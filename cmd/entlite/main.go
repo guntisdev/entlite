@@ -9,8 +9,8 @@ func main() {
 	fmt.Println("hello world")
 
 	if len(os.Args) < 2 {
+		fmt.Fprintln(os.Stderr, "Missing arguments")
 		// TODO print usage with new and gen commands
-		fmt.Println("Missing arguments")
 		os.Exit(1)
 	}
 
