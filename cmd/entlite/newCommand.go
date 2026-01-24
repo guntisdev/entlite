@@ -33,7 +33,7 @@ func newCommand(entityNames []string) {
 		}
 	}
 
-	if err := createGenFile(genDir); err != nil {
+	if err := createGenFile(schemaDir); err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating generate.go: %v\n", err)
 		os.Exit(1)
 	}
