@@ -17,7 +17,7 @@ func TestNewCommandFunction(t *testing.T) {
 	expectedFiles := []string{
 		"ent/schema/user.go",
 		"ent/schema/post.go",
-		"ent/gen/generate.go",
+		"ent/schema/generate.go",
 		"ent/sqlc.yaml",
 		"ent/buf.yaml",
 		"ent/buf.gen.yaml",
