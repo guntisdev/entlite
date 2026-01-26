@@ -1,6 +1,15 @@
 package entlite
 
 // --------------------------------- string ---------------------------------
+type StringFieldBuilder interface {
+	Unique() StringFieldBuilder
+	Default(string) StringFieldBuilder
+	ProtoField(int) StringFieldBuilder
+
+	// to be used in Field
+	field()
+}
+
 type StringField struct {
 	name       string
 	unique     bool
@@ -12,7 +21,7 @@ type StringField struct {
 func (*StringField) field() {}
 
 // constructor
-func String(name string) *StringField {
+func String(name string) StringFieldBuilder {
 	return &StringField{name: name}
 }
 
@@ -29,17 +38,17 @@ func (f *StringField) GetProtoField() *int {
 }
 
 // setters with chaining logic. uses mutable struct
-func (f *StringField) Unique() *StringField {
+func (f *StringField) Unique() StringFieldBuilder {
 	f.unique = true
 	return f
 }
 
-func (f *StringField) Default(value string) *StringField {
+func (f *StringField) Default(value string) StringFieldBuilder {
 	f.defaultVal = &value
 	return f
 }
 
-func (f *StringField) ProtoField(num int) *StringField {
+func (f *StringField) ProtoField(num int) StringFieldBuilder {
 	f.protoField = &num
 	return f
 }
