@@ -27,7 +27,7 @@ type ServiceAnnotation struct{}
 
 func (ServiceAnnotation) annotation() {}
 
-func Service() Annotation {
+func Service(annotations ...Annotation) Annotation {
 	return ServiceAnnotation{}
 }
 
@@ -41,3 +41,15 @@ const (
 	MethodDelete
 	MethodList
 )
+
+type MethodsAnnotation struct {
+	Methods []Method
+}
+
+func (MethodsAnnotation) annotation() {}
+
+func Methods(...Method) Annotation {
+	var methodList []Method
+
+	return MethodsAnnotation{Methods: methodList}
+}
