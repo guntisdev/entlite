@@ -1,17 +1,50 @@
 package entlite
 
-// string
+// --------------------------------- string ---------------------------------
 type StringField struct {
-	name string
+	name       string
+	unique     bool
+	defaultVal *string
+	protoField *int
 }
 
-func (StringField) field() {}
+// marker method for sealed interface
+func (*StringField) field() {}
 
-func String(name string) StringField {
-	return StringField{name: name}
+// constructor
+func String(name string) *StringField {
+	return &StringField{name: name}
 }
 
-// bool
+func (f *StringField) GetUnique() bool {
+	return f.unique
+}
+
+func (f *StringField) GetDefault() *string {
+	return f.defaultVal
+}
+
+func (f *StringField) GetProtoField() *int {
+	return f.protoField
+}
+
+// setters with chaining logic. uses mutable struct
+func (f *StringField) Unique() *StringField {
+	f.unique = true
+	return f
+}
+
+func (f *StringField) Default(value string) *StringField {
+	f.defaultVal = &value
+	return f
+}
+
+func (f *StringField) ProtoField(num int) *StringField {
+	f.protoField = &num
+	return f
+}
+
+// --------------------------------- bool ---------------------------------
 type BoolField struct {
 	name string
 }
@@ -22,7 +55,7 @@ func Bool(name string) BoolField {
 	return BoolField{name: name}
 }
 
-// int32
+// --------------------------------- bool ---------------------------------
 type Int32Field struct {
 	name string
 }
