@@ -86,7 +86,7 @@ func (%s) Fields() []entlite.Field {
 }
 
 func createGenFile(dir string) error {
-	content := `go:generate go run github.com/guntisdev/entlite/cmd/entlite .
+	content := `//go:generate go run github.com/guntisdev/entlite/cmd/entlite gen .
 
 package ent
 `
