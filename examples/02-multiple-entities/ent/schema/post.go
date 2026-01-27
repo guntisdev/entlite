@@ -20,6 +20,6 @@ func (Post) Fields() []entlite.Field {
 		entlite.String("title").ProtoField(2),
 		entlite.String("content").ProtoField(3),
 		entlite.Bool("published").Default(false).ProtoField(4),
-		entlite.Time("created_at").Default("NOW()").ProtoField(5),
+		// entlite.Time("created_at").Default("NOW()").ProtoField(5),
 	}
 }
