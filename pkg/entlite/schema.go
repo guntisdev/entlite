@@ -7,7 +7,7 @@ type Annotation interface {
 }
 
 type Field interface {
-	field()
+	Field()
 }
 
 //	type Entity interface {

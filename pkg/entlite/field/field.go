@@ -1,4 +1,4 @@
-package entlite
+package field
 
 // --------------------------------- string ---------------------------------
 type StringFieldBuilder interface {
@@ -6,8 +6,8 @@ type StringFieldBuilder interface {
 	Default(string) StringFieldBuilder
 	ProtoField(int) StringFieldBuilder
 
-	// to be used in Field
-	field()
+	// to satisfy entlite.Field interface
+	Field()
 }
 
 type StringField struct {
@@ -18,7 +18,7 @@ type StringField struct {
 }
 
 // marker method for sealed interface
-func (*StringField) field() {}
+func (*StringField) Field() {}
 
 // constructor
 func String(name string) StringFieldBuilder {
@@ -58,7 +58,8 @@ type BoolFieldBuilder interface {
 	Default(bool) BoolFieldBuilder
 	ProtoField(int) BoolFieldBuilder
 
-	field()
+	// to satisfy entlite.Field interface
+	Field()
 }
 
 type BoolField struct {
@@ -67,7 +68,7 @@ type BoolField struct {
 	protoField *int
 }
 
-func (*BoolField) field() {}
+func (*BoolField) Field() {}
 
 func Bool(name string) BoolFieldBuilder {
 	return &BoolField{name: name}
@@ -96,7 +97,8 @@ type Int32FieldBuilder interface {
 	Default(int32) Int32FieldBuilder
 	ProtoField(int) Int32FieldBuilder
 
-	field()
+	// to satisfy entlite.Field interface
+	Field()
 }
 
 type Int32Field struct {
@@ -105,7 +107,7 @@ type Int32Field struct {
 	protoField *int
 }
 
-func (*Int32Field) field() {}
+func (*Int32Field) Field() {}
 
 func Int32(name string) Int32FieldBuilder {
 	return &Int32Field{name: name}

@@ -1,6 +1,9 @@
 package ent
 
-import "github.com/guntisdev/entlite/pkg/entlite"
+import (
+	"github.com/guntisdev/entlite/pkg/entlite"
+	"github.com/guntisdev/entlite/pkg/entlite/field"
+)
 
 type Post struct {
 	entlite.Schema
@@ -17,9 +20,9 @@ func (Post) Annotations() []entlite.Annotation {
 
 func (Post) Fields() []entlite.Field {
 	return []entlite.Field{
-		entlite.String("title").ProtoField(2),
-		entlite.String("content").ProtoField(3),
-		entlite.Bool("published").Default(false).ProtoField(4),
-		// entlite.Time("created_at").Default("NOW()").ProtoField(5),
+		field.String("title").ProtoField(2),
+		field.String("content").ProtoField(3),
+		field.Bool("published").Default(false).ProtoField(4),
+		// field.Time("created_at").Default("NOW()").ProtoField(5),
 	}
 }
