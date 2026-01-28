@@ -1,6 +1,9 @@
 package ent
 
-import "github.com/guntisdev/entlite/pkg/entlite"
+import (
+	"github.com/guntisdev/entlite/pkg/entlite"
+	"github.com/guntisdev/entlite/pkg/entlite/field"
+)
 
 type User struct {
 	entlite.Schema
@@ -15,8 +18,8 @@ func (User) Annotations() []entlite.Annotation {
 
 func (User) Fields() []entlite.Field {
 	return []entlite.Field{
-		entlite.String("email").Unique().ProtoField(2),
-		entlite.String("name").ProtoField(3),
-		// entlite.Time("created_at").Default("NOW()").ProtoField(4),
+		field.String("email").Unique().ProtoField(2),
+		field.String("name").ProtoField(3),
+		// field.Time("created_at").Default("NOW()").ProtoField(4),
 	}
 }
