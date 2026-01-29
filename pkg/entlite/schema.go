@@ -3,21 +3,16 @@ package entlite
 type Schema struct{}
 
 type Annotation interface {
-	annotation()
+	Annotation()
 }
 
 type Field interface {
 	Field()
 }
 
-//	type Entity interface {
-//		EntityName() string
-//		EntityFields() []Field
-//		EntityAnnotations() []Annotation
-//	}
 type MessageAnnotation struct{}
 
-func (MessageAnnotation) annotation() {}
+func (MessageAnnotation) Annotation() {}
 
 func Message() Annotation {
 	return MessageAnnotation{}
@@ -25,31 +20,8 @@ func Message() Annotation {
 
 type ServiceAnnotation struct{}
 
-func (ServiceAnnotation) annotation() {}
+func (ServiceAnnotation) Annotation() {}
 
 func Service(annotations ...Annotation) Annotation {
 	return ServiceAnnotation{}
-}
-
-// CRUD method type
-type Method int
-
-const (
-	MethodCreate Method = 1 << iota
-	MethodGet
-	MethodUpdate
-	MethodDelete
-	MethodList
-)
-
-type MethodsAnnotation struct {
-	Methods []Method
-}
-
-func (MethodsAnnotation) annotation() {}
-
-func Methods(...Method) Annotation {
-	var methodList []Method
-
-	return MethodsAnnotation{Methods: methodList}
 }
