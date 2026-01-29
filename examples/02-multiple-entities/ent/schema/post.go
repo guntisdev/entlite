@@ -3,6 +3,7 @@ package ent
 import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
+	"github.com/guntisdev/entlite/pkg/entlite/service"
 )
 
 type Post struct {
@@ -13,7 +14,7 @@ func (Post) Annotations() []entlite.Annotation {
 	return []entlite.Annotation{
 		entlite.Message(),
 		entlite.Service(
-			entlite.Methods(entlite.MethodGet | entlite.MethodList),
+			service.Methods(service.MethodGet | service.MethodList),
 		),
 	}
 }
