@@ -5,34 +5,28 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"os"
 	"path/filepath"
-
-	"github.com/guntisdev/entlite/pkg/entlite"
 )
-
-type Parser struct {
-	discoveredEntities []string
-	entityDirectory    string
-	parsedEntities     []entlite.Schema
-}
 
 type DiscoveredEntity struct {
 	Name string
 	Path string
 }
 
-func NewParser() *Parser {
-	return &Parser{}
-}
-
-func (p *Parser) DiscoverEntities(entityDir string) ([]DiscoveredEntity, error) {
-	p.entityDirectory = entityDir
-	p.discoveredEntities = nil
-
-	pattern := filepath.Join(entityDir, "*.go")
-	matches, err := filepath.Glob(pattern)
+func DiscoverEntities(entityDir string) ([]DiscoveredEntity, error) {
+	var matches []string
+	err := filepath.WalkDir(entityDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() && filepath.Ext(path) == ".go" {
+			matches = append(matches, path)
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to fined go files in %s: %w", entityDir, err)
+		return nil, fmt.Errorf("failed to find go files in %s: %w", entityDir, err)
 	}
 
 	fmt.Printf("Found %d files\n", len(matches))
@@ -41,7 +35,7 @@ func (p *Parser) DiscoverEntities(entityDir string) ([]DiscoveredEntity, error) 
 
 	for _, file := range matches {
 
-		entities, err := p.findEntitiesInFile(file)
+		entities, err := findEntitiesInFile(file)
 		if err != nil {
 			return nil, fmt.Errorf("failed to examine file %s: %w", file, err)
 		}
@@ -63,7 +57,7 @@ func (p *Parser) DiscoverEntities(entityDir string) ([]DiscoveredEntity, error) 
 	return entityList, nil
 }
 
-func (p *Parser) findEntitiesInFile(filename string) ([]string, error) {
+func findEntitiesInFile(filename string) ([]string, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {
@@ -89,7 +83,7 @@ func (p *Parser) findEntitiesInFile(filename string) ([]string, error) {
 				continue
 			}
 
-			if p.embedsEntliteSchema(structType) {
+			if embedsEntliteSchema(structType) {
 				entities = append(entities, typeSpec.Name.Name)
 			}
 		}
@@ -98,7 +92,7 @@ func (p *Parser) findEntitiesInFile(filename string) ([]string, error) {
 	return entities, nil
 }
 
-func (p *Parser) embedsEntliteSchema(structType *ast.StructType) bool {
+func embedsEntliteSchema(structType *ast.StructType) bool {
 	if structType.Fields == nil {
 		return false
 	}

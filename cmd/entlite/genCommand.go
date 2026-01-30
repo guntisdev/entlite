@@ -26,8 +26,7 @@ func genCommand(args []string) {
 		os.Exit(1)
 	}
 
-	p := parser.NewParser()
-	if _, err := p.DiscoverEntities(dir); err != nil {
+	if _, err := parser.DiscoverEntities(dir); err != nil {
 		fmt.Fprintf(os.Stderr, "Error discovering and parsing entities: %v\n", err)
 		os.Exit(1)
 	}
