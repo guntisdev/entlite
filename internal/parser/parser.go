@@ -16,30 +16,39 @@ type Parser struct {
 	parsedEntities     []entlite.Schema
 }
 
+type DiscoveredEntity struct {
+	Name string
+	Path string
+}
+
 func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) DiscoverEntities(entityDir string) error {
+func (p *Parser) DiscoverEntities(entityDir string) ([]DiscoveredEntity, error) {
 	p.entityDirectory = entityDir
 	p.discoveredEntities = nil
 
 	pattern := filepath.Join(entityDir, "*.go")
 	matches, err := filepath.Glob(pattern)
 	if err != nil {
-		return fmt.Errorf("failed to fined go files in %s: %w", entityDir, err)
+		return nil, fmt.Errorf("failed to fined go files in %s: %w", entityDir, err)
 	}
 
 	fmt.Printf("Found %d files\n", len(matches))
+
+	var entityList []DiscoveredEntity
 
 	for _, file := range matches {
 
 		entities, err := p.findEntitiesInFile(file)
 		if err != nil {
-			return fmt.Errorf("failed to examine file %s: %w", file, err)
+			return nil, fmt.Errorf("failed to examine file %s: %w", file, err)
 		}
 
-		p.discoveredEntities = append(p.discoveredEntities, entities...)
+		for _, entity := range entities {
+			entityList = append(entityList, DiscoveredEntity{file, entity})
+		}
 
 		// TODO remove
 		for _, entityName := range entities {
@@ -47,7 +56,11 @@ func (p *Parser) DiscoverEntities(entityDir string) error {
 		}
 	}
 
-	return nil
+	if len(entityList) == 0 {
+		return nil, fmt.Errorf("no entities found in directory")
+	}
+
+	return entityList, nil
 }
 
 func (p *Parser) findEntitiesInFile(filename string) ([]string, error) {
@@ -66,18 +79,18 @@ func (p *Parser) findEntitiesInFile(filename string) ([]string, error) {
 		}
 
 		for _, spec := range genDecl.Specs {
-			typeSec, ok := spec.(*ast.TypeSpec)
+			typeSpec, ok := spec.(*ast.TypeSpec)
 			if !ok {
 				continue
 			}
 
-			sturctType, ok := typeSec.Type.(*ast.StructType)
+			structType, ok := typeSpec.Type.(*ast.StructType)
 			if !ok {
 				continue
 			}
 
-			if p.embedsEntliteSchema(sturctType) {
-				entities = append(entities, typeSec.Name.Name)
+			if p.embedsEntliteSchema(structType) {
+				entities = append(entities, typeSpec.Name.Name)
 			}
 		}
 	}
