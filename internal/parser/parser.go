@@ -190,7 +190,6 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 	}
 
 	return field
-
 }
 
 func parseDefaultValue(expr ast.Expr) any {
@@ -268,8 +267,6 @@ func parseAnnotationCall(callExpr *ast.CallExpr) schema.Annotation {
 			case "Service":
 				annotation.Type = schema.AnnotationService
 
-				// TODO delete
-				fmt.Printf("Service annotation found with %d arguments\n", len(callExpr.Args))
 				if len(callExpr.Args) > 0 {
 					methods := parseServiceArguments(callExpr.Args)
 					annotation.Methods = methods
@@ -289,15 +286,11 @@ func parseServiceArguments(args []ast.Expr) []schema.Method {
 	for _, arg := range args {
 		if callExpr, ok := arg.(*ast.CallExpr); ok {
 			if selExpr, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
-				if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "entlite" {
+				if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "service" {
 					if selExpr.Sel.Name == "Methods" {
-						// TODO remove
-						fmt.Printf("Found Method() call with %d arguments \n", len(callExpr.Args))
 						if len(callExpr.Args) > 0 {
 							methodMethods := parseMethodsArguments(callExpr.Args[0])
 							methods = append(methods, methodMethods...)
-							// TODO remove
-							fmt.Printf("Extract methods: %v\n", methodMethods)
 						}
 					}
 				}
@@ -312,13 +305,12 @@ func parseMethodsArguments(expr ast.Expr) []schema.Method {
 	var methods []schema.Method
 
 	if binExpr, ok := expr.(*ast.BinaryExpr); ok && binExpr.Op == token.OR {
-		// Recursively parse both sides ofthe OR
 		leftMethods := parseMethodsArguments(binExpr.X)
 		rightMethods := parseMethodsArguments(binExpr.Y)
 		methods = append(methods, leftMethods...)
 		methods = append(methods, rightMethods...)
 	} else if selExpr, ok := expr.(*ast.SelectorExpr); ok {
-		if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "entlite" {
+		if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "service" {
 			switch selExpr.Sel.Name {
 			case "MethodCreate":
 				methods = append(methods, schema.MethodCreate)
@@ -331,8 +323,6 @@ func parseMethodsArguments(expr ast.Expr) []schema.Method {
 			case "MethodList":
 				methods = append(methods, schema.MethodList)
 			}
-			// TODO delete
-			fmt.Printf("Found methods: %s\n", selExpr.Sel.Name)
 		}
 	}
 
