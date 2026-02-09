@@ -11,6 +11,7 @@ type Field struct {
 	Type         FieldType
 	Unique       bool
 	DefaultValue any
+	DefaultNow   bool
 	ProtoField   *int
 }
 
@@ -20,7 +21,7 @@ const (
 	FieldTypeString FieldType = "string"
 	FieldTypeInt32  FieldType = "int32"
 	FieldTypeBool   FieldType = "bool"
-	// FieldTypeTime   FieldType = "time"
+	FieldTypeTime   FieldType = "time"
 )
 
 type Annotation struct {
