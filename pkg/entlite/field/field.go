@@ -1,5 +1,7 @@
 package field
 
+import "time"
+
 // --------------------------------- string ---------------------------------
 type StringFieldBuilder interface {
 	Unique() StringFieldBuilder
@@ -127,6 +129,57 @@ func (f *Int32Field) Default(value int32) Int32FieldBuilder {
 }
 
 func (f *Int32Field) ProtoField(num int) Int32FieldBuilder {
+	f.protoField = &num
+	return f
+}
+
+// --------------------------------- time ---------------------------------
+type TimeFieldBuilder interface {
+	Default(time.Time) TimeFieldBuilder
+	DefaultNow() TimeFieldBuilder
+	ProtoField(int) TimeFieldBuilder
+
+	Field()
+}
+
+type TimeField struct {
+	name       string
+	defaultVal *time.Time
+	useNow     bool
+	protoField *int
+}
+
+func (*TimeField) Field() {}
+
+func Time(name string) TimeFieldBuilder {
+	return &TimeField{name: name}
+}
+
+func (f *TimeField) GetDefault() *time.Time {
+	return f.defaultVal
+}
+
+func (f *TimeField) GetUseNow() bool {
+	return f.useNow
+}
+
+func (f *TimeField) GetProtoField() *int {
+	return f.protoField
+}
+
+func (f *TimeField) Default(value time.Time) TimeFieldBuilder {
+	f.defaultVal = &value
+	f.useNow = false
+	return f
+}
+
+func (f *TimeField) DefaultNow() TimeFieldBuilder {
+	f.defaultVal = nil
+	f.useNow = true
+	return f
+}
+
+func (f *TimeField) ProtoField(num int) TimeFieldBuilder {
 	f.protoField = &num
 	return f
 }

@@ -149,14 +149,13 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 							field.Name = strings.Trim(lit.Value, "\"")
 						}
 					}
-					// TODO make time field
-					// case "Time":
-					//                 field.Type = schema.FieldTypeTime
-					// 	if len(e.Args) > 0 {
-					// 		if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-					// 			field.Name = strings.Trim(lit.Value, "\"")
-					// 		}
-					// 	}
+				case "Time":
+					field.Type = schema.FieldTypeTime
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Name = strings.Trim(lit.Value, "\"")
+						}
+					}
 				case "ProtoField":
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.INT {
@@ -171,6 +170,8 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 					if len(e.Args) > 0 {
 						field.DefaultValue = parseDefaultValue(e.Args[0])
 					}
+				case "DefaultNow":
+					field.DefaultNow = true
 				}
 
 				// Continue with the receiver of this method call
