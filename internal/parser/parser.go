@@ -267,12 +267,20 @@ func parseAnnotationCall(callExpr *ast.CallExpr) schema.Annotation {
 			case "Service":
 				annotation.Type = schema.AnnotationService
 
+				var methods []schema.Method
 				if len(callExpr.Args) > 0 {
-					methods := parseServiceArguments(callExpr.Args)
-					annotation.Methods = methods
-					// TODO delete
-					fmt.Printf("Parser methods form Service arguments: %v\n", methods)
+					methods = parseServiceArguments(callExpr.Args)
+				} else {
+					// if no arguments in Service() then all default methods
+					methods = []schema.Method{
+						schema.MethodCreate,
+						schema.MethodGet,
+						schema.MethodUpdate,
+						schema.MethodDelete,
+						schema.MethodList,
+					}
 				}
+				annotation.Methods = methods
 			}
 		}
 	}
@@ -298,6 +306,16 @@ func parseServiceArguments(args []ast.Expr) []schema.Method {
 		}
 	}
 
+	if len(methods) == 0 {
+		methods = []schema.Method{
+			schema.MethodCreate,
+			schema.MethodGet,
+			schema.MethodUpdate,
+			schema.MethodDelete,
+			schema.MethodList,
+		}
+	}
+
 	return methods
 }
 
@@ -319,7 +337,7 @@ func parseMethodsArguments(expr ast.Expr) []schema.Method {
 			case "MethodUpdate":
 				methods = append(methods, schema.MethodUpdate)
 			case "MethodDelete":
-				methods = append(methods, schema.MethodUpdate)
+				methods = append(methods, schema.MethodDelete)
 			case "MethodList":
 				methods = append(methods, schema.MethodList)
 			}
