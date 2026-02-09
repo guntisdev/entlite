@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
 )
@@ -62,6 +63,7 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			continue
 		}
 
+		// Parse Annotations
 		if funcDecl.Name.Name == "Annotations" {
 			annotations, err := parseAnnotationsMethod(funcDecl)
 			if err != nil {
@@ -70,11 +72,158 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			entity.Annotations = annotations
 		}
 
-		// parse Fields
+		// Parse Fields
+		if funcDecl.Name.Name == "Fields" {
+			fields, err := parseFieldsMethod(funcDecl)
+			if err != nil {
+				return entity, fmt.Errorf("failed to parse fields: %w", err)
+			}
+			entity.Fields = fields
+		}
 
 	}
 
 	return entity, nil
+}
+
+func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
+	var fields []schema.Field
+
+	if funcDecl.Body == nil {
+		return fields, nil
+	}
+
+	for _, stmt := range funcDecl.Body.List {
+		retStmt, ok := stmt.(*ast.ReturnStmt)
+		if !ok {
+			continue
+		}
+
+		for _, result := range retStmt.Results {
+			if compLit, ok := result.(*ast.CompositeLit); ok {
+				for _, elt := range compLit.Elts {
+					field := parseFieldExpression(elt)
+					if field.Name != "" {
+						fields = append(fields, field)
+					}
+				}
+
+			}
+		}
+	}
+
+	return fields, nil
+}
+
+func parseFieldExpression(expr ast.Expr) schema.Field {
+	field := schema.Field{}
+
+	// Handle method chaining like entlite.String("name").ProtoField(2)
+	currentExpr := expr
+
+	for currentExpr != nil {
+		switch e := currentExpr.(type) {
+		case *ast.CallExpr:
+			if selExpr, ok := e.Fun.(*ast.SelectorExpr); ok {
+				methodName := selExpr.Sel.Name
+
+				switch methodName {
+				case "String":
+					field.Type = schema.FieldTypeString
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Name = strings.Trim(lit.Value, "\"")
+						}
+					}
+				case "Int32":
+					field.Type = schema.FieldTypeInt32
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Name = strings.Trim(lit.Value, "\"")
+						}
+					}
+				case "Bool":
+					field.Type = schema.FieldTypeBool
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Name = strings.Trim(lit.Value, "\"")
+						}
+					}
+					// TODO make time field
+					// case "Time":
+					//                 field.Type = schema.FieldTypeTime
+					// 	if len(e.Args) > 0 {
+					// 		if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+					// 			field.Name = strings.Trim(lit.Value, "\"")
+					// 		}
+					// 	}
+				case "ProtoField":
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.INT {
+							if val := parseInt(lit.Value); val != nil {
+								field.ProtoField = val
+							}
+						}
+					}
+				case "Unique":
+					field.Unique = true
+				case "Default":
+					if len(e.Args) > 0 {
+						field.DefaultValue = parseDefaultValue(e.Args[0])
+					}
+				}
+
+				// Continue with the receiver of this method call
+				currentExpr = selExpr.X
+
+			} else {
+				// not a method call, check if it is a top level function call
+				if _, ok := e.Fun.(*ast.Ident); ok {
+					// Handle calls like entlite.String
+					break
+				}
+				currentExpr = nil
+			}
+		default:
+			currentExpr = nil
+		}
+	}
+
+	return field
+}
+
+func parseDefaultValue(expr ast.Expr) any {
+	switch e := expr.(type) {
+	case *ast.BasicLit:
+		switch e.Kind {
+		case token.STRING:
+			return strings.Trim(e.Value, "\"")
+		case token.INT:
+			var val int
+			fmt.Scanf(e.Value, "%d", &val)
+			return val
+		case token.FLOAT:
+			var val float32
+			fmt.Scanf(e.Value, "%f", &val)
+			return val
+		}
+	case *ast.Ident:
+		if e.Name == "true" {
+			return true
+		}
+		if e.Name == "false" {
+			return false
+		}
+	}
+	return nil
+}
+
+func parseInt(s string) *int {
+	var i int
+	if _, err := fmt.Scanf(s, "%d", &i); err == nil {
+		return &i
+	}
+	return nil
 }
 
 func parseAnnotationsMethod(funcDecl *ast.FuncDecl) ([]schema.Annotation, error) {
@@ -118,14 +267,20 @@ func parseAnnotationCall(callExpr *ast.CallExpr) schema.Annotation {
 			case "Service":
 				annotation.Type = schema.AnnotationService
 
-				// TODO delete
-				fmt.Printf("Service annotation found with %d arguments\n", len(callExpr.Args))
+				var methods []schema.Method
 				if len(callExpr.Args) > 0 {
-					methods := parseServiceArguments(callExpr.Args)
-					annotation.Methods = methods
-					// TODO delete
-					fmt.Printf("Parser methods form Service arguments: %v\n", methods)
+					methods = parseServiceArguments(callExpr.Args)
+				} else {
+					// if no arguments in Service() then all default methods
+					methods = []schema.Method{
+						schema.MethodCreate,
+						schema.MethodGet,
+						schema.MethodUpdate,
+						schema.MethodDelete,
+						schema.MethodList,
+					}
 				}
+				annotation.Methods = methods
 			}
 		}
 	}
@@ -139,19 +294,25 @@ func parseServiceArguments(args []ast.Expr) []schema.Method {
 	for _, arg := range args {
 		if callExpr, ok := arg.(*ast.CallExpr); ok {
 			if selExpr, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
-				if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "entlite" {
+				if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "service" {
 					if selExpr.Sel.Name == "Methods" {
-						// TODO remove
-						fmt.Printf("Found Method() call with %d arguments \n", len(callExpr.Args))
 						if len(callExpr.Args) > 0 {
 							methodMethods := parseMethodsArguments(callExpr.Args[0])
 							methods = append(methods, methodMethods...)
-							// TODO remove
-							fmt.Printf("Extract methods: %v\n", methodMethods)
 						}
 					}
 				}
 			}
+		}
+	}
+
+	if len(methods) == 0 {
+		methods = []schema.Method{
+			schema.MethodCreate,
+			schema.MethodGet,
+			schema.MethodUpdate,
+			schema.MethodDelete,
+			schema.MethodList,
 		}
 	}
 
@@ -162,13 +323,12 @@ func parseMethodsArguments(expr ast.Expr) []schema.Method {
 	var methods []schema.Method
 
 	if binExpr, ok := expr.(*ast.BinaryExpr); ok && binExpr.Op == token.OR {
-		// Recursively parse both sides ofthe OR
 		leftMethods := parseMethodsArguments(binExpr.X)
 		rightMethods := parseMethodsArguments(binExpr.Y)
 		methods = append(methods, leftMethods...)
 		methods = append(methods, rightMethods...)
 	} else if selExpr, ok := expr.(*ast.SelectorExpr); ok {
-		if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "entlite" {
+		if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "service" {
 			switch selExpr.Sel.Name {
 			case "MethodCreate":
 				methods = append(methods, schema.MethodCreate)
@@ -177,12 +337,10 @@ func parseMethodsArguments(expr ast.Expr) []schema.Method {
 			case "MethodUpdate":
 				methods = append(methods, schema.MethodUpdate)
 			case "MethodDelete":
-				methods = append(methods, schema.MethodUpdate)
+				methods = append(methods, schema.MethodDelete)
 			case "MethodList":
 				methods = append(methods, schema.MethodList)
 			}
-			// TODO
-			fmt.Printf("Found methods: %s\n", selExpr.Sel.Name)
 		}
 	}
 
