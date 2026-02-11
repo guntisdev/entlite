@@ -99,7 +99,100 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 func generateServiceProto(entity schema.Entity) string {
 	var content strings.Builder
 
+	content.WriteString(generateServiceMessages(entity))
+	content.WriteString("\n")
+
+	serviceName := fmt.Sprintf("%sService", entity.Name)
+	content.WriteString(fmt.Sprintf("// %s provides CRUD opertions for %s entities\n", serviceName, entity.Name))
+	content.WriteString(fmt.Sprintf("service %s {\n", serviceName))
+
+	for _, method := range entity.GetMethods() {
+		content.WriteString(generateServiceMethod(entity.Name, method))
+	}
+
+	content.WriteString("}")
+
 	return content.String()
+}
+
+func generateServiceMessages(entity schema.Entity) string {
+	var content strings.Builder
+
+	for i, method := range entity.GetMethods() {
+		if i > 0 {
+			content.WriteString("\n")
+		}
+
+		switch method {
+		case schema.MethodCreate:
+			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
+			for _, field := range entity.Fields {
+				protoType := getProtoType(field.Type)
+				fieldNumber := 1
+				if field.ProtoField != nil {
+					fieldNumber = *field.ProtoField
+				}
+				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, fieldNumber))
+			}
+			content.WriteString("}")
+		case schema.MethodGet:
+			content.WriteString(fmt.Sprintf("message Get%sRequest {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("  %s;\n", getIdFieldAsStr(entity.Fields)))
+			content.WriteString("}")
+		case schema.MethodUpdate:
+			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("  %s;\n", getIdFieldAsStr(entity.Fields)))
+			for _, field := range entity.Fields {
+				protoType := getProtoType(field.Type)
+				fieldNumber := 1
+				if field.ProtoField != nil {
+					fieldNumber = *field.ProtoField
+				}
+				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, fieldNumber))
+
+			}
+			content.WriteString("}")
+		case schema.MethodDelete:
+			content.WriteString(fmt.Sprintf("message Delete%sRequest {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("  %s;\n", getIdFieldAsStr(entity.Fields)))
+			content.WriteString("}")
+		case schema.MethodList:
+			content.WriteString(fmt.Sprintf("message List%sRequest {\n", entity.Name))
+			content.WriteString("  int32 limit = 1;\n")
+			content.WriteString("  int32 offset = 2;\n")
+			content.WriteString("}\n\n")
+
+			content.WriteString(fmt.Sprintf("message List%sResponse {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString("}")
+		}
+
+	}
+	// TODO
+
+	return content.String()
+}
+
+func getIdFieldAsStr(fields []schema.Field) string {
+	// TODO get id field from fields - proly by field number
+	return "int32 id = 1"
+}
+
+func generateServiceMethod(entityName string, method schema.Method) string {
+	switch method {
+	case schema.MethodCreate:
+		return fmt.Sprintf("  rpc Create(Create%sRequest) returns (%s);\n", entityName, entityName)
+	case schema.MethodGet:
+		return fmt.Sprintf(" rpc Get(Get%sRequest) returns (%s);\n", entityName, entityName)
+	case schema.MethodUpdate:
+		return fmt.Sprintf(" rpc Update(Update%sRequest) returns (%s)\n", entityName, entityName)
+	case schema.MethodDelete:
+		return fmt.Sprintf(" rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entityName)
+	case schema.MethodList:
+		return fmt.Sprintf(" rpc List(List%sRequest) returns (%s)\n", entityName, entityName)
+	default:
+		return ""
+	}
 }
 
 func writeFile(filePath, content string) error {
