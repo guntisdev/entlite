@@ -8,6 +8,10 @@ type StringFieldBuilder interface {
 	Default(string) StringFieldBuilder
 	ProtoField(int) StringFieldBuilder
 
+	/*
+	   Optional, Immutable, DefaultFunc, Comment, Sensitive (for password field)
+	*/
+
 	// to satisfy entlite.Field interface
 	Field()
 }
@@ -136,6 +140,7 @@ func (f *Int32Field) ProtoField(num int) Int32FieldBuilder {
 // --------------------------------- time ---------------------------------
 type TimeFieldBuilder interface {
 	Default(time.Time) TimeFieldBuilder
+	// TODO change thos to DefaultFunc so naming is consistent also with strings, UUID etc
 	DefaultNow() TimeFieldBuilder
 	ProtoField(int) TimeFieldBuilder
 
