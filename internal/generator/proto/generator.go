@@ -63,7 +63,7 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 		}
 
 		content.WriteString(fmt.Sprintf("// %s represents as %s entity\n", entity.Name, strings.ToLower(entity.Name)))
-		content.WriteString(fmt.Sprintf("message %s{\n", entity.Name))
+		content.WriteString(fmt.Sprintf("message %s {\n", entity.Name))
 
 		for _, field := range entity.Fields {
 			protoType := getProtoType(field.Type)
@@ -100,7 +100,7 @@ func generateServiceProto(entity schema.Entity) string {
 	var content strings.Builder
 
 	content.WriteString(generateServiceMessages(entity))
-	content.WriteString("\n")
+	content.WriteString("\n\n")
 
 	serviceName := fmt.Sprintf("%sService", entity.Name)
 	content.WriteString(fmt.Sprintf("// %s provides CRUD opertions for %s entities\n", serviceName, entity.Name))
@@ -183,13 +183,13 @@ func generateServiceMethod(entityName string, method schema.Method) string {
 	case schema.MethodCreate:
 		return fmt.Sprintf("  rpc Create(Create%sRequest) returns (%s);\n", entityName, entityName)
 	case schema.MethodGet:
-		return fmt.Sprintf(" rpc Get(Get%sRequest) returns (%s);\n", entityName, entityName)
+		return fmt.Sprintf("  rpc Get(Get%sRequest) returns (%s);\n", entityName, entityName)
 	case schema.MethodUpdate:
-		return fmt.Sprintf(" rpc Update(Update%sRequest) returns (%s)\n", entityName, entityName)
+		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s)\n", entityName, entityName)
 	case schema.MethodDelete:
-		return fmt.Sprintf(" rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entityName)
+		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entityName)
 	case schema.MethodList:
-		return fmt.Sprintf(" rpc List(List%sRequest) returns (%s)\n", entityName, entityName)
+		return fmt.Sprintf("  rpc List(List%sRequest) returns (%s)\n", entityName, entityName)
 	default:
 		return ""
 	}
