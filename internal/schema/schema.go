@@ -1,5 +1,37 @@
 package schema
 
+type Schema struct {
+	Entities []Entity
+}
+
+func (e Entity) HasMessage() bool {
+	for _, ann := range e.Annotations {
+		if ann.Type == AnnotationMessage {
+			return true
+		}
+	}
+	return false
+}
+
+func (e Entity) HasService() bool {
+	for _, ann := range e.Annotations {
+		if ann.Type == AnnotationService {
+			return true
+		}
+	}
+	return false
+}
+
+func (e Entity) GetMethods() []Method {
+	for _, ann := range e.Annotations {
+		if ann.Type == AnnotationService && len(ann.Methods) > 0 {
+			return ann.Methods
+		}
+	}
+
+	return nil
+}
+
 type Entity struct {
 	Name        string
 	Fields      []Field

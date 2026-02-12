@@ -78,6 +78,12 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			if err != nil {
 				return entity, fmt.Errorf("failed to parse fields: %w", err)
 			}
+			/*
+			   TODO add extra logic to put protoField values
+			   - check if id exists with 1 - if no add it
+			   - check if fields have duplicated protoField values - if so return error
+			   - automatically add protoField value if not applied to field, check to not duplicate values
+			*/
 			entity.Fields = fields
 		}
 

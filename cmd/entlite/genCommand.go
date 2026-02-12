@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/guntisdev/entlite/internal/generator/proto"
 	"github.com/guntisdev/entlite/internal/parser"
 )
 
@@ -38,5 +39,29 @@ func genCommand(args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Parsed entities:\n%v\n", parsedEntities)
+	// fmt.Printf("Parsed entities:\n%v\n", parsedEntities)
+
+	protoDir := filepath.Join(filepath.Dir(dir), "contract", "proto")
+	sqlcDir := filepath.Join(filepath.Dir(dir), "contract", "sqlc")
+	genDir := filepath.Join(filepath.Dir(dir), "gen")
+
+	dirs := []string{protoDir, sqlcDir, genDir}
+
+	for _, dir := range dirs {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			fmt.Fprintf(os.Stderr, "Error creating directory %s %v\n", dir, err)
+			os.Exit(1)
+		}
+	}
+
+	// TODO generate proto
+	if err := proto.Generate(parsedEntities, protoDir); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed generating entities: %v\n", err)
+		os.Exit(1)
+	}
+
+	// TODO generate sqlc
+
+	// TODO generate bridge/converter
+
 }
