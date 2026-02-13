@@ -67,11 +67,7 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 
 		for _, field := range entity.Fields {
 			protoType := getProtoType(field.Type)
-			fieldNumber := 1 // actual number should be read/generated at parser stage
-			if field.ProtoField != nil {
-				fieldNumber = *field.ProtoField
-			}
-			content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, fieldNumber))
+			content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
 		}
 
 		content.WriteString("}")
@@ -128,11 +124,7 @@ func generateServiceMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
 				protoType := getProtoType(field.Type)
-				fieldNumber := 1
-				if field.ProtoField != nil {
-					fieldNumber = *field.ProtoField
-				}
-				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, fieldNumber))
+				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
 			}
 			content.WriteString("}")
 		case schema.MethodGet:
@@ -144,11 +136,7 @@ func generateServiceMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("  %s;\n", getIdFieldAsStr(entity.Fields)))
 			for _, field := range entity.Fields {
 				protoType := getProtoType(field.Type)
-				fieldNumber := 1
-				if field.ProtoField != nil {
-					fieldNumber = *field.ProtoField
-				}
-				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, fieldNumber))
+				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
 
 			}
 			content.WriteString("}")
