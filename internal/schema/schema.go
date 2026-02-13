@@ -44,7 +44,7 @@ type Field struct {
 	Unique       bool
 	DefaultValue any
 	DefaultNow   bool
-	ProtoField   *int
+	ProtoField   int
 }
 
 type FieldType string

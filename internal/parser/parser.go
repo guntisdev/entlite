@@ -167,7 +167,7 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.INT {
 							if val := parseInt(lit.Value); val != nil {
-								field.ProtoField = val
+								field.ProtoField = *val
 							}
 						}
 					}

@@ -26,8 +26,8 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 			hasIdField = true
 		}
 
-		if field.ProtoField != nil {
-			usedNumbers = append(usedNumbers, *field.ProtoField)
+		if field.ProtoField != 0 {
+			usedNumbers = append(usedNumbers, field.ProtoField)
 		}
 	}
 
@@ -38,7 +38,7 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 		idField := schema.Field{
 			Name:       "id",
 			Type:       schema.FieldTypeInt32,
-			ProtoField: &idNumber,
+			ProtoField: idNumber,
 			Unique:     true,
 		}
 
@@ -47,10 +47,10 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 
 	// add proto field numbers if they are missing
 	for i := range fields {
-		if fields[i].ProtoField == nil {
+		if fields[i].ProtoField == 0 {
 			num := getNextAvailable(usedNumbers)
 			usedNumbers = append(usedNumbers, num)
-			fields[i].ProtoField = &num
+			fields[i].ProtoField = num
 		}
 	}
 
@@ -77,11 +77,11 @@ func checkProtoFieldCollision(fields []schema.Field) error {
 	existingNumbers := make(map[int]struct{})
 
 	for _, field := range fields {
-		if field.ProtoField == nil {
+		if field.ProtoField == 0 {
 			continue
 		}
 
-		num := *field.ProtoField
+		num := field.ProtoField
 		if _, exists := existingNumbers[num]; exists {
 			return fmt.Errorf("ProtoField collision detected: field number %d used more than once", num)
 		}
