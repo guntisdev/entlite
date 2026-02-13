@@ -129,6 +129,7 @@ func generateServiceMessages(entity schema.Entity) string {
 			for _, field := range entity.Fields {
 				protoType := getProtoType(field.Type)
 				fieldNumber := 1
+				fmt.Printf(">> %v", field.ProtoField)
 				if field.ProtoField != nil {
 					fieldNumber = *field.ProtoField
 				}
