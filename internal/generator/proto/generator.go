@@ -195,7 +195,7 @@ func generateServiceMethod(entityName string, method schema.Method) string {
 	case schema.MethodDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entityName)
 	case schema.MethodList:
-		return fmt.Sprintf("  rpc List(List%sRequest) returns (List%sUser);\n", entityName, entityName)
+		return fmt.Sprintf("  rpc List(List%sRequest) returns (List%sResponse);\n", entityName, entityName)
 	default:
 		return ""
 	}
