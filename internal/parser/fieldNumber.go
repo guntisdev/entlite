@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"slices"
 	"sort"
-	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
 )
@@ -22,7 +21,7 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 
 	// checks if there is id field with protoField number
 	for _, field := range fields {
-		if strings.ToLower(field.Name) == "id" {
+		if field.IsID() {
 			hasIdField = true
 		}
 
