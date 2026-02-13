@@ -67,6 +67,9 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 
 		for _, field := range entity.Fields {
 			protoType := getProtoType(field.Type)
+			if field.Comment != "" {
+				content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
+			}
 			content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
 		}
 
@@ -124,6 +127,9 @@ func generateServiceMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
 				protoType := getProtoType(field.Type)
+				if field.Comment != "" {
+					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
+				}
 				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
 			}
 			content.WriteString("}")
@@ -133,11 +139,12 @@ func generateServiceMessages(entity schema.Entity) string {
 			content.WriteString("}")
 		case schema.MethodUpdate:
 			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
-			content.WriteString(fmt.Sprintf("  %s;\n", getIdFieldAsStr(entity.Fields)))
 			for _, field := range entity.Fields {
 				protoType := getProtoType(field.Type)
+				if field.Comment != "" {
+					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
+				}
 				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
-
 			}
 			content.WriteString("}")
 		case schema.MethodDelete:
