@@ -172,7 +172,13 @@ func generateServiceMessages(entity schema.Entity) string {
 }
 
 func getIdFieldAsStr(fields []schema.Field) string {
-	// TODO get id field from fields - proly by field number
+	for _, field := range fields {
+		if strings.ToLower(field.Name) == "id" {
+			protoType := getProtoType(field.Type)
+			return fmt.Sprintf("%s %s = %d", protoType, field.Name, field.ProtoField)
+		}
+	}
+
 	return "int32 id = 1"
 }
 
