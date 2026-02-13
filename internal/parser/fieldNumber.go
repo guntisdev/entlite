@@ -46,12 +46,11 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 	}
 
 	// add proto field numbers if they are missing
-	for _, field := range fields {
-		if field.ProtoField == nil {
+	for i := range fields {
+		if fields[i].ProtoField == nil {
 			num := getNextAvailable(usedNumbers)
 			usedNumbers = append(usedNumbers, num)
-			field.ProtoField = &num
-			fmt.Printf("num: %d\n", num)
+			fields[i].ProtoField = &num
 		}
 	}
 

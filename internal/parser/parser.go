@@ -86,8 +86,6 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			// add protoField, add id if not there
 			fields = addFieldNumbers(fields)
 			entity.Fields = fields
-
-			fmt.Printf("entity: %w", entity)
 		}
 
 	}
