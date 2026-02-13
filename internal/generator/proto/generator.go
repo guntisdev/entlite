@@ -143,6 +143,9 @@ func generateServiceMessages(entity schema.Entity) string {
 		case schema.MethodUpdate:
 			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
+				if field.Immutable && !field.IsID() {
+					continue
+				}
 				protoType := getProtoType(field.Type)
 				if field.Comment != "" {
 					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
@@ -166,7 +169,6 @@ func generateServiceMessages(entity schema.Entity) string {
 		}
 
 	}
-	// TODO
 
 	return content.String()
 }
