@@ -49,6 +49,7 @@ type Field struct {
 	ProtoField   int
 	Comment      string
 	Immutable    bool
+	Optional     bool
 }
 
 func (f Field) IsID() bool {

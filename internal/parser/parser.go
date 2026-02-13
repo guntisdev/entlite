@@ -181,6 +181,8 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 					field.Unique = true
 				case "Immutable":
 					field.Immutable = true
+				case "Optional":
+					field.Optional = true
 				case "Default":
 					if len(e.Args) > 0 {
 						field.DefaultValue = parseDefaultValue(e.Args[0])

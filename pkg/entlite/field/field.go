@@ -9,6 +9,7 @@ type StringFieldBuilder interface {
 	ProtoField(int) StringFieldBuilder
 	Comment(string) StringFieldBuilder
 	Immutable() StringFieldBuilder
+	Optional() StringFieldBuilder
 	/*
 	   Optional, Immutable, DefaultFunc, Comment, Sensitive (for password field)
 	*/
@@ -24,6 +25,7 @@ type StringField struct {
 	protoField *int
 	comment    *string
 	immutable  bool
+	optional   bool
 }
 
 // marker method for sealed interface
@@ -54,6 +56,10 @@ func (f *StringField) GetImmutable() bool {
 	return f.immutable
 }
 
+func (f *StringField) GetOptional() bool {
+	return f.optional
+}
+
 // setters with chaining logic. uses mutable struct
 func (f *StringField) Unique() StringFieldBuilder {
 	f.unique = true
@@ -77,6 +83,11 @@ func (f *StringField) Comment(text string) StringFieldBuilder {
 
 func (f *StringField) Immutable() StringFieldBuilder {
 	f.immutable = true
+	return f
+}
+
+func (f *StringField) Optional() StringFieldBuilder {
+	f.optional = true
 	return f
 }
 
@@ -135,6 +146,7 @@ type Int32FieldBuilder interface {
 	Default(int32) Int32FieldBuilder
 	ProtoField(int) Int32FieldBuilder
 	Comment(string) Int32FieldBuilder
+	Optional() Int32FieldBuilder
 
 	// to satisfy entlite.Field interface
 	Field()
@@ -145,6 +157,7 @@ type Int32Field struct {
 	defaultVal *int32
 	protoField *int
 	comment    *string
+	optional   bool
 }
 
 func (*Int32Field) Field() {}
@@ -165,6 +178,10 @@ func (f *Int32Field) GetComment() *string {
 	return f.comment
 }
 
+func (f *Int32Field) GetOptional() bool {
+	return f.optional
+}
+
 func (f *Int32Field) Default(value int32) Int32FieldBuilder {
 	f.defaultVal = &value
 	return f
@@ -180,6 +197,11 @@ func (f *Int32Field) Comment(text string) Int32FieldBuilder {
 	return f
 }
 
+func (f *Int32Field) Optional() Int32FieldBuilder {
+	f.optional = true
+	return f
+}
+
 // --------------------------------- time ---------------------------------
 type TimeFieldBuilder interface {
 	Default(time.Time) TimeFieldBuilder
@@ -188,6 +210,7 @@ type TimeFieldBuilder interface {
 	ProtoField(int) TimeFieldBuilder
 	Comment(string) TimeFieldBuilder
 	Immutable() TimeFieldBuilder
+	Optional() TimeFieldBuilder
 
 	Field()
 }
@@ -199,6 +222,7 @@ type TimeField struct {
 	protoField *int
 	comment    *string
 	immutable  bool
+	optional   bool
 }
 
 func (*TimeField) Field() {}
@@ -227,6 +251,10 @@ func (f *TimeField) GetImmutable() bool {
 	return f.immutable
 }
 
+func (f *TimeField) GetOptional() bool {
+	return f.optional
+}
+
 func (f *TimeField) Default(value time.Time) TimeFieldBuilder {
 	f.defaultVal = &value
 	f.useNow = false
@@ -251,5 +279,10 @@ func (f *TimeField) Comment(text string) TimeFieldBuilder {
 
 func (f *TimeField) Immutable() TimeFieldBuilder {
 	f.immutable = true
+	return f
+}
+
+func (f *TimeField) Optional() TimeFieldBuilder {
+	f.optional = true
 	return f
 }

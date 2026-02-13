@@ -66,11 +66,15 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 		content.WriteString(fmt.Sprintf("message %s {\n", entity.Name))
 
 		for _, field := range entity.Fields {
-			protoType := getProtoType(field.Type)
 			if field.Comment != "" {
 				content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
 			}
-			content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
+			protoType := getProtoType(field.Type)
+			var optional string
+			if field.Optional {
+				optional = "optional "
+			}
+			content.WriteString(fmt.Sprintf(" %s%s %s = %d;\n", optional, protoType, field.Name, field.ProtoField))
 		}
 
 		content.WriteString("}")
@@ -129,11 +133,15 @@ func generateServiceMessages(entity schema.Entity) string {
 				if field.IsID() {
 					continue
 				}
-				protoType := getProtoType(field.Type)
 				if field.Comment != "" {
 					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
 				}
-				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
+				protoType := getProtoType(field.Type)
+				var optional string
+				if field.Optional {
+					optional = "optional "
+				}
+				content.WriteString(fmt.Sprintf("  %s%s %s = %d;\n", optional, protoType, field.Name, field.ProtoField))
 			}
 			content.WriteString("}")
 		case schema.MethodGet:
@@ -146,11 +154,15 @@ func generateServiceMessages(entity schema.Entity) string {
 				if field.Immutable && !field.IsID() {
 					continue
 				}
-				protoType := getProtoType(field.Type)
 				if field.Comment != "" {
 					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
 				}
-				content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, field.Name, field.ProtoField))
+				protoType := getProtoType(field.Type)
+				var optional string
+				if field.Optional {
+					optional = "optional "
+				}
+				content.WriteString(fmt.Sprintf("  %s%s %s = %d;\n", optional, protoType, field.Name, field.ProtoField))
 			}
 			content.WriteString("}")
 		case schema.MethodDelete:
