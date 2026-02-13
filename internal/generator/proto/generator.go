@@ -126,6 +126,9 @@ func generateServiceMessages(entity schema.Entity) string {
 		case schema.MethodCreate:
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
+				if strings.ToLower(field.Name) == "id" {
+					continue
+				}
 				protoType := getProtoType(field.Type)
 				if field.Comment != "" {
 					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
@@ -180,11 +183,11 @@ func generateServiceMethod(entityName string, method schema.Method) string {
 	case schema.MethodGet:
 		return fmt.Sprintf("  rpc Get(Get%sRequest) returns (%s);\n", entityName, entityName)
 	case schema.MethodUpdate:
-		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s)\n", entityName, entityName)
+		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entityName, entityName)
 	case schema.MethodDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entityName)
 	case schema.MethodList:
-		return fmt.Sprintf("  rpc List(List%sRequest) returns (%s)\n", entityName, entityName)
+		return fmt.Sprintf("  rpc List(List%sRequest) returns (List%sUser);\n", entityName, entityName)
 	default:
 		return ""
 	}
