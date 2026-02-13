@@ -1,6 +1,8 @@
 package ent
 
 import (
+	"time"
+
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 )
@@ -22,6 +24,7 @@ func (User) Fields() []entlite.Field {
 		field.String("name").Comment("First name and surname"),
 		field.Int32("age").Optional(),
 		field.Bool("is_admin").ProtoField(5),
-		field.Time("created_at").DefaultNow().ProtoField(6).Immutable(),
+		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
+		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
 	}
 }

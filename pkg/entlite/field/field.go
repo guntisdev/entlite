@@ -6,6 +6,7 @@ import "time"
 type StringFieldBuilder interface {
 	Unique() StringFieldBuilder
 	Default(string) StringFieldBuilder
+	DefaultFunc(func() string) StringFieldBuilder
 	ProtoField(int) StringFieldBuilder
 	Comment(string) StringFieldBuilder
 	Immutable() StringFieldBuilder
@@ -19,13 +20,14 @@ type StringFieldBuilder interface {
 }
 
 type StringField struct {
-	name       string
-	unique     bool
-	defaultVal *string
-	protoField *int
-	comment    *string
-	immutable  bool
-	optional   bool
+	name        string
+	unique      bool
+	defaultVal  *string
+	defaultFunc func() string
+	protoField  *int
+	comment     *string
+	immutable   bool
+	optional    bool
 }
 
 // marker method for sealed interface
@@ -42,6 +44,10 @@ func (f *StringField) GetUnique() bool {
 
 func (f *StringField) GetDefault() *string {
 	return f.defaultVal
+}
+
+func (f *StringField) GetDefaultFunc() func() string {
+	return f.defaultFunc
 }
 
 func (f *StringField) GetProtoField() *int {
@@ -68,6 +74,13 @@ func (f *StringField) Unique() StringFieldBuilder {
 
 func (f *StringField) Default(value string) StringFieldBuilder {
 	f.defaultVal = &value
+	f.defaultFunc = nil
+	return f
+}
+
+func (f *StringField) DefaultFunc(fn func() string) StringFieldBuilder {
+	f.defaultFunc = fn
+	f.defaultVal = nil
 	return f
 }
 
@@ -205,8 +218,7 @@ func (f *Int32Field) Optional() Int32FieldBuilder {
 // --------------------------------- time ---------------------------------
 type TimeFieldBuilder interface {
 	Default(time.Time) TimeFieldBuilder
-	// TODO change thos to DefaultFunc so naming is consistent also with strings, UUID etc
-	DefaultNow() TimeFieldBuilder
+	DefaultFunc(func() time.Time) TimeFieldBuilder
 	ProtoField(int) TimeFieldBuilder
 	Comment(string) TimeFieldBuilder
 	Immutable() TimeFieldBuilder
@@ -216,13 +228,13 @@ type TimeFieldBuilder interface {
 }
 
 type TimeField struct {
-	name       string
-	defaultVal *time.Time
-	useNow     bool
-	protoField *int
-	comment    *string
-	immutable  bool
-	optional   bool
+	name        string
+	defaultVal  *time.Time
+	defaultFunc func() time.Time
+	protoField  *int
+	comment     *string
+	immutable   bool
+	optional    bool
 }
 
 func (*TimeField) Field() {}
@@ -235,8 +247,8 @@ func (f *TimeField) GetDefault() *time.Time {
 	return f.defaultVal
 }
 
-func (f *TimeField) GetUseNow() bool {
-	return f.useNow
+func (f *TimeField) GetDefaultFunc() func() time.Time {
+	return f.defaultFunc
 }
 
 func (f *TimeField) GetProtoField() *int {
@@ -256,14 +268,14 @@ func (f *TimeField) GetOptional() bool {
 }
 
 func (f *TimeField) Default(value time.Time) TimeFieldBuilder {
+	f.defaultFunc = nil
 	f.defaultVal = &value
-	f.useNow = false
 	return f
 }
 
-func (f *TimeField) DefaultNow() TimeFieldBuilder {
+func (f *TimeField) DefaultFunc(fn func() time.Time) TimeFieldBuilder {
 	f.defaultVal = nil
-	f.useNow = true
+	f.defaultFunc = fn
 	return f
 }
 

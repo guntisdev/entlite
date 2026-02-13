@@ -45,7 +45,7 @@ type Field struct {
 	Type         FieldType
 	Unique       bool
 	DefaultValue any
-	DefaultNow   bool
+	DefaultFunc  func() any
 	ProtoField   int
 	Comment      string
 	Immutable    bool
