@@ -19,8 +19,8 @@ func (User) Annotations() []entlite.Annotation {
 func (User) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("email").Unique().ProtoField(2),
-		field.String("name").ProtoField(3),
-		field.Int32("age").ProtoField(4),
+		field.String("name").Comment("First name and surname"),
+		field.Int32("age"),
 		field.Bool("is_admin").ProtoField(5),
 		field.Time("created_at").DefaultNow().ProtoField(6),
 	}

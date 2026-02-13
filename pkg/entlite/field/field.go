@@ -7,6 +7,7 @@ type StringFieldBuilder interface {
 	Unique() StringFieldBuilder
 	Default(string) StringFieldBuilder
 	ProtoField(int) StringFieldBuilder
+	Comment(string) StringFieldBuilder
 
 	/*
 	   Optional, Immutable, DefaultFunc, Comment, Sensitive (for password field)
@@ -21,6 +22,7 @@ type StringField struct {
 	unique     bool
 	defaultVal *string
 	protoField *int
+	comment    *string
 }
 
 // marker method for sealed interface
@@ -43,6 +45,10 @@ func (f *StringField) GetProtoField() *int {
 	return f.protoField
 }
 
+func (f *StringField) GetComment() *string {
+	return f.comment
+}
+
 // setters with chaining logic. uses mutable struct
 func (f *StringField) Unique() StringFieldBuilder {
 	f.unique = true
@@ -59,10 +65,16 @@ func (f *StringField) ProtoField(num int) StringFieldBuilder {
 	return f
 }
 
+func (f *StringField) Comment(text string) StringFieldBuilder {
+	f.comment = &text
+	return f
+}
+
 // --------------------------------- bool ---------------------------------
 type BoolFieldBuilder interface {
 	Default(bool) BoolFieldBuilder
 	ProtoField(int) BoolFieldBuilder
+	Comment(string) BoolFieldBuilder
 
 	// to satisfy entlite.Field interface
 	Field()
@@ -72,6 +84,7 @@ type BoolField struct {
 	name       string
 	defaultVal *bool
 	protoField *int
+	comment    *string
 }
 
 func (*BoolField) Field() {}
@@ -88,6 +101,10 @@ func (f *BoolField) GetProtoField() *int {
 	return f.protoField
 }
 
+func (f *BoolField) GetComment() *string {
+	return f.comment
+}
+
 func (f *BoolField) Default(value bool) BoolFieldBuilder {
 	f.defaultVal = &value
 	return f
@@ -98,10 +115,16 @@ func (f *BoolField) ProtoField(num int) BoolFieldBuilder {
 	return f
 }
 
+func (f *BoolField) Comment(text string) BoolFieldBuilder {
+	f.comment = &text
+	return f
+}
+
 // --------------------------------- int32 ---------------------------------
 type Int32FieldBuilder interface {
 	Default(int32) Int32FieldBuilder
 	ProtoField(int) Int32FieldBuilder
+	Comment(string) Int32FieldBuilder
 
 	// to satisfy entlite.Field interface
 	Field()
@@ -111,6 +134,7 @@ type Int32Field struct {
 	name       string
 	defaultVal *int32
 	protoField *int
+	comment    *string
 }
 
 func (*Int32Field) Field() {}
@@ -127,6 +151,10 @@ func (f *Int32Field) GetProtoField() *int {
 	return f.protoField
 }
 
+func (f *Int32Field) GetComment() *string {
+	return f.comment
+}
+
 func (f *Int32Field) Default(value int32) Int32FieldBuilder {
 	f.defaultVal = &value
 	return f
@@ -137,12 +165,18 @@ func (f *Int32Field) ProtoField(num int) Int32FieldBuilder {
 	return f
 }
 
+func (f *Int32Field) Comment(text string) Int32FieldBuilder {
+	f.comment = &text
+	return f
+}
+
 // --------------------------------- time ---------------------------------
 type TimeFieldBuilder interface {
 	Default(time.Time) TimeFieldBuilder
 	// TODO change thos to DefaultFunc so naming is consistent also with strings, UUID etc
 	DefaultNow() TimeFieldBuilder
 	ProtoField(int) TimeFieldBuilder
+	Comment(string) TimeFieldBuilder
 
 	Field()
 }
@@ -152,6 +186,7 @@ type TimeField struct {
 	defaultVal *time.Time
 	useNow     bool
 	protoField *int
+	comment    *string
 }
 
 func (*TimeField) Field() {}
@@ -172,6 +207,10 @@ func (f *TimeField) GetProtoField() *int {
 	return f.protoField
 }
 
+func (f *TimeField) GetComment() *string {
+	return f.comment
+}
+
 func (f *TimeField) Default(value time.Time) TimeFieldBuilder {
 	f.defaultVal = &value
 	f.useNow = false
@@ -186,5 +225,10 @@ func (f *TimeField) DefaultNow() TimeFieldBuilder {
 
 func (f *TimeField) ProtoField(num int) TimeFieldBuilder {
 	f.protoField = &num
+	return f
+}
+
+func (f *TimeField) Comment(text string) TimeFieldBuilder {
+	f.comment = &text
 	return f
 }

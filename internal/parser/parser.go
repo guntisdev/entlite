@@ -171,6 +171,12 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 							}
 						}
 					}
+				case "Comment":
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Comment = strings.Trim(lit.Value, "\"")
+						}
+					}
 				case "Unique":
 					field.Unique = true
 				case "Default":

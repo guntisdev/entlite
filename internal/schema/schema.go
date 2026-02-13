@@ -45,6 +45,7 @@ type Field struct {
 	DefaultValue any
 	DefaultNow   bool
 	ProtoField   int
+	Comment      string
 }
 
 type FieldType string
