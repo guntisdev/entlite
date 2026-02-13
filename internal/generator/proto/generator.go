@@ -126,7 +126,7 @@ func generateServiceMessages(entity schema.Entity) string {
 		case schema.MethodCreate:
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
-				if strings.ToLower(field.Name) == "id" {
+				if field.IsID() {
 					continue
 				}
 				protoType := getProtoType(field.Type)
@@ -173,7 +173,7 @@ func generateServiceMessages(entity schema.Entity) string {
 
 func getIdFieldAsStr(fields []schema.Field) string {
 	for _, field := range fields {
-		if strings.ToLower(field.Name) == "id" {
+		if field.IsID() {
 			protoType := getProtoType(field.Type)
 			return fmt.Sprintf("%s %s = %d", protoType, field.Name, field.ProtoField)
 		}

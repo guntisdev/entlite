@@ -1,5 +1,7 @@
 package schema
 
+import "strings"
+
 type Schema struct {
 	Entities []Entity
 }
@@ -46,6 +48,10 @@ type Field struct {
 	DefaultNow   bool
 	ProtoField   int
 	Comment      string
+}
+
+func (f Field) IsID() bool {
+	return strings.ToLower(f.Name) == "id"
 }
 
 type FieldType string
