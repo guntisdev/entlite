@@ -8,7 +8,7 @@ type StringFieldBuilder interface {
 	Default(string) StringFieldBuilder
 	ProtoField(int) StringFieldBuilder
 	Comment(string) StringFieldBuilder
-
+	Immutable() StringFieldBuilder
 	/*
 	   Optional, Immutable, DefaultFunc, Comment, Sensitive (for password field)
 	*/
@@ -23,6 +23,7 @@ type StringField struct {
 	defaultVal *string
 	protoField *int
 	comment    *string
+	immutable  bool
 }
 
 // marker method for sealed interface
@@ -49,6 +50,10 @@ func (f *StringField) GetComment() *string {
 	return f.comment
 }
 
+func (f *StringField) GetImmutable() bool {
+	return f.immutable
+}
+
 // setters with chaining logic. uses mutable struct
 func (f *StringField) Unique() StringFieldBuilder {
 	f.unique = true
@@ -67,6 +72,11 @@ func (f *StringField) ProtoField(num int) StringFieldBuilder {
 
 func (f *StringField) Comment(text string) StringFieldBuilder {
 	f.comment = &text
+	return f
+}
+
+func (f *StringField) Immutable() StringFieldBuilder {
+	f.immutable = true
 	return f
 }
 
@@ -177,6 +187,7 @@ type TimeFieldBuilder interface {
 	DefaultNow() TimeFieldBuilder
 	ProtoField(int) TimeFieldBuilder
 	Comment(string) TimeFieldBuilder
+	Immutable() TimeFieldBuilder
 
 	Field()
 }
@@ -187,6 +198,7 @@ type TimeField struct {
 	useNow     bool
 	protoField *int
 	comment    *string
+	immutable  bool
 }
 
 func (*TimeField) Field() {}
@@ -211,6 +223,10 @@ func (f *TimeField) GetComment() *string {
 	return f.comment
 }
 
+func (f *TimeField) GetImmutable() bool {
+	return f.immutable
+}
+
 func (f *TimeField) Default(value time.Time) TimeFieldBuilder {
 	f.defaultVal = &value
 	f.useNow = false
@@ -230,5 +246,10 @@ func (f *TimeField) ProtoField(num int) TimeFieldBuilder {
 
 func (f *TimeField) Comment(text string) TimeFieldBuilder {
 	f.comment = &text
+	return f
+}
+
+func (f *TimeField) Immutable() TimeFieldBuilder {
+	f.immutable = true
 	return f
 }

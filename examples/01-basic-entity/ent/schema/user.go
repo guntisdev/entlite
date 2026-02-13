@@ -22,6 +22,6 @@ func (User) Fields() []entlite.Field {
 		field.String("name").Comment("First name and surname"),
 		field.Int32("age"),
 		field.Bool("is_admin").ProtoField(5),
-		field.Time("created_at").DefaultNow().ProtoField(6),
+		field.Time("created_at").DefaultNow().ProtoField(6).Immutable(),
 	}
 }
