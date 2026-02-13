@@ -187,8 +187,10 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 					if len(e.Args) > 0 {
 						field.DefaultValue = parseDefaultValue(e.Args[0])
 					}
-				case "DefaultNow":
-					field.DefaultNow = true
+				case "DefaultFunc":
+					if len(e.Args) > 0 {
+						field.DefaultFunc = parseDefaultFuncValue(e.Args[0])
+					}
 				}
 
 				// Continue with the receiver of this method call
@@ -240,6 +242,33 @@ func parseInt(s string) *int {
 	var i int
 	if _, err := fmt.Scanf(s, "%d", &i); err == nil {
 		return &i
+	}
+	return nil
+}
+
+func parseDefaultFuncValue(expr ast.Expr) func() any {
+	switch e := expr.(type) {
+	case *ast.SelectorExpr:
+		// Handle cases like uuid.NewString, time.Now, etc.
+		if ident, ok := e.X.(*ast.Ident); ok {
+			pkg := ident.Name
+			fn := e.Sel.Name
+			// For now, we'll create a placeholder that stores the function name
+			return func() any {
+				return fmt.Sprintf("%s.%s", pkg, fn)
+			}
+		}
+	case *ast.Ident:
+		// Handle direct function references like someFunction
+		fnName := e.Name
+		return func() any {
+			return fnName
+		}
+	case *ast.FuncLit:
+		// Handle inline function literals like func() string { return "value" }
+		return func() any {
+			return "inline_function"
+		}
 	}
 	return nil
 }

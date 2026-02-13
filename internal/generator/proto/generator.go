@@ -74,7 +74,7 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 			if field.Optional {
 				optional = "optional "
 			}
-			content.WriteString(fmt.Sprintf(" %s%s %s = %d;\n", optional, protoType, field.Name, field.ProtoField))
+			content.WriteString(fmt.Sprintf("  %s%s %s = %d;\n", optional, protoType, field.Name, field.ProtoField))
 		}
 
 		content.WriteString("}")
@@ -130,7 +130,7 @@ func generateServiceMessages(entity schema.Entity) string {
 		case schema.MethodCreate:
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
-				if field.IsID() {
+				if field.IsID() || field.DefaultValue != nil || field.DefaultFunc != nil {
 					continue
 				}
 				if field.Comment != "" {
@@ -151,8 +151,10 @@ func generateServiceMessages(entity schema.Entity) string {
 		case schema.MethodUpdate:
 			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
-				if field.Immutable && !field.IsID() {
-					continue
+				if !field.IsID() {
+					if field.Immutable || field.DefaultValue != nil || field.DefaultFunc != nil {
+						continue
+					}
 				}
 				if field.Comment != "" {
 					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
