@@ -32,7 +32,7 @@ func (g *Generator) Generate(entities []schema.Entity, dir string, sqlDialect SQ
 		return fmt.Errorf("Failed to generate schema.sql: %w", err)
 	}
 
-	if err := g.generateQueries(entities); err != nil {
+	if err := g.generateQueries(entities, dir); err != nil {
 		return fmt.Errorf("failed to generate queries.sql: %w", err)
 	}
 
@@ -93,9 +93,61 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	return content.String()
 }
 
-func (g *Generator) generateQueries(entities []schema.Entity) error {
+func (g *Generator) generateQueries(entities []schema.Entity, dir string) error {
+	var content strings.Builder
+
+	content.WriteString("-- Generate queries.sql\n")
+	content.WriteString("-- This file contains SQLC-compatible queries definitions\n\n")
+
+	for _, entity := range entities {
+		content.WriteString(g.generateCRUDQueries(entity))
+		content.WriteString("\n")
+	}
+
+	queriesPath := filepath.Join(dir, "queries.sql")
+	if err := writeFile(queriesPath, content.String()); err != nil {
+		return err
+	}
 
 	return nil
+}
+
+func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
+	var content strings.Builder
+
+	tableName := strings.ToLower(entity.Name)
+	// TODO take id field from entity
+	idField := "id"
+
+	content.WriteString(fmt.Sprintf("-- %s CRUD operations\n", entity.Name))
+
+	// CREATE
+	if g.supportsReturning() {
+		content.WriteString(fmt.Sprintf("\n-- name: Create%s :one\n"))
+	} else {
+		content.WriteString(fmt.Sprintf("\n-- name: Create%s :exec\n"))
+	}
+	content.WriteString(fmt.Sprintf("INSERT INTO %s%s%s (\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
+
+	var insertFields []string
+	var insertPlaceholders []string
+
+	for _, field := range entity.Fields {
+		insertFields = append(insertFields, field.Name)
+		parameterPlaceholder := g.getParameterPlaceholder(len(insertPlaceholders) + 1)
+		insertPlaceholders = append(insertPlaceholders, parameterPlaceholder)
+	}
+
+	content.WriteString(fmt.Sprintf("  %s\n", strings.Join(insertFields, ",\n ")))
+	content.WriteString(") VALUES (\n")
+	content.WriteString(fmt.Sprintf("  %s\n", strings.Join(insertPlaceholders, ",\n ")))
+	if g.supportsReturning() {
+		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField))
+	} else {
+		content.WriteString(");")
+	}
+
+	// READ (get by id)
 }
 
 func writeFile(filePath, content string) error {

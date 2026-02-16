@@ -103,3 +103,27 @@ func (g *Generator) formatDefaultValue(value interface{}, fieldType schema.Field
 
 	return fmt.Sprintf("%v", value)
 }
+
+func (g *Generator) supportsReturning() bool {
+	switch g.sqlDialect {
+	case MySQL:
+		return false
+	case PostgreSQL, SQLite:
+		return true
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}
+
+func (g *Generator) getParameterPlaceholder(index int) string {
+	switch g.sqlDialect {
+	case PostgreSQL:
+		return fmt.Sprintf("$%d", index)
+	case SQLite:
+		return "?"
+	case MySQL:
+		return "?"
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}
