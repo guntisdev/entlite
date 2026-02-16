@@ -148,6 +148,41 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	}
 
 	// READ (get by id)
+	content.WriteString(fmt.Sprintf("\n-- name: GET%s :one\n", entity.Name))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField, g.getParameterPlaceholder(1)))
+
+	// LIST
+	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n:", entity.Name))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s ORDERED BY %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField))
+
+	// UPDATE
+	if g.supportsReturning() {
+		content.WriteString(fmt.Sprintf("\n-- name: UPDATE%s :one\n", entity.Name))
+	} else {
+		content.WriteString(fmt.Sprintf("\n--name: UPDATE%s :exec\n", entity.Name))
+	}
+	content.WriteString(fmt.Sprintf("UPDATE %s%s%s SET\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
+
+	var updateFields []string
+	placeholderIndex := 1
+	for _, field := range entity.Fields {
+		updateFields = append(updateFields, fmt.Sprintf("  %s = %s", field.Name, g.getParameterPlaceholder(placeholderIndex)))
+		placeholderIndex++
+	}
+
+	content.WriteString(strings.Join(updateFields, ",\n"))
+	content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField, g.getParameterPlaceholder(placeholderIndex)))
+	if g.supportsReturning() {
+		content.WriteString("\nRETURNING *;\n")
+	} else {
+		content.WriteString(";\n")
+	}
+
+	// DELETE
+	content.WriteString(fmt.Sprintf("\n-- name: DELETE%s :exec\n", entity.Name))
+	content.WriteString(fmt.Sprintf("DELETE FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField, g.getParameterPlaceholder(1)))
+
+	return content.String()
 }
 
 func writeFile(filePath, content string) error {
