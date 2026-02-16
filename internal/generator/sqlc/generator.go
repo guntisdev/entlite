@@ -27,7 +27,7 @@ func NewGenerator(sqlDialect SQLDialect) *Generator {
 	}
 }
 
-func (g *Generator) Generate(entities []schema.Entity, dir string, sqlDialect SQLDialect) error {
+func (g *Generator) Generate(entities []schema.Entity, dir string) error {
 	if err := g.generateSchema(entities, dir); err != nil {
 		return fmt.Errorf("Failed to generate schema.sql: %w", err)
 	}
@@ -123,9 +123,9 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// CREATE
 	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf("\n-- name: Create%s :one\n"))
+		content.WriteString(fmt.Sprintf("\n-- name: Create%s :one\n", entity.Name))
 	} else {
-		content.WriteString(fmt.Sprintf("\n-- name: Create%s :exec\n"))
+		content.WriteString(fmt.Sprintf("\n-- name: Create%s :exec\n", entity.Name))
 	}
 	content.WriteString(fmt.Sprintf("INSERT INTO %s%s%s (\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
 
@@ -133,14 +133,14 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var insertPlaceholders []string
 
 	for _, field := range entity.Fields {
-		insertFields = append(insertFields, field.Name)
+		insertFields = append(insertFields, " "+field.Name)
 		parameterPlaceholder := g.getParameterPlaceholder(len(insertPlaceholders) + 1)
-		insertPlaceholders = append(insertPlaceholders, parameterPlaceholder)
+		insertPlaceholders = append(insertPlaceholders, " "+parameterPlaceholder)
 	}
 
-	content.WriteString(fmt.Sprintf("  %s\n", strings.Join(insertFields, ",\n ")))
+	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertFields, ",\n ")))
 	content.WriteString(") VALUES (\n")
-	content.WriteString(fmt.Sprintf("  %s\n", strings.Join(insertPlaceholders, ",\n ")))
+	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
 	if g.supportsReturning() {
 		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField))
 	} else {
@@ -152,7 +152,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField, g.getParameterPlaceholder(1)))
 
 	// LIST
-	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n:", entity.Name))
+	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n", entity.Name))
 	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s ORDERED BY %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField))
 
 	// UPDATE
