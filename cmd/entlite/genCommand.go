@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/guntisdev/entlite/internal/generator/proto"
+	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/parser"
 )
 
@@ -54,14 +55,16 @@ func genCommand(args []string) {
 		}
 	}
 
-	// TODO generate proto
+	// PROTO
 	if err := proto.Generate(parsedEntities, protoDir); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed generating entities: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed generating proto: %v\n", err)
 		os.Exit(1)
 	}
 
-	// TODO generate sqlc
-
-	// TODO generate bridge/converter
-
+	// TODO get dialect from arguments (if not choose default one)
+	sqlcGenerator := sqlc.NewGenerator(sqlc.PostgreSQL)
+	if err := sqlcGenerator.Generate(parsedEntities, sqlcDir); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed generating sqlc: %v\n", err)
+		os.Exit(1)
+	}
 }
