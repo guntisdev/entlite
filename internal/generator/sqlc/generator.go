@@ -65,7 +65,8 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("-- %s table\n", tableName))
 	content.WriteString(fmt.Sprintf("CREATE TABLE %s%s%s(\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
 
-	content.WriteString(g.getIdFieldSQL())
+	idField := getIdField(entity.Fields)
+	content.WriteString(g.getIdFieldSQL(idField))
 
 	for _, field := range entity.Fields {
 		content.WriteString(",\n")
@@ -183,6 +184,16 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("DELETE FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField, g.getParameterPlaceholder(1)))
 
 	return content.String()
+}
+
+func getIdField(fields []schema.Field) schema.Field {
+	for _, field := range fields {
+		if field.IsID() {
+			return field
+		}
+	}
+
+	panic("No id field detected")
 }
 
 func writeFile(filePath, content string) error {
