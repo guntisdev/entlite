@@ -66,9 +66,13 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("CREATE TABLE %s%s%s(\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
 
 	idField := getIdField(entity.Fields)
-	content.WriteString(g.getIdFieldSQL(idField))
 
 	for _, field := range entity.Fields {
+		if field.IsID() {
+			content.WriteString(g.getIdFieldSQL(idField))
+			continue
+		}
+
 		content.WriteString(",\n")
 		sqlType := g.getSQLType(field.Type)
 
