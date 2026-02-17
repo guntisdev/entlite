@@ -19,7 +19,7 @@ func (g *Generator) getIdentifierQuote() string {
 
 func (g *Generator) getIdFieldSQL(field schema.Field) string {
 	idType := g.getIdFieldType(field.Type)
-	return fmt.Sprintf("  %s %s", field.Name, &idType)
+	return fmt.Sprintf("  %s %s", field.Name, idType)
 }
 
 func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {

@@ -117,8 +117,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var content strings.Builder
 
 	tableName := strings.ToLower(entity.Name)
-	// TODO take id field from entity
-	idField := "id"
+	idField := getIdField(entity.Fields)
 
 	content.WriteString(fmt.Sprintf("-- %s CRUD operations\n", entity.Name))
 
@@ -143,18 +142,18 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	content.WriteString(") VALUES (\n")
 	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
 	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField))
+		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField.Name))
 	} else {
 		content.WriteString(");")
 	}
 
 	// READ (get by id)
 	content.WriteString(fmt.Sprintf("\n-- name: GET%s :one\n", entity.Name))
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField, g.getParameterPlaceholder(1)))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField.Name, g.getParameterPlaceholder(1)))
 
 	// LIST
 	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n", entity.Name))
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s ORDERED BY %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s ORDERED BY %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField.Name))
 
 	// UPDATE
 	if g.supportsReturning() {
@@ -172,7 +171,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	}
 
 	content.WriteString(strings.Join(updateFields, ",\n"))
-	content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField, g.getParameterPlaceholder(placeholderIndex)))
+	content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField.Name, g.getParameterPlaceholder(placeholderIndex)))
 	if g.supportsReturning() {
 		content.WriteString("\nRETURNING *;\n")
 	} else {
@@ -181,7 +180,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// DELETE
 	content.WriteString(fmt.Sprintf("\n-- name: DELETE%s :exec\n", entity.Name))
-	content.WriteString(fmt.Sprintf("DELETE FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField, g.getParameterPlaceholder(1)))
+	content.WriteString(fmt.Sprintf("DELETE FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField.Name, g.getParameterPlaceholder(1)))
 
 	return content.String()
 }
