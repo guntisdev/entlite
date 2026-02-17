@@ -17,6 +17,10 @@ func (g *Generator) getIdentifierQuote() string {
 	panic("unreachable: invalid SQL dialect")
 }
 
+func (g *Generator) quote(str string) string {
+	return g.getIdentifierQuote() + str + g.getIdentifierQuote()
+}
+
 func (g *Generator) getIdFieldSQL(field schema.Field) string {
 	idType := g.getIdFieldType(field.Type)
 	return fmt.Sprintf("  %s %s", field.Name, idType)

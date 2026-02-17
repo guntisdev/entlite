@@ -63,7 +63,7 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 
 	tableName := strings.ToLower(entity.Name)
 	content.WriteString(fmt.Sprintf("-- %s table\n", tableName))
-	content.WriteString(fmt.Sprintf("CREATE TABLE %s%s%s(\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
+	content.WriteString(fmt.Sprintf("CREATE TABLE %s(\n", g.quote(tableName)))
 
 	idField := getIdField(entity.Fields)
 
@@ -131,7 +131,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	} else {
 		content.WriteString(fmt.Sprintf("\n-- name: Create%s :exec\n", entity.Name))
 	}
-	content.WriteString(fmt.Sprintf("INSERT INTO %s%s%s (\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
+	content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
 
 	var insertFields []string
 	var insertPlaceholders []string
@@ -153,11 +153,11 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// READ (get by id)
 	content.WriteString(fmt.Sprintf("\n-- name: GET%s :one\n", entity.Name))
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField.Name, g.getParameterPlaceholder(1)))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
 
 	// LIST
 	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n", entity.Name))
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s ORDERED BY %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField.Name))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDERED BY %s;\n", g.quote(tableName), idField.Name))
 
 	// UPDATE
 	if g.supportsReturning() {
@@ -165,7 +165,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	} else {
 		content.WriteString(fmt.Sprintf("\n--name: UPDATE%s :exec\n", entity.Name))
 	}
-	content.WriteString(fmt.Sprintf("UPDATE %s%s%s SET\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
+	content.WriteString(fmt.Sprintf("UPDATE %s SET\n", g.quote(tableName)))
 
 	var updateFields []string
 	placeholderIndex := 1
@@ -184,7 +184,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// DELETE
 	content.WriteString(fmt.Sprintf("\n-- name: DELETE%s :exec\n", entity.Name))
-	content.WriteString(fmt.Sprintf("DELETE FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField.Name, g.getParameterPlaceholder(1)))
+	content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
 
 	return content.String()
 }
