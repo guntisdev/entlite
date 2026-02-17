@@ -17,15 +17,50 @@ func (g *Generator) getIdentifierQuote() string {
 	panic("unreachable: invalid SQL dialect")
 }
 
-// TODO pass actual id field from entity
-func (g *Generator) getIdFieldSQL() string {
+func (g *Generator) quote(str string) string {
+	return g.getIdentifierQuote() + str + g.getIdentifierQuote()
+}
+
+func (g *Generator) getIdFieldSQL(field schema.Field) string {
+	idType := g.getIdFieldType(field.Type)
+	return fmt.Sprintf("  %s %s", field.Name, idType)
+}
+
+func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 	switch g.sqlDialect {
 	case PostgreSQL:
-		return "  id SERIAL PRIMARY KEY"
+		switch fieldType {
+		case schema.FieldTypeInt32:
+			return "SERIAL PRIMARY KEY"
+		// case schema.FieldTypeInt64:
+		//	return "BIGSERIAL PRIMARY KEY"
+		case schema.FieldTypeString:
+			return "TEXT PRIMARY KEY"
+		default:
+			return "SERIAL PRIMARY KEY"
+		}
 	case SQLite:
-		return "  id INTEGER PRIMARY KEY AUTOINCREMENT"
+		switch fieldType {
+		case schema.FieldTypeInt32:
+			return "INTEGER PRIMARY KEY AUTOINCREMENT"
+		// case schema.FieldTypeInt64:
+		//	return "INTEGER PRIMARY KEY AUTOINCREMENT"
+		case schema.FieldTypeString:
+			return "TEXT PRIMARY KEY"
+		default:
+			return "INTEGER PRIMARY KEY AUTOINCREMENT"
+		}
 	case MySQL:
-		return "  id INT AUTO_INCREMENT PRIMARY KEY"
+		switch fieldType {
+		case schema.FieldTypeInt32:
+			return "INT AUTO_INCREMENT PRIMARY KEY"
+		// case schema.FieldTypeInt64:
+		//	return "BIGINT AUTO_INCREMENT PRIMARY KEY"
+		case schema.FieldTypeString:
+			return "VARCHAR(36) PRIMARY KEY" // UUID or ULID or similar string ID
+		default:
+			return "INT AUTO_INCREMENT PRIMARY KEY"
+		}
 	}
 
 	panic("unreachable: invalid SQL dialect")

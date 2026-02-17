@@ -63,11 +63,16 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 
 	tableName := strings.ToLower(entity.Name)
 	content.WriteString(fmt.Sprintf("-- %s table\n", tableName))
-	content.WriteString(fmt.Sprintf("CREATE TABLE %s%s%s(\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
+	content.WriteString(fmt.Sprintf("CREATE TABLE %s(\n", g.quote(tableName)))
 
-	content.WriteString(g.getIdFieldSQL())
+	idField := getIdField(entity.Fields)
 
 	for _, field := range entity.Fields {
+		if field.IsID() {
+			content.WriteString(g.getIdFieldSQL(idField))
+			continue
+		}
+
 		content.WriteString(",\n")
 		sqlType := g.getSQLType(field.Type)
 
@@ -116,8 +121,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var content strings.Builder
 
 	tableName := strings.ToLower(entity.Name)
-	// TODO take id field from entity
-	idField := "id"
+	idField := getIdField(entity.Fields)
 
 	content.WriteString(fmt.Sprintf("-- %s CRUD operations\n", entity.Name))
 
@@ -127,7 +131,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	} else {
 		content.WriteString(fmt.Sprintf("\n-- name: Create%s :exec\n", entity.Name))
 	}
-	content.WriteString(fmt.Sprintf("INSERT INTO %s%s%s (\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
+	content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
 
 	var insertFields []string
 	var insertPlaceholders []string
@@ -142,18 +146,18 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	content.WriteString(") VALUES (\n")
 	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
 	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField))
+		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField.Name))
 	} else {
 		content.WriteString(");")
 	}
 
 	// READ (get by id)
 	content.WriteString(fmt.Sprintf("\n-- name: GET%s :one\n", entity.Name))
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField, g.getParameterPlaceholder(1)))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
 
 	// LIST
 	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n", entity.Name))
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s%s%s ORDERED BY %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDERED BY %s;\n", g.quote(tableName), idField.Name))
 
 	// UPDATE
 	if g.supportsReturning() {
@@ -161,7 +165,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	} else {
 		content.WriteString(fmt.Sprintf("\n--name: UPDATE%s :exec\n", entity.Name))
 	}
-	content.WriteString(fmt.Sprintf("UPDATE %s%s%s SET\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote()))
+	content.WriteString(fmt.Sprintf("UPDATE %s SET\n", g.quote(tableName)))
 
 	var updateFields []string
 	placeholderIndex := 1
@@ -171,7 +175,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	}
 
 	content.WriteString(strings.Join(updateFields, ",\n"))
-	content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField, g.getParameterPlaceholder(placeholderIndex)))
+	content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField.Name, g.getParameterPlaceholder(placeholderIndex)))
 	if g.supportsReturning() {
 		content.WriteString("\nRETURNING *;\n")
 	} else {
@@ -180,9 +184,19 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// DELETE
 	content.WriteString(fmt.Sprintf("\n-- name: DELETE%s :exec\n", entity.Name))
-	content.WriteString(fmt.Sprintf("DELETE FROM %s%s%s WHERE %s = %s;\n", g.getIdentifierQuote(), tableName, g.getIdentifierQuote(), idField, g.getParameterPlaceholder(1)))
+	content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
 
 	return content.String()
+}
+
+func getIdField(fields []schema.Field) schema.Field {
+	for _, field := range fields {
+		if field.IsID() {
+			return field
+		}
+	}
+
+	panic("No id field detected")
 }
 
 func writeFile(filePath, content string) error {
