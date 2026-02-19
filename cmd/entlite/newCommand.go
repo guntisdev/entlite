@@ -61,6 +61,7 @@ func createEntityFile(entityName string, dir string) error {
 	content := fmt.Sprintf(`package ent
 
 import "github.com/guntisdev/entlite/pkg/entlite"
+import "github.com/guntisdev/entlite/pkg/entlite/field"
 
 // %s entity definition
 type %s struct {
@@ -76,7 +77,7 @@ func (%s) Annotations() []entlite.Annotation {
 
 func (%s) Fields() []entlite.Field {
 	return []entlite.Field{
-		entlite.String("name").ProtoField(2),
+		field.String("name").ProtoField(2),
 		// Add more fields here
 	}
 }
@@ -103,8 +104,8 @@ sql:
     engine: "postgresql"       # postgresql or sqlite or mysql
     gen:
       go:
-        package: "db"
-        out: "gen/db"
+        package: "internal"
+        out: "gen/db/internal"
         emit_json_tags: true  
 `
 
