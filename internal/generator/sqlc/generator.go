@@ -157,7 +157,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// LIST
 	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n", entity.Name))
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDERED BY %s;\n", g.quote(tableName), idField.Name))
+	content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDER BY %s;\n", g.quote(tableName), idField.Name))
 
 	// UPDATE
 	if g.supportsReturning() {
