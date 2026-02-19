@@ -33,8 +33,8 @@ func newCommand(entityNames []string) {
 		}
 	}
 
-	if err := createGenFile(schemaDir); err != nil {
-		fmt.Fprintf(os.Stderr, "Error creating generate.go: %v\n", err)
+	if err := createSchemaGenFile(schemaDir); err != nil {
+		fmt.Fprintf(os.Stderr, "Error creating schema/generate.go: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -52,6 +52,11 @@ func newCommand(entityNames []string) {
 		fmt.Fprintf(os.Stderr, "Error creating buf.gen.yaml: %v\n", err)
 		os.Exit(1)
 	}
+
+	if err := createGenFile(entDir); err != nil {
+		fmt.Fprintf(os.Stderr, "Error creating generate.go: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 func createEntityFile(entityName string, dir string) error {
@@ -61,6 +66,7 @@ func createEntityFile(entityName string, dir string) error {
 	content := fmt.Sprintf(`package ent
 
 import "github.com/guntisdev/entlite/pkg/entlite"
+import "github.com/guntisdev/entlite/pkg/entlite/field"
 
 // %s entity definition
 type %s struct {
@@ -76,7 +82,7 @@ func (%s) Annotations() []entlite.Annotation {
 
 func (%s) Fields() []entlite.Field {
 	return []entlite.Field{
-		entlite.String("name").ProtoField(2),
+		field.String("name").ProtoField(2),
 		// Add more fields here
 	}
 }
@@ -85,8 +91,20 @@ func (%s) Fields() []entlite.Field {
 	return createIfNotExist(filePath, content)
 }
 
-func createGenFile(dir string) error {
+func createSchemaGenFile(dir string) error {
 	content := `//go:generate go run github.com/guntisdev/entlite/cmd/entlite gen .
+
+package schema
+`
+	filePath := filepath.Join(dir, "generate.go")
+
+	return createIfNotExist(filePath, content)
+}
+
+func createGenFile(dir string) error {
+	content := `//go:generate go generate ./schema
+//go:generate go tool sqlc generate
+//go:generate go tool buf generate
 
 package ent
 `
@@ -103,8 +121,8 @@ sql:
     engine: "postgresql"       # postgresql or sqlite or mysql
     gen:
       go:
-        package: "db"
-        out: "gen/db"
+        package: "internal"
+        out: "gen/db/internal"
         emit_json_tags: true  
 `
 

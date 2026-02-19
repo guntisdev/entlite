@@ -88,7 +88,7 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 	case schema.FieldTypeBool:
 		return "BOOLEAN"
 	case schema.FieldTypeTime:
-		return "TIMESTAMP WITH TIMEZONE"
+		return "TIMESTAMPTZ"
 	default:
 		return "TEXT"
 	}

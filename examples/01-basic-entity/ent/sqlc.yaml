@@ -5,6 +5,6 @@ sql:
     engine: "postgresql"       # postgresql or sqlite or mysql
     gen:
       go:
-        package: "db"
-        out: "gen/db"
+        package: "internal"
+        out: "gen/db/internal"
         emit_json_tags: true  
