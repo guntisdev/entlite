@@ -16,6 +16,14 @@ func sqlcWrapCommand(args []string) {
 		os.Exit(1)
 	}
 
+	// TODO figure out how to pass entity directory
+	entityDir := "."
+	_, err := loadEntities(entityDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error loading entities: %v\n", err)
+		os.Exit(1)
+	}
+
 	inputDir := args[0]
 	outputDir := args[1]
 
