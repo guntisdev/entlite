@@ -220,11 +220,11 @@ func parseDefaultValue(expr ast.Expr) any {
 			return strings.Trim(e.Value, "\"")
 		case token.INT:
 			var val int
-			fmt.Scanf(e.Value, "%d", &val)
+			fmt.Sscanf(e.Value, "%d", &val)
 			return val
 		case token.FLOAT:
 			var val float32
-			fmt.Scanf(e.Value, "%f", &val)
+			fmt.Sscanf(e.Value, "%f", &val)
 			return val
 		}
 	case *ast.Ident:
@@ -240,7 +240,7 @@ func parseDefaultValue(expr ast.Expr) any {
 
 func parseInt(s string) *int {
 	var i int
-	if _, err := fmt.Scanf(s, "%d", &i); err == nil {
+	if _, err := fmt.Sscanf(s, "%d", &i); err == nil {
 		return &i
 	}
 	return nil
