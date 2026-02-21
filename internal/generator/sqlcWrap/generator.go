@@ -67,6 +67,7 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity) (string, err
 	needsTimeImport := false
 	needsSQLImport := false
 
+	// TODO find better way get imports (not hardcoded Time)
 	for structName := range createParamsStructs {
 		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
 		if entity, ok := entityMap[entityName]; ok {
@@ -110,7 +111,7 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity) (string, err
 							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
 							if entity, ok := entityMap[entityName]; ok && hasDefaultFuncFields(entity) {
 								// Generate custom struct without DefaultFunc fields
-								sb.WriteString(generateCustomParamsStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity, fset))
+								sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity, fset))
 								continue
 							}
 						}
@@ -181,7 +182,7 @@ func usesSQLType(expr ast.Expr) bool {
 	return false
 }
 
-func generateCustomParamsStruct(structName string, structType *ast.StructType, entity schema.Entity, fset *token.FileSet) string {
+func generateCreateStruct(structName string, structType *ast.StructType, entity schema.Entity, fset *token.FileSet) string {
 	var sb strings.Builder
 
 	defaultFuncFields := make(map[string]bool)
