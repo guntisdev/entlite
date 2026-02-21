@@ -245,10 +245,8 @@ func generateCreateMethodWrapper(funcDecl *ast.FuncDecl, entity schema.Entity, i
 			continue
 		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
-			if field.Type == schema.FieldTypeTime {
-				// TODO remove hardcoded, print actual value of DefaultFunc
-				sb.WriteString(fmt.Sprintf("\t\t%s: time.Now(),\n", exportedName))
-			}
+			funcName := field.DefaultFunc().(string)
+			sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
 		} else {
 			sb.WriteString(fmt.Sprintf("\t\t%s: arg.%s,\n", exportedName, exportedName))
 		}
