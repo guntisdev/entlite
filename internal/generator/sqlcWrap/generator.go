@@ -64,18 +64,20 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity) (string, err
 	sb.WriteString(fmt.Sprintf("package %s\n\n", packageName))
 
 	needsContextImport := false
-	needsTimeImport := false
 	needsSQLImport := false
+	neededImports := make(map[string]bool)
 
-	// TODO find better way get imports (not hardcoded Time)
 	for structName := range createParamsStructs {
 		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
 		if entity, ok := entityMap[entityName]; ok {
 			if hasDefaultFuncFields(entity) {
 				needsContextImport = true
 				for _, field := range entity.Fields {
-					if field.DefaultFunc != nil && field.Type == schema.FieldTypeTime {
-						needsTimeImport = true
+					if field.DefaultFunc != nil {
+						funcName := field.DefaultFunc().(string)
+						if pkgName := extractPackageName(funcName); pkgName != "" {
+							neededImports[pkgName] = true
+						}
 					}
 				}
 			}
@@ -94,8 +96,8 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity) (string, err
 	if needsSQLImport {
 		sb.WriteString("\t\"database/sql\"\n")
 	}
-	if needsTimeImport {
-		sb.WriteString("\t\"time\"\n")
+	for pkgName := range neededImports {
+		sb.WriteString(fmt.Sprintf("\t\"%s\"\n", pkgName))
 	}
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
 	sb.WriteString(")\n\n")
@@ -157,6 +159,15 @@ func hasDefaultFuncFields(entity schema.Entity) bool {
 		}
 	}
 	return false
+}
+
+func extractPackageName(funcName string) string {
+	if idx := strings.LastIndex(funcName, "."); idx != -1 {
+		pkgName := funcName[:idx]
+		return pkgName
+
+	}
+	return ""
 }
 
 func usesSQLTypes(structType *ast.StructType) bool {
