@@ -125,28 +125,37 @@ func generateWrapperContent(inputFilePath string, parsedEntities []schema.Entity
 	packageName := filepath.Base(filepath.Dir(absInputDir))
 	sb.WriteString(fmt.Sprintf("package %s\n\n", packageName))
 
-	needsContext := false
-	needsTime := false
+	needsContextImport := false
+	needsTimeImport := false
+	needsSQLImport := false
 
 	for structName := range createParamsStructs {
 		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
 		if entity, ok := entityMap[entityName]; ok {
 			if hasDefaultFuncFields(entity) {
-				needsContext = true
+				needsContextImport = true
 				for _, field := range entity.Fields {
 					if field.DefaultFunc != nil && field.Type == schema.FieldTypeTime {
-						needsTime = true
+						needsTimeImport = true
 					}
 				}
+			}
+		}
+		if structType, ok := createParamsStructs[structName]; ok {
+			if usesSQLTypes(structType) {
+				needsSQLImport = true
 			}
 		}
 	}
 
 	sb.WriteString("import (\n")
-	if needsContext {
+	if needsContextImport {
 		sb.WriteString("\t\"context\"\n")
 	}
-	if needsTime {
+	if needsSQLImport {
+		sb.WriteString("\t\"database/sql\"\n")
+	}
+	if needsTimeImport {
 		sb.WriteString("\t\"time\"\n")
 	}
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
@@ -167,7 +176,12 @@ func generateWrapperContent(inputFilePath string, parsedEntities []schema.Entity
 								continue
 							}
 						}
-						sb.WriteString(fmt.Sprintf("type %s = %s.%s\n", s.Name.Name, inputPackageName, s.Name.Name))
+						// For Queries type, use a proper type (not alias) so we can add methods
+						if s.Name.Name == "Queries" {
+							sb.WriteString(fmt.Sprintf("type %s %s.%s\n", s.Name.Name, inputPackageName, s.Name.Name))
+						} else {
+							sb.WriteString(fmt.Sprintf("type %s = %s.%s\n", s.Name.Name, inputPackageName, s.Name.Name))
+						}
 					}
 				case *ast.ValueSpec:
 					for _, name := range s.Names {
@@ -202,6 +216,29 @@ func hasDefaultFuncFields(entity schema.Entity) bool {
 		if field.DefaultFunc != nil {
 			return true
 		}
+	}
+	return false
+}
+
+func usesSQLTypes(structType *ast.StructType) bool {
+	for _, field := range structType.Fields.List {
+		if usesSQLType(field.Type) {
+			return true
+		}
+	}
+	return false
+}
+
+func usesSQLType(expr ast.Expr) bool {
+	switch t := expr.(type) {
+	case *ast.SelectorExpr:
+		if ident, ok := t.X.(*ast.Ident); ok {
+			return ident.Name == "sql"
+		}
+	case *ast.StarExpr:
+		return usesSQLType(t.X)
+	case *ast.ArrayType:
+		return usesSQLType(t.Elt)
 	}
 	return false
 }
@@ -265,6 +302,9 @@ func generateCreateMethodWrapper(funcDecl *ast.FuncDecl, entity schema.Entity, i
 
 	for _, field := range entity.Fields {
 		exportedName := toExportedName(field.Name)
+		if field.IsID() && field.DefaultFunc == nil {
+			continue
+		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			if field.Type == schema.FieldTypeTime {
 				// TODO remove hardcoded, print actual value of DefaultFunc
