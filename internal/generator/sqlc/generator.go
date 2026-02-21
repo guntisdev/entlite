@@ -137,6 +137,9 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var insertPlaceholders []string
 
 	for _, field := range entity.Fields {
+		if field.IsID() && field.DefaultFunc == nil {
+			continue
+		}
 		insertFields = append(insertFields, " "+field.Name)
 		parameterPlaceholder := g.getParameterPlaceholder(len(insertPlaceholders) + 1)
 		insertPlaceholders = append(insertPlaceholders, " "+parameterPlaceholder)
@@ -170,6 +173,9 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var updateFields []string
 	placeholderIndex := 1
 	for _, field := range entity.Fields {
+		if field.IsID() || field.Immutable {
+			continue
+		}
 		updateFields = append(updateFields, fmt.Sprintf("  %s = %s", field.Name, g.getParameterPlaceholder(placeholderIndex)))
 		placeholderIndex++
 	}
