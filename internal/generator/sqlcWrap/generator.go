@@ -37,6 +37,9 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	createParamsStructs := make(map[string]*ast.StructType)
 	createFuncs := make(map[string]*ast.FuncDecl)
 
+	updateParamsStructs := make(map[string]*ast.StructType)
+	updateFuncs := make(map[string]*ast.FuncDecl)
+
 	for _, decl := range node.Decls {
 		switch d := decl.(type) {
 		case *ast.GenDecl:
@@ -47,6 +50,9 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 						if strings.HasPrefix(typeSpec.Name.Name, "Create") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
 							createParamsStructs[typeSpec.Name.Name] = structType
 						}
+						if strings.HasPrefix(typeSpec.Name.Name, "Update") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
+							updateParamsStructs[typeSpec.Name.Name] = structType
+						}
 					}
 				}
 			}
@@ -54,6 +60,9 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 			// Find Create{Entity} functions
 			if strings.HasPrefix(d.Name.Name, "Create") && d.Recv != nil {
 				createFuncs[d.Name.Name] = d
+			}
+			if strings.HasPrefix(d.Name.Name, "Update") && d.Recv != nil {
+				updateFuncs[d.Name.Name] = d
 			}
 		}
 	}
@@ -115,10 +124,19 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
 							if entity, ok := entityMap[entityName]; ok && hasDefaultFuncFields(entity) {
 								// Generate custom struct without DefaultFunc fields
-								sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity, fset))
+								sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity))
 								continue
 							}
 						}
+
+						if strings.HasPrefix(s.Name.Name, "Update") && strings.HasSuffix(s.Name.Name, "Params") {
+							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Update"), "Params")
+							if entity, ok := entityMap[entityName]; ok && hasDefaultFuncAndNoImmutable(entity) {
+								sb.WriteString(generateUpdateStruct(s.Name.Name, updateParamsStructs[s.Name.Name], entity))
+								continue
+							}
+						}
+
 						// For Queries type, use a proper type (not alias) so we can add methods
 						if s.Name.Name == "Queries" {
 							sb.WriteString(fmt.Sprintf("type %s %s.%s\n", s.Name.Name, inputPackageName, s.Name.Name))
@@ -144,7 +162,13 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Create") {
 				entityName := strings.TrimPrefix(d.Name.Name, "Create")
 				if entity, ok := entityMap[entityName]; ok && hasDefaultFuncFields(entity) {
-					sb.WriteString(generateCreateMethodWrapper(d, entity, inputPackageName, fset))
+					sb.WriteString(generateCreateMethod(d, entity, inputPackageName))
+					continue
+				}
+			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Update") {
+				entityName := strings.TrimPrefix(d.Name.Name, "Update")
+				if entity, ok := entityMap[entityName]; ok && hasDefaultFuncAndNoImmutable(entity) {
+					sb.WriteString(generateUpdateMethod(d, entity, inputPackageName))
 					continue
 				}
 			}
@@ -157,6 +181,16 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 func hasDefaultFuncFields(entity schema.Entity) bool {
 	for _, field := range entity.Fields {
 		if field.DefaultFunc != nil {
+			return true
+		}
+	}
+	return false
+}
+
+// for example updated_at field
+func hasDefaultFuncAndNoImmutable(entity schema.Entity) bool {
+	for _, field := range entity.Fields {
+		if field.DefaultFunc != nil && !field.Immutable {
 			return true
 		}
 	}
@@ -192,84 +226,6 @@ func usesSQLType(expr ast.Expr) bool {
 		return usesSQLType(t.Elt)
 	}
 	return false
-}
-
-func generateCreateStruct(structName string, structType *ast.StructType, entity schema.Entity, fset *token.FileSet) string {
-	var sb strings.Builder
-
-	defaultFuncFields := make(map[string]bool)
-	for _, field := range entity.Fields {
-		if field.DefaultFunc != nil {
-			defaultFuncFields[toExportedName(field.Name)] = true
-		}
-	}
-
-	sb.WriteString(fmt.Sprintf("type %s struct {\n", structName))
-
-	for _, field := range structType.Fields.List {
-		if len(field.Names) > 0 {
-			fieldName := field.Names[0].Name
-			// Skip fields that have DefaultFunc
-			if !defaultFuncFields[fieldName] {
-				sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, formatType(field.Type)))
-				if field.Tag != nil {
-					sb.WriteString(fmt.Sprintf(" %s", field.Tag.Value))
-				}
-				sb.WriteString("\n")
-			}
-		}
-	}
-
-	sb.WriteString("}\n\n")
-	return sb.String()
-}
-
-func generateCreateMethodWrapper(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, fset *token.FileSet) string {
-	var sb strings.Builder
-
-	receiverType := formatType(funcDecl.Recv.List[0].Type)
-	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, arg %sParams) ", receiverType, funcDecl.Name.Name, funcDecl.Name.Name))
-
-	if funcDecl.Type.Results != nil && len(funcDecl.Type.Results.List) > 0 {
-		sb.WriteString("(")
-		for i, result := range funcDecl.Type.Results.List {
-			if i > 0 {
-				sb.WriteString(", ")
-			}
-			sb.WriteString(formatType(result.Type))
-		}
-		sb.WriteString(")")
-	}
-
-	sb.WriteString(" {\n")
-	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
-
-	defaultFuncFields := make(map[string]schema.Field)
-	for _, field := range entity.Fields {
-		if field.DefaultFunc != nil {
-			defaultFuncFields[toExportedName(field.Name)] = field
-		}
-	}
-
-	for _, field := range entity.Fields {
-		exportedName := toExportedName(field.Name)
-		if field.IsID() && field.DefaultFunc == nil {
-			continue
-		}
-		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
-			funcName := field.DefaultFunc().(string)
-			sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
-		} else {
-			sb.WriteString(fmt.Sprintf("\t\t%s: arg.%s,\n", exportedName, exportedName))
-		}
-	}
-
-	sb.WriteString("\t}\n")
-
-	sb.WriteString(fmt.Sprintf("\treturn (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
-	sb.WriteString("}\n\n")
-
-	return sb.String()
 }
 
 func formatType(expr ast.Expr) string {
