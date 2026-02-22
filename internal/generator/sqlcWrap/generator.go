@@ -12,7 +12,7 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func Generate(inputFilePath string, parsedEntities []schema.Entity) (string, error) {
+func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]string) (string, error) {
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, inputFilePath, nil, parser.ParseComments)
 	if err != nil {
@@ -76,7 +76,9 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity) (string, err
 					if field.DefaultFunc != nil {
 						funcName := field.DefaultFunc().(string)
 						if pkgName := extractPackageName(funcName); pkgName != "" {
-							neededImports[pkgName] = true
+							if importPath, ok := entityImports[pkgName]; ok {
+								neededImports[importPath] = true
+							}
 						}
 					}
 				}
@@ -96,8 +98,8 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity) (string, err
 	if needsSQLImport {
 		sb.WriteString("\t\"database/sql\"\n")
 	}
-	for pkgName := range neededImports {
-		sb.WriteString(fmt.Sprintf("\t\"%s\"\n", pkgName))
+	for importPath := range neededImports {
+		sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
 	}
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
 	sb.WriteString(")\n\n")
@@ -165,7 +167,6 @@ func extractPackageName(funcName string) string {
 	if idx := strings.LastIndex(funcName, "."); idx != -1 {
 		pkgName := funcName[:idx]
 		return pkgName
-
 	}
 	return ""
 }
