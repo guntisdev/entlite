@@ -23,6 +23,12 @@ func sqlcWrapCommand(args []string) {
 		os.Exit(1)
 	}
 
+	entityImports, err := getEntityImports(entityDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error loading entity imports: %v\n", err)
+		os.Exit(1)
+	}
+
 	inputDir := args[0]
 	outputDir := args[1]
 
@@ -54,7 +60,7 @@ func sqlcWrapCommand(args []string) {
 			inputFilePath := filepath.Join(inputDir, fileName)
 			outputFilePath := filepath.Join(outputDir, fileName)
 
-			content, err := sqlcwrap.Generate(inputFilePath, parsedEntities)
+			content, err := sqlcwrap.Generate(inputFilePath, parsedEntities, entityImports)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating wrapper content for %s: %v\n", fileName, err)
 				os.Exit(1)

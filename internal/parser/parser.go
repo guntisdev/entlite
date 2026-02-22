@@ -188,6 +188,7 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 						field.DefaultValue = parseDefaultValue(e.Args[0])
 					}
 				case "DefaultFunc":
+					/// TODO check that value is not inline func, only func name
 					if len(e.Args) > 0 {
 						field.DefaultFunc = parseDefaultFuncValue(e.Args[0])
 					}
