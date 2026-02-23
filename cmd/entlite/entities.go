@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
@@ -58,5 +59,13 @@ func getEntityImports(entityDir string) (map[string]string, error) {
 		return nil, fmt.Errorf("extracting imports: %w", err)
 	}
 
-	return entityImports, nil
+	// Filter out entlite DSL imports - we only need actual dependencies like time, custom logic, etc.
+	filteredImports := make(map[string]string)
+	for alias, importPath := range entityImports {
+		if !strings.HasPrefix(importPath, "github.com/guntisdev/entlite/pkg/entlite") {
+			filteredImports[alias] = importPath
+		}
+	}
+
+	return filteredImports, nil
 }

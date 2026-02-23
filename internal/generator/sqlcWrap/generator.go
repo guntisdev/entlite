@@ -74,23 +74,12 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 
 	needsContextImport := false
 	needsSQLImport := false
-	neededImports := make(map[string]bool)
 
 	for structName := range createParamsStructs {
 		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
 		if entity, ok := entityMap[entityName]; ok {
 			if hasDefaultFuncFields(entity) {
 				needsContextImport = true
-				for _, field := range entity.Fields {
-					if field.DefaultFunc != nil {
-						funcName := field.DefaultFunc().(string)
-						if pkgName := extractPackageName(funcName); pkgName != "" {
-							if importPath, ok := entityImports[pkgName]; ok {
-								neededImports[importPath] = true
-							}
-						}
-					}
-				}
 			}
 		}
 		if structType, ok := createParamsStructs[structName]; ok {
@@ -107,8 +96,11 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	if needsSQLImport {
 		sb.WriteString("\t\"database/sql\"\n")
 	}
-	for importPath := range neededImports {
-		sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
+	// we need these imports only for overriden queries
+	if filepath.Base(inputFilePath) == "queries.sql.go" {
+		for _, importPath := range entityImports {
+			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
+		}
 	}
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
 	sb.WriteString(")\n\n")
@@ -195,14 +187,6 @@ func hasDefaultFuncAndNoImmutable(entity schema.Entity) bool {
 		}
 	}
 	return false
-}
-
-func extractPackageName(funcName string) string {
-	if idx := strings.LastIndex(funcName, "."); idx != -1 {
-		pkgName := funcName[:idx]
-		return pkgName
-	}
-	return ""
 }
 
 func usesSQLTypes(structType *ast.StructType) bool {
