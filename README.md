@@ -1,6 +1,21 @@
-TODO
+# Entlite
+Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
-* change folder structure so sqlc generates in gen/db/internal
-* create tools.go for sqlc, buf, connect // or from 1.24 tool in go.mod https://go.dev/doc/go1.24#tools
-* create generate.go to launch entity generation and then sqlc and buf
-* provide wrapper around sqlc export, to support custom functions on .DefaultFunc() and .Validate() 
+## Folder structure
+```
+└── ent/
+    ├── schema/         # DSL entities
+    ├── contract/
+    │   ├── proto/      # generated from DSL: schema.prot. Custom proto could be added here
+    │   └── sqlc/       # generated from DSL: schema.sql, queries.sql. Custom sql could be added here
+    ├── gen/
+    │   ├── db/         # generated from sqlc contract
+    │   ├── pb/         # generated from proto contract
+    │   ├── convert/    # generated from DSL - convertion between db and pb types
+    │   └── ts/         # generated from proto contract
+    ├── logic/          # optional, custom functions for DSL entities
+    ├── buf.yaml
+    ├── buf.gen.yaml
+    ├── sqlc.yaml
+    └── generate.go     # go generate - creates contracts, launches sqlc, buf, light db wrapper and convert
+```
