@@ -15,7 +15,6 @@ func sqlcWrapCommand(args []string) {
 		os.Exit(1)
 	}
 
-	// TODO figure out how to pass entity directory
 	entityDir := "./schema"
 	parsedEntities, err := loadEntities(entityDir)
 	if err != nil {

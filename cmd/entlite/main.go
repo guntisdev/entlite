@@ -21,6 +21,8 @@ func main() {
 		genCommand(os.Args[2:])
 	case "sqlc-wrap":
 		sqlcWrapCommand(os.Args[2:])
+	case "convert":
+		convertCommand(os.Args[2:])
 	default:
 		// TODO print usage with new and gen commands
 		fmt.Println("Unknow argument")
