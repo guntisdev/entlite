@@ -65,5 +65,22 @@ func generateHelperFunctions() string {
 	content.WriteString("\treturn *i\n")
 	content.WriteString("}\n\n")
 
+	// NullInt32Value
+	content.WriteString("// NullInt32ToPtr converts sql.NullInt32 to int32 pointer\n")
+	content.WriteString("func NullInt32ToPtr(n sql.NullInt32) *int32 {\n")
+	content.WriteString("\tif !n.Valid {\n")
+	content.WriteString("\t\treturn nil\n")
+	content.WriteString("\t}\n")
+	content.WriteString("\treturn &n.Int32\n")
+	content.WriteString("}\n\n")
+
+	content.WriteString("// PtrToNullInt32 converts int32 pointer to NullInt32\n")
+	content.WriteString("func PtrToNullInt32(i *int32) sql.NullInt32 {\n")
+	content.WriteString("\tif i == nil {\n")
+	content.WriteString("\t\treturn sql.NullInt32{Valid: false}\n")
+	content.WriteString("\t}\n")
+	content.WriteString("\treturn sql.NullInt32{Int32: *i, Valid: true}\n")
+	content.WriteString("}\n\n")
+
 	return content.String()
 }

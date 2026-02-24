@@ -25,7 +25,11 @@ func Generate(entities []schema.Entity, imports []string) (string, error) {
 	content.WriteString("package convert\n\n")
 
 	content.WriteString("import (\n")
+	// TODO find this import dynamically
 	content.WriteString("\t\"database/sql\"\n")
+
+	// TODO check from DefaultFunc actual imports
+	content.WriteString("\t\"time\"\n")
 	content.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
 	for _, importPath := range imports {
 		content.WriteString(fmt.Sprintf("\t%s\n", importPath))
@@ -77,6 +81,11 @@ func generateEntityConversion(entity schema.Entity) string {
 
 func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) string {
 	dbFieldRef := fmt.Sprintf("%s.%s", dbPrefix, dbFieldName)
+
+	// TODO make optional for all field types
+	if field.Type == schema.FieldTypeInt32 && field.Optional {
+		return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+	}
 
 	switch field.Type {
 	case schema.FieldTypeString:
