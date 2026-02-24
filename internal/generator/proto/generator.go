@@ -41,7 +41,7 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 
 	content.WriteString("syntax = \"proto3\";\n\n")
 	content.WriteString(fmt.Sprintf("package %s;\n\n", "entlite"))
-	content.WriteString("option go_package = \".pb\";\n\n")
+	content.WriteString("option go_package = \"./pb\";\n\n")
 
 	imports := []string{}
 	if needsCommonImports(messageEntities) {

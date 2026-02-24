@@ -37,6 +37,8 @@ func Generate(entities []schema.Entity, imports []string) (string, error) {
 		content.WriteString("\n")
 	}
 
+	content.WriteString(generateHelperFunctions())
+
 	return content.String(), nil
 }
 
@@ -58,9 +60,10 @@ func generateEntityConversion(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("\treturn &%s{\n", pbName))
 
 	for _, field := range entity.Fields {
-		fieldName := snakeToCamelCase(field.Name)
-		conversion := fieldDBToProto(field, fieldName, dbPrefix)
-		content.WriteString(fmt.Sprintf("\t\t%s: %s,\n", fieldName, conversion))
+		dbFieldName := toDBFieldName(field)
+		conversion := fieldDBToProto(field, dbFieldName, dbPrefix)
+		protoFieldName := toProtoFieldName(field)
+		content.WriteString(fmt.Sprintf("\t\t%s: %s,\n", protoFieldName, conversion))
 	}
 
 	content.WriteString("\t}\n")
@@ -72,8 +75,8 @@ func generateEntityConversion(entity schema.Entity) string {
 	return content.String()
 }
 
-func fieldDBToProto(field schema.Field, fieldName string, dbPrefix string) string {
-	dbFieldRef := fmt.Sprintf("%s.%s", dbPrefix, fieldName)
+func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) string {
+	dbFieldRef := fmt.Sprintf("%s.%s", dbPrefix, dbFieldName)
 
 	switch field.Type {
 	case schema.FieldTypeString:
@@ -81,12 +84,27 @@ func fieldDBToProto(field schema.Field, fieldName string, dbPrefix string) strin
 	case schema.FieldTypeInt32:
 		return dbFieldRef
 	case schema.FieldTypeBool:
-		return fmt.Sprintf("NullBoolValue(%s)", dbFieldRef)
+		return dbFieldRef
 	case schema.FieldTypeTime:
 		return fmt.Sprintf("TimeToProtoTimestamp(&%s)", dbFieldRef)
 	default:
 		return dbFieldRef
 	}
+}
+
+func toProtoFieldName(field schema.Field) string {
+	if field.IsID() {
+		return strings.ToUpper(field.Name[:1]) + field.Name[1:]
+	}
+	return snakeToCamelCase(field.Name)
+}
+
+// match sqlc conversion - ID and CamelCase names
+func toDBFieldName(field schema.Field) string {
+	if field.IsID() {
+		return "ID"
+	}
+	return snakeToCamelCase(field.Name)
 }
 
 func snakeToCamelCase(s string) string {
