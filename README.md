@@ -1,6 +1,14 @@
 # Entlite
 Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
+## TODO
+* Generate convert proto to db
+* Add Validation() for field
+* Add Validation func to sqlc output
+* Add to proto required field check `[(buf.validate.field).required = true];` 
+* Add Validate() method to proto export struct
+* Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
+
 ## Folder structure
 ```
 └── ent/
