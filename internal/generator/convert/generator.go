@@ -84,9 +84,19 @@ func generateEntityConversion(entity schema.Entity) string {
 func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) string {
 	dbFieldRef := fmt.Sprintf("%s.%s", dbPrefix, dbFieldName)
 
-	// TODO make optional for all field types
-	if field.Type == schema.FieldTypeInt32 && field.Optional {
-		return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+	if field.Optional {
+		switch field.Type {
+		case schema.FieldTypeString:
+			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeInt32:
+			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeBool:
+			return fmt.Sprintf("NullBoolToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeTime:
+			return fmt.Sprintf("NullTimeToProto(%s)", dbFieldRef)
+		default:
+			return dbFieldRef
+		}
 	}
 
 	switch field.Type {
