@@ -41,6 +41,8 @@ func Generate(entities []schema.Entity, imports []string) (string, error) {
 		content.WriteString("\n")
 	}
 
+	content.WriteString("\n\n")
+	content.WriteString("// ++++++ Helper functions for type conversions\n")
 	content.WriteString(generateHelperFunctions())
 
 	return content.String(), nil
@@ -55,7 +57,7 @@ func generateEntityConversion(entity schema.Entity) string {
 	dbName := fmt.Sprintf("%s.%s", dbPrefix, entity.Name)
 	pbName := fmt.Sprintf("%s.%s", pbPrefix, entity.Name)
 
-	content.WriteString(fmt.Sprintf("// %s conversion functions\n\n", entity.Name))
+	content.WriteString(fmt.Sprintf("// +++++ %s conversion functions\n\n", entity.Name))
 	content.WriteString(fmt.Sprintf("// %s DBToProto converts a database model to proto message\n", entity.Name))
 	content.WriteString(fmt.Sprintf("func %sDBToProto(db *%s) *%s {\n", entity.Name, dbName, pbName))
 	content.WriteString("\tif db == nil {\n")
@@ -95,7 +97,7 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 	case schema.FieldTypeBool:
 		return dbFieldRef
 	case schema.FieldTypeTime:
-		return fmt.Sprintf("TimeToProtoTimestamp(&%s)", dbFieldRef)
+		return fmt.Sprintf("TimeToProto(%s)", dbFieldRef)
 	default:
 		return dbFieldRef
 	}

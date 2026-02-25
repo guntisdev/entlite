@@ -1,86 +1,88 @@
 package convert
 
-import "strings"
+import (
+	"bytes"
+	"strings"
+	"text/template"
+)
 
 func generateHelperFunctions() string {
 	var content strings.Builder
 
-	content.WriteString("// Helper functions for type conversions\n\n")
-
-	// TimeToProtoTimestamp
-	content.WriteString("// TimeToProtoTimestamp converts a Go time.Time pointer to proto Timestamp\n")
-	content.WriteString("func TimeToProtoTimestamp(t *time.Time) *timestamppb.Timestamp {\n")
-	content.WriteString("\tif t == nil {\n")
-	content.WriteString("\t\treturn nil\n")
-	content.WriteString("\t}\n")
-	content.WriteString("\treturn timestamppb.New(*t)\n")
-	content.WriteString("}\n\n")
-
-	// ProtoTimestampToTime
-	content.WriteString("// ProtoTimestampToTime converts a proto Timestamp to Go time.Time pointer\n")
-	content.WriteString("func ProtoTimestampToTime(ts *timestamppb.Timestamp) *time.Time {\n")
-	content.WriteString("\tif ts == nil {\n")
-	content.WriteString("\t\treturn nil\n")
-	content.WriteString("\t}\n")
-	content.WriteString("\tt := ts.AsTime()\n")
-	content.WriteString("\treturn &t\n")
-	content.WriteString("}\n\n")
-
-	// ProtoTimestampToTimeValue
-	content.WriteString("// ProtoTimestampToTimeValue converts a proto Timestamp to Go time.Time value\n")
-	content.WriteString("func ProtoTimestampToTimeValue(ts *timestamppb.Timestamp) time.Time {\n")
-	content.WriteString("\tif ts == nil {\n")
-	content.WriteString("\t\treturn time.Time{}\n")
-	content.WriteString("\t}\n")
-	content.WriteString("\treturn ts.AsTime()\n")
-	content.WriteString("}\n\n")
-
-	// StringPtr
-	content.WriteString("// StringPtr returns a pointer to the string value\n")
-	content.WriteString("func StringPtr(s string) *string {\n")
-	content.WriteString("\treturn &s\n")
-	content.WriteString("}\n\n")
-
-	// StringValue
-	content.WriteString("// StringValue returns the string value from a pointer, or empty string if nil\n")
-	content.WriteString("func StringValue(s *string) string {\n")
-	content.WriteString("\tif s == nil {\n")
-	content.WriteString("\t\treturn \"\"\n")
-	content.WriteString("\t}\n")
-	content.WriteString("\treturn *s\n")
-	content.WriteString("}\n\n")
-
-	// Int32Ptr
-	content.WriteString("// Int32Ptr returns a pointer to the int32 value\n")
-	content.WriteString("func Int32Ptr(i int32) *int32 {\n")
-	content.WriteString("\treturn &i\n")
-	content.WriteString("}\n\n")
-
-	// Int32Value
-	content.WriteString("// Int32Value returns the int32 value from a pointer, or 0 if nil\n")
-	content.WriteString("func Int32Value(i *int32) int32 {\n")
-	content.WriteString("\tif i == nil {\n")
-	content.WriteString("\t\treturn 0\n")
-	content.WriteString("\t}\n")
-	content.WriteString("\treturn *i\n")
-	content.WriteString("}\n\n")
-
-	// NullInt32Value
-	content.WriteString("// NullInt32ToPtr converts sql.NullInt32 to int32 pointer\n")
-	content.WriteString("func NullInt32ToPtr(n sql.NullInt32) *int32 {\n")
-	content.WriteString("\tif !n.Valid {\n")
-	content.WriteString("\t\treturn nil\n")
-	content.WriteString("\t}\n")
-	content.WriteString("\treturn &n.Int32\n")
-	content.WriteString("}\n\n")
-
-	content.WriteString("// PtrToNullInt32 converts int32 pointer to NullInt32\n")
-	content.WriteString("func PtrToNullInt32(i *int32) sql.NullInt32 {\n")
-	content.WriteString("\tif i == nil {\n")
-	content.WriteString("\t\treturn sql.NullInt32{Valid: false}\n")
-	content.WriteString("\t}\n")
-	content.WriteString("\treturn sql.NullInt32{Int32: *i, Valid: true}\n")
-	content.WriteString("}\n\n")
+	content.WriteString(timeToproto)
+	content.WriteString(nullableConverters())
+	content.WriteString(nullableTime)
 
 	return content.String()
 }
+
+func nullableConverters() string {
+	var buf bytes.Buffer
+
+	type Config struct {
+		Type      string
+		Primitive string
+	}
+
+	fields := []Config{
+		{Type: "Int32", Primitive: "int32"},
+		{Type: "String", Primitive: "string"},
+		{Type: "Bool", Primitive: "bool"},
+	}
+
+	for _, field := range fields {
+		_ = nullableConvertersTemplate.Execute(&buf, field)
+	}
+
+	return buf.String()
+}
+
+const timeToproto = `
+// TimeToProto converts time.Time to timestamppb.Timestamp pointer
+func TimeToProto(t time.Time) *timestamppb.Timestamp {
+	return timestamppb.New(t)
+}
+
+// Note: If the pointer is nil, it returns a zero time.Time{}
+func ProtoToTime(t *timestamppb.Timestamp) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return t.AsTime()
+}
+`
+
+var nullableConvertersTemplate = template.Must(template.New("converters").Parse(`
+// --- {{.Type}} Converters ---
+func Null{{.Type}}ToPtr(n sql.Null{{.Type}}) *{{.Primitive}} {
+	if !n.Valid { return nil }
+	return &n.{{.Type}}
+}
+
+func PtrToNull{{.Type}}(i *{{.Primitive}}) sql.Null{{.Type}} {
+	if i == nil {
+		return sql.Null{{.Type}}{Valid: false}
+	}
+	return sql.Null{{.Type}}{ {{.Type}}: *i, Valid: true }
+}
+`))
+
+const nullableTime = `
+// --- Time Converters ---
+func NullTimeToProto(n sql.NullTime) *timestamppb.Timestamp {
+	if !n.Valid {
+		return nil
+	}
+	return timestamppb.New(n.Time)
+}
+
+func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
+	if t == nil {
+		return sql.NullTime{Valid: false}
+	}
+	return sql.NullTime{
+		Time:  t.AsTime(),
+		Valid: true,
+	}
+}
+`
