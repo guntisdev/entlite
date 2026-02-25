@@ -9,6 +9,12 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
+// TODO add mandatory field check like this: `[(buf.validate.field).required = true];`
+// and in buf.yaml add:
+// deps:
+//   - buf.build/bufbuild/protovalidate
+//
+// also use protovalidate-go combined with an interceptor (to call .Validate() for each message)
 func Generate(entities []schema.Entity, dir string) error {
 	var messageEntities []schema.Entity
 	for _, entity := range entities {

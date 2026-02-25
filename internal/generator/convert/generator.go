@@ -41,6 +41,8 @@ func Generate(entities []schema.Entity, imports []string) (string, error) {
 		content.WriteString("\n")
 	}
 
+	content.WriteString("\n\n")
+	content.WriteString("// ++++++ Helper functions for type conversions\n")
 	content.WriteString(generateHelperFunctions())
 
 	return content.String(), nil
@@ -55,7 +57,7 @@ func generateEntityConversion(entity schema.Entity) string {
 	dbName := fmt.Sprintf("%s.%s", dbPrefix, entity.Name)
 	pbName := fmt.Sprintf("%s.%s", pbPrefix, entity.Name)
 
-	content.WriteString(fmt.Sprintf("// %s conversion functions\n\n", entity.Name))
+	content.WriteString(fmt.Sprintf("// +++++ %s conversion functions\n\n", entity.Name))
 	content.WriteString(fmt.Sprintf("// %s DBToProto converts a database model to proto message\n", entity.Name))
 	content.WriteString(fmt.Sprintf("func %sDBToProto(db *%s) *%s {\n", entity.Name, dbName, pbName))
 	content.WriteString("\tif db == nil {\n")
@@ -82,9 +84,19 @@ func generateEntityConversion(entity schema.Entity) string {
 func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) string {
 	dbFieldRef := fmt.Sprintf("%s.%s", dbPrefix, dbFieldName)
 
-	// TODO make optional for all field types
-	if field.Type == schema.FieldTypeInt32 && field.Optional {
-		return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+	if field.Optional {
+		switch field.Type {
+		case schema.FieldTypeString:
+			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeInt32:
+			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeBool:
+			return fmt.Sprintf("NullBoolToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeTime:
+			return fmt.Sprintf("NullTimeToProto(%s)", dbFieldRef)
+		default:
+			return dbFieldRef
+		}
 	}
 
 	switch field.Type {
@@ -95,7 +107,7 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 	case schema.FieldTypeBool:
 		return dbFieldRef
 	case schema.FieldTypeTime:
-		return fmt.Sprintf("TimeToProtoTimestamp(&%s)", dbFieldRef)
+		return fmt.Sprintf("TimeToProto(%s)", dbFieldRef)
 	default:
 		return dbFieldRef
 	}
