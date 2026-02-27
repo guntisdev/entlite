@@ -73,10 +73,24 @@ func generateEntityConversion(entity schema.Entity) string {
 	}
 
 	content.WriteString("\t}\n")
+	content.WriteString("}\n\n")
 
-	// TODO proto to DB
+	content.WriteString(fmt.Sprintf("// %sProtoToDB converts a proto message to database model\n", entity.Name))
+	content.WriteString(fmt.Sprintf("func %sProtoToDB(pb *%s) *%s {\n", entity.Name, pbName, dbName))
+	content.WriteString("\tif pb == nil {\n")
+	content.WriteString("\t\treturn nil\n")
+	content.WriteString("\t}\n\n")
+	content.WriteString(fmt.Sprintf("\treturn &%s{\n", dbName))
 
-	content.WriteString("}")
+	for _, field := range entity.Fields {
+		protoFieldName := toProtoFieldName(field)
+		conversion := fieldProtoToDB(field, protoFieldName, pbPrefix)
+		dbFieldName := toDBFieldName(field)
+		content.WriteString(fmt.Sprintf("\t\t%s: %s,\n", dbFieldName, conversion))
+	}
+
+	content.WriteString("\t}\n")
+	content.WriteString("}\n")
 
 	return content.String()
 }
@@ -110,6 +124,38 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 		return fmt.Sprintf("TimeToProto(%s)", dbFieldRef)
 	default:
 		return dbFieldRef
+	}
+}
+
+func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string) string {
+	pbFieldRef := fmt.Sprintf("%s.%s", pbPrefix, protoFieldName)
+
+	if field.Optional {
+		switch field.Type {
+		case schema.FieldTypeString:
+			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
+		case schema.FieldTypeInt32:
+			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
+		case schema.FieldTypeBool:
+			return fmt.Sprintf("PtrToNullBool(%s)", pbFieldRef)
+		case schema.FieldTypeTime:
+			return fmt.Sprintf("ProtoToNullTime(%s)", pbFieldRef)
+		default:
+			return pbFieldRef
+		}
+	}
+
+	switch field.Type {
+	case schema.FieldTypeString:
+		return pbFieldRef
+	case schema.FieldTypeInt32:
+		return pbFieldRef
+	case schema.FieldTypeBool:
+		return pbFieldRef
+	case schema.FieldTypeTime:
+		return fmt.Sprintf("ProtoToTime(%s)", pbFieldRef)
+	default:
+		return pbFieldRef
 	}
 }
 
