@@ -23,6 +23,8 @@ func (User) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("email").Unique().ProtoField(2),
 		field.String("name").Comment("First name and surname"),
+		// TODO validate func actually needs input argument
+		// field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
 		field.Int32("age").Optional(),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),

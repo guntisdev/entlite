@@ -109,7 +109,10 @@ func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
 		for _, result := range retStmt.Results {
 			if compLit, ok := result.(*ast.CompositeLit); ok {
 				for _, elt := range compLit.Elts {
-					field := parseFieldExpression(elt)
+					field, err := parseFieldExpression(elt)
+					if err != nil {
+						return nil, err
+					}
 					if field.Name != "" {
 						fields = append(fields, field)
 					}
@@ -122,7 +125,7 @@ func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
 	return fields, nil
 }
 
-func parseFieldExpression(expr ast.Expr) schema.Field {
+func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 	field := schema.Field{}
 
 	// Handle method chaining like entlite.String("name").ProtoField(2)
@@ -188,14 +191,20 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 						field.DefaultValue = parseDefaultValue(e.Args[0])
 					}
 				case "DefaultFunc":
-					/// TODO check that value is not inline func, only func name
 					if len(e.Args) > 0 {
-						field.DefaultFunc = parseDefaultFuncValue(e.Args[0])
+						fn, err := parseDefaultFuncValue(e.Args[0])
+						if err != nil {
+							return field, fmt.Errorf("field %q: %w", field.Name, err)
+						}
+						field.DefaultFunc = fn
 					}
 				case "Validate":
-					// TODO same check that value is not inline func
 					if len(e.Args) > 0 {
-						field.Validate = parseValidateFuncValue(e.Args[0])
+						fn, err := parseValidateFuncValue(e.Args[0])
+						if err != nil {
+							return field, fmt.Errorf("field %q: %w", field.Name, err)
+						}
+						field.Validate = fn
 					}
 				}
 
@@ -215,7 +224,7 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 		}
 	}
 
-	return field
+	return field, nil
 }
 
 func parseDefaultValue(expr ast.Expr) any {
@@ -252,53 +261,54 @@ func parseInt(s string) *int {
 	return nil
 }
 
-func parseDefaultFuncValue(expr ast.Expr) func() any {
+func parseDefaultFuncValue(expr ast.Expr) (func() any, error) {
 	switch e := expr.(type) {
 	case *ast.SelectorExpr:
-		// Handle cases like uuid.NewString, time.Now, etc.
+		// Accept package function references like uuid.NewString, time.Now
 		if ident, ok := e.X.(*ast.Ident); ok {
 			pkg := ident.Name
 			fn := e.Sel.Name
-			// For now, we'll create a placeholder that stores the function name
 			return func() any {
+				// Placeholder - stores function reference as pkg.Function
 				return fmt.Sprintf("%s.%s", pkg, fn)
-			}
+			}, nil
 		}
 	case *ast.Ident:
-		// Handle direct function references like someFunction
+		// Accept direct function references like someFunction
 		fnName := e.Name
 		return func() any {
 			return fnName
-		}
+		}, nil
 	case *ast.FuncLit:
-		// TODO actually here could return error only inline functions accepted
-		// Handle inline function literals like func() string { return "value" }
-		return func() any {
-			return "inline_function"
-		}
+		return nil, fmt.Errorf("default func cannot be an anonymous function, use a named function reference instead")
 	}
-	return nil
+	return nil, fmt.Errorf("default func must be a function reference")
 }
 
-func parseValidateFuncValue(expr ast.Expr) func() bool {
-	switch expr.(type) {
-	case *ast.FuncLit:
-		// Only accept inline function literals for validation
-		// The actual validation logic will be implemented by the inline function
-		return func() bool {
-			// Placeholder - in actual usage, the inline function would be executed
-			return true
-		}
+func parseValidateFuncValue(expr ast.Expr) (func() bool, error) {
+	switch e := expr.(type) {
 	case *ast.SelectorExpr:
-		// Reject selector expressions (like pkg.Function) for validation
-		// Only inline functions should be allowed
-		return nil
+		// Accept package function references like env.isDebug
+		if ident, ok := e.X.(*ast.Ident); ok {
+			pkg := ident.Name
+			fn := e.Sel.Name
+			return func() bool {
+				// Placeholder - stores function reference as pkg.Function
+				_ = fmt.Sprintf("%s.%s", pkg, fn)
+				return true
+			}, nil
+		}
 	case *ast.Ident:
-		// Reject function references for validation
-		// Only inline functions should be allowed
-		return nil
+		// Accept direct function references like MyBoolFunc
+		fnName := e.Name
+		return func() bool {
+			_ = fnName
+			return true
+		}, nil
+	case *ast.FuncLit:
+		return nil, fmt.Errorf("validate cannot be an anonymous function, use a named function reference instead")
 	}
-	return nil
+	return nil, fmt.Errorf("validate must be a function reference")
 }
 
 func parseAnnotationsMethod(funcDecl *ast.FuncDecl) ([]schema.Annotation, error) {
