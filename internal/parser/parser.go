@@ -192,6 +192,11 @@ func parseFieldExpression(expr ast.Expr) schema.Field {
 					if len(e.Args) > 0 {
 						field.DefaultFunc = parseDefaultFuncValue(e.Args[0])
 					}
+				case "Validate":
+					// TODO same check that value is not inline func
+					if len(e.Args) > 0 {
+						field.Validate = parseValidateFuncValue(e.Args[0])
+					}
 				}
 
 				// Continue with the receiver of this method call
@@ -266,10 +271,32 @@ func parseDefaultFuncValue(expr ast.Expr) func() any {
 			return fnName
 		}
 	case *ast.FuncLit:
+		// TODO actually here could return error only inline functions accepted
 		// Handle inline function literals like func() string { return "value" }
 		return func() any {
 			return "inline_function"
 		}
+	}
+	return nil
+}
+
+func parseValidateFuncValue(expr ast.Expr) func() bool {
+	switch expr.(type) {
+	case *ast.FuncLit:
+		// Only accept inline function literals for validation
+		// The actual validation logic will be implemented by the inline function
+		return func() bool {
+			// Placeholder - in actual usage, the inline function would be executed
+			return true
+		}
+	case *ast.SelectorExpr:
+		// Reject selector expressions (like pkg.Function) for validation
+		// Only inline functions should be allowed
+		return nil
+	case *ast.Ident:
+		// Reject function references for validation
+		// Only inline functions should be allowed
+		return nil
 	}
 	return nil
 }
