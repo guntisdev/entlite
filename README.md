@@ -8,6 +8,7 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Add to proto required field check `[(buf.validate.field).required = true];` 
 * Add Validate() method to proto export struct
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
+* Fix getting import path and reuse functionality (currently some copy paste code)
 
 ## Folder structure
 ```

@@ -58,7 +58,9 @@ func generateEntityConversion(entity schema.Entity) string {
 	pbName := fmt.Sprintf("%s.%s", pbPrefix, entity.Name)
 
 	content.WriteString(fmt.Sprintf("// +++++ %s conversion functions\n\n", entity.Name))
-	content.WriteString(fmt.Sprintf("// %s DBToProto converts a database model to proto message\n", entity.Name))
+
+	// DB to Proto
+	content.WriteString(fmt.Sprintf("// %sDBToProto converts a database model to proto message\n", entity.Name))
 	content.WriteString(fmt.Sprintf("func %sDBToProto(db *%s) *%s {\n", entity.Name, dbName, pbName))
 	content.WriteString("\tif db == nil {\n")
 	content.WriteString("\t\treturn nil\n")
@@ -73,10 +75,38 @@ func generateEntityConversion(entity schema.Entity) string {
 	}
 
 	content.WriteString("\t}\n")
+	content.WriteString("}\n\n")
 
-	// TODO proto to DB
+	// Proto to DB
+	content.WriteString(fmt.Sprintf("// %sProtoToDB converts a proto message to database model\n", entity.Name))
+	content.WriteString(fmt.Sprintf("func %sProtoToDB(pb *%s) *%s {\n", entity.Name, pbName, dbName))
+	content.WriteString("\tif pb == nil {\n")
+	content.WriteString("\t\treturn nil\n")
+	content.WriteString("\t}\n\n")
+	content.WriteString(fmt.Sprintf("\treturn &%s{\n", dbName))
 
-	content.WriteString("}")
+	for _, field := range entity.Fields {
+		protoFieldName := toProtoFieldName(field)
+		conversion := fieldProtoToDB(field, protoFieldName, pbPrefix)
+		dbFieldName := toDBFieldName(field)
+		content.WriteString(fmt.Sprintf("\t\t%s: %s,\n", dbFieldName, conversion))
+	}
+
+	content.WriteString("\t}\n")
+	content.WriteString("}\n")
+
+	// DB slice to Proto slice
+	content.WriteString(fmt.Sprintf("// %sDBSliceToProtoSlice converts db slice to proto array message\n", entity.Name))
+	content.WriteString(fmt.Sprintf("func %sDBSliceToProtoSlice(dbSlice []*%s) []*%s {\n", entity.Name, dbName, pbName))
+	content.WriteString("\tif dbSlice == nil {\n")
+	content.WriteString("\t\treturn nil\n")
+	content.WriteString("\t}\n\n")
+	content.WriteString(fmt.Sprintf("\tresult := make([]*%s, len(dbSlice))\n", pbName))
+	content.WriteString("\tfor i, row := range dbSlice {\n")
+	content.WriteString(fmt.Sprintf("\t\tresult[i] = %sDBToProto(row)\n", entity.Name))
+	content.WriteString("\t}\n")
+	content.WriteString("\treturn result\n")
+	content.WriteString("}\n")
 
 	return content.String()
 }
@@ -110,6 +140,38 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 		return fmt.Sprintf("TimeToProto(%s)", dbFieldRef)
 	default:
 		return dbFieldRef
+	}
+}
+
+func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string) string {
+	pbFieldRef := fmt.Sprintf("%s.%s", pbPrefix, protoFieldName)
+
+	if field.Optional {
+		switch field.Type {
+		case schema.FieldTypeString:
+			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
+		case schema.FieldTypeInt32:
+			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
+		case schema.FieldTypeBool:
+			return fmt.Sprintf("PtrToNullBool(%s)", pbFieldRef)
+		case schema.FieldTypeTime:
+			return fmt.Sprintf("ProtoToNullTime(%s)", pbFieldRef)
+		default:
+			return pbFieldRef
+		}
+	}
+
+	switch field.Type {
+	case schema.FieldTypeString:
+		return pbFieldRef
+	case schema.FieldTypeInt32:
+		return pbFieldRef
+	case schema.FieldTypeBool:
+		return pbFieldRef
+	case schema.FieldTypeTime:
+		return fmt.Sprintf("ProtoToTime(%s)", pbFieldRef)
+	default:
+		return pbFieldRef
 	}
 }
 
