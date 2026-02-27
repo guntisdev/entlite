@@ -11,9 +11,8 @@ type StringFieldBuilder interface {
 	Comment(string) StringFieldBuilder
 	Immutable() StringFieldBuilder
 	Optional() StringFieldBuilder
-	/*
-	   Optional, Immutable, DefaultFunc, Comment, Sensitive (for password field)
-	*/
+	Validate(func() bool) StringFieldBuilder
+	// maybe ProtoExclude() - meant to not send out password?
 
 	// to satisfy entlite.Field interface
 	Field()
@@ -28,6 +27,7 @@ type StringField struct {
 	comment     *string
 	immutable   bool
 	optional    bool
+	validate    func() bool
 }
 
 // marker method for sealed interface
@@ -64,6 +64,10 @@ func (f *StringField) GetImmutable() bool {
 
 func (f *StringField) GetOptional() bool {
 	return f.optional
+}
+
+func (f *StringField) GetValidate() func() bool {
+	return f.validate
 }
 
 // setters with chaining logic. uses mutable struct
@@ -104,11 +108,17 @@ func (f *StringField) Optional() StringFieldBuilder {
 	return f
 }
 
+func (f *StringField) Validate(fn func() bool) StringFieldBuilder {
+	f.validate = fn
+	return f
+}
+
 // --------------------------------- bool ---------------------------------
 type BoolFieldBuilder interface {
 	Default(bool) BoolFieldBuilder
 	ProtoField(int) BoolFieldBuilder
 	Comment(string) BoolFieldBuilder
+	Validate(func() bool) BoolFieldBuilder
 
 	// to satisfy entlite.Field interface
 	Field()
@@ -119,6 +129,7 @@ type BoolField struct {
 	defaultVal *bool
 	protoField *int
 	comment    *string
+	validate   func() bool
 }
 
 func (*BoolField) Field() {}
@@ -139,6 +150,10 @@ func (f *BoolField) GetComment() *string {
 	return f.comment
 }
 
+func (f *BoolField) GetValidate() func() bool {
+	return f.validate
+}
+
 func (f *BoolField) Default(value bool) BoolFieldBuilder {
 	f.defaultVal = &value
 	return f
@@ -154,12 +169,18 @@ func (f *BoolField) Comment(text string) BoolFieldBuilder {
 	return f
 }
 
+func (f *BoolField) Validate(fn func() bool) BoolFieldBuilder {
+	f.validate = fn
+	return f
+}
+
 // --------------------------------- int32 ---------------------------------
 type Int32FieldBuilder interface {
 	Default(int32) Int32FieldBuilder
 	ProtoField(int) Int32FieldBuilder
 	Comment(string) Int32FieldBuilder
 	Optional() Int32FieldBuilder
+	Validate(func() bool) Int32FieldBuilder
 
 	// to satisfy entlite.Field interface
 	Field()
@@ -171,6 +192,7 @@ type Int32Field struct {
 	protoField *int
 	comment    *string
 	optional   bool
+	validate   func() bool
 }
 
 func (*Int32Field) Field() {}
@@ -195,6 +217,10 @@ func (f *Int32Field) GetOptional() bool {
 	return f.optional
 }
 
+func (f *Int32Field) GetValidate() func() bool {
+	return f.validate
+}
+
 func (f *Int32Field) Default(value int32) Int32FieldBuilder {
 	f.defaultVal = &value
 	return f
@@ -215,6 +241,11 @@ func (f *Int32Field) Optional() Int32FieldBuilder {
 	return f
 }
 
+func (f *Int32Field) Validate(fn func() bool) Int32FieldBuilder {
+	f.validate = fn
+	return f
+}
+
 // --------------------------------- time ---------------------------------
 type TimeFieldBuilder interface {
 	Default(time.Time) TimeFieldBuilder
@@ -223,6 +254,7 @@ type TimeFieldBuilder interface {
 	Comment(string) TimeFieldBuilder
 	Immutable() TimeFieldBuilder
 	Optional() TimeFieldBuilder
+	Validate(func() bool) TimeFieldBuilder
 
 	Field()
 }
@@ -235,6 +267,7 @@ type TimeField struct {
 	comment     *string
 	immutable   bool
 	optional    bool
+	validate    func() bool
 }
 
 func (*TimeField) Field() {}
@@ -267,6 +300,10 @@ func (f *TimeField) GetOptional() bool {
 	return f.optional
 }
 
+func (f *TimeField) GetValidate() func() bool {
+	return f.validate
+}
+
 func (f *TimeField) Default(value time.Time) TimeFieldBuilder {
 	f.defaultFunc = nil
 	f.defaultVal = &value
@@ -296,5 +333,10 @@ func (f *TimeField) Immutable() TimeFieldBuilder {
 
 func (f *TimeField) Optional() TimeFieldBuilder {
 	f.optional = true
+	return f
+}
+
+func (f *TimeField) Validate(fn func() bool) TimeFieldBuilder {
+	f.validate = fn
 	return f
 }
