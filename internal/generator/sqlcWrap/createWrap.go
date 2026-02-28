@@ -44,39 +44,27 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
 	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, arg %sParams) ", receiverType, funcDecl.Name.Name, funcDecl.Name.Name))
 
+	var firstReturnType string
 	if funcDecl.Type.Results != nil && len(funcDecl.Type.Results.List) > 0 {
 		sb.WriteString("(")
 		for i, result := range funcDecl.Type.Results.List {
 			if i > 0 {
 				sb.WriteString(", ")
 			}
-			sb.WriteString(formatType(result.Type))
+			formattedType := formatType(result.Type)
+			if i == 0 {
+				firstReturnType = formattedType
+			}
+			sb.WriteString(formattedType)
 		}
 		sb.WriteString(")")
 	}
 
 	sb.WriteString(" {\n")
 
-	idDefaultVal := "0"
-	for _, field := range entity.Fields {
-		if field.IsID() && field.Type == schema.FieldTypeString {
-			idDefaultVal = "\"\""
-		}
-	}
-
-	for _, field := range entity.Fields {
-		if field.Validate == nil {
-			continue
-		}
-
-		validateName := field.Validate().(string)
-		fieldName := toDBFieldName(field)
-		sb.WriteString(fmt.Sprintf("\tif !%s(arg.%s) {\n", validateName, fieldName))
-		sb.WriteString(fmt.Sprintf("\t\treturn %s, fmt.Errorf(\"Failed create: incorrect value for %s in field %s, validated by %s\")\n", idDefaultVal, entity.Name, field.Name, validateName))
-		sb.WriteString("\t}\n")
-	}
-
+	sb.WriteString(addValidationChecks(entity, "create", firstReturnType))
 	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
+
 	defaultFuncFields := make(map[string]schema.Field)
 	for _, field := range entity.Fields {
 		if field.DefaultFunc != nil {
@@ -102,6 +90,34 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	sb.WriteString(fmt.Sprintf("\treturn (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
 	sb.WriteString("}\n\n")
 
+	return sb.String()
+}
+
+func addValidationChecks(entity schema.Entity, sqlQuery string, returnType string) string {
+	var sb strings.Builder
+
+	var zeroValue string
+	switch returnType {
+	case "", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
+		zeroValue = "0"
+	case "string":
+		zeroValue = "\"\""
+	default:
+		// Assume it's a struct type
+		zeroValue = returnType + "{}"
+	}
+
+	for _, field := range entity.Fields {
+		if field.Validate == nil {
+			continue
+		}
+
+		validateName := field.Validate().(string)
+		fieldName := toDBFieldName(field)
+		sb.WriteString(fmt.Sprintf("\tif !%s(arg.%s) {\n", validateName, fieldName))
+		sb.WriteString(fmt.Sprintf("\t\treturn %s, fmt.Errorf(\"Failed %s: incorrect value for '%s' in field '%s', validated by '%s'\")\n", zeroValue, sqlQuery, entity.Name, field.Name, validateName))
+		sb.WriteString("\t}\n")
+	}
 	return sb.String()
 }
 

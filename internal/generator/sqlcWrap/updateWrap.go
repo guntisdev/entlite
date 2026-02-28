@@ -44,18 +44,25 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
 	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, arg %sParams) ", receiverType, funcDecl.Name.Name, funcDecl.Name.Name))
 
+	var firstReturnType string
 	if funcDecl.Type.Results != nil && len(funcDecl.Type.Results.List) > 0 {
 		sb.WriteString("(")
 		for i, result := range funcDecl.Type.Results.List {
 			if i > 0 {
 				sb.WriteString(", ")
 			}
-			sb.WriteString(formatType(result.Type))
+			formattedType := formatType(result.Type)
+			if i == 0 {
+				firstReturnType = formattedType
+			}
+			sb.WriteString(formattedType)
 		}
 		sb.WriteString(")")
 	}
 
 	sb.WriteString(" {\n")
+
+	sb.WriteString(addValidationChecks(entity, "update", firstReturnType))
 	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
 
 	defaultFuncFields := make(map[string]schema.Field)
