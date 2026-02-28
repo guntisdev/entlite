@@ -91,8 +91,10 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	}
 
 	if filepath.Base(inputFilePath) == "queries.sql.go" {
-		if hasValidateField(parsedEntities) {
-			needsFmtImport = true
+		for _, entity := range parsedEntities {
+			if hasValidateField(entity) {
+				needsFmtImport = true
+			}
 		}
 	}
 
@@ -115,13 +117,6 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
 	sb.WriteString(")\n\n")
 
-	if filepath.Base(inputFilePath) == "queries.sql.go" {
-		// create Validate() functions for fields
-		for _, entity := range parsedEntities {
-			sb.WriteString(generateValidateFuncs(entity))
-		}
-	}
-
 	for _, decl := range node.Decls {
 		switch d := decl.(type) {
 		case *ast.GenDecl:
@@ -131,10 +126,12 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 					if s.Name.IsExported() {
 						if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, "Params") {
 							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
-							if entity, ok := entityMap[entityName]; ok && hasDefaultFuncFields(entity) {
-								// Generate custom struct without DefaultFunc fields
-								sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity))
-								continue
+							if entity, ok := entityMap[entityName]; ok {
+								if hasDefaultFuncFields(entity) || hasValidateField(entity) {
+									// Generate custom struct without DefaultFunc fields, also put Validate
+									sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity))
+									continue
+								}
 							}
 						}
 
@@ -187,31 +184,10 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	return sb.String(), nil
 }
 
-func generateValidateFuncs(entity schema.Entity) string {
-	var result strings.Builder
+func hasValidateField(entity schema.Entity) bool {
 	for _, field := range entity.Fields {
-		if field.Validate == nil {
-			continue
-		}
-
-		validateName := field.Validate().(string)
-		result.WriteString(fmt.Sprintf("func validate_%s_%s(value %s) error {\n", entity.Name, field.Name, field.Type))
-		result.WriteString(fmt.Sprintf("\tif %s(value) {\n", validateName))
-		result.WriteString(fmt.Sprintf("\t\treturn fmt.Errorf(\"Incorrect value for %s in field %s, validated by %s\")\n", entity.Name, field.Name, validateName))
-		result.WriteString("\t}\n")
-		result.WriteString("\treturn nil\n")
-		result.WriteString("}\n\n")
-	}
-
-	return result.String()
-}
-
-func hasValidateField(entities []schema.Entity) bool {
-	for _, entity := range entities {
-		for _, field := range entity.Fields {
-			if field.Validate != nil {
-				return true
-			}
+		if field.Validate != nil {
+			return true
 		}
 	}
 	return false
