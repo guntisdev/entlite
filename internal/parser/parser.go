@@ -285,14 +285,14 @@ func parseDefaultFuncValue(expr ast.Expr) (func() any, error) {
 	return nil, fmt.Errorf("default func must be a function reference")
 }
 
-func parseValidateFuncValue(expr ast.Expr) (func() bool, error) {
+func parseValidateFuncValue(expr ast.Expr) (func(any) bool, error) {
 	switch e := expr.(type) {
 	case *ast.SelectorExpr:
 		// Accept package function references like env.isDebug
 		if ident, ok := e.X.(*ast.Ident); ok {
 			pkg := ident.Name
 			fn := e.Sel.Name
-			return func() bool {
+			return func(any) bool {
 				// Placeholder - stores function reference as pkg.Function
 				_ = fmt.Sprintf("%s.%s", pkg, fn)
 				return true
@@ -301,7 +301,7 @@ func parseValidateFuncValue(expr ast.Expr) (func() bool, error) {
 	case *ast.Ident:
 		// Accept direct function references like MyBoolFunc
 		fnName := e.Name
-		return func() bool {
+		return func(any) bool {
 			_ = fnName
 			return true
 		}, nil
