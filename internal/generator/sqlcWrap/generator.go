@@ -74,6 +74,7 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 
 	needsContextImport := false
 	needsSQLImport := false
+	needsFmtImport := false
 
 	for structName := range createParamsStructs {
 		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
@@ -89,12 +90,21 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 		}
 	}
 
+	if filepath.Base(inputFilePath) == "queries.sql.go" {
+		if hasValidateField(parsedEntities) {
+			needsFmtImport = true
+		}
+	}
+
 	sb.WriteString("import (\n")
 	if needsContextImport {
 		sb.WriteString("\t\"context\"\n")
 	}
 	if needsSQLImport {
 		sb.WriteString("\t\"database/sql\"\n")
+	}
+	if needsFmtImport {
+		sb.WriteString("\t\"fmt\"\n")
 	}
 	// we need these imports only for overriden queries
 	if filepath.Base(inputFilePath) == "queries.sql.go" {
@@ -104,6 +114,13 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	}
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
 	sb.WriteString(")\n\n")
+
+	if filepath.Base(inputFilePath) == "queries.sql.go" {
+		// create Validate() functions for fields
+		for _, entity := range parsedEntities {
+			sb.WriteString(generateValidateFuncs(entity))
+		}
+	}
 
 	for _, decl := range node.Decls {
 		switch d := decl.(type) {
@@ -168,6 +185,36 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	}
 
 	return sb.String(), nil
+}
+
+func generateValidateFuncs(entity schema.Entity) string {
+	var result strings.Builder
+	for _, field := range entity.Fields {
+		if field.Validate == nil {
+			continue
+		}
+
+		validateName := field.Validate().(string)
+		result.WriteString(fmt.Sprintf("func validate_%s_%s(value %s) error {\n", entity.Name, field.Name, field.Type))
+		result.WriteString(fmt.Sprintf("\tif %s(value) {\n", validateName))
+		result.WriteString(fmt.Sprintf("\t\treturn fmt.Errorf(\"Incorrect value for %s in field %s, validated by %s\")\n", entity.Name, field.Name, validateName))
+		result.WriteString("\t}\n")
+		result.WriteString("\treturn nil\n")
+		result.WriteString("}\n\n")
+	}
+
+	return result.String()
+}
+
+func hasValidateField(entities []schema.Entity) bool {
+	for _, entity := range entities {
+		for _, field := range entity.Fields {
+			if field.Validate != nil {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func hasDefaultFuncFields(entity schema.Entity) bool {
