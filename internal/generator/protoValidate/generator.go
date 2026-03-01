@@ -28,7 +28,7 @@ func Generate(entities []schema.Entity, imports map[string]string) (string, erro
 	for _, importPath := range imports {
 		content.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
 	}
-	content.WriteString(")\n")
+	content.WriteString(")\n\n")
 
 	for _, entity := range entities {
 		if !hasValidateField(entity) {
@@ -54,7 +54,7 @@ func generateCreateRequest(entity schema.Entity) string {
 		content.WriteString(fmt.Sprintf("\t\treturn fmt.Errorf(\"Validation failed for field name: %s\")\n", fieldName))
 		content.WriteString("\t}\n")
 	}
-	content.WriteString("return nil\n")
+	content.WriteString("\treturn nil\n")
 	content.WriteString("}\n\n")
 	return content.String()
 }
@@ -72,7 +72,7 @@ func generateUpdateRequest(entity schema.Entity) string {
 		content.WriteString(fmt.Sprintf("\t\treturn fmt.Errorf(\"Validation failed for field name: %s\")\n", fieldName))
 		content.WriteString("\t}\n")
 	}
-	content.WriteString("return nil\n")
+	content.WriteString("\treturn nil\n")
 	content.WriteString("}\n\n")
 	return content.String()
 }

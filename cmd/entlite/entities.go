@@ -69,3 +69,31 @@ func getEntityImports(entityDir string) (map[string]string, error) {
 
 	return filteredImports, nil
 }
+
+func getValidateImports(entityDir string) (map[string]string, error) {
+	dir, err := filepath.Abs(entityDir)
+	if err != nil {
+		return nil, fmt.Errorf("resolving path %s: %w", entityDir, err)
+	}
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return nil, fmt.Errorf("entity directory does not exist: %s", dir)
+	}
+
+	discoveredEntities, err := parser.DiscoverEntities(dir)
+	if err != nil {
+		return nil, fmt.Errorf("discovering entities: %w", err)
+	}
+
+	schemaFilePaths := make([]string, len(discoveredEntities))
+	for i, discovered := range discoveredEntities {
+		schemaFilePaths[i] = discovered.Path
+	}
+
+	validateImports, err := parser.ExtractValidateImports(schemaFilePaths)
+	if err != nil {
+		return nil, fmt.Errorf("extracting validate imports: %w", err)
+	}
+
+	return validateImports, nil
+}

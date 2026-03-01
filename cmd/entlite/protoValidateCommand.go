@@ -27,13 +27,13 @@ func protoValidate(args []string) {
 		os.Exit(1)
 	}
 
-	entityImports, err := getEntityImports(entityDir)
+	validateImports, err := getValidateImports(entityDir)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error loading entity imports: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error loading validate imports: %v\n", err)
 		os.Exit(1)
 	}
 
-	content, err := protovalidate.Generate(parsedEntities, entityImports)
+	content, err := protovalidate.Generate(parsedEntities, validateImports)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating proto validation: %v\n", err)
 		os.Exit(1)
