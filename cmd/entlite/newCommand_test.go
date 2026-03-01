@@ -59,7 +59,3 @@ func TestNewCommandFunction(t *testing.T) {
 		}
 	}
 }
-
-func TestGenCommandFunction(t *testing.T) {
-	t.Skip("Skipping genCommand test until implementation is complete")
-}
