@@ -21,6 +21,8 @@ func main() {
 		genCommand(os.Args[2:])
 	case "sqlc-wrap":
 		sqlcWrapCommand(os.Args[2:])
+	case "proto-validate":
+		protoValidate(os.Args[2:])
 	case "convert":
 		convertCommand(os.Args[2:])
 	default:
