@@ -285,25 +285,23 @@ func parseDefaultFuncValue(expr ast.Expr) (func() any, error) {
 	return nil, fmt.Errorf("default func must be a function reference")
 }
 
-func parseValidateFuncValue(expr ast.Expr) (func(any) bool, error) {
+func parseValidateFuncValue(expr ast.Expr) (func() any, error) {
 	switch e := expr.(type) {
 	case *ast.SelectorExpr:
-		// Accept package function references like env.isDebug
+		// Accept package function references like validators.CheckEmail
 		if ident, ok := e.X.(*ast.Ident); ok {
 			pkg := ident.Name
 			fn := e.Sel.Name
-			return func(any) bool {
+			return func() any {
 				// Placeholder - stores function reference as pkg.Function
-				_ = fmt.Sprintf("%s.%s", pkg, fn)
-				return true
+				return fmt.Sprintf("%s.%s", pkg, fn)
 			}, nil
 		}
 	case *ast.Ident:
-		// Accept direct function references like MyBoolFunc
+		// Accept direct function references like MyValidateFunc
 		fnName := e.Name
-		return func(any) bool {
-			_ = fnName
-			return true
+		return func() any {
+			return fnName
 		}, nil
 	case *ast.FuncLit:
 		return nil, fmt.Errorf("validate cannot be an anonymous function, use a named function reference instead")

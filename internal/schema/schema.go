@@ -50,7 +50,7 @@ type Field struct {
 	Comment      string
 	Immutable    bool
 	Optional     bool
-	Validate     func(any) bool
+	Validate     func() any
 }
 
 func (f Field) IsID() bool {
