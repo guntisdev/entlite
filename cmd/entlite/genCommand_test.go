@@ -20,10 +20,12 @@ func diff(expected, actual string) string {
 		return ""
 	}
 
-	// TODO: Add color support and clean up wrapper lines
-	// Remove the first and last lines which are just:
-	// string(Inverse(SplitLines, []string{
-	// }))
+	// Remove the wrapper lines that cmp.Diff adds
+	lines := strings.Split(d, "\n")
+	if len(lines) > 2 {
+		lines = lines[1 : len(lines)-1]
+		return strings.Join(lines, "\n")
+	}
 
 	return d
 }
