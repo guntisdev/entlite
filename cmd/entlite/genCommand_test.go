@@ -14,6 +14,12 @@ var splitLines = cmpopts.AcyclicTransformer("SplitLines", func(s string) []strin
 	return strings.Split(strings.TrimSpace(s), "\n")
 })
 
+const (
+	colorReset = "\033[0m"
+	colorRed   = "\033[31m"
+	colorGreen = "\033[32m"
+)
+
 func diff(expected, actual string) string {
 	d := cmp.Diff(expected, actual, splitLines)
 	if d == "" {
@@ -24,10 +30,17 @@ func diff(expected, actual string) string {
 	lines := strings.Split(d, "\n")
 	if len(lines) > 2 {
 		lines = lines[1 : len(lines)-1]
-		return strings.Join(lines, "\n")
 	}
 
-	return d
+	for i, line := range lines {
+		if strings.HasPrefix(line, "-") {
+			lines[i] = colorRed + line + colorReset
+		} else if strings.HasPrefix(line, "+") {
+			lines[i] = colorGreen + line + colorReset
+		}
+	}
+
+	return strings.Join(lines, "\n")
 }
 
 func TestGenCommandFunction(t *testing.T) {
