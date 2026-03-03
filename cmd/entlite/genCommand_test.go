@@ -7,7 +7,26 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
+
+var splitLines = cmpopts.AcyclicTransformer("SplitLines", func(s string) []string {
+	return strings.Split(strings.TrimSpace(s), "\n")
+})
+
+func diff(expected, actual string) string {
+	d := cmp.Diff(expected, actual, splitLines)
+	if d == "" {
+		return ""
+	}
+
+	// TODO: Add color support and clean up wrapper lines
+	// Remove the first and last lines which are just:
+	// string(Inverse(SplitLines, []string{
+	// }))
+
+	return d
+}
 
 func TestGenCommandFunction(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -183,10 +202,9 @@ service UserService {
 	if content, err := os.ReadFile(protoPath); err != nil {
 		t.Fatalf("Failed to read proto file: %v", err)
 	} else {
-		actualContent := strings.TrimSpace(string(content))
-		expectedTrimmed := strings.TrimSpace(expectedProtoContent)
-		if diff := cmp.Diff(expectedTrimmed, actualContent); diff != "" {
-			t.Errorf("Proto file content mismatch (-expected +actual):\n%s", diff)
+		actualContent := string(content)
+		if d := diff(expectedProtoContent, actualContent); d != "" {
+			t.Errorf("Proto file content mismatch (-expected +actual):\n%s", d)
 		}
 	}
 
@@ -210,10 +228,9 @@ CREATE TABLE "user"(
 	if content, err := os.ReadFile(sqlSchemaPath); err != nil {
 		t.Fatalf("Failed to read SQL schema file: %v", err)
 	} else {
-		actualContent := strings.TrimSpace(string(content))
-		expectedTrimmed := strings.TrimSpace(expectedSQLSchema)
-		if diff := cmp.Diff(expectedTrimmed, actualContent); diff != "" {
-			t.Errorf("SQL schema content mismatch (-expected +actual):\n%s", diff)
+		actualContent := string(content)
+		if d := diff(expectedSQLSchema, actualContent); d != "" {
+			t.Errorf("SQL schema content mismatch (-expected +actual):\n%s", d)
 		}
 	}
 
@@ -265,10 +282,9 @@ DELETE FROM "user" WHERE id = $1;`
 	if content, err := os.ReadFile(sqlQueriesPath); err != nil {
 		t.Fatalf("Failed to read SQL queries file: %v", err)
 	} else {
-		actualContent := strings.TrimSpace(string(content))
-		expectedTrimmed := strings.TrimSpace(expectedSQLQueries)
-		if diff := cmp.Diff(expectedTrimmed, actualContent); diff != "" {
-			t.Errorf("SQL queries content mismatch (-expected +actual):\n%s", diff)
+		actualContent := string(content)
+		if d := diff(expectedSQLQueries, actualContent); d != "" {
+			t.Errorf("SQL queries content mismatch (-expected +actual):\n%s", d)
 		}
 	}
 }
