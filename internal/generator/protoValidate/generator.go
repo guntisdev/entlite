@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func Generate(entities []schema.Entity, imports map[string]string) (string, error) {
+func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (string, error) {
 	var content strings.Builder
 
 	content.WriteString("package pb\n\n")
@@ -25,8 +26,8 @@ func Generate(entities []schema.Entity, imports map[string]string) (string, erro
 	}
 
 	// TODO this brings all imports, need only validate imports
-	for _, importPath := range imports {
-		content.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
+	for _, importInfo := range imports {
+		content.WriteString(fmt.Sprintf("\t\"%s\"\n", importInfo.Path))
 	}
 	content.WriteString(")\n\n")
 

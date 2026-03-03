@@ -8,9 +8,14 @@ import (
 	"strings"
 )
 
-// return keyVal pkgName=importPath
-func ExtractImports(schemaFilePaths []string) (map[string]string, error) {
-	pkgToImport := make(map[string]string)
+type ImportInfo struct {
+	Name       string // package name or alias
+	Path       string // import path
+	SchemaPath string // schema file where this import was found
+}
+
+func ExtractImports(schemaFilePaths []string) (map[string]ImportInfo, error) {
+	pkgToImport := make(map[string]ImportInfo)
 
 	for _, path := range schemaFilePaths {
 		fset := token.NewFileSet()
@@ -31,37 +36,33 @@ func ExtractImports(schemaFilePaths []string) (map[string]string, error) {
 				pkgName = filepath.Base(importPath)
 			}
 
-			pkgToImport[pkgName] = importPath
+			// Only store if not already present (first occurrence wins)
+			if _, exists := pkgToImport[pkgName]; !exists {
+				pkgToImport[pkgName] = ImportInfo{
+					Name:       pkgName,
+					Path:       importPath,
+					SchemaPath: path,
+				}
+			}
 		}
 	}
 
 	return pkgToImport, nil
 }
 
-// ExtractValidateImports extracts only imports that are used in .Validate() method calls
-// For example: field.String("name").Validate(logic.StartsWithCapital) → returns "logic" import
-func ExtractValidateImports(schemaFilePaths []string) (map[string]string, error) {
-	allImports := make(map[string]string)
+func FilterValidateImports(allImports map[string]ImportInfo) map[string]ImportInfo {
+	schemaPathsMap := make(map[string]bool)
+	for _, importInfo := range allImports {
+		schemaPathsMap[importInfo.SchemaPath] = true
+	}
+
 	usedPackages := make(map[string]bool)
 
-	for _, path := range schemaFilePaths {
+	for path := range schemaPathsMap {
 		fset := token.NewFileSet()
 		node, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
 		if err != nil {
 			continue
-		}
-
-		for _, imp := range node.Imports {
-			importPath := strings.Trim(imp.Path.Value, `"`)
-			var pkgName string
-
-			if imp.Name != nil {
-				pkgName = imp.Name.Name
-			} else {
-				pkgName = filepath.Base(importPath)
-			}
-
-			allImports[pkgName] = importPath
 		}
 
 		ast.Inspect(node, func(n ast.Node) bool {
@@ -79,7 +80,7 @@ func ExtractValidateImports(schemaFilePaths []string) (map[string]string, error)
 			for _, arg := range callExpr.Args {
 				if sel, ok := arg.(*ast.SelectorExpr); ok {
 					if ident, ok := sel.X.(*ast.Ident); ok {
-						// iden.Name is the package name (e.g., "logic", "env")
+						// ident.Name is the package name (e.g., "logic", "env")
 						usedPackages[ident.Name] = true
 					}
 				}
@@ -89,12 +90,12 @@ func ExtractValidateImports(schemaFilePaths []string) (map[string]string, error)
 		})
 	}
 
-	result := make(map[string]string)
+	result := make(map[string]ImportInfo)
 	for pkgName := range usedPackages {
-		if importPath, exists := allImports[pkgName]; exists {
-			result[pkgName] = importPath
+		if importInfo, exists := allImports[pkgName]; exists {
+			result[pkgName] = importInfo
 		}
 	}
 
-	return result, nil
+	return result
 }

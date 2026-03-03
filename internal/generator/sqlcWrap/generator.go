@@ -9,10 +9,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	internalParser "github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]string) (string, error) {
+func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo) (string, error) {
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, inputFilePath, nil, parser.ParseComments)
 	if err != nil {
@@ -110,8 +111,8 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	}
 	// we need these imports only for overriden queries
 	if filepath.Base(inputFilePath) == "queries.sql.go" {
-		for _, importPath := range entityImports {
-			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
+		for _, importInfo := range entityImports {
+			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importInfo.Path))
 		}
 	}
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
