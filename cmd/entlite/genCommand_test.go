@@ -3,45 +3,10 @@ package main
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
+	testutil "github.com/guntisdev/entlite/internal/util"
 )
-
-var splitLines = cmpopts.AcyclicTransformer("SplitLines", func(s string) []string {
-	return strings.Split(strings.TrimSpace(s), "\n")
-})
-
-const (
-	colorReset = "\033[0m"
-	colorRed   = "\033[31m"
-	colorGreen = "\033[32m"
-)
-
-func diff(expected, actual string) string {
-	d := cmp.Diff(expected, actual, splitLines)
-	if d == "" {
-		return ""
-	}
-
-	// Remove the wrapper lines that cmp.Diff adds
-	lines := strings.Split(d, "\n")
-	if len(lines) > 2 {
-		lines = lines[1 : len(lines)-1]
-	}
-
-	for i, line := range lines {
-		if strings.HasPrefix(line, "-") {
-			lines[i] = colorRed + line + colorReset
-		} else if strings.HasPrefix(line, "+") {
-			lines[i] = colorGreen + line + colorReset
-		}
-	}
-
-	return strings.Join(lines, "\n")
-}
 
 func TestGenCommandFunction(t *testing.T) {
 	tmpDir := t.TempDir()
@@ -218,7 +183,7 @@ service UserService {
 		t.Fatalf("Failed to read proto file: %v", err)
 	} else {
 		actualContent := string(content)
-		if d := diff(expectedProtoContent, actualContent); d != "" {
+		if d := testutil.Diff(expectedProtoContent, actualContent); d != "" {
 			t.Errorf("Proto file content mismatch (-expected +actual):\n%s", d)
 		}
 	}
@@ -244,7 +209,7 @@ CREATE TABLE "user"(
 		t.Fatalf("Failed to read SQL schema file: %v", err)
 	} else {
 		actualContent := string(content)
-		if d := diff(expectedSQLSchema, actualContent); d != "" {
+		if d := testutil.Diff(expectedSQLSchema, actualContent); d != "" {
 			t.Errorf("SQL schema content mismatch (-expected +actual):\n%s", d)
 		}
 	}
@@ -298,7 +263,7 @@ DELETE FROM "user" WHERE id = $1;`
 		t.Fatalf("Failed to read SQL queries file: %v", err)
 	} else {
 		actualContent := string(content)
-		if d := diff(expectedSQLQueries, actualContent); d != "" {
+		if d := testutil.Diff(expectedSQLQueries, actualContent); d != "" {
 			t.Errorf("SQL queries content mismatch (-expected +actual):\n%s", d)
 		}
 	}
