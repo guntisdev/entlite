@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestGenCommandFunction(t *testing.T) {
@@ -117,67 +119,156 @@ func StartsWithCapital(s string) bool {
 
 	// Verify schema.proto
 	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto")
-	if content, err := os.ReadFile(protoPath); err == nil {
-		protoContent := string(content)
+	expectedProtoContent := `syntax = "proto3";
 
-		expectedProtoStrings := []string{
-			"syntax = \"proto3\"",
-			"package entlite",
-			"message User",
-			"string email = 2",
-			"string name = ",
-			"int32 age = ",
-			"bool is_admin = 5",
-			"google.protobuf.Timestamp created_at = 6",
-			"google.protobuf.Timestamp updated_at = 7",
-			"service UserService",
-		}
+package entlite;
 
-		for _, expected := range expectedProtoStrings {
-			if !strings.Contains(protoContent, expected) {
-				t.Errorf("Proto file missing expected content: %s", expected)
-			}
+option go_package = "./pb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// User represents as user entity
+message User {
+  int32 id = 1;
+  string email = 2;
+  // First name and surname
+  string name = 3;
+  optional int32 age = 4;
+  string uuid = 8;
+  bool is_admin = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message CreateUserRequest {
+  string email = 2;
+  // First name and surname
+  string name = 3;
+  optional int32 age = 4;
+  bool is_admin = 5;
+}
+message GetUserRequest {
+  int32 id = 1;
+}
+message UpdateUserRequest {
+  int32 id = 1;
+  string email = 2;
+  // First name and surname
+  string name = 3;
+  optional int32 age = 4;
+  bool is_admin = 5;
+}
+message DeleteUserRequest {
+  int32 id = 1;
+}
+message ListUserRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message ListUserResponse {
+  repeated User users = 1;
+}
+
+// UserService provides CRUD opertions for User entities
+service UserService {
+  rpc Create(CreateUserRequest) returns (User);
+  rpc Get(GetUserRequest) returns (User);
+  rpc Update(UpdateUserRequest) returns (User);
+  rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
+  rpc List(ListUserRequest) returns (ListUserResponse);
+}`
+
+	if content, err := os.ReadFile(protoPath); err != nil {
+		t.Fatalf("Failed to read proto file: %v", err)
+	} else {
+		actualContent := strings.TrimSpace(string(content))
+		expectedTrimmed := strings.TrimSpace(expectedProtoContent)
+		if diff := cmp.Diff(expectedTrimmed, actualContent); diff != "" {
+			t.Errorf("Proto file content mismatch (-expected +actual):\n%s", diff)
 		}
 	}
 
 	// Verify schema.sql
 	sqlSchemaPath := filepath.Join(tmpDir, "ent", "contract", "sqlc", "schema.sql")
-	if content, err := os.ReadFile(sqlSchemaPath); err == nil {
-		sqlContent := string(content)
+	expectedSQLSchema := `-- Generated schema.sql
+-- This file contains table definitions for all entities
 
-		// Check for expected SQL content
-		expectedSQLStrings := []string{
-			"CREATE TABLE",
-			"user",
-			"email",
-			"name",
-			"age",
-			"is_admin",
-			"created_at",
-			"updated_at",
-		}
+-- user table
+CREATE TABLE "user"(
+  id SERIAL PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  age INTEGER,
+  uuid TEXT NOT NULL,
+  is_admin BOOLEAN NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL
+);`
 
-		for _, expected := range expectedSQLStrings {
-			if !strings.Contains(sqlContent, expected) {
-				t.Errorf("SQL schema file missing expected content: %s", expected)
-			}
+	if content, err := os.ReadFile(sqlSchemaPath); err != nil {
+		t.Fatalf("Failed to read SQL schema file: %v", err)
+	} else {
+		actualContent := strings.TrimSpace(string(content))
+		expectedTrimmed := strings.TrimSpace(expectedSQLSchema)
+		if diff := cmp.Diff(expectedTrimmed, actualContent); diff != "" {
+			t.Errorf("SQL schema content mismatch (-expected +actual):\n%s", diff)
 		}
 	}
 
 	// Verify queries.sql
 	sqlQueriesPath := filepath.Join(tmpDir, "ent", "contract", "sqlc", "queries.sql")
-	if content, err := os.ReadFile(sqlQueriesPath); err == nil {
-		queriesContent := string(content)
+	expectedSQLQueries := `-- Generate queries.sql
+-- This file contains SQLC-compatible queries definitions
 
-		expectedQueryStrings := []string{
-			"-- name:",
-			"User",
-		}
+-- User CRUD operations
 
-		for _, expected := range expectedQueryStrings {
-			if !strings.Contains(queriesContent, expected) {
-				t.Errorf("SQL queries file missing expected content: %s", expected)
-			}
+-- name: CreateUser :one
+INSERT INTO "user" (
+  email,
+  name,
+  age,
+  uuid,
+  is_admin,
+  created_at,
+  updated_at
+) VALUES (
+  $1,
+  $2,
+  $3,
+  $4,
+  $5,
+  $6,
+  $7
+) RETURNING id;
+
+-- name: GetUser :one
+SELECT * FROM "user" WHERE id = $1;
+
+-- name: ListUser :many
+SELECT * FROM "user" ORDER BY id;
+
+-- name: UpdateUser :one
+UPDATE "user" SET
+  email = $1,
+  name = $2,
+  age = $3,
+  is_admin = $4,
+  updated_at = $5
+WHERE id = $6
+RETURNING *;
+
+-- name: DeleteUser :exec
+DELETE FROM "user" WHERE id = $1;`
+
+	if content, err := os.ReadFile(sqlQueriesPath); err != nil {
+		t.Fatalf("Failed to read SQL queries file: %v", err)
+	} else {
+		actualContent := strings.TrimSpace(string(content))
+		expectedTrimmed := strings.TrimSpace(expectedSQLQueries)
+		if diff := cmp.Diff(expectedTrimmed, actualContent); diff != "" {
+			t.Errorf("SQL queries content mismatch (-expected +actual):\n%s", diff)
 		}
 	}
 }

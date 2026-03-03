@@ -7,7 +7,10 @@ tool (
 	github.com/sqlc-dev/sqlc/cmd/sqlc
 )
 
-require github.com/google/uuid v1.6.0
+require (
+	github.com/google/go-cmp v0.7.0
+	github.com/google/uuid v1.6.0
+)
 
 require (
 	buf.build/gen/go/bufbuild/bufplugin/protocolbuffers/go v1.36.11-20250718181942-e35f9b667443.1 // indirect
