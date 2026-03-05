@@ -5,12 +5,12 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"os"
 	"path/filepath"
 	"strings"
 
 	internalParser "github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
 func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo) (string, error) {
@@ -22,7 +22,7 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 
 	inputPackageName := node.Name.Name
 	absInputDir, _ := filepath.Abs(filepath.Dir(inputFilePath))
-	moduleName, workspaceRoot, err := findModuleInfo(absInputDir)
+	moduleName, workspaceRoot, err := util.FindModuleInfo(absInputDir)
 	if err != nil {
 		return "", fmt.Errorf("failed to find module info: %w", err)
 	}
@@ -259,36 +259,4 @@ func toExportedName(name string) string {
 		}
 	}
 	return strings.Join(parts, "")
-}
-
-func findModuleInfo(startDir string) (string, string, error) {
-	dir := startDir
-
-	for {
-		goModPath := filepath.Join(dir, "go.mod")
-		if _, err := os.Stat(goModPath); err == nil {
-			content, err := os.ReadFile(goModPath)
-			if err != nil {
-				return "", "", err
-			}
-
-			lines := strings.Split(string(content), "\n")
-			for _, line := range lines {
-				line = strings.TrimSpace(line)
-				if strings.HasPrefix(line, "module ") {
-					moduleName := strings.TrimSpace(strings.TrimPrefix(line, "module"))
-					return moduleName, dir, nil
-				}
-			}
-			return "", "", fmt.Errorf("module declaration not found in go.mod")
-		}
-
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-
-	return "", "", fmt.Errorf("go.mod not found")
 }

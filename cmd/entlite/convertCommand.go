@@ -46,6 +46,8 @@ func convertCommand(args []string) {
 		os.Exit(1)
 	}
 
+	// TODO use logic from internal/generator/sqlcWrap/generator.go
+	// better to have one function in internal/util/ folder
 	imports := []string{
 		fmt.Sprintf(`"%s"`, dbImport),
 		fmt.Sprintf(`"%s"`, pbImport),
