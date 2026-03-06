@@ -32,7 +32,7 @@ func Generate(entities []schema.Entity, imports []string) (string, error) {
 	content.WriteString("\t\"time\"\n")
 	content.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
 	for _, importPath := range imports {
-		content.WriteString(fmt.Sprintf("\t%s\n", importPath))
+		content.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
 	}
 	content.WriteString(")\n\n")
 
