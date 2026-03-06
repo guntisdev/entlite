@@ -28,8 +28,6 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 	entity := schema.Entity{
 		Name: discovered.Name,
 	}
-	// TODO remove
-	fmt.Printf("parseFromFile %s\n", discovered.Name)
 
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, discovered.Path, nil, parser.ParseComments)

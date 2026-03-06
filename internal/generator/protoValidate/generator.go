@@ -25,7 +25,6 @@ func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (s
 		content.WriteString("\t\"fmt\"\n")
 	}
 
-	// TODO this brings all imports, need only validate imports
 	for _, importInfo := range imports {
 		content.WriteString(fmt.Sprintf("\t\"%s\"\n", importInfo.Path))
 	}

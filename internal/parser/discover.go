@@ -43,11 +43,6 @@ func DiscoverEntities(entityDir string) ([]DiscoveredEntity, error) {
 		for _, entity := range entities {
 			entityList = append(entityList, DiscoveredEntity{entity, file})
 		}
-
-		// TODO remove
-		for _, entityName := range entities {
-			fmt.Printf("Found entities %s\n", entityName)
-		}
 	}
 
 	if len(entityList) == 0 {
