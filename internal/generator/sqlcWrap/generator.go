@@ -5,14 +5,15 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"os"
 	"path/filepath"
 	"strings"
 
+	internalParser "github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
-func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]string) (string, error) {
+func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo) (string, error) {
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, inputFilePath, nil, parser.ParseComments)
 	if err != nil {
@@ -21,13 +22,10 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 
 	inputPackageName := node.Name.Name
 	absInputDir, _ := filepath.Abs(filepath.Dir(inputFilePath))
-	moduleName, workspaceRoot, err := findModuleInfo(absInputDir)
+	importPath, err := util.PathToImport(inputFilePath)
 	if err != nil {
-		return "", fmt.Errorf("failed to find module info: %w", err)
+		return "", fmt.Errorf("failed to convert path to import: %w", err)
 	}
-	relPath, _ := filepath.Rel(workspaceRoot, absInputDir)
-	importPath := filepath.Join(moduleName, relPath)
-	importPath = filepath.ToSlash(importPath)
 
 	entityMap := make(map[string]schema.Entity)
 	for _, entity := range parsedEntities {
@@ -110,8 +108,8 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	}
 	// we need these imports only for overriden queries
 	if filepath.Base(inputFilePath) == "queries.sql.go" {
-		for _, importPath := range entityImports {
-			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
+		for _, importInfo := range entityImports {
+			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importInfo.Path))
 		}
 	}
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
@@ -258,36 +256,4 @@ func toExportedName(name string) string {
 		}
 	}
 	return strings.Join(parts, "")
-}
-
-func findModuleInfo(startDir string) (string, string, error) {
-	dir := startDir
-
-	for {
-		goModPath := filepath.Join(dir, "go.mod")
-		if _, err := os.Stat(goModPath); err == nil {
-			content, err := os.ReadFile(goModPath)
-			if err != nil {
-				return "", "", err
-			}
-
-			lines := strings.Split(string(content), "\n")
-			for _, line := range lines {
-				line = strings.TrimSpace(line)
-				if strings.HasPrefix(line, "module ") {
-					moduleName := strings.TrimSpace(strings.TrimPrefix(line, "module"))
-					return moduleName, dir, nil
-				}
-			}
-			return "", "", fmt.Errorf("module declaration not found in go.mod")
-		}
-
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-
-	return "", "", fmt.Errorf("go.mod not found")
 }

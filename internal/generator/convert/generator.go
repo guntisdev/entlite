@@ -25,14 +25,10 @@ func Generate(entities []schema.Entity, imports []string) (string, error) {
 	content.WriteString("package convert\n\n")
 
 	content.WriteString("import (\n")
-	// TODO find this import dynamically
-	content.WriteString("\t\"database/sql\"\n")
-
-	// TODO check from DefaultFunc actual imports
-	content.WriteString("\t\"time\"\n")
-	content.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
-	for _, importPath := range imports {
-		content.WriteString(fmt.Sprintf("\t%s\n", importPath))
+	timeAndSqlImports := []string{"database/sql", "time", "google.golang.org/protobuf/types/known/timestamppb"}
+	allImports := append(timeAndSqlImports, imports...)
+	for _, importPath := range allImports {
+		content.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
 	}
 	content.WriteString(")\n\n")
 

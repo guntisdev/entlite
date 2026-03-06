@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	testutil "github.com/guntisdev/entlite/internal/util"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
 func TestConvertCommand(t *testing.T) {
@@ -321,7 +321,7 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 `
 
 	// Compare using Diff
-	if d := testutil.Diff(expectedContent, string(actualContent)); d != "" {
+	if d := util.Diff(expectedContent, string(actualContent)); d != "" {
 		t.Errorf("Convert.go content mismatch (-expected +actual):\n%s", d)
 	}
 }
