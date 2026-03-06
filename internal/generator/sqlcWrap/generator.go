@@ -22,13 +22,10 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 
 	inputPackageName := node.Name.Name
 	absInputDir, _ := filepath.Abs(filepath.Dir(inputFilePath))
-	moduleName, workspaceRoot, err := util.FindModuleInfo(absInputDir)
+	importPath, err := util.PathToImport(inputFilePath)
 	if err != nil {
-		return "", fmt.Errorf("failed to find module info: %w", err)
+		return "", fmt.Errorf("failed to convert path to import: %w", err)
 	}
-	relPath, _ := filepath.Rel(workspaceRoot, absInputDir)
-	importPath := filepath.Join(moduleName, relPath)
-	importPath = filepath.ToSlash(importPath)
 
 	entityMap := make(map[string]schema.Entity)
 	for _, entity := range parsedEntities {
