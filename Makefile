@@ -10,5 +10,8 @@ build:
 test:
 	go test -v ./...
 
+integration:
+	go test -v -tags=integration ./examples/...
+
 bin:
 	go build -o entlite ./cmd/entlite/main.go
