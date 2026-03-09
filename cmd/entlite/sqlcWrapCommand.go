@@ -54,8 +54,6 @@ func sqlcWrapCommand(args []string) {
 
 		fileName := file.Name()
 		if strings.HasSuffix(fileName, ".go") {
-			fmt.Printf("Processing: %s\n", fileName)
-
 			inputFilePath := filepath.Join(inputDir, fileName)
 			outputFilePath := filepath.Join(outputDir, fileName)
 
@@ -70,8 +68,6 @@ func sqlcWrapCommand(args []string) {
 				fmt.Fprintf(os.Stderr, "Error writing output file %s: %v\n", outputFilePath, err)
 				os.Exit(1)
 			}
-
-			fmt.Printf("Created: %s\n", outputFilePath)
 		}
 	}
 }
