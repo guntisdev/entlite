@@ -35,7 +35,7 @@ func TestConvertCommand(t *testing.T) {
 
 	goModContent := `module github.com/guntisdev/entlite/examples/01-basic-entity
 
-go 1.23.0
+go 1.26.0
 `
 	goModPath := filepath.Join(tmpDir, "go.mod")
 	if err := os.WriteFile(goModPath, []byte(goModContent), 0644); err != nil {
