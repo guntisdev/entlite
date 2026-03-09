@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"time"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/logic"
+	"time"
 	internal "github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/db/internal"
 )
 

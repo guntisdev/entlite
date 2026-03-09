@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	internalParser "github.com/guntisdev/entlite/internal/parser"
@@ -108,7 +109,14 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	}
 	// we need these imports only for overriden queries
 	if filepath.Base(inputFilePath) == "queries.sql.go" {
-		for _, importInfo := range entityImports {
+		// Sort keys for consistent output
+		keys := make([]string, 0, len(entityImports))
+		for key := range entityImports {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			importInfo := entityImports[key]
 			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importInfo.Path))
 		}
 	}
