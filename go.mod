@@ -1,6 +1,6 @@
 module github.com/guntisdev/entlite
 
-go 1.25.6
+go 1.26
 
 tool (
 	github.com/bufbuild/buf/cmd/buf
@@ -8,8 +8,10 @@ tool (
 )
 
 require (
+	connectrpc.com/connect v1.19.1
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
+	google.golang.org/protobuf v1.36.11
 )
 
 require (
@@ -28,7 +30,6 @@ require (
 	buf.build/go/spdx v0.2.0 // indirect
 	buf.build/go/standard v0.1.0 // indirect
 	cel.dev/expr v0.25.1 // indirect
-	connectrpc.com/connect v1.19.1 // indirect
 	connectrpc.com/otelconnect v0.9.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect
@@ -130,7 +131,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20260209200024-4cfbd4190f57 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260209200024-4cfbd4190f57 // indirect
 	google.golang.org/grpc v1.79.1 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.66.3 // indirect

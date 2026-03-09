@@ -96,7 +96,7 @@ func testExample(t *testing.T, exampleDir string) {
 
 	// Create a go.mod file with replace directive pointing to local entlite
 	goModContent := "module github.com/guntisdev/entlite/examples/" + exampleDir + "\n\n" +
-		"go 1.25.6\n\n" +
+		"go 1.26.1\n\n" +
 		"replace github.com/guntisdev/entlite => " + moduleRoot + "\n"
 	goModPath := filepath.Join(dstDir, "go.mod")
 	if err := os.WriteFile(goModPath, []byte(goModContent), 0644); err != nil {
