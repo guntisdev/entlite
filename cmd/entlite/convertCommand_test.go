@@ -9,11 +9,9 @@ import (
 )
 
 func TestConvertCommand(t *testing.T) {
-	t.Skip("TODO: Fix test - will return to it later")
 
 	tmpDir := t.TempDir()
 
-	// Create directory structure
 	schemaDir := filepath.Join(tmpDir, "ent", "schema")
 	logicDir := filepath.Join(tmpDir, "ent", "logic")
 	dbDir := filepath.Join(tmpDir, "ent", "gen", "db")
@@ -35,7 +33,6 @@ func TestConvertCommand(t *testing.T) {
 		t.Fatalf("Failed to create pb directory: %v", err)
 	}
 
-	// Create go.mod file
 	goModContent := `module github.com/guntisdev/entlite/examples/01-basic-entity
 
 go 1.23.0
@@ -45,7 +42,6 @@ go 1.23.0
 		t.Fatalf("Failed to write go.mod: %v", err)
 	}
 
-	// Create schema/user.go
 	userSchemaContent := `package ent
 
 import (
@@ -77,15 +73,13 @@ func (User) Fields() []entlite.Field {
 		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
 		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
 	}
-}
-`
+}`
 
 	userSchemaPath := filepath.Join(schemaDir, "user.go")
 	if err := os.WriteFile(userSchemaPath, []byte(userSchemaContent), 0644); err != nil {
 		t.Fatalf("Failed to write user schema: %v", err)
 	}
 
-	// Create logic/logic.go with helper functions
 	logicContent := `package logic
 
 import (
@@ -103,15 +97,13 @@ func StartsWithCapital(s string) bool {
 		return false
 	}
 	return unicode.IsUpper(rune(s[0]))
-}
-`
+}`
 
 	logicPath := filepath.Join(logicDir, "logic.go")
 	if err := os.WriteFile(logicPath, []byte(logicContent), 0644); err != nil {
 		t.Fatalf("Failed to write logic file: %v", err)
 	}
 
-	// Create dummy db/db.go file - just needs to exist for the import path check
 	dbContent := `package db
 
 import (
@@ -128,14 +120,12 @@ type User struct {
 	IsAdmin   bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
-}
-`
+}`
 	dbPath := filepath.Join(dbDir, "db.go")
 	if err := os.WriteFile(dbPath, []byte(dbContent), 0644); err != nil {
 		t.Fatalf("Failed to write db file: %v", err)
 	}
 
-	// Create dummy pb/pb.go file - just needs to exist for the import path check
 	pbContent := `package pb
 
 import (
@@ -151,8 +141,7 @@ type User struct {
 	IsAdmin   bool
 	CreatedAt *timestamppb.Timestamp
 	UpdatedAt *timestamppb.Timestamp
-}
-`
+}`
 	pbPath := filepath.Join(pbDir, "pb.go")
 	if err := os.WriteFile(pbPath, []byte(pbContent), 0644); err != nil {
 		t.Fatalf("Failed to write pb file: %v", err)
@@ -163,27 +152,24 @@ type User struct {
 	if err != nil {
 		t.Fatalf("Failed to get current directory: %v", err)
 	}
+	// run convert command from t.TempDir()/ent/
 	if err := os.Chdir(filepath.Join(tmpDir, "ent")); err != nil {
 		t.Fatalf("Failed to change directory: %v", err)
 	}
 	defer os.Chdir(originalDir)
 
-	// Run convertCommand
 	convertCommand([]string{dbDir, pbDir})
 
-	// Check that convert.go was created
 	convertPath := filepath.Join(tmpDir, "ent", "gen", "convert", "convert.go")
 	if _, err := os.Stat(convertPath); os.IsNotExist(err) {
 		t.Fatalf("Expected convert.go was not created at %s", convertPath)
 	}
 
-	// Read the generated content
 	actualContent, err := os.ReadFile(convertPath)
 	if err != nil {
 		t.Fatalf("Failed to read generated convert.go: %v", err)
 	}
 
-	// Expected content based on examples/01-basic-entity/ent/gen/convert/convert.go
 	expectedContent := `// generate convertion between db and pb types
 package convert
 
@@ -317,10 +303,8 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 		Time:  t.AsTime(),
 		Valid: true,
 	}
-}
-`
+}`
 
-	// Compare using Diff
 	if d := util.Diff(expectedContent, string(actualContent)); d != "" {
 		t.Errorf("Convert.go content mismatch (-expected +actual):\n%s", d)
 	}
