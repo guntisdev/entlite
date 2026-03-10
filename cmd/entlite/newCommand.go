@@ -63,7 +63,7 @@ func createEntityFile(entityName string, dir string) error {
 	fileName := strings.ToLower(entityName) + ".go"
 	filePath := filepath.Join(dir, fileName)
 
-	content := fmt.Sprintf(`package ent
+	content := fmt.Sprintf(`package schema
 
 import "github.com/guntisdev/entlite/pkg/entlite"
 import "github.com/guntisdev/entlite/pkg/entlite/field"
@@ -104,6 +104,7 @@ package schema
 func createGenFile(dir string) error {
 	content := `//go:generate go generate ./schema
 //go:generate go tool sqlc generate
+//go:generate go tool buf dep update
 //go:generate go tool buf generate
 //go:generate go run github.com/guntisdev/entlite/cmd/entlite sqlc-wrap ./gen/db/internal ./gen/db
 //go:generate go run github.com/guntisdev/entlite/cmd/entlite proto-validate ./gen/pb
@@ -143,6 +144,8 @@ lint:
 breaking:
   use:
     - FILE
+deps:
+  - buf.build/bufbuild/protovalidate
 `
 
 	path := filepath.Join(dir, "buf.yaml")
