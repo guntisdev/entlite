@@ -2,13 +2,13 @@
 Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
 ## TODO
-* Generate convert proto to db
-* Add Validation() for field
-* Add Validation func to sqlc output
 * Add to proto required field check `[(buf.validate.field).required = true];` 
-* Add Validate() method to proto export struct
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
-* Fix getting import path and reuse functionality (currently some copy paste code)
+* improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
+* handle sql dialect passing to newCommand
+* read sql dialect from sqlc.yaml when generate.go - use for correct convertion/validation/wrapping
+* check each field if it added in further generation (for example Comment)
+* add more field types: int64? float32?
 
 ## Folder structure
 ```

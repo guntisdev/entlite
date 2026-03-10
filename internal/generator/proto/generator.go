@@ -56,12 +56,15 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 	if needsEmptyImportForEntities(serviceEntities) {
 		imports = append(imports, "google/protobuf/empty.proto")
 	}
+	imports = append(imports, "buf/validate/validate.proto")
 	for _, imp := range imports {
 		content.WriteString(fmt.Sprintf("import \"%s\";\n", imp))
 	}
 	if len(imports) > 0 {
 		content.WriteString("\n")
 	}
+
+	var requiredStr = "[(buf.validate.field).required = true]"
 
 	for i, entity := range messageEntities {
 		if i > 0 {
@@ -77,10 +80,13 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 			}
 			protoType := getProtoType(field.Type)
 			var optional string
+			var required string
 			if field.Optional {
 				optional = "optional "
+			} else {
+				required = fmt.Sprintf(" %s", requiredStr)
 			}
-			content.WriteString(fmt.Sprintf("  %s%s %s = %d;\n", optional, protoType, field.Name, field.ProtoField))
+			content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
 		}
 
 		content.WriteString("}")
@@ -126,6 +132,7 @@ func generateServiceProto(entity schema.Entity) string {
 
 func generateServiceMessages(entity schema.Entity) string {
 	var content strings.Builder
+	var requiredStr = "[(buf.validate.field).required = true]"
 
 	for i, method := range entity.GetMethods() {
 		if i > 0 {
@@ -144,15 +151,18 @@ func generateServiceMessages(entity schema.Entity) string {
 				}
 				protoType := getProtoType(field.Type)
 				var optional string
+				var required string
 				if field.Optional {
 					optional = "optional "
+				} else {
+					required = fmt.Sprintf(" %s", requiredStr)
 				}
-				content.WriteString(fmt.Sprintf("  %s%s %s = %d;\n", optional, protoType, field.Name, field.ProtoField))
+				content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
 			}
 			content.WriteString("}")
 		case schema.MethodGet:
 			content.WriteString(fmt.Sprintf("message Get%sRequest {\n", entity.Name))
-			content.WriteString(fmt.Sprintf("  %s;\n", getIdFieldAsStr(entity.Fields)))
+			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
 		case schema.MethodUpdate:
 			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
@@ -167,20 +177,23 @@ func generateServiceMessages(entity schema.Entity) string {
 				}
 				protoType := getProtoType(field.Type)
 				var optional string
+				var required string
 				if field.Optional {
 					optional = "optional "
+				} else {
+					required = fmt.Sprintf(" %s", requiredStr)
 				}
-				content.WriteString(fmt.Sprintf("  %s%s %s = %d;\n", optional, protoType, field.Name, field.ProtoField))
+				content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
 			}
 			content.WriteString("}")
 		case schema.MethodDelete:
 			content.WriteString(fmt.Sprintf("message Delete%sRequest {\n", entity.Name))
-			content.WriteString(fmt.Sprintf("  %s;\n", getIdFieldAsStr(entity.Fields)))
+			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
 		case schema.MethodList:
 			content.WriteString(fmt.Sprintf("message List%sRequest {\n", entity.Name))
-			content.WriteString("  int32 limit = 1;\n")
-			content.WriteString("  int32 offset = 2;\n")
+			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
+			content.WriteString(fmt.Sprintf("  int32 offset = 2 %s;\n", requiredStr))
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message List%sResponse {\n", entity.Name))

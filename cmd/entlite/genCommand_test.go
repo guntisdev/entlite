@@ -126,44 +126,45 @@ option go_package = "./pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
+import "buf/validate/validate.proto";
 
 // User represents as user entity
 message User {
-  int32 id = 1;
-  string email = 2;
+  int32 id = 1 [(buf.validate.field).required = true];
+  string email = 2 [(buf.validate.field).required = true];
   // First name and surname
-  string name = 3;
+  string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
-  string uuid = 8;
-  bool is_admin = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
+  string uuid = 8 [(buf.validate.field).required = true];
+  bool is_admin = 5 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp created_at = 6 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
 }
 
 message CreateUserRequest {
-  string email = 2;
+  string email = 2 [(buf.validate.field).required = true];
   // First name and surname
-  string name = 3;
+  string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
-  bool is_admin = 5;
+  bool is_admin = 5 [(buf.validate.field).required = true];
 }
 message GetUserRequest {
-  int32 id = 1;
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int32 id = 1;
-  string email = 2;
+  int32 id = 1 [(buf.validate.field).required = true];
+  string email = 2 [(buf.validate.field).required = true];
   // First name and surname
-  string name = 3;
+  string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
-  bool is_admin = 5;
+  bool is_admin = 5 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {
-  int32 id = 1;
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message ListUserRequest {
-  int32 limit = 1;
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true];
+  int32 offset = 2 [(buf.validate.field).required = true];
 }
 
 message ListUserResponse {
