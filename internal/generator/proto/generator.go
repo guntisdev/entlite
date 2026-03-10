@@ -64,7 +64,7 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 		content.WriteString("\n")
 	}
 
-	var requiredStr = "[(buf.validate.field).required = true];"
+	var requiredStr = "[(buf.validate.field).required = true]"
 
 	for i, entity := range messageEntities {
 		if i > 0 {
@@ -132,7 +132,7 @@ func generateServiceProto(entity schema.Entity) string {
 
 func generateServiceMessages(entity schema.Entity) string {
 	var content strings.Builder
-	var requiredStr = "[(buf.validate.field).required = true];"
+	var requiredStr = "[(buf.validate.field).required = true]"
 
 	for i, method := range entity.GetMethods() {
 		if i > 0 {
