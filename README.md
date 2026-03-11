@@ -7,8 +7,9 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
 * handle sql dialect passing to newCommand
 * read sql dialect from sqlc.yaml when generate.go - use for correct convertion/validation/wrapping
+* fix sqlite convertion types (integer=int64, boolean=int64)
 * check each field if it added in further generation (for example Comment)
-* add more field types: int64? float32?
+* add more field types: int64? float32? float64?
 
 ## Folder structure
 ```
