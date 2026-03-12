@@ -50,8 +50,6 @@ func genCommand(args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("sql: %s\n", dialect)
-
 	// SQLC
 	sqlcGenerator := sqlc.NewGenerator(dialect)
 	if err := sqlcGenerator.Generate(parsedEntities, sqlcDir); err != nil {

@@ -55,7 +55,13 @@ func convertCommand(args []string) {
 		os.Exit(1)
 	}
 
-	content, err := convert.Generate(parsedEntities, imports)
+	dialect, err := util.GetSqlDialectFromSqlcYaml("./sqlc.yaml")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
+		os.Exit(1)
+	}
+
+	content, err := convert.Generate(parsedEntities, imports, dialect)
 	if err := writeFile(convertPath, content); err != nil {
 		fmt.Fprintf(os.Stderr, "Error failed write to file: %s %v\n", convertPath, err)
 		os.Exit(1)
