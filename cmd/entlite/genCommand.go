@@ -7,6 +7,7 @@ import (
 
 	"github.com/guntisdev/entlite/internal/generator/proto"
 	"github.com/guntisdev/entlite/internal/generator/sqlc"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
 func genCommand(args []string) {
@@ -42,8 +43,15 @@ func genCommand(args []string) {
 		os.Exit(1)
 	}
 
-	// TODO get dialect from arguments (if not choose default one)
-	sqlcGenerator := sqlc.NewGenerator(sqlc.PostgreSQL)
+	sqlcYamlPath := filepath.Join(filepath.Dir(dir), "sqlc.yaml")
+	dialect, err := util.GetSqlDialectFromSqlcYaml(sqlcYamlPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
+		os.Exit(1)
+	}
+
+	// SQLC
+	sqlcGenerator := sqlc.NewGenerator(dialect)
 	if err := sqlcGenerator.Generate(parsedEntities, sqlcDir); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed generating sqlc: %v\n", err)
 		os.Exit(1)

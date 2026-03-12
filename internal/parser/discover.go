@@ -29,8 +29,6 @@ func DiscoverEntities(entityDir string) ([]DiscoveredEntity, error) {
 		return nil, fmt.Errorf("failed to find go files in %s: %w", entityDir, err)
 	}
 
-	fmt.Printf("Found %d files\n", len(matches))
-
 	var entityList []DiscoveredEntity
 
 	for _, file := range matches {

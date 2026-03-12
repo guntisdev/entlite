@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func Generate(entities []schema.Entity, imports []string) (string, error) {
+func Generate(entities []schema.Entity, imports []string, sqlDialect sqlc.SQLDialect) (string, error) {
 	var messageEntities []schema.Entity
 	for _, entity := range entities {
 		if entity.HasMessage() {
