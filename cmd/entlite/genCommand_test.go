@@ -89,6 +89,23 @@ func StartsWithCapital(s string) bool {
 		t.Fatalf("Failed to write logic file: %v", err)
 	}
 
+	// Create sqlc.yaml
+	sqlcYamlContent := `version: "2"
+sql:
+  - schema: "contract/sqlc/schema.sql"
+    queries: "contract/sqlc/queries.sql"    
+    engine: "postgresql"
+    gen:
+      go:
+        package: "internal"
+        out: "gen/db/internal"
+        emit_json_tags: true`
+
+	sqlcYamlPath := filepath.Join(tmpDir, "ent", "sqlc.yaml")
+	if err := os.WriteFile(sqlcYamlPath, []byte(sqlcYamlContent), 0644); err != nil {
+		t.Fatalf("Failed to write sqlc.yaml: %v", err)
+	}
+
 	genCommand([]string{schemaDir})
 
 	expectedDirs := []string{
