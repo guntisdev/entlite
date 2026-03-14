@@ -12,6 +12,7 @@ func generateHelperFunctions() string {
 	content.WriteString(timeToproto)
 	content.WriteString(nullableConverters())
 	content.WriteString(nullableTime)
+	content.WriteString(nullableBytes)
 
 	return content.String()
 }
@@ -27,6 +28,7 @@ func nullableConverters() string {
 	fields := []Config{
 		{Type: "Int32", Primitive: "int32"},
 		{Type: "Int64", Primitive: "int64"},
+		{Type: "Float64", Primitive: "float64"},
 		{Type: "String", Primitive: "string"},
 		{Type: "Bool", Primitive: "bool"},
 	}
@@ -85,5 +87,18 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 		Time:  t.AsTime(),
 		Valid: true,
 	}
+}
+`
+
+const nullableBytes = `
+// --- Bytes Converters ---
+func NullBytesToPtr(b []byte) *[]byte {
+    if b == nil { return nil }
+    return &b
+}
+
+func PtrToNullBytes(b *[]byte) []byte {
+    if b == nil { return nil }
+    return *b
 }
 `

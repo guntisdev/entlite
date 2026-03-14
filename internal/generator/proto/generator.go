@@ -268,10 +268,14 @@ func getProtoType(fieldType schema.FieldType) string {
 		return "string"
 	case schema.FieldTypeInt:
 		return "int64"
+	case schema.FieldTypeFloat:
+		return "float64"
 	case schema.FieldTypeBool:
 		return "bool"
 	case schema.FieldTypeTime:
 		return "google.protobuf.Timestamp"
+	case schema.FieldTypeByte:
+		return "bytes"
 	default:
 		return "string"
 	}
