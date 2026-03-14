@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
@@ -214,7 +215,7 @@ func getIdFieldAsStr(fields []schema.Field) string {
 		}
 	}
 
-	return "int32 id = 1"
+	return "int64 id = 1"
 }
 
 func generateServiceMethod(entityName string, method schema.Method) string {
@@ -253,10 +254,8 @@ func needsCommonImports(entities []schema.Entity) bool {
 func needsEmptyImportForEntities(entities []schema.Entity) bool {
 	for _, entity := range entities {
 		methods := entity.GetMethods()
-		for _, method := range methods {
-			if method == schema.MethodDelete {
-				return true
-			}
+		if slices.Contains(methods, schema.MethodDelete) {
+			return true
 		}
 	}
 
@@ -267,8 +266,8 @@ func getProtoType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
 		return "string"
-	case schema.FieldTypeInt32:
-		return "int32"
+	case schema.FieldTypeInt:
+		return "int64"
 	case schema.FieldTypeBool:
 		return "bool"
 	case schema.FieldTypeTime:

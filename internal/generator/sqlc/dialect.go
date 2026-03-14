@@ -30,7 +30,7 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 	switch g.sqlDialect {
 	case PostgreSQL:
 		switch fieldType {
-		case schema.FieldTypeInt32:
+		case schema.FieldTypeInt:
 			return "SERIAL PRIMARY KEY"
 		// case schema.FieldTypeInt64:
 		//	return "BIGSERIAL PRIMARY KEY"
@@ -41,7 +41,7 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 		}
 	case SQLite:
 		switch fieldType {
-		case schema.FieldTypeInt32:
+		case schema.FieldTypeInt:
 			return "INTEGER PRIMARY KEY AUTOINCREMENT"
 		// case schema.FieldTypeInt64:
 		//	return "INTEGER PRIMARY KEY AUTOINCREMENT"
@@ -52,7 +52,7 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 		}
 	case MySQL:
 		switch fieldType {
-		case schema.FieldTypeInt32:
+		case schema.FieldTypeInt:
 			return "INT AUTO_INCREMENT PRIMARY KEY"
 		// case schema.FieldTypeInt64:
 		//	return "BIGINT AUTO_INCREMENT PRIMARY KEY"
@@ -83,7 +83,7 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
 		return "TEXT"
-	case schema.FieldTypeInt32:
+	case schema.FieldTypeInt:
 		return "INTEGER"
 	case schema.FieldTypeBool:
 		return "BOOLEAN"
@@ -98,7 +98,7 @@ func (g *Generator) getSQLiteType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
 		return "TEXT"
-	case schema.FieldTypeInt32:
+	case schema.FieldTypeInt:
 		return "INTEGER"
 	case schema.FieldTypeBool:
 		return "INTEGER" // sqlite uses integer for boolean
@@ -113,7 +113,7 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
 		return "TEXT"
-	case schema.FieldTypeInt32:
+	case schema.FieldTypeInt:
 		return "INTEGER"
 	case schema.FieldTypeBool:
 		return "TINYINT(1)"
@@ -124,7 +124,7 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	}
 }
 
-func (g *Generator) formatDefaultValue(value interface{}, fieldType schema.FieldType) string {
+func (g *Generator) formatDefaultValue(value any, fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeBool:
 		if b, ok := value.(bool); ok {

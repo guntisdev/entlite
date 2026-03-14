@@ -143,8 +143,8 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 							field.Name = strings.Trim(lit.Value, "\"")
 						}
 					}
-				case "Int32":
-					field.Type = schema.FieldTypeInt32
+				case "Int":
+					field.Type = schema.FieldTypeInt
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
 							field.Name = strings.Trim(lit.Value, "\"")
