@@ -150,6 +150,13 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 							field.Name = strings.Trim(lit.Value, "\"")
 						}
 					}
+				case "Float":
+					field.Type = schema.FieldTypeFloat
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Name = strings.Trim(lit.Value, "\"")
+						}
+					}
 				case "Bool":
 					field.Type = schema.FieldTypeBool
 					if len(e.Args) > 0 {
@@ -159,6 +166,13 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 					}
 				case "Time":
 					field.Type = schema.FieldTypeTime
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Name = strings.Trim(lit.Value, "\"")
+						}
+					}
+				case "Byte":
+					field.Type = schema.FieldTypeByte
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
 							field.Name = strings.Trim(lit.Value, "\"")

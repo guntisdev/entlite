@@ -62,8 +62,10 @@ type FieldType string
 const (
 	FieldTypeString FieldType = "string"
 	FieldTypeInt    FieldType = "int64"
+	FieldTypeFloat  FieldType = "float64"
 	FieldTypeBool   FieldType = "bool"
 	FieldTypeTime   FieldType = "time"
+	FieldTypeByte   FieldType = "[]byte"
 )
 
 type Annotation struct {
