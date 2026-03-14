@@ -91,11 +91,20 @@ func addValidationChecks(entity schema.Entity, sqlQuery string, returnType strin
 	switch returnType {
 	case "", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
 		zeroValue = "0"
+	case "float32", "float64":
+		zeroValue = "0.0"
+	case "bool":
+		zeroValue = "false"
 	case "string":
 		zeroValue = "\"\""
 	default:
-		// Assume it's a struct type
-		zeroValue = returnType + "{}"
+		// Handle pointers, slices, and maps
+		if strings.HasPrefix(returnType, "*") || strings.HasPrefix(returnType, "[]") || strings.HasPrefix(returnType, "map[") {
+			zeroValue = "nil"
+		} else {
+			// Assume it's a struct type
+			zeroValue = returnType + "{}"
+		}
 	}
 
 	for _, field := range entity.Fields {

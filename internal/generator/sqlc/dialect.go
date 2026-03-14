@@ -85,10 +85,14 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 		return "TEXT"
 	case schema.FieldTypeInt:
 		return "BIGINT"
+	case schema.FieldTypeFloat:
+		return "DOUBLE PRECISION"
 	case schema.FieldTypeBool:
 		return "BOOLEAN"
 	case schema.FieldTypeTime:
 		return "TIMESTAMPTZ"
+	case schema.FieldTypeByte:
+		return "BYTEA"
 	default:
 		return "TEXT"
 	}
@@ -100,10 +104,14 @@ func (g *Generator) getSQLiteType(fieldType schema.FieldType) string {
 		return "TEXT"
 	case schema.FieldTypeInt:
 		return "INTEGER"
+	case schema.FieldTypeFloat:
+		return "REAL"
 	case schema.FieldTypeBool:
 		return "INTEGER" // sqlite uses integer for boolean
 	case schema.FieldTypeTime:
 		return "DATETIME"
+	case schema.FieldTypeByte:
+		return "BLOB"
 	default:
 		return "TEXT"
 	}
@@ -115,10 +123,14 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 		return "TEXT"
 	case schema.FieldTypeInt:
 		return "BIGINT"
+	case schema.FieldTypeFloat:
+		return "DOUBLE"
 	case schema.FieldTypeBool:
 		return "TINYINT(1)"
 	case schema.FieldTypeTime:
 		return "TIMESTAMP"
+	case schema.FieldTypeByte:
+		return "BLOB"
 	default:
 		return "TEXT"
 	}
@@ -133,7 +145,6 @@ func (g *Generator) formatDefaultValue(value any, fieldType schema.FieldType) st
 			}
 			return "false"
 		}
-		// case schema.FieldTypeTime:
 	}
 
 	return fmt.Sprintf("%v", value)
