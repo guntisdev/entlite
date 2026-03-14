@@ -213,10 +213,10 @@ service UserService {
 
 -- user table
 CREATE TABLE "user"(
-  id SERIAL PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
-  age INTEGER,
+  age BIGINT,
   uuid TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,

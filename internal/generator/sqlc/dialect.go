@@ -84,7 +84,7 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 	case schema.FieldTypeString:
 		return "TEXT"
 	case schema.FieldTypeInt:
-		return "BIGSERIAl"
+		return "BIGINT"
 	case schema.FieldTypeBool:
 		return "BOOLEAN"
 	case schema.FieldTypeTime:
