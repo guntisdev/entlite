@@ -2,6 +2,8 @@ package field
 
 import "time"
 
+// TODO implement Byte field, and then all int/float types like uint8, int32 etc
+
 // --------------------------------- string ---------------------------------
 type StringFieldBuilder interface {
 	Unique() StringFieldBuilder
@@ -243,6 +245,77 @@ func (f *IntField) Optional() IntFieldBuilder {
 }
 
 func (f *IntField) Validate(fn func(int64) bool) IntFieldBuilder {
+	f.validate = fn
+	return f
+}
+
+// --------------------------------- float ---------------------------------
+type FloatFieldBuilder interface {
+	Default(float64) FloatFieldBuilder
+	ProtoField(int) FloatFieldBuilder
+	Comment(string) FloatFieldBuilder
+	Optional() FloatFieldBuilder
+	Validate(func(float64) bool) FloatFieldBuilder
+
+	Field()
+}
+
+type FloatField struct {
+	name       string
+	defaultVal *float64
+	protoField *int
+	comment    *string
+	optional   bool
+	validate   func(float64) bool
+}
+
+func (*FloatField) Field() {}
+
+func Float(name string) FloatFieldBuilder {
+	return &FloatField{name: name}
+}
+
+func (f *FloatField) GetDefault() *float64 {
+	return f.defaultVal
+}
+
+func (f *FloatField) GetProtoField() *int {
+	return f.protoField
+}
+
+func (f *FloatField) GetComment() *string {
+	return f.comment
+}
+
+func (f *FloatField) GetOptional() bool {
+	return f.optional
+}
+
+func (f *FloatField) GetValidate() func(float64) bool {
+	return f.validate
+}
+
+func (f *FloatField) Default(value float64) FloatFieldBuilder {
+	f.defaultVal = &value
+	return f
+}
+
+func (f *FloatField) ProtoField(num int) FloatFieldBuilder {
+	f.protoField = &num
+	return f
+}
+
+func (f *FloatField) Comment(text string) FloatFieldBuilder {
+	f.comment = &text
+	return f
+}
+
+func (f *FloatField) Optional() FloatFieldBuilder {
+	f.optional = true
+	return f
+}
+
+func (f *FloatField) Validate(fn func(float64) bool) FloatFieldBuilder {
 	f.validate = fn
 	return f
 }
