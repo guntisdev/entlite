@@ -117,10 +117,14 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeInt:
 			return fmt.Sprintf("NullInt64ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeFloat:
+			return fmt.Sprintf("NullFloat64ToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeBool:
 			return fmt.Sprintf("NullBoolToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeTime:
 			return fmt.Sprintf("NullTimeToProto(%s)", dbFieldRef)
+		case schema.FieldTypeByte:
+			return fmt.Sprintf("NullBytesToPtr(%s)", dbFieldRef)
 		default:
 			return dbFieldRef
 		}
@@ -131,10 +135,14 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 		return dbFieldRef
 	case schema.FieldTypeInt:
 		return dbFieldRef
+	case schema.FieldTypeFloat:
+		return dbFieldRef
 	case schema.FieldTypeBool:
 		return dbFieldRef
 	case schema.FieldTypeTime:
 		return fmt.Sprintf("TimeToProto(%s)", dbFieldRef)
+	case schema.FieldTypeByte:
+		return dbFieldRef
 	default:
 		return dbFieldRef
 	}
@@ -149,10 +157,14 @@ func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string) 
 			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
 		case schema.FieldTypeInt:
 			return fmt.Sprintf("PtrToNullInt64(%s)", pbFieldRef)
+		case schema.FieldTypeFloat:
+			return fmt.Sprintf("PtrToNullFloat64(%s)", pbFieldRef)
 		case schema.FieldTypeBool:
 			return fmt.Sprintf("PtrToNullBool(%s)", pbFieldRef)
 		case schema.FieldTypeTime:
 			return fmt.Sprintf("ProtoToNullTime(%s)", pbFieldRef)
+		case schema.FieldTypeByte:
+			return fmt.Sprintf("PtrToNullBytes(%s)", pbFieldRef)
 		default:
 			return pbFieldRef
 		}
@@ -163,10 +175,14 @@ func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string) 
 		return pbFieldRef
 	case schema.FieldTypeInt:
 		return pbFieldRef
+	case schema.FieldTypeFloat:
+		return pbFieldRef
 	case schema.FieldTypeBool:
 		return pbFieldRef
 	case schema.FieldTypeTime:
 		return fmt.Sprintf("ProtoToTime(%s)", pbFieldRef)
+	case schema.FieldTypeByte:
+		return pbFieldRef
 	default:
 		return pbFieldRef
 	}
