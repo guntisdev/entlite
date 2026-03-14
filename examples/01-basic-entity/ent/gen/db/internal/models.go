@@ -10,10 +10,10 @@ import (
 )
 
 type User struct {
-	ID        int32         `json:"id"`
+	ID        int64         `json:"id"`
 	Email     string        `json:"email"`
 	Name      string        `json:"name"`
-	Age       sql.NullInt32 `json:"age"`
+	Age       sql.NullInt64 `json:"age"`
 	Uuid      string        `json:"uuid"`
 	IsAdmin   bool          `json:"is_admin"`
 	CreatedAt time.Time     `json:"created_at"`

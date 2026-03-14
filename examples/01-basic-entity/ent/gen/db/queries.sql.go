@@ -12,11 +12,11 @@ import (
 type CreateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
-	Age sql.NullInt32 `json:"age"`
+	Age sql.NullInt64 `json:"age"`
 	IsAdmin bool `json:"is_admin"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
 	if !logic.StartsWithCapital(arg.Name) {
 		return 0, fmt.Errorf("Failed create: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
@@ -35,9 +35,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
-	Age sql.NullInt32 `json:"age"`
+	Age sql.NullInt64 `json:"age"`
 	IsAdmin bool `json:"is_admin"`
-	ID int32 `json:"id"`
+	ID int64 `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

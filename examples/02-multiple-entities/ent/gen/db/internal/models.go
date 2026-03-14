@@ -5,14 +5,14 @@
 package internal
 
 type Post struct {
-	ID        int32  `json:"id"`
+	ID        int64  `json:"id"`
 	Title     string `json:"title"`
 	Content   string `json:"content"`
 	Published bool   `json:"published"`
 }
 
 type User struct {
-	ID    int32  `json:"id"`
+	ID    int64  `json:"id"`
 	Email string `json:"email"`
 	Name  string `json:"name"`
 }

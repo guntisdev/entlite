@@ -36,7 +36,7 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 
 		idField := schema.Field{
 			Name:       "id",
-			Type:       schema.FieldTypeInt32,
+			Type:       schema.FieldTypeInt,
 			ProtoField: idNumber,
 			Unique:     true,
 		}

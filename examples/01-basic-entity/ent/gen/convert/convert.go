@@ -21,7 +21,7 @@ func UserDBToProto(db *db.User) *pb.User {
 		Id: db.ID,
 		Email: db.Email,
 		Name: db.Name,
-		Age: NullInt32ToPtr(db.Age),
+		Age: NullInt64ToPtr(db.Age),
 		Uuid: db.Uuid,
 		IsAdmin: db.IsAdmin,
 		CreatedAt: TimeToProto(db.CreatedAt),
@@ -39,7 +39,7 @@ func UserProtoToDB(pb *pb.User) *db.User {
 		ID: pb.Id,
 		Email: pb.Email,
 		Name: pb.Name,
-		Age: PtrToNullInt32(pb.Age),
+		Age: PtrToNullInt64(pb.Age),
 		Uuid: pb.Uuid,
 		IsAdmin: pb.IsAdmin,
 		CreatedAt: ProtoToTime(pb.CreatedAt),
@@ -87,6 +87,19 @@ func PtrToNullInt32(i *int32) sql.NullInt32 {
 		return sql.NullInt32{Valid: false}
 	}
 	return sql.NullInt32{ Int32: *i, Valid: true }
+}
+
+// --- Int64 Converters ---
+func NullInt64ToPtr(n sql.NullInt64) *int64 {
+	if !n.Valid { return nil }
+	return &n.Int64
+}
+
+func PtrToNullInt64(i *int64) sql.NullInt64 {
+	if i == nil {
+		return sql.NullInt64{Valid: false}
+	}
+	return sql.NullInt64{ Int64: *i, Valid: true }
 }
 
 // --- String Converters ---

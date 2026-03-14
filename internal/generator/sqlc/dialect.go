@@ -30,10 +30,10 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 	switch g.sqlDialect {
 	case PostgreSQL:
 		switch fieldType {
-		case schema.FieldTypeInt32:
-			return "SERIAL PRIMARY KEY"
-		// case schema.FieldTypeInt64:
-		//	return "BIGSERIAL PRIMARY KEY"
+		// case schema.FieldTypeInt32:
+		// 	return "SERIAL PRIMARY KEY"
+		case schema.FieldTypeInt:
+			return "BIGSERIAL PRIMARY KEY"
 		case schema.FieldTypeString:
 			return "TEXT PRIMARY KEY"
 		default:
@@ -41,10 +41,10 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 		}
 	case SQLite:
 		switch fieldType {
-		case schema.FieldTypeInt32:
+		// case schema.FieldTypeInt32:
+		// 	return "INTEGER PRIMARY KEY AUTOINCREMENT"
+		case schema.FieldTypeInt:
 			return "INTEGER PRIMARY KEY AUTOINCREMENT"
-		// case schema.FieldTypeInt64:
-		//	return "INTEGER PRIMARY KEY AUTOINCREMENT"
 		case schema.FieldTypeString:
 			return "TEXT PRIMARY KEY"
 		default:
@@ -52,10 +52,10 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 		}
 	case MySQL:
 		switch fieldType {
-		case schema.FieldTypeInt32:
-			return "INT AUTO_INCREMENT PRIMARY KEY"
-		// case schema.FieldTypeInt64:
-		//	return "BIGINT AUTO_INCREMENT PRIMARY KEY"
+		// case schema.FieldTypeInt32:
+		// 	return "INT AUTO_INCREMENT PRIMARY KEY"
+		case schema.FieldTypeInt:
+			return "BIGINT AUTO_INCREMENT PRIMARY KEY"
 		case schema.FieldTypeString:
 			return "VARCHAR(36) PRIMARY KEY" // UUID or ULID or similar string ID
 		default:
@@ -83,8 +83,8 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
 		return "TEXT"
-	case schema.FieldTypeInt32:
-		return "INTEGER"
+	case schema.FieldTypeInt:
+		return "BIGINT"
 	case schema.FieldTypeBool:
 		return "BOOLEAN"
 	case schema.FieldTypeTime:
@@ -98,7 +98,7 @@ func (g *Generator) getSQLiteType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
 		return "TEXT"
-	case schema.FieldTypeInt32:
+	case schema.FieldTypeInt:
 		return "INTEGER"
 	case schema.FieldTypeBool:
 		return "INTEGER" // sqlite uses integer for boolean
@@ -113,8 +113,8 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
 		return "TEXT"
-	case schema.FieldTypeInt32:
-		return "INTEGER"
+	case schema.FieldTypeInt:
+		return "BIGINT"
 	case schema.FieldTypeBool:
 		return "TINYINT(1)"
 	case schema.FieldTypeTime:
@@ -124,7 +124,7 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	}
 }
 
-func (g *Generator) formatDefaultValue(value interface{}, fieldType schema.FieldType) string {
+func (g *Generator) formatDefaultValue(value any, fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeBool:
 		if b, ok := value.(bool); ok {

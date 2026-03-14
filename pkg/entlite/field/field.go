@@ -174,74 +174,75 @@ func (f *BoolField) Validate(fn func(bool) bool) BoolFieldBuilder {
 	return f
 }
 
-// --------------------------------- int32 ---------------------------------
-type Int32FieldBuilder interface {
-	Default(int32) Int32FieldBuilder
-	ProtoField(int) Int32FieldBuilder
-	Comment(string) Int32FieldBuilder
-	Optional() Int32FieldBuilder
-	Validate(func(int32) bool) Int32FieldBuilder
+// --------------------------------- int ---------------------------------
+// int uses int64 as type under the hood - for sqlite and JS compatibility
+type IntFieldBuilder interface {
+	Default(int64) IntFieldBuilder
+	ProtoField(int) IntFieldBuilder
+	Comment(string) IntFieldBuilder
+	Optional() IntFieldBuilder
+	Validate(func(int64) bool) IntFieldBuilder
 
 	// to satisfy entlite.Field interface
 	Field()
 }
 
-type Int32Field struct {
+type IntField struct {
 	name       string
-	defaultVal *int32
+	defaultVal *int64
 	protoField *int
 	comment    *string
 	optional   bool
-	validate   func(int32) bool
+	validate   func(int64) bool
 }
 
-func (*Int32Field) Field() {}
+func (*IntField) Field() {}
 
-func Int32(name string) Int32FieldBuilder {
-	return &Int32Field{name: name}
+func Int(name string) IntFieldBuilder {
+	return &IntField{name: name}
 }
 
-func (f *Int32Field) GetDefault() *int32 {
+func (f *IntField) GetDefault() *int64 {
 	return f.defaultVal
 }
 
-func (f *Int32Field) GetProtoField() *int {
+func (f *IntField) GetProtoField() *int {
 	return f.protoField
 }
 
-func (f *Int32Field) GetComment() *string {
+func (f *IntField) GetComment() *string {
 	return f.comment
 }
 
-func (f *Int32Field) GetOptional() bool {
+func (f *IntField) GetOptional() bool {
 	return f.optional
 }
 
-func (f *Int32Field) GetValidate() func(int32) bool {
+func (f *IntField) GetValidate() func(int64) bool {
 	return f.validate
 }
 
-func (f *Int32Field) Default(value int32) Int32FieldBuilder {
+func (f *IntField) Default(value int64) IntFieldBuilder {
 	f.defaultVal = &value
 	return f
 }
 
-func (f *Int32Field) ProtoField(num int) Int32FieldBuilder {
+func (f *IntField) ProtoField(num int) IntFieldBuilder {
 	f.protoField = &num
 	return f
 }
 
-func (f *Int32Field) Comment(text string) Int32FieldBuilder {
+func (f *IntField) Comment(text string) IntFieldBuilder {
 	f.comment = &text
 	return f
 }
 
-func (f *Int32Field) Optional() Int32FieldBuilder {
+func (f *IntField) Optional() IntFieldBuilder {
 	f.optional = true
 	return f
 }
 
-func (f *Int32Field) Validate(fn func(int32) bool) Int32FieldBuilder {
+func (f *IntField) Validate(fn func(int64) bool) IntFieldBuilder {
 	f.validate = fn
 	return f
 }

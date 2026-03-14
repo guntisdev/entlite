@@ -115,8 +115,8 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 		switch field.Type {
 		case schema.FieldTypeString:
 			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
-		case schema.FieldTypeInt32:
-			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeInt:
+			return fmt.Sprintf("NullInt64ToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeBool:
 			return fmt.Sprintf("NullBoolToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeTime:
@@ -129,7 +129,7 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 	switch field.Type {
 	case schema.FieldTypeString:
 		return dbFieldRef
-	case schema.FieldTypeInt32:
+	case schema.FieldTypeInt:
 		return dbFieldRef
 	case schema.FieldTypeBool:
 		return dbFieldRef
@@ -147,8 +147,8 @@ func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string) 
 		switch field.Type {
 		case schema.FieldTypeString:
 			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
-		case schema.FieldTypeInt32:
-			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
+		case schema.FieldTypeInt:
+			return fmt.Sprintf("PtrToNullInt64(%s)", pbFieldRef)
 		case schema.FieldTypeBool:
 			return fmt.Sprintf("PtrToNullBool(%s)", pbFieldRef)
 		case schema.FieldTypeTime:
@@ -161,7 +161,7 @@ func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string) 
 	switch field.Type {
 	case schema.FieldTypeString:
 		return pbFieldRef
-	case schema.FieldTypeInt32:
+	case schema.FieldTypeInt:
 		return pbFieldRef
 	case schema.FieldTypeBool:
 		return pbFieldRef

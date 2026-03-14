@@ -121,6 +121,19 @@ func PtrToNullInt32(i *int32) sql.NullInt32 {
 	return sql.NullInt32{ Int32: *i, Valid: true }
 }
 
+// --- Int64 Converters ---
+func NullInt64ToPtr(n sql.NullInt64) *int64 {
+	if !n.Valid { return nil }
+	return &n.Int64
+}
+
+func PtrToNullInt64(i *int64) sql.NullInt64 {
+	if i == nil {
+		return sql.NullInt64{Valid: false}
+	}
+	return sql.NullInt64{ Int64: *i, Valid: true }
+}
+
 // --- String Converters ---
 func NullStringToPtr(n sql.NullString) *string {
 	if !n.Valid { return nil }

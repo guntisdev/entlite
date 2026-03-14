@@ -49,7 +49,7 @@ func (User) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("email").Unique().ProtoField(2),
 		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
-		field.Int32("age").Optional(),
+		field.Int("age").Optional(),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),
 		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
@@ -147,11 +147,11 @@ import "buf/validate/validate.proto";
 
 // User represents as user entity
 message User {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
-  optional int32 age = 4;
+  optional int64 age = 4;
   string uuid = 8 [(buf.validate.field).required = true];
   bool is_admin = 5 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 6 [(buf.validate.field).required = true];
@@ -162,26 +162,26 @@ message CreateUserRequest {
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
-  optional int32 age = 4;
+  optional int64 age = 4;
   bool is_admin = 5 [(buf.validate.field).required = true];
 }
 message GetUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
-  optional int32 age = 4;
+  optional int64 age = 4;
   bool is_admin = 5 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message ListUserRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2 [(buf.validate.field).required = true];
+  int64 limit = 1 [(buf.validate.field).required = true];
+  int64 offset = 2 [(buf.validate.field).required = true];
 }
 
 message ListUserResponse {
@@ -213,10 +213,10 @@ service UserService {
 
 -- user table
 CREATE TABLE "user"(
-  id SERIAL PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
-  age INTEGER,
+  age BIGINT,
   uuid TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,

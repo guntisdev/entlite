@@ -26,6 +26,7 @@ func nullableConverters() string {
 
 	fields := []Config{
 		{Type: "Int32", Primitive: "int32"},
+		{Type: "Int64", Primitive: "int64"},
 		{Type: "String", Primitive: "string"},
 		{Type: "Bool", Primitive: "bool"},
 	}
