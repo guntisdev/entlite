@@ -414,3 +414,96 @@ func (f *TimeField) Validate(fn func(time.Time) bool) TimeFieldBuilder {
 	f.validate = fn
 	return f
 }
+
+// --------------------------------- byte ---------------------------------
+type ByteFieldBuilder interface {
+	Unique() ByteFieldBuilder
+	Optional() ByteFieldBuilder
+	Immutable() ByteFieldBuilder
+	ProtoField(int) ByteFieldBuilder
+	Comment(string) ByteFieldBuilder
+	DefaultFunc(func() []byte) ByteFieldBuilder
+	Validate(func([]byte) bool) ByteFieldBuilder
+
+	Field()
+}
+
+type ByteField struct {
+	name        string
+	unique      bool
+	optional    bool
+	immutable   bool
+	protoField  *int
+	comment     *string
+	defaultFunc func() []byte
+	validate    func([]byte) bool
+}
+
+func (*ByteField) Field() {}
+
+func Byte(name string) ByteFieldBuilder {
+	return &ByteField{name: name}
+}
+
+func (f *ByteField) GetUnique() bool {
+	return f.unique
+}
+
+func (f *ByteField) GetOptional() bool {
+	return f.optional
+}
+
+func (f *ByteField) GetImmutable() bool {
+	return f.immutable
+}
+
+func (f *ByteField) GetProtoField() *int {
+	return f.protoField
+}
+
+func (f *ByteField) GetComment() *string {
+	return f.comment
+}
+
+func (f *ByteField) GetDefaultFunc() func() []byte {
+	return f.defaultFunc
+}
+
+func (f *ByteField) GetValidate() func([]byte) bool {
+	return f.validate
+}
+
+func (f *ByteField) Unique() ByteFieldBuilder {
+	f.unique = true
+	return f
+}
+
+func (f *ByteField) Optional() ByteFieldBuilder {
+	f.optional = true
+	return f
+}
+
+func (f *ByteField) Immutable() ByteFieldBuilder {
+	f.immutable = true
+	return f
+}
+
+func (f *ByteField) ProtoField(num int) ByteFieldBuilder {
+	f.protoField = &num
+	return f
+}
+
+func (f *ByteField) Comment(text string) ByteFieldBuilder {
+	f.comment = &text
+	return f
+}
+
+func (f *ByteField) DefaultFunc(fn func() []byte) ByteFieldBuilder {
+	f.defaultFunc = fn
+	return f
+}
+
+func (f *ByteField) Validate(fn func([]byte) bool) ByteFieldBuilder {
+	f.validate = fn
+	return f
+}
