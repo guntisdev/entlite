@@ -62,7 +62,7 @@ func (User) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("email").Unique().ProtoField(2),
 		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
-		field.Int32("age").Optional(),
+		field.Int("age").Optional(),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),
 		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
@@ -134,7 +134,7 @@ const createUser = ` + "`-- name: CreateUser :one\nINSERT INTO users (email, nam
 type CreateUserParams struct {
 	Email     string
 	Name      string
-	Age       sql.NullInt32
+	Age       sql.NullInt64
 	Uuid      string
 	IsAdmin   bool
 	CreatedAt time.Time
@@ -142,10 +142,10 @@ type CreateUserParams struct {
 }
 
 type User struct {
-	ID        int32
+	ID        int64
 	Email     string
 	Name      string
-	Age       sql.NullInt32
+	Age       sql.NullInt64
 	Uuid      string
 	IsAdmin   bool
 	CreatedAt time.Time
@@ -179,10 +179,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 const updateUser = ` + "`-- name: UpdateUser :one\nUPDATE users\nSET email = $2, name = $3, age = $4, is_admin = $5, updated_at = $6\nWHERE id = $1\nRETURNING id, email, name, age, uuid, is_admin, created_at, updated_at\n`" + `
 
 type UpdateUserParams struct {
-	ID        int32
+	ID        int64
 	Email     string
 	Name      string
-	Age       sql.NullInt32
+	Age       sql.NullInt64
 	IsAdmin   bool
 	UpdatedAt time.Time
 }
@@ -253,7 +253,7 @@ type Queries db.Queries
 type CreateUserParams struct {
 	Email string
 	Name string
-	Age sql.NullInt32
+	Age sql.NullInt64
 	IsAdmin bool
 }
 
@@ -275,10 +275,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 type UpdateUserParams struct {
-	ID int32
+	ID int64
 	Email string
 	Name string
-	Age sql.NullInt32
+	Age sql.NullInt64
 	IsAdmin bool
 }
 

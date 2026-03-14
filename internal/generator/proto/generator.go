@@ -193,8 +193,8 @@ func generateServiceMessages(entity schema.Entity) string {
 			content.WriteString("}")
 		case schema.MethodList:
 			content.WriteString(fmt.Sprintf("message List%sRequest {\n", entity.Name))
-			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
-			content.WriteString(fmt.Sprintf("  int32 offset = 2 %s;\n", requiredStr))
+			content.WriteString(fmt.Sprintf("  int64 limit = 1 %s;\n", requiredStr))
+			content.WriteString(fmt.Sprintf("  int64 offset = 2 %s;\n", requiredStr))
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message List%sResponse {\n", entity.Name))
