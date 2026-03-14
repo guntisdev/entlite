@@ -10,10 +10,7 @@ plugins:
       - package_suffix=
   - remote: buf.build/bufbuild/es
     out: gen/ts
-    opt: 
-      - target=ts
-      - json_types=true # Generates types for JSON serialization
-      - int64_type=number # Forces int64 to be treated as number in TS
+    opt: target=ts
   - remote: buf.build/connectrpc/es
     out: gen/ts
     opt: target=ts

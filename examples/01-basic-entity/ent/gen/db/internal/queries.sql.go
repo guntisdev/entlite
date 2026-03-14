@@ -36,7 +36,7 @@ INSERT INTO "user" (
 type CreateUserParams struct {
 	Email     string        `json:"email"`
 	Name      string        `json:"name"`
-	Age       sql.NullInt32 `json:"age"`
+	Age       sql.NullInt64 `json:"age"`
 	Uuid      string        `json:"uuid"`
 	IsAdmin   bool          `json:"is_admin"`
 	CreatedAt time.Time     `json:"created_at"`
@@ -46,7 +46,7 @@ type CreateUserParams struct {
 // Generate queries.sql
 // This file contains SQLC-compatible queries definitions
 // User CRUD operations
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Email,
 		arg.Name,
@@ -56,7 +56,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
-	var id int32
+	var id int64
 	err := row.Scan(&id)
 	return id, err
 }
@@ -65,7 +65,7 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM "user" WHERE id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
+func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
 }
@@ -74,7 +74,7 @@ const getUser = `-- name: GetUser :one
 SELECT id, email, name, age, uuid, is_admin, created_at, updated_at FROM "user" WHERE id = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(
@@ -140,10 +140,10 @@ RETURNING id, email, name, age, uuid, is_admin, created_at, updated_at
 type UpdateUserParams struct {
 	Email     string        `json:"email"`
 	Name      string        `json:"name"`
-	Age       sql.NullInt32 `json:"age"`
+	Age       sql.NullInt64 `json:"age"`
 	IsAdmin   bool          `json:"is_admin"`
 	UpdatedAt time.Time     `json:"updated_at"`
-	ID        int32         `json:"id"`
+	ID        int64         `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

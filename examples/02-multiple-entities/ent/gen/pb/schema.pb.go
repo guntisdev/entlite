@@ -26,7 +26,7 @@ const (
 // Post represents as post entity
 type Post struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 	Published     bool                   `protobuf:"varint,4,opt,name=published,proto3" json:"published,omitempty"`
@@ -64,7 +64,7 @@ func (*Post) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Post) GetId() int32 {
+func (x *Post) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -95,7 +95,7 @@ func (x *Post) GetPublished() bool {
 // User represents as user entity
 type User struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -132,7 +132,7 @@ func (*User) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *User) GetId() int32 {
+func (x *User) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -155,7 +155,7 @@ func (x *User) GetName() string {
 
 type GetPostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -190,7 +190,7 @@ func (*GetPostRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetPostRequest) GetId() int32 {
+func (x *GetPostRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -199,8 +199,8 @@ func (x *GetPostRequest) GetId() int32 {
 
 type ListPostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit         int64                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int64                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -235,14 +235,14 @@ func (*ListPostRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *ListPostRequest) GetLimit() int32 {
+func (x *ListPostRequest) GetLimit() int64 {
 	if x != nil {
 		return x.Limit
 	}
 	return 0
 }
 
-func (x *ListPostRequest) GetOffset() int32 {
+func (x *ListPostRequest) GetOffset() int64 {
 	if x != nil {
 		return x.Offset
 	}
@@ -347,7 +347,7 @@ func (x *CreateUserRequest) GetName() string {
 
 type GetUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -382,7 +382,7 @@ func (*GetUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *GetUserRequest) GetId() int32 {
+func (x *GetUserRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -391,7 +391,7 @@ func (x *GetUserRequest) GetId() int32 {
 
 type UpdateUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -428,7 +428,7 @@ func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UpdateUserRequest) GetId() int32 {
+func (x *UpdateUserRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -451,7 +451,7 @@ func (x *UpdateUserRequest) GetName() string {
 
 type DeleteUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -486,7 +486,7 @@ func (*DeleteUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *DeleteUserRequest) GetId() int32 {
+func (x *DeleteUserRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -495,8 +495,8 @@ func (x *DeleteUserRequest) GetId() int32 {
 
 type ListUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit         int64                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int64                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -531,14 +531,14 @@ func (*ListUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ListUserRequest) GetLimit() int32 {
+func (x *ListUserRequest) GetLimit() int64 {
 	if x != nil {
 		return x.Limit
 	}
 	return 0
 }
 
-func (x *ListUserRequest) GetOffset() int32 {
+func (x *ListUserRequest) GetOffset() int64 {
 	if x != nil {
 		return x.Offset
 	}
@@ -595,35 +595,35 @@ const file_schema_proto_rawDesc = "" +
 	"\n" +
 	"\fschema.proto\x12\aentlite\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"\x84\x01\n" +
 	"\x04Post\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
 	"\x05title\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05title\x12 \n" +
 	"\acontent\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\acontent\x12$\n" +
 	"\tpublished\x18\x04 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\tpublished\"X\n" +
 	"\x04User\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\"(\n" +
 	"\x0eGetPostRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\"O\n" +
+	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\"O\n" +
 	"\x0fListPostRequest\x12\x1c\n" +
-	"\x05limit\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x05limit\x12\x1e\n" +
-	"\x06offset\x18\x02 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x06offset\"7\n" +
+	"\x05limit\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x05limit\x12\x1e\n" +
+	"\x06offset\x18\x02 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x06offset\"7\n" +
 	"\x10ListPostResponse\x12#\n" +
 	"\x05posts\x18\x01 \x03(\v2\r.entlite.PostR\x05posts\"M\n" +
 	"\x11CreateUserRequest\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\"(\n" +
 	"\x0eGetUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\"e\n" +
+	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\"e\n" +
 	"\x11UpdateUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\"+\n" +
 	"\x11DeleteUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\"O\n" +
+	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\"O\n" +
 	"\x0fListUserRequest\x12\x1c\n" +
-	"\x05limit\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x05limit\x12\x1e\n" +
-	"\x06offset\x18\x02 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x06offset\"7\n" +
+	"\x05limit\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x05limit\x12\x1e\n" +
+	"\x06offset\x18\x02 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x06offset\"7\n" +
 	"\x10ListUserResponse\x12#\n" +
 	"\x05users\x18\x01 \x03(\v2\r.entlite.UserR\x05users2y\n" +
 	"\vPostService\x12-\n" +

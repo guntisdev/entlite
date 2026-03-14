@@ -9,7 +9,7 @@ import "buf/validate/validate.proto";
 
 // Post represents as post entity
 message Post {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
   string title = 2 [(buf.validate.field).required = true];
   string content = 3 [(buf.validate.field).required = true];
   bool published = 4 [(buf.validate.field).required = true];
@@ -17,17 +17,17 @@ message Post {
 
 // User represents as user entity
 message User {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   string name = 3 [(buf.validate.field).required = true];
 }
 
 message GetPostRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message ListPostRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2 [(buf.validate.field).required = true];
+  int64 limit = 1 [(buf.validate.field).required = true];
+  int64 offset = 2 [(buf.validate.field).required = true];
 }
 
 message ListPostResponse {
@@ -45,19 +45,19 @@ message CreateUserRequest {
   string name = 3 [(buf.validate.field).required = true];
 }
 message GetUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   string name = 3 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message ListUserRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2 [(buf.validate.field).required = true];
+  int64 limit = 1 [(buf.validate.field).required = true];
+  int64 offset = 2 [(buf.validate.field).required = true];
 }
 
 message ListUserResponse {

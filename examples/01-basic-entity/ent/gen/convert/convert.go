@@ -4,10 +4,9 @@ package convert
 import (
 	"database/sql"
 	"time"
-
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/db"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/pb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // +++++ User conversion functions
@@ -19,12 +18,12 @@ func UserDBToProto(db *db.User) *pb.User {
 	}
 
 	return &pb.User{
-		Id:        db.ID,
-		Email:     db.Email,
-		Name:      db.Name,
-		Age:       NullInt32ToPtr(db.Age),
-		Uuid:      db.Uuid,
-		IsAdmin:   db.IsAdmin,
+		Id: db.ID,
+		Email: db.Email,
+		Name: db.Name,
+		Age: NullInt64ToPtr(db.Age),
+		Uuid: db.Uuid,
+		IsAdmin: db.IsAdmin,
 		CreatedAt: TimeToProto(db.CreatedAt),
 		UpdatedAt: TimeToProto(db.UpdatedAt),
 	}
@@ -37,17 +36,16 @@ func UserProtoToDB(pb *pb.User) *db.User {
 	}
 
 	return &db.User{
-		ID:        pb.Id,
-		Email:     pb.Email,
-		Name:      pb.Name,
-		Age:       PtrToNullInt32(pb.Age),
-		Uuid:      pb.Uuid,
-		IsAdmin:   pb.IsAdmin,
+		ID: pb.Id,
+		Email: pb.Email,
+		Name: pb.Name,
+		Age: PtrToNullInt64(pb.Age),
+		Uuid: pb.Uuid,
+		IsAdmin: pb.IsAdmin,
 		CreatedAt: ProtoToTime(pb.CreatedAt),
 		UpdatedAt: ProtoToTime(pb.UpdatedAt),
 	}
 }
-
 // UserDBSliceToProtoSlice converts db slice to proto array message
 func UserDBSliceToProtoSlice(dbSlice []*db.User) []*pb.User {
 	if dbSlice == nil {
@@ -60,6 +58,8 @@ func UserDBSliceToProtoSlice(dbSlice []*db.User) []*pb.User {
 	}
 	return result
 }
+
+
 
 // ++++++ Helper functions for type conversions
 
@@ -78,9 +78,7 @@ func ProtoToTime(t *timestamppb.Timestamp) time.Time {
 
 // --- Int32 Converters ---
 func NullInt32ToPtr(n sql.NullInt32) *int32 {
-	if !n.Valid {
-		return nil
-	}
+	if !n.Valid { return nil }
 	return &n.Int32
 }
 
@@ -88,14 +86,12 @@ func PtrToNullInt32(i *int32) sql.NullInt32 {
 	if i == nil {
 		return sql.NullInt32{Valid: false}
 	}
-	return sql.NullInt32{Int32: *i, Valid: true}
+	return sql.NullInt32{ Int32: *i, Valid: true }
 }
 
 // --- Int64 Converters ---
 func NullInt64ToPtr(n sql.NullInt64) *int64 {
-	if !n.Valid {
-		return nil
-	}
+	if !n.Valid { return nil }
 	return &n.Int64
 }
 
@@ -103,14 +99,12 @@ func PtrToNullInt64(i *int64) sql.NullInt64 {
 	if i == nil {
 		return sql.NullInt64{Valid: false}
 	}
-	return sql.NullInt64{Int64: *i, Valid: true}
+	return sql.NullInt64{ Int64: *i, Valid: true }
 }
 
 // --- String Converters ---
 func NullStringToPtr(n sql.NullString) *string {
-	if !n.Valid {
-		return nil
-	}
+	if !n.Valid { return nil }
 	return &n.String
 }
 
@@ -118,14 +112,12 @@ func PtrToNullString(i *string) sql.NullString {
 	if i == nil {
 		return sql.NullString{Valid: false}
 	}
-	return sql.NullString{String: *i, Valid: true}
+	return sql.NullString{ String: *i, Valid: true }
 }
 
 // --- Bool Converters ---
 func NullBoolToPtr(n sql.NullBool) *bool {
-	if !n.Valid {
-		return nil
-	}
+	if !n.Valid { return nil }
 	return &n.Bool
 }
 
@@ -133,7 +125,7 @@ func PtrToNullBool(i *bool) sql.NullBool {
 	if i == nil {
 		return sql.NullBool{Valid: false}
 	}
-	return sql.NullBool{Bool: *i, Valid: true}
+	return sql.NullBool{ Bool: *i, Valid: true }
 }
 
 // --- Time Converters ---
