@@ -102,6 +102,19 @@ func PtrToNullInt64(i *int64) sql.NullInt64 {
 	return sql.NullInt64{ Int64: *i, Valid: true }
 }
 
+// --- Float64 Converters ---
+func NullFloat64ToPtr(n sql.NullFloat64) *float64 {
+	if !n.Valid { return nil }
+	return &n.Float64
+}
+
+func PtrToNullFloat64(i *float64) sql.NullFloat64 {
+	if i == nil {
+		return sql.NullFloat64{Valid: false}
+	}
+	return sql.NullFloat64{ Float64: *i, Valid: true }
+}
+
 // --- String Converters ---
 func NullStringToPtr(n sql.NullString) *string {
 	if !n.Valid { return nil }
@@ -144,4 +157,15 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 		Time:  t.AsTime(),
 		Valid: true,
 	}
+}
+
+// --- Bytes Converters ---
+func NullBytesToPtr(b []byte) *[]byte {
+    if b == nil { return nil }
+    return &b
+}
+
+func PtrToNullBytes(b *[]byte) []byte {
+    if b == nil { return nil }
+    return *b
 }
