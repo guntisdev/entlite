@@ -22,8 +22,10 @@ func UserDBToProto(db *db.User) *pb.User {
 		Email: db.Email,
 		Name: db.Name,
 		Age: NullInt64ToPtr(db.Age),
+		Score: db.Score,
 		Uuid: db.Uuid,
 		IsAdmin: db.IsAdmin,
+		ApiKey: db.ApiKey,
 		CreatedAt: TimeToProto(db.CreatedAt),
 		UpdatedAt: TimeToProto(db.UpdatedAt),
 	}
@@ -40,8 +42,10 @@ func UserProtoToDB(pb *pb.User) *db.User {
 		Email: pb.Email,
 		Name: pb.Name,
 		Age: PtrToNullInt64(pb.Age),
+		Score: pb.Score,
 		Uuid: pb.Uuid,
 		IsAdmin: pb.IsAdmin,
+		ApiKey: pb.ApiKey,
 		CreatedAt: ProtoToTime(pb.CreatedAt),
 		UpdatedAt: ProtoToTime(pb.UpdatedAt),
 	}

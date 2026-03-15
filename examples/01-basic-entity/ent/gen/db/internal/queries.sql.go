@@ -18,8 +18,10 @@ INSERT INTO "user" (
   email,
   name,
   age,
+  score,
   uuid,
   is_admin,
+  api_key,
   created_at,
   updated_at
 ) VALUES (
@@ -29,7 +31,9 @@ INSERT INTO "user" (
   $4,
   $5,
   $6,
-  $7
+  $7,
+  $8,
+  $9
 ) RETURNING id
 `
 
@@ -37,8 +41,10 @@ type CreateUserParams struct {
 	Email     string        `json:"email"`
 	Name      string        `json:"name"`
 	Age       sql.NullInt64 `json:"age"`
+	Score     float64       `json:"score"`
 	Uuid      string        `json:"uuid"`
 	IsAdmin   bool          `json:"is_admin"`
+	ApiKey    []byte        `json:"api_key"`
 	CreatedAt time.Time     `json:"created_at"`
 	UpdatedAt time.Time     `json:"updated_at"`
 }
@@ -51,8 +57,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.Email,
 		arg.Name,
 		arg.Age,
+		arg.Score,
 		arg.Uuid,
 		arg.IsAdmin,
+		arg.ApiKey,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -71,7 +79,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, name, age, uuid, is_admin, created_at, updated_at FROM "user" WHERE id = $1
+SELECT id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at FROM "user" WHERE id = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
@@ -82,8 +90,10 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.Email,
 		&i.Name,
 		&i.Age,
+		&i.Score,
 		&i.Uuid,
 		&i.IsAdmin,
+		&i.ApiKey,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -91,7 +101,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 }
 
 const listUser = `-- name: ListUser :many
-SELECT id, email, name, age, uuid, is_admin, created_at, updated_at FROM "user" ORDER BY id
+SELECT id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at FROM "user" ORDER BY id
 `
 
 func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
@@ -108,8 +118,10 @@ func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
 			&i.Email,
 			&i.Name,
 			&i.Age,
+			&i.Score,
 			&i.Uuid,
 			&i.IsAdmin,
+			&i.ApiKey,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -131,16 +143,18 @@ UPDATE "user" SET
   email = $1,
   name = $2,
   age = $3,
-  is_admin = $4,
-  updated_at = $5
-WHERE id = $6
-RETURNING id, email, name, age, uuid, is_admin, created_at, updated_at
+  score = $4,
+  is_admin = $5,
+  updated_at = $6
+WHERE id = $7
+RETURNING id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at
 `
 
 type UpdateUserParams struct {
 	Email     string        `json:"email"`
 	Name      string        `json:"name"`
 	Age       sql.NullInt64 `json:"age"`
+	Score     float64       `json:"score"`
 	IsAdmin   bool          `json:"is_admin"`
 	UpdatedAt time.Time     `json:"updated_at"`
 	ID        int64         `json:"id"`
@@ -151,6 +165,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Email,
 		arg.Name,
 		arg.Age,
+		arg.Score,
 		arg.IsAdmin,
 		arg.UpdatedAt,
 		arg.ID,
@@ -161,8 +176,10 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Email,
 		&i.Name,
 		&i.Age,
+		&i.Score,
 		&i.Uuid,
 		&i.IsAdmin,
+		&i.ApiKey,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

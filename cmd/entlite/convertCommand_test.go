@@ -33,76 +33,10 @@ func TestConvertCommand(t *testing.T) {
 		t.Fatalf("Failed to create pb directory: %v", err)
 	}
 
-	goModContent := `module github.com/guntisdev/entlite/examples/01-basic-entity
-
-go 1.26.0
-`
-	goModPath := filepath.Join(tmpDir, "go.mod")
-	if err := os.WriteFile(goModPath, []byte(goModContent), 0644); err != nil {
-		t.Fatalf("Failed to write go.mod: %v", err)
-	}
-
-	userSchemaContent := `package ent
-
-import (
-	"time"
-
-	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/logic"
-	"github.com/guntisdev/entlite/pkg/entlite"
-	"github.com/guntisdev/entlite/pkg/entlite/field"
-)
-
-type User struct {
-	entlite.Schema
-}
-
-func (User) Annotations() []entlite.Annotation {
-	return []entlite.Annotation{
-		entlite.Message(),
-		entlite.Service(),
-	}
-}
-
-func (User) Fields() []entlite.Field {
-	return []entlite.Field{
-		field.String("email").Unique().ProtoField(2),
-		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
-		field.Int("age").Optional(),
-		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
-		field.Bool("is_admin").ProtoField(5),
-		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
-		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
-	}
-}`
-
-	userSchemaPath := filepath.Join(schemaDir, "user.go")
-	if err := os.WriteFile(userSchemaPath, []byte(userSchemaContent), 0644); err != nil {
-		t.Fatalf("Failed to write user schema: %v", err)
-	}
-
-	logicContent := `package logic
-
-import (
-	"unicode"
-
-	"github.com/google/uuid"
-)
-
-func GetUuidStr() string {
-	return uuid.New().String()
-}
-
-func StartsWithCapital(s string) bool {
-	if len(s) == 0 {
-		return false
-	}
-	return unicode.IsUpper(rune(s[0]))
-}`
-
-	logicPath := filepath.Join(logicDir, "logic.go")
-	if err := os.WriteFile(logicPath, []byte(logicContent), 0644); err != nil {
-		t.Fatalf("Failed to write logic file: %v", err)
-	}
+	// Write common test input files
+	writeTestGoMod(t, tmpDir)
+	writeTestUserSchema(t, schemaDir)
+	writeTestLogic(t, logicDir)
 
 	dbContent := `package db
 
@@ -116,8 +50,10 @@ type User struct {
 	Email     string
 	Name      string
 	Age       sql.NullInt64
+	Score     float64
 	Uuid      string
 	IsAdmin   bool
+	ApiKey    []byte
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }`
@@ -137,8 +73,10 @@ type User struct {
 	Email     string
 	Name      string
 	Age       *int64
+	Score     float64
 	Uuid      string
 	IsAdmin   bool
+	ApiKey    []byte
 	CreatedAt *timestamppb.Timestamp
 	UpdatedAt *timestamppb.Timestamp
 }`
@@ -211,8 +149,10 @@ func UserDBToProto(db *db.User) *pb.User {
 		Email: db.Email,
 		Name: db.Name,
 		Age: NullInt64ToPtr(db.Age),
+		Score: db.Score,
 		Uuid: db.Uuid,
 		IsAdmin: db.IsAdmin,
+		ApiKey: db.ApiKey,
 		CreatedAt: TimeToProto(db.CreatedAt),
 		UpdatedAt: TimeToProto(db.UpdatedAt),
 	}
@@ -229,8 +169,10 @@ func UserProtoToDB(pb *pb.User) *db.User {
 		Email: pb.Email,
 		Name: pb.Name,
 		Age: PtrToNullInt64(pb.Age),
+		Score: pb.Score,
 		Uuid: pb.Uuid,
 		IsAdmin: pb.IsAdmin,
+		ApiKey: pb.ApiKey,
 		CreatedAt: ProtoToTime(pb.CreatedAt),
 		UpdatedAt: ProtoToTime(pb.UpdatedAt),
 	}

@@ -15,8 +15,10 @@ message User {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int64 age = 4;
-  string uuid = 8 [(buf.validate.field).required = true];
+  double score = 8 [(buf.validate.field).required = true];
+  string uuid = 9 [(buf.validate.field).required = true];
   bool is_admin = 5 [(buf.validate.field).required = true];
+  bytes api_key = 10 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 6 [(buf.validate.field).required = true];
   google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
 }

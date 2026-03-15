@@ -23,71 +23,10 @@ func TestGenCommandFunction(t *testing.T) {
 		t.Fatalf("Failed to create logic directory: %v", err)
 	}
 
-	// Create schema/user.go
-	userSchemaContent := `package ent
-
-import (
-	"time"
-
-	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/logic"
-	"github.com/guntisdev/entlite/pkg/entlite"
-	"github.com/guntisdev/entlite/pkg/entlite/field"
-)
-
-type User struct {
-	entlite.Schema
-}
-
-func (User) Annotations() []entlite.Annotation {
-	return []entlite.Annotation{
-		entlite.Message(),
-		entlite.Service(),
-	}
-}
-
-func (User) Fields() []entlite.Field {
-	return []entlite.Field{
-		field.String("email").Unique().ProtoField(2),
-		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
-		field.Int("age").Optional(),
-		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
-		field.Bool("is_admin").ProtoField(5),
-		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
-		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
-	}
-}
-`
-
-	userSchemaPath := filepath.Join(schemaDir, "user.go")
-	if err := os.WriteFile(userSchemaPath, []byte(userSchemaContent), 0644); err != nil {
-		t.Fatalf("Failed to write user schema: %v", err)
-	}
-
-	// Create logic/logic.go with helper functions
-	logicContent := `package logic
-
-import (
-	"unicode"
-
-	"github.com/google/uuid"
-)
-
-func GetUuidStr() string {
-	return uuid.New().String()
-}
-
-func StartsWithCapital(s string) bool {
-	if len(s) == 0 {
-		return false
-	}
-	return unicode.IsUpper(rune(s[0]))
-}
-`
-
-	logicPath := filepath.Join(logicDir, "logic.go")
-	if err := os.WriteFile(logicPath, []byte(logicContent), 0644); err != nil {
-		t.Fatalf("Failed to write logic file: %v", err)
-	}
+	// Write common test input files
+	writeTestGoMod(t, tmpDir)
+	writeTestUserSchema(t, schemaDir)
+	writeTestLogic(t, logicDir)
 
 	// Create sqlc.yaml
 	sqlcYamlContent := `version: "2"
@@ -152,8 +91,10 @@ message User {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int64 age = 4;
-  string uuid = 8 [(buf.validate.field).required = true];
+  double score = 8 [(buf.validate.field).required = true];
+  string uuid = 9 [(buf.validate.field).required = true];
   bool is_admin = 5 [(buf.validate.field).required = true];
+  bytes api_key = 10 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 6 [(buf.validate.field).required = true];
   google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
 }
@@ -217,8 +158,10 @@ CREATE TABLE "user"(
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
   age BIGINT,
+  score DOUBLE PRECISION DEFAULT 0 NOT NULL,
   uuid TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL,
+  api_key BYTEA NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL
 );`
@@ -244,8 +187,10 @@ INSERT INTO "user" (
   email,
   name,
   age,
+  score,
   uuid,
   is_admin,
+  api_key,
   created_at,
   updated_at
 ) VALUES (
@@ -255,7 +200,9 @@ INSERT INTO "user" (
   $4,
   $5,
   $6,
-  $7
+  $7,
+  $8,
+  $9
 ) RETURNING id;
 
 -- name: GetUser :one
@@ -269,9 +216,10 @@ UPDATE "user" SET
   email = $1,
   name = $2,
   age = $3,
-  is_admin = $4,
-  updated_at = $5
-WHERE id = $6
+  score = $4,
+  is_admin = $5,
+  updated_at = $6
+WHERE id = $7
 RETURNING *;
 
 -- name: DeleteUser :exec

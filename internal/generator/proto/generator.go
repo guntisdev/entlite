@@ -269,7 +269,7 @@ func getProtoType(fieldType schema.FieldType) string {
 	case schema.FieldTypeInt:
 		return "int64"
 	case schema.FieldTypeFloat:
-		return "float64"
+		return "double"
 	case schema.FieldTypeBool:
 		return "bool"
 	case schema.FieldTypeTime:
