@@ -68,8 +68,10 @@ func (User) Fields() []entlite.Field {
 		field.String("email").Unique().ProtoField(2),
 		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
 		field.Int("age").Optional(),
+		field.Float("score").Default(0.0),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),
+		field.Byte("api_key").DefaultFunc(logic.GenerateAPIKey).Immutable(),
 		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
 		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
 	}
@@ -83,6 +85,8 @@ func (User) Fields() []entlite.Field {
 	logicContent := `package logic
 
 import (
+	"crypto/rand"
+	"fmt"
 	"unicode"
 
 	"github.com/google/uuid"
@@ -97,6 +101,15 @@ func StartsWithCapital(s string) bool {
 		return false
 	}
 	return unicode.IsUpper(rune(s[0]))
+}
+
+func GenerateAPIKey() []byte {
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
+	if err != nil {
+		panic(fmt.Sprintf("failed to generate secure random bytes: %v", err))
+	}
+	return key
 }`
 
 	logicPath := filepath.Join(logicDir, "logic.go")
@@ -116,8 +129,10 @@ type User struct {
 	Email     string
 	Name      string
 	Age       sql.NullInt64
+	Score     float64
 	Uuid      string
 	IsAdmin   bool
+	ApiKey    []byte
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }`
@@ -137,8 +152,10 @@ type User struct {
 	Email     string
 	Name      string
 	Age       *int64
+	Score     float64
 	Uuid      string
 	IsAdmin   bool
+	ApiKey    []byte
 	CreatedAt *timestamppb.Timestamp
 	UpdatedAt *timestamppb.Timestamp
 }`
@@ -211,8 +228,10 @@ func UserDBToProto(db *db.User) *pb.User {
 		Email: db.Email,
 		Name: db.Name,
 		Age: NullInt64ToPtr(db.Age),
+		Score: db.Score,
 		Uuid: db.Uuid,
 		IsAdmin: db.IsAdmin,
+		ApiKey: db.ApiKey,
 		CreatedAt: TimeToProto(db.CreatedAt),
 		UpdatedAt: TimeToProto(db.UpdatedAt),
 	}
@@ -229,8 +248,10 @@ func UserProtoToDB(pb *pb.User) *db.User {
 		Email: pb.Email,
 		Name: pb.Name,
 		Age: PtrToNullInt64(pb.Age),
+		Score: pb.Score,
 		Uuid: pb.Uuid,
 		IsAdmin: pb.IsAdmin,
+		ApiKey: pb.ApiKey,
 		CreatedAt: ProtoToTime(pb.CreatedAt),
 		UpdatedAt: ProtoToTime(pb.UpdatedAt),
 	}

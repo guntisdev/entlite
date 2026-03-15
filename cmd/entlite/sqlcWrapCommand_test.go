@@ -63,8 +63,10 @@ func (User) Fields() []entlite.Field {
 		field.String("email").Unique().ProtoField(2),
 		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
 		field.Int("age").Optional(),
+		field.Float("score").Default(0.0),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),
+		field.Byte("api_key").DefaultFunc(logic.GenerateAPIKey).Immutable(),
 		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
 		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
 	}
@@ -78,6 +80,8 @@ func (User) Fields() []entlite.Field {
 	logicContent := `package logic
 
 import (
+	"crypto/rand"
+	"fmt"
 	"unicode"
 
 	"github.com/google/uuid"
@@ -92,6 +96,15 @@ func StartsWithCapital(s string) bool {
 		return false
 	}
 	return unicode.IsUpper(rune(s[0]))
+}
+
+func GenerateAPIKey() []byte {
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
+	if err != nil {
+		panic(fmt.Sprintf("failed to generate secure random bytes: %v", err))
+	}
+	return key
 }`
 
 	logicPath := filepath.Join(logicDir, "logic.go")
@@ -129,14 +142,16 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	}
 }
 
-const createUser = ` + "`-- name: CreateUser :one\nINSERT INTO users (email, name, age, uuid, is_admin, created_at, updated_at)\nVALUES ($1, $2, $3, $4, $5, $6, $7)\nRETURNING id, email, name, age, uuid, is_admin, created_at, updated_at\n`" + `
+const createUser = ` + "`-- name: CreateUser :one\nINSERT INTO users (email, name, age, score, uuid, is_admin, api_key, created_at, updated_at)\nVALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)\nRETURNING id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at\n`" + `
 
 type CreateUserParams struct {
 	Email     string
 	Name      string
 	Age       sql.NullInt64
+	Score     float64
 	Uuid      string
 	IsAdmin   bool
+	ApiKey    []byte
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -146,8 +161,10 @@ type User struct {
 	Email     string
 	Name      string
 	Age       sql.NullInt64
+	Score     float64
 	Uuid      string
 	IsAdmin   bool
+	ApiKey    []byte
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -157,8 +174,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Email,
 		arg.Name,
 		arg.Age,
+		arg.Score,
 		arg.Uuid,
 		arg.IsAdmin,
+		arg.ApiKey,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -168,21 +187,24 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Email,
 		&i.Name,
 		&i.Age,
+		&i.Score,
 		&i.Uuid,
 		&i.IsAdmin,
+		&i.ApiKey,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const updateUser = ` + "`-- name: UpdateUser :one\nUPDATE users\nSET email = $2, name = $3, age = $4, is_admin = $5, updated_at = $6\nWHERE id = $1\nRETURNING id, email, name, age, uuid, is_admin, created_at, updated_at\n`" + `
+const updateUser = ` + "`-- name: UpdateUser :one\nUPDATE users\nSET email = $2, name = $3, age = $4, score = $5, is_admin = $6, updated_at = $7\nWHERE id = $1\nRETURNING id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at\n`" + `
 
 type UpdateUserParams struct {
 	ID        int64
 	Email     string
 	Name      string
 	Age       sql.NullInt64
+	Score     float64
 	IsAdmin   bool
 	UpdatedAt time.Time
 }
@@ -193,6 +215,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Email,
 		arg.Name,
 		arg.Age,
+		arg.Score,
 		arg.IsAdmin,
 		arg.UpdatedAt,
 	)
@@ -202,8 +225,10 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Email,
 		&i.Name,
 		&i.Age,
+		&i.Score,
 		&i.Uuid,
 		&i.IsAdmin,
+		&i.ApiKey,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -254,6 +279,7 @@ type CreateUserParams struct {
 	Email string
 	Name string
 	Age sql.NullInt64
+	Score float64
 	IsAdmin bool
 }
 
@@ -266,8 +292,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: arg.Age,
+		Score: arg.Score,
 		Uuid: logic.GetUuidStr(),
 		IsAdmin: arg.IsAdmin,
+		ApiKey: logic.GenerateAPIKey(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -279,6 +307,7 @@ type UpdateUserParams struct {
 	Email string
 	Name string
 	Age sql.NullInt64
+	Score float64
 	IsAdmin bool
 }
 
@@ -290,6 +319,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: arg.Age,
+		Score: arg.Score,
 		IsAdmin: arg.IsAdmin,
 		UpdatedAt: time.Now(),
 	}

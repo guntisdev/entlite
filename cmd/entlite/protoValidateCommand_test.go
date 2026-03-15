@@ -63,8 +63,10 @@ func (User) Fields() []entlite.Field {
 		field.String("email").Unique().ProtoField(2).Validate(logic.IsValidEmail),
 		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
 		field.Int32("age").Optional(),
+		field.Float("score").Default(0.0),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),
+		field.Byte("api_key").DefaultFunc(logic.GenerateAPIKey).Immutable(),
 		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
 		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
 	}
@@ -110,6 +112,8 @@ func (Post) Fields() []entlite.Field {
 	logicContent := `package logic
 
 import (
+	"crypto/rand"
+	"fmt"
 	"strings"
 	"unicode"
 
@@ -133,6 +137,15 @@ func IsValidEmail(s string) bool {
 
 func MinLength5(s string) bool {
 	return len(s) >= 5
+}
+
+func GenerateAPIKey() []byte {
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
+	if err != nil {
+		panic(fmt.Sprintf("failed to generate secure random bytes: %v", err))
+	}
+	return key
 }`
 
 	logicPath := filepath.Join(logicDir, "logic.go")
