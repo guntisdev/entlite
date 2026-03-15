@@ -33,89 +33,10 @@ func TestConvertCommand(t *testing.T) {
 		t.Fatalf("Failed to create pb directory: %v", err)
 	}
 
-	goModContent := `module github.com/guntisdev/entlite/examples/01-basic-entity
-
-go 1.26.0
-`
-	goModPath := filepath.Join(tmpDir, "go.mod")
-	if err := os.WriteFile(goModPath, []byte(goModContent), 0644); err != nil {
-		t.Fatalf("Failed to write go.mod: %v", err)
-	}
-
-	userSchemaContent := `package ent
-
-import (
-	"time"
-
-	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/logic"
-	"github.com/guntisdev/entlite/pkg/entlite"
-	"github.com/guntisdev/entlite/pkg/entlite/field"
-)
-
-type User struct {
-	entlite.Schema
-}
-
-func (User) Annotations() []entlite.Annotation {
-	return []entlite.Annotation{
-		entlite.Message(),
-		entlite.Service(),
-	}
-}
-
-func (User) Fields() []entlite.Field {
-	return []entlite.Field{
-		field.String("email").Unique().ProtoField(2),
-		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
-		field.Int("age").Optional(),
-		field.Float("score").Default(0.0),
-		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
-		field.Bool("is_admin").ProtoField(5),
-		field.Byte("api_key").DefaultFunc(logic.GenerateAPIKey).Immutable(),
-		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
-		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
-	}
-}`
-
-	userSchemaPath := filepath.Join(schemaDir, "user.go")
-	if err := os.WriteFile(userSchemaPath, []byte(userSchemaContent), 0644); err != nil {
-		t.Fatalf("Failed to write user schema: %v", err)
-	}
-
-	logicContent := `package logic
-
-import (
-	"crypto/rand"
-	"fmt"
-	"unicode"
-
-	"github.com/google/uuid"
-)
-
-func GetUuidStr() string {
-	return uuid.New().String()
-}
-
-func StartsWithCapital(s string) bool {
-	if len(s) == 0 {
-		return false
-	}
-	return unicode.IsUpper(rune(s[0]))
-}
-
-func GenerateAPIKey() []byte {
-	key := make([]byte, 32)
-	_, err := rand.Read(key)
-	if err != nil {
-		panic(fmt.Sprintf("failed to generate secure random bytes: %v", err))
-	}
-	return key
-}`
-
-	logicPath := filepath.Join(logicDir, "logic.go")
-	if err := os.WriteFile(logicPath, []byte(logicContent), 0644); err != nil {
-		t.Fatalf("Failed to write logic file: %v", err)
-	}
+	// Write common test input files
+	writeTestGoMod(t, tmpDir)
+	writeTestUserSchema(t, schemaDir)
+	writeTestLogic(t, logicDir)
 
 	dbContent := `package db
 
