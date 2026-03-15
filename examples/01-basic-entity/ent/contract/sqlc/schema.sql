@@ -7,8 +7,10 @@ CREATE TABLE "user"(
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
   age BIGINT,
+  score DOUBLE PRECISION DEFAULT 0 NOT NULL,
   uuid TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL,
+  api_key BYTEA NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL
 );

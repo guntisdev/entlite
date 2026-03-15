@@ -13,6 +13,7 @@ type CreateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
 	Age sql.NullInt64 `json:"age"`
+	Score float64 `json:"score"`
 	IsAdmin bool `json:"is_admin"`
 }
 
@@ -24,8 +25,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: arg.Age,
+		Score: arg.Score,
 		Uuid: logic.GetUuidStr(),
 		IsAdmin: arg.IsAdmin,
+		ApiKey: logic.GenerateAPIKey(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -36,6 +39,7 @@ type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
 	Age sql.NullInt64 `json:"age"`
+	Score float64 `json:"score"`
 	IsAdmin bool `json:"is_admin"`
 	ID int64 `json:"id"`
 }
@@ -48,6 +52,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: arg.Age,
+		Score: arg.Score,
 		IsAdmin: arg.IsAdmin,
 		UpdatedAt: time.Now(),
 	}

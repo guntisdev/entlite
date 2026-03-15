@@ -32,8 +32,10 @@ type User struct {
 	// First name and surname
 	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Age           *int64                 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
-	Uuid          string                 `protobuf:"bytes,8,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Score         float64                `protobuf:"fixed64,8,opt,name=score,proto3" json:"score,omitempty"`
+	Uuid          string                 `protobuf:"bytes,9,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	IsAdmin       bool                   `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
+	ApiKey        []byte                 `protobuf:"bytes,10,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -98,6 +100,13 @@ func (x *User) GetAge() int64 {
 	return 0
 }
 
+func (x *User) GetScore() float64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
 func (x *User) GetUuid() string {
 	if x != nil {
 		return x.Uuid
@@ -110,6 +119,13 @@ func (x *User) GetIsAdmin() bool {
 		return x.IsAdmin
 	}
 	return false
+}
+
+func (x *User) GetApiKey() []byte {
+	if x != nil {
+		return x.ApiKey
+	}
+	return nil
 }
 
 func (x *User) GetCreatedAt() *timestamppb.Timestamp {
@@ -460,14 +476,17 @@ var File_schema_proto protoreflect.FileDescriptor
 
 const file_schema_proto_rawDesc = "" +
 	"\n" +
-	"\fschema.proto\x12\aentlite\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"\xbc\x02\n" +
+	"\fschema.proto\x12\aentlite\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"\xfb\x02\n" +
 	"\x04User\x12\x16\n" +
 	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12\x15\n" +
-	"\x03age\x18\x04 \x01(\x03H\x00R\x03age\x88\x01\x01\x12\x1a\n" +
-	"\x04uuid\x18\b \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04uuid\x12!\n" +
-	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12A\n" +
+	"\x03age\x18\x04 \x01(\x03H\x00R\x03age\x88\x01\x01\x12\x1c\n" +
+	"\x05score\x18\b \x01(\x01B\x06\xbaH\x03\xc8\x01\x01R\x05score\x12\x1a\n" +
+	"\x04uuid\x18\t \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04uuid\x12!\n" +
+	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12\x1f\n" +
+	"\aapi_key\x18\n" +
+	" \x01(\fB\x06\xbaH\x03\xc8\x01\x01R\x06apiKey\x12A\n" +
 	"\n" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\tcreatedAt\x12A\n" +
 	"\n" +
