@@ -1,6 +1,21 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { UserService } from "./gen/schema_connect.js";
+import { UserService } from "./gen/schema_pb.js";
+
+window.onload = async () => {
+//     console.log('proto frontend')
+
+
+//     const transport = createConnectTransport({
+//         baseUrl: "http://localhost:8080",
+//     });
+
+
+//     const client = createClient(UserService, transport);
+
+//     const usr = await client.get({ id: BigInt(1) })
+//     console.log(usr)
+// }
 
 // Create transport
 const transport = createConnectTransport({
@@ -97,3 +112,5 @@ document.addEventListener("DOMContentLoaded", () => {
   log("🚀 Entlite Demo Ready!");
   log("Generated TypeScript types and Connect client working!");
 });
+
+}

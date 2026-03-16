@@ -8,11 +8,8 @@ plugins:
     opt: 
       - paths=source_relative
       - package_suffix=
-  - remote: buf.build/bufbuild/es
+  - remote: buf.build/bufbuild/es:v2.11.0
     out: ../web/src/gen
-    opt: target=ts
-    include_imports: true
-  - remote: buf.build/connectrpc/es
-    out: ../web/src/gen
-    opt: target=ts
+    opt: 
+      - target=ts
     include_imports: true
