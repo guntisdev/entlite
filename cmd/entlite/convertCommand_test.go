@@ -299,6 +299,26 @@ func NullBytesToPtr(b []byte) *[]byte {
 func PtrToNullBytes(b *[]byte) []byte {
     if b == nil { return nil }
     return *b
+}
+
+// --- SQLite bool converters ---
+func SQLiteIntToBool(i int64) bool {
+    switch i {
+    case 0:
+        return false
+    case 1:
+        return true
+    default:
+        panic("Unable convert sqlite int to bool")
+    }
+}
+
+func SQLiteBoolToInt(b bool) int64 {
+    if b {
+        return 1
+    } else {
+        return 0
+    }
 }`
 
 	if d := util.Diff(expectedContent, string(actualContent)); d != "" {

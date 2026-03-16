@@ -34,7 +34,7 @@ func Generate(entities []schema.Entity, imports []string, sqlDialect sqlc.SQLDia
 	content.WriteString(")\n\n")
 
 	for _, entity := range messageEntities {
-		content.WriteString(generateEntityConversion(entity))
+		content.WriteString(generateEntityConversion(entity, sqlDialect))
 		content.WriteString("\n")
 	}
 
@@ -45,7 +45,7 @@ func Generate(entities []schema.Entity, imports []string, sqlDialect sqlc.SQLDia
 	return content.String(), nil
 }
 
-func generateEntityConversion(entity schema.Entity) string {
+func generateEntityConversion(entity schema.Entity, sqlDialect sqlc.SQLDialect) string {
 	var content strings.Builder
 
 	// TODO maybe extract prefix from imports strings someday?
@@ -66,7 +66,7 @@ func generateEntityConversion(entity schema.Entity) string {
 
 	for _, field := range entity.Fields {
 		dbFieldName := toDBFieldName(field)
-		conversion := fieldDBToProto(field, dbFieldName, dbPrefix)
+		conversion := fieldDBToProto(field, dbFieldName, dbPrefix, sqlDialect)
 		protoFieldName := toProtoFieldName(field)
 		content.WriteString(fmt.Sprintf("\t\t%s: %s,\n", protoFieldName, conversion))
 	}
@@ -84,7 +84,7 @@ func generateEntityConversion(entity schema.Entity) string {
 
 	for _, field := range entity.Fields {
 		protoFieldName := toProtoFieldName(field)
-		conversion := fieldProtoToDB(field, protoFieldName, pbPrefix)
+		conversion := fieldProtoToDB(field, protoFieldName, pbPrefix, sqlDialect)
 		dbFieldName := toDBFieldName(field)
 		content.WriteString(fmt.Sprintf("\t\t%s: %s,\n", dbFieldName, conversion))
 	}
@@ -108,8 +108,12 @@ func generateEntityConversion(entity schema.Entity) string {
 	return content.String()
 }
 
-func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) string {
+func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string, sqlDialect sqlc.SQLDialect) string {
 	dbFieldRef := fmt.Sprintf("%s.%s", dbPrefix, dbFieldName)
+
+	if sqlDialect == sqlc.SQLite && field.Type == schema.FieldTypeBool {
+		return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
+	}
 
 	if field.Optional {
 		switch field.Type {
@@ -148,8 +152,12 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string) str
 	}
 }
 
-func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string) string {
+func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string, sqlDialect sqlc.SQLDialect) string {
 	pbFieldRef := fmt.Sprintf("%s.%s", pbPrefix, protoFieldName)
+
+	if sqlDialect == sqlc.SQLite && field.Type == schema.FieldTypeBool {
+		return fmt.Sprintf("SQLiteBoolToInt(%s)", pbFieldRef)
+	}
 
 	if field.Optional {
 		switch field.Type {
