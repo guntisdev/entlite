@@ -22,6 +22,7 @@ INSERT INTO "user" (
   uuid,
   is_admin,
   api_key,
+  last_login_ms,
   created_at,
   updated_at
 ) VALUES (
@@ -33,26 +34,28 @@ INSERT INTO "user" (
   $6,
   $7,
   $8,
-  $9
+  $9,
+  $10
 ) RETURNING id
 `
 
 type CreateUserParams struct {
-	Email     string        `json:"email"`
-	Name      string        `json:"name"`
-	Age       sql.NullInt64 `json:"age"`
-	Score     float64       `json:"score"`
-	Uuid      string        `json:"uuid"`
-	IsAdmin   bool          `json:"is_admin"`
-	ApiKey    []byte        `json:"api_key"`
-	CreatedAt time.Time     `json:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at"`
+	Email       string        `json:"email"`
+	Name        string        `json:"name"`
+	Age         sql.NullInt32 `json:"age"`
+	Score       float64       `json:"score"`
+	Uuid        string        `json:"uuid"`
+	IsAdmin     bool          `json:"is_admin"`
+	ApiKey      []byte        `json:"api_key"`
+	LastLoginMs int64         `json:"last_login_ms"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 // Generate queries.sql
 // This file contains SQLC-compatible queries definitions
 // User CRUD operations
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Email,
 		arg.Name,
@@ -61,10 +64,11 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.Uuid,
 		arg.IsAdmin,
 		arg.ApiKey,
+		arg.LastLoginMs,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
-	var id int64
+	var id int32
 	err := row.Scan(&id)
 	return id, err
 }
@@ -73,16 +77,16 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM "user" WHERE id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
+func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at FROM "user" WHERE id = $1
+SELECT id, email, name, age, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE id = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(
@@ -94,6 +98,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.Uuid,
 		&i.IsAdmin,
 		&i.ApiKey,
+		&i.LastLoginMs,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -101,7 +106,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 }
 
 const listUser = `-- name: ListUser :many
-SELECT id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at FROM "user" ORDER BY id
+SELECT id, email, name, age, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" ORDER BY id
 `
 
 func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
@@ -122,6 +127,7 @@ func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
 			&i.Uuid,
 			&i.IsAdmin,
 			&i.ApiKey,
+			&i.LastLoginMs,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -145,19 +151,21 @@ UPDATE "user" SET
   age = $3,
   score = $4,
   is_admin = $5,
-  updated_at = $6
-WHERE id = $7
-RETURNING id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at
+  last_login_ms = $6,
+  updated_at = $7
+WHERE id = $8
+RETURNING id, email, name, age, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	Email     string        `json:"email"`
-	Name      string        `json:"name"`
-	Age       sql.NullInt64 `json:"age"`
-	Score     float64       `json:"score"`
-	IsAdmin   bool          `json:"is_admin"`
-	UpdatedAt time.Time     `json:"updated_at"`
-	ID        int64         `json:"id"`
+	Email       string        `json:"email"`
+	Name        string        `json:"name"`
+	Age         sql.NullInt32 `json:"age"`
+	Score       float64       `json:"score"`
+	IsAdmin     bool          `json:"is_admin"`
+	LastLoginMs int64         `json:"last_login_ms"`
+	UpdatedAt   time.Time     `json:"updated_at"`
+	ID          int32         `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -167,6 +175,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Age,
 		arg.Score,
 		arg.IsAdmin,
+		arg.LastLoginMs,
 		arg.UpdatedAt,
 		arg.ID,
 	)
@@ -180,6 +189,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Uuid,
 		&i.IsAdmin,
 		&i.ApiKey,
+		&i.LastLoginMs,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

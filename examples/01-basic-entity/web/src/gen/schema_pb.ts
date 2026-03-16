@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUisQIKBFVzZXISEgoCaWQYASABKANCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKANIAIgBARIVCgVzY29yZRgIIAEoAUIGukgDyAEBEhQKBHV1aWQYCSABKAlCBrpIA8gBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEhcKB2FwaV9rZXkYCiABKAxCBrpIA8gBARI2CgpjcmVhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEjYKCnVwZGF0ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQFCBgoEX2FnZSJ0ChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKANIAIgBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBQgYKBF9hZ2UiJAoOR2V0VXNlclJlcXVlc3QSEgoCaWQYASABKANCBrpIA8gBASKIAQoRVXBkYXRlVXNlclJlcXVlc3QSEgoCaWQYASABKANCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKANIAIgBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBQgYKBF9hZ2UiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCaWQYASABKANCBrpIA8gBASJACg9MaXN0VXNlclJlcXVlc3QSFQoFbGltaXQYASABKANCBrpIA8gBARIWCgZvZmZzZXQYAiABKANCBrpIA8gBASIwChBMaXN0VXNlclJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyMqECCgtVc2VyU2VydmljZRIzCgZDcmVhdGUSGi5lbnRsaXRlLkNyZWF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEi0KA0dldBIXLmVudGxpdGUuR2V0VXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISMwoGVXBkYXRlEhouZW50bGl0ZS5VcGRhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchI8CgZEZWxldGUSGi5lbnRsaXRlLkRlbGV0ZVVzZXJSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EjsKBExpc3QSGC5lbnRsaXRlLkxpc3RVc2VyUmVxdWVzdBoZLmVudGxpdGUuTGlzdFVzZXJSZXNwb25zZUIGWgQuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUi0AIKBFVzZXISEgoCaWQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgIIAEoAUIGukgDyAEBEhQKBHV1aWQYCSABKAlCBrpIA8gBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEhcKB2FwaV9rZXkYCiABKAxCBrpIA8gBARIdCg1sYXN0X2xvZ2luX21zGAsgASgDQga6SAPIAQESNgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UikwEKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgLIAEoA0IGukgDyAEBQgYKBF9hZ2UiJAoOR2V0VXNlclJlcXVlc3QSEgoCaWQYASABKAVCBrpIA8gBASKnAQoRVXBkYXRlVXNlclJlcXVlc3QSEgoCaWQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEh0KDWxhc3RfbG9naW5fbXMYCyABKANCBrpIA8gBAUIGCgRfYWdlIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAmlkGAEgASgFQga6SAPIAQEiQAoPTGlzdFVzZXJSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESFgoGb2Zmc2V0GAIgASgFQga6SAPIAQEiMAoQTGlzdFVzZXJSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlcjKhAgoLVXNlclNlcnZpY2USMwoGQ3JlYXRlEhouZW50bGl0ZS5DcmVhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchItCgNHZXQSFy5lbnRsaXRlLkdldFVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgRMaXN0EhguZW50bGl0ZS5MaXN0VXNlclJlcXVlc3QaGS5lbnRsaXRlLkxpc3RVc2VyUmVzcG9uc2VCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -22,9 +22,9 @@ export const file_schema: GenFile = /*@__PURE__*/
  */
 export type User = Message<"entlite.User"> & {
   /**
-   * @generated from field: int64 id = 1;
+   * @generated from field: int32 id = 1;
    */
-  id: bigint;
+  id: number;
 
   /**
    * @generated from field: string email = 2;
@@ -39,9 +39,9 @@ export type User = Message<"entlite.User"> & {
   name: string;
 
   /**
-   * @generated from field: optional int64 age = 4;
+   * @generated from field: optional int32 age = 4;
    */
-  age?: bigint;
+  age?: number;
 
   /**
    * @generated from field: double score = 8;
@@ -62,6 +62,11 @@ export type User = Message<"entlite.User"> & {
    * @generated from field: bytes api_key = 10;
    */
   apiKey: Uint8Array;
+
+  /**
+   * @generated from field: int64 last_login_ms = 11;
+   */
+  lastLoginMs: bigint;
 
   /**
    * @generated from field: google.protobuf.Timestamp created_at = 6;
@@ -98,14 +103,19 @@ export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
   name: string;
 
   /**
-   * @generated from field: optional int64 age = 4;
+   * @generated from field: optional int32 age = 4;
    */
-  age?: bigint;
+  age?: number;
 
   /**
    * @generated from field: bool is_admin = 5;
    */
   isAdmin: boolean;
+
+  /**
+   * @generated from field: int64 last_login_ms = 11;
+   */
+  lastLoginMs: bigint;
 };
 
 /**
@@ -120,9 +130,9 @@ export const CreateUserRequestSchema: GenMessage<CreateUserRequest> = /*@__PURE_
  */
 export type GetUserRequest = Message<"entlite.GetUserRequest"> & {
   /**
-   * @generated from field: int64 id = 1;
+   * @generated from field: int32 id = 1;
    */
-  id: bigint;
+  id: number;
 };
 
 /**
@@ -137,9 +147,9 @@ export const GetUserRequestSchema: GenMessage<GetUserRequest> = /*@__PURE__*/
  */
 export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
   /**
-   * @generated from field: int64 id = 1;
+   * @generated from field: int32 id = 1;
    */
-  id: bigint;
+  id: number;
 
   /**
    * @generated from field: string email = 2;
@@ -154,14 +164,19 @@ export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
   name: string;
 
   /**
-   * @generated from field: optional int64 age = 4;
+   * @generated from field: optional int32 age = 4;
    */
-  age?: bigint;
+  age?: number;
 
   /**
    * @generated from field: bool is_admin = 5;
    */
   isAdmin: boolean;
+
+  /**
+   * @generated from field: int64 last_login_ms = 11;
+   */
+  lastLoginMs: bigint;
 };
 
 /**
@@ -176,9 +191,9 @@ export const UpdateUserRequestSchema: GenMessage<UpdateUserRequest> = /*@__PURE_
  */
 export type DeleteUserRequest = Message<"entlite.DeleteUserRequest"> & {
   /**
-   * @generated from field: int64 id = 1;
+   * @generated from field: int32 id = 1;
    */
-  id: bigint;
+  id: number;
 };
 
 /**
@@ -193,14 +208,14 @@ export const DeleteUserRequestSchema: GenMessage<DeleteUserRequest> = /*@__PURE_
  */
 export type ListUserRequest = Message<"entlite.ListUserRequest"> & {
   /**
-   * @generated from field: int64 limit = 1;
+   * @generated from field: int32 limit = 1;
    */
-  limit: bigint;
+  limit: number;
 
   /**
-   * @generated from field: int64 offset = 2;
+   * @generated from field: int32 offset = 2;
    */
-  offset: bigint;
+  offset: number;
 };
 
 /**

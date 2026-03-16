@@ -86,15 +86,16 @@ import "buf/validate/validate.proto";
 
 // User represents as user entity
 message User {
-  int64 id = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
-  optional int64 age = 4;
+  optional int32 age = 4;
   double score = 8 [(buf.validate.field).required = true];
   string uuid = 9 [(buf.validate.field).required = true];
   bool is_admin = 5 [(buf.validate.field).required = true];
   bytes api_key = 10 [(buf.validate.field).required = true];
+  int64 last_login_ms = 11 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 6 [(buf.validate.field).required = true];
   google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
 }
@@ -103,26 +104,28 @@ message CreateUserRequest {
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
-  optional int64 age = 4;
+  optional int32 age = 4;
   bool is_admin = 5 [(buf.validate.field).required = true];
+  int64 last_login_ms = 11 [(buf.validate.field).required = true];
 }
 message GetUserRequest {
-  int64 id = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int64 id = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
-  optional int64 age = 4;
+  optional int32 age = 4;
   bool is_admin = 5 [(buf.validate.field).required = true];
+  int64 last_login_ms = 11 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {
-  int64 id = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message ListUserRequest {
-  int64 limit = 1 [(buf.validate.field).required = true];
-  int64 offset = 2 [(buf.validate.field).required = true];
+  int32 limit = 1 [(buf.validate.field).required = true];
+  int32 offset = 2 [(buf.validate.field).required = true];
 }
 
 message ListUserResponse {
@@ -154,14 +157,15 @@ service UserService {
 
 -- user table
 CREATE TABLE "user"(
-  id BIGSERIAL PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
-  age BIGINT,
+  age INT,
   score DOUBLE PRECISION DEFAULT 0 NOT NULL,
   uuid TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL,
   api_key BYTEA NOT NULL,
+  last_login_ms BIGINT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL
 );`
@@ -191,6 +195,7 @@ INSERT INTO "user" (
   uuid,
   is_admin,
   api_key,
+  last_login_ms,
   created_at,
   updated_at
 ) VALUES (
@@ -202,7 +207,8 @@ INSERT INTO "user" (
   $6,
   $7,
   $8,
-  $9
+  $9,
+  $10
 ) RETURNING id;
 
 -- name: GetUser :one
@@ -218,8 +224,9 @@ UPDATE "user" SET
   age = $3,
   score = $4,
   is_admin = $5,
-  updated_at = $6
-WHERE id = $7
+  last_login_ms = $6,
+  updated_at = $7
+WHERE id = $8
 RETURNING *;
 
 -- name: DeleteUser :exec

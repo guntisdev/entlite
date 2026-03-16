@@ -32,9 +32,9 @@ type CreatePostParams struct {
 // Generate queries.sql
 // This file contains SQLC-compatible queries definitions
 // Post CRUD operations
-func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (int64, error) {
+func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (int32, error) {
 	row := q.db.QueryRowContext(ctx, createPost, arg.Title, arg.Content, arg.Published)
-	var id int64
+	var id int32
 	err := row.Scan(&id)
 	return id, err
 }
@@ -56,9 +56,9 @@ type CreateUserParams struct {
 }
 
 // User CRUD operations
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
 	row := q.db.QueryRowContext(ctx, createUser, arg.Email, arg.Name)
-	var id int64
+	var id int32
 	err := row.Scan(&id)
 	return id, err
 }
@@ -67,7 +67,7 @@ const deletePost = `-- name: DeletePost :exec
 DELETE FROM "post" WHERE id = $1
 `
 
-func (q *Queries) DeletePost(ctx context.Context, id int64) error {
+func (q *Queries) DeletePost(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deletePost, id)
 	return err
 }
@@ -76,7 +76,7 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM "user" WHERE id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
+func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
 }
@@ -85,7 +85,7 @@ const getPost = `-- name: GetPost :one
 SELECT id, title, content, published FROM "post" WHERE id = $1
 `
 
-func (q *Queries) GetPost(ctx context.Context, id int64) (Post, error) {
+func (q *Queries) GetPost(ctx context.Context, id int32) (Post, error) {
 	row := q.db.QueryRowContext(ctx, getPost, id)
 	var i Post
 	err := row.Scan(
@@ -101,7 +101,7 @@ const getUser = `-- name: GetUser :one
 SELECT id, email, name FROM "user" WHERE id = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(&i.ID, &i.Email, &i.Name)
@@ -180,7 +180,7 @@ type UpdatePostParams struct {
 	Title     string `json:"title"`
 	Content   string `json:"content"`
 	Published bool   `json:"published"`
-	ID        int64  `json:"id"`
+	ID        int32  `json:"id"`
 }
 
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
@@ -211,7 +211,7 @@ RETURNING id, email, name
 type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
-	ID    int64  `json:"id"`
+	ID    int32  `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

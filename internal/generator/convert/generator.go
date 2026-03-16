@@ -120,6 +120,8 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string, sql
 		case schema.FieldTypeString:
 			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeInt:
+			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeInt64:
 			return fmt.Sprintf("NullInt64ToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeFloat:
 			return fmt.Sprintf("NullFloat64ToPtr(%s)", dbFieldRef)
@@ -164,6 +166,8 @@ func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string, 
 		case schema.FieldTypeString:
 			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
 		case schema.FieldTypeInt:
+			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
+		case schema.FieldTypeInt64:
 			return fmt.Sprintf("PtrToNullInt64(%s)", pbFieldRef)
 		case schema.FieldTypeFloat:
 			return fmt.Sprintf("PtrToNullFloat64(%s)", pbFieldRef)

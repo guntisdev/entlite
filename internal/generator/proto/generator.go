@@ -193,8 +193,8 @@ func generateServiceMessages(entity schema.Entity) string {
 			content.WriteString("}")
 		case schema.MethodList:
 			content.WriteString(fmt.Sprintf("message List%sRequest {\n", entity.Name))
-			content.WriteString(fmt.Sprintf("  int64 limit = 1 %s;\n", requiredStr))
-			content.WriteString(fmt.Sprintf("  int64 offset = 2 %s;\n", requiredStr))
+			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
+			content.WriteString(fmt.Sprintf("  int32 offset = 2 %s;\n", requiredStr))
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message List%sResponse {\n", entity.Name))
@@ -215,7 +215,7 @@ func getIdFieldAsStr(fields []schema.Field) string {
 		}
 	}
 
-	return "int64 id = 1"
+	return "int32 id = 1"
 }
 
 func generateServiceMethod(entityName string, method schema.Method) string {
@@ -267,6 +267,8 @@ func getProtoType(fieldType schema.FieldType) string {
 	case schema.FieldTypeString:
 		return "string"
 	case schema.FieldTypeInt:
+		return "int32"
+	case schema.FieldTypeInt64:
 		return "int64"
 	case schema.FieldTypeFloat:
 		return "double"
