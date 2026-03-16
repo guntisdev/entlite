@@ -27,8 +27,16 @@ window.onload = async () => {
             name: "Test User",
             age: 25,
             isAdmin: false,
+            lastLoginMs: BigInt(Date.now()),
             });
             log("✓ User created:", response);
+            log(`  - ID: ${response.id}`);
+            log(`  - Email: ${response.email}`);
+            log(`  - Name: ${response.name}`);
+            log(`  - Score: ${response.score}`);
+            log(`  - UUID: ${response.uuid}`);
+            log(`  - API Key: ${response.apiKey}`);
+            log(`  - Last Login: ${response.lastLoginMs}`);
         } catch (error) {
             log("✗ Error creating user:", error);
         }
@@ -38,7 +46,18 @@ window.onload = async () => {
         try {
             log("Getting user...");
             const response = await client.get({ id: 1 });
-            log("✓ User retrieved:", response);
+            log("✓ User retrieved:");
+            log(`  - ID: ${response.id}`);
+            log(`  - Email: ${response.email}`);
+            log(`  - Name: ${response.name}`);
+            log(`  - Age: ${response.age}`);
+            log(`  - Score: ${response.score}`);
+            log(`  - UUID: ${response.uuid}`);
+            log(`  - Is Admin: ${response.isAdmin}`);
+            log(`  - API Key length: ${response.apiKey.length} bytes`);
+            log(`  - Last Login: ${response.lastLoginMs}`);
+            log(`  - Created At: ${response.createdAt}`);
+            log(`  - Updated At: ${response.updatedAt}`);
         } catch (error) {
             log("✗ Error getting user:", error);
         }
@@ -48,7 +67,18 @@ window.onload = async () => {
         try {
             log("Listing users...");
             const response = await client.list({ limit: 10, offset: 0 });
-            log("✓ Users listed:", response);
+            log(`✓ Users listed (${response.users.length} users):`);
+            response.users.forEach((user, index) => {
+                log(`  User ${index + 1}:`);
+                log(`    - ID: ${user.id}`);
+                log(`    - Email: ${user.email}`);
+                log(`    - Name: ${user.name}`);
+                log(`    - Age: ${user.age}`);
+                log(`    - Score: ${user.score}`);
+                log(`    - UUID: ${user.uuid}`);
+                log(`    - Is Admin: ${user.isAdmin}`);
+                log(`    - Last Login: ${user.lastLoginMs}`);
+            });
         } catch (error) {
             log("✗ Error listing users:", error);
         }
@@ -63,8 +93,17 @@ window.onload = async () => {
             name: "Updated User",
             age: 30,
             isAdmin: true,
+            lastLoginMs: BigInt(Date.now()),
             });
-            log("✓ User updated:", response);
+            log("✓ User updated:");
+            log(`  - ID: ${response.id}`);
+            log(`  - Email: ${response.email}`);
+            log(`  - Name: ${response.name}`);
+            log(`  - Age: ${response.age}`);
+            log(`  - Score: ${response.score}`);
+            log(`  - UUID: ${response.uuid}`);
+            log(`  - Is Admin: ${response.isAdmin}`);
+            log(`  - Last Login: ${response.lastLoginMs}`);
         } catch (error) {
             log("✗ Error updating user:", error);
         }
