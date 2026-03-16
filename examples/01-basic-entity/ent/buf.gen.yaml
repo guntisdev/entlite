@@ -11,6 +11,8 @@ plugins:
   - remote: buf.build/bufbuild/es
     out: ../web/src/gen
     opt: target=ts
+    include_imports: true
   - remote: buf.build/connectrpc/es
     out: ../web/src/gen
     opt: target=ts
+    include_imports: true
