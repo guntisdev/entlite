@@ -46,10 +46,10 @@ import (
 )
 
 type User struct {
-	ID        int64
+	ID        int32
 	Email     string
 	Name      string
-	Age       sql.NullInt64
+	Age       sql.NullInt32
 	Score     float64
 	Uuid      string
 	IsAdmin   bool
@@ -69,10 +69,10 @@ import (
 )
 
 type User struct {
-	Id        int64
+	Id        int32
 	Email     string
 	Name      string
-	Age       *int64
+	Age       *int32
 	Score     float64
 	Uuid      string
 	IsAdmin   bool
@@ -148,11 +148,12 @@ func UserDBToProto(db *db.User) *pb.User {
 		Id: db.ID,
 		Email: db.Email,
 		Name: db.Name,
-		Age: NullInt64ToPtr(db.Age),
+		Age: NullInt32ToPtr(db.Age),
 		Score: db.Score,
 		Uuid: db.Uuid,
 		IsAdmin: db.IsAdmin,
 		ApiKey: db.ApiKey,
+		LastLoginMs: db.LastLoginMs,
 		CreatedAt: TimeToProto(db.CreatedAt),
 		UpdatedAt: TimeToProto(db.UpdatedAt),
 	}
@@ -168,11 +169,12 @@ func UserProtoToDB(pb *pb.User) *db.User {
 		ID: pb.Id,
 		Email: pb.Email,
 		Name: pb.Name,
-		Age: PtrToNullInt64(pb.Age),
+		Age: PtrToNullInt32(pb.Age),
 		Score: pb.Score,
 		Uuid: pb.Uuid,
 		IsAdmin: pb.IsAdmin,
 		ApiKey: pb.ApiKey,
+		LastLoginMs: pb.LastLoginMs,
 		CreatedAt: ProtoToTime(pb.CreatedAt),
 		UpdatedAt: ProtoToTime(pb.UpdatedAt),
 	}

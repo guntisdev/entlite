@@ -217,6 +217,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		Uuid: logic.GetUuidStr(),
 		IsAdmin: arg.IsAdmin,
 		ApiKey: logic.GenerateAPIKey(),
+		LastLoginMs: arg.LastLoginMs,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -242,6 +243,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		Age: arg.Age,
 		Score: arg.Score,
 		IsAdmin: arg.IsAdmin,
+		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}
 	return (*db.Queries)(q).UpdateUser(ctx, internalArg)
