@@ -27,15 +27,16 @@ const (
 // User represents as user entity
 type User struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Id    int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id    int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Email string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	// First name and surname
 	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Age           *int64                 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
+	Age           *int32                 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
 	Score         float64                `protobuf:"fixed64,8,opt,name=score,proto3" json:"score,omitempty"`
 	Uuid          string                 `protobuf:"bytes,9,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	IsAdmin       bool                   `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
 	ApiKey        []byte                 `protobuf:"bytes,10,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	LastLoginMs   int64                  `protobuf:"varint,11,opt,name=last_login_ms,json=lastLoginMs,proto3" json:"last_login_ms,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -72,7 +73,7 @@ func (*User) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *User) GetId() int64 {
+func (x *User) GetId() int32 {
 	if x != nil {
 		return x.Id
 	}
@@ -93,7 +94,7 @@ func (x *User) GetName() string {
 	return ""
 }
 
-func (x *User) GetAge() int64 {
+func (x *User) GetAge() int32 {
 	if x != nil && x.Age != nil {
 		return *x.Age
 	}
@@ -128,6 +129,13 @@ func (x *User) GetApiKey() []byte {
 	return nil
 }
 
+func (x *User) GetLastLoginMs() int64 {
+	if x != nil {
+		return x.LastLoginMs
+	}
+	return 0
+}
+
 func (x *User) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -147,8 +155,9 @@ type CreateUserRequest struct {
 	Email string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	// First name and surname
 	Name          string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Age           *int64 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
+	Age           *int32 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
 	IsAdmin       bool   `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
+	LastLoginMs   int64  `protobuf:"varint,11,opt,name=last_login_ms,json=lastLoginMs,proto3" json:"last_login_ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -197,7 +206,7 @@ func (x *CreateUserRequest) GetName() string {
 	return ""
 }
 
-func (x *CreateUserRequest) GetAge() int64 {
+func (x *CreateUserRequest) GetAge() int32 {
 	if x != nil && x.Age != nil {
 		return *x.Age
 	}
@@ -211,9 +220,16 @@ func (x *CreateUserRequest) GetIsAdmin() bool {
 	return false
 }
 
+func (x *CreateUserRequest) GetLastLoginMs() int64 {
+	if x != nil {
+		return x.LastLoginMs
+	}
+	return 0
+}
+
 type GetUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -248,7 +264,7 @@ func (*GetUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetUserRequest) GetId() int64 {
+func (x *GetUserRequest) GetId() int32 {
 	if x != nil {
 		return x.Id
 	}
@@ -257,12 +273,13 @@ func (x *GetUserRequest) GetId() int64 {
 
 type UpdateUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Id    int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id    int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Email string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	// First name and surname
 	Name          string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Age           *int64 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
+	Age           *int32 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
 	IsAdmin       bool   `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
+	LastLoginMs   int64  `protobuf:"varint,11,opt,name=last_login_ms,json=lastLoginMs,proto3" json:"last_login_ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -297,7 +314,7 @@ func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *UpdateUserRequest) GetId() int64 {
+func (x *UpdateUserRequest) GetId() int32 {
 	if x != nil {
 		return x.Id
 	}
@@ -318,7 +335,7 @@ func (x *UpdateUserRequest) GetName() string {
 	return ""
 }
 
-func (x *UpdateUserRequest) GetAge() int64 {
+func (x *UpdateUserRequest) GetAge() int32 {
 	if x != nil && x.Age != nil {
 		return *x.Age
 	}
@@ -332,9 +349,16 @@ func (x *UpdateUserRequest) GetIsAdmin() bool {
 	return false
 }
 
+func (x *UpdateUserRequest) GetLastLoginMs() int64 {
+	if x != nil {
+		return x.LastLoginMs
+	}
+	return 0
+}
+
 type DeleteUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -369,7 +393,7 @@ func (*DeleteUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *DeleteUserRequest) GetId() int64 {
+func (x *DeleteUserRequest) GetId() int32 {
 	if x != nil {
 		return x.Id
 	}
@@ -378,8 +402,8 @@ func (x *DeleteUserRequest) GetId() int64 {
 
 type ListUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Limit         int64                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int64                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int32                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -414,14 +438,14 @@ func (*ListUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *ListUserRequest) GetLimit() int64 {
+func (x *ListUserRequest) GetLimit() int32 {
 	if x != nil {
 		return x.Limit
 	}
 	return 0
 }
 
-func (x *ListUserRequest) GetOffset() int64 {
+func (x *ListUserRequest) GetOffset() int32 {
 	if x != nil {
 		return x.Offset
 	}
@@ -476,42 +500,45 @@ var File_schema_proto protoreflect.FileDescriptor
 
 const file_schema_proto_rawDesc = "" +
 	"\n" +
-	"\fschema.proto\x12\aentlite\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"\xfb\x02\n" +
+	"\fschema.proto\x12\aentlite\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"\xa7\x03\n" +
 	"\x04User\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12\x15\n" +
-	"\x03age\x18\x04 \x01(\x03H\x00R\x03age\x88\x01\x01\x12\x1c\n" +
+	"\x03age\x18\x04 \x01(\x05H\x00R\x03age\x88\x01\x01\x12\x1c\n" +
 	"\x05score\x18\b \x01(\x01B\x06\xbaH\x03\xc8\x01\x01R\x05score\x12\x1a\n" +
 	"\x04uuid\x18\t \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04uuid\x12!\n" +
 	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12\x1f\n" +
 	"\aapi_key\x18\n" +
-	" \x01(\fB\x06\xbaH\x03\xc8\x01\x01R\x06apiKey\x12A\n" +
+	" \x01(\fB\x06\xbaH\x03\xc8\x01\x01R\x06apiKey\x12*\n" +
+	"\rlast_login_ms\x18\v \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\vlastLoginMs\x12A\n" +
 	"\n" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\tcreatedAt\x12A\n" +
 	"\n" +
 	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\tupdatedAtB\x06\n" +
-	"\x04_age\"\x8f\x01\n" +
+	"\x04_age\"\xbb\x01\n" +
 	"\x11CreateUserRequest\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12\x15\n" +
-	"\x03age\x18\x04 \x01(\x03H\x00R\x03age\x88\x01\x01\x12!\n" +
-	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdminB\x06\n" +
+	"\x03age\x18\x04 \x01(\x05H\x00R\x03age\x88\x01\x01\x12!\n" +
+	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12*\n" +
+	"\rlast_login_ms\x18\v \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\vlastLoginMsB\x06\n" +
 	"\x04_age\"(\n" +
 	"\x0eGetUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\"\xa7\x01\n" +
+	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\"\xd3\x01\n" +
 	"\x11UpdateUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12\x15\n" +
-	"\x03age\x18\x04 \x01(\x03H\x00R\x03age\x88\x01\x01\x12!\n" +
-	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdminB\x06\n" +
+	"\x03age\x18\x04 \x01(\x05H\x00R\x03age\x88\x01\x01\x12!\n" +
+	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12*\n" +
+	"\rlast_login_ms\x18\v \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\vlastLoginMsB\x06\n" +
 	"\x04_age\"+\n" +
 	"\x11DeleteUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x02id\"O\n" +
+	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\"O\n" +
 	"\x0fListUserRequest\x12\x1c\n" +
-	"\x05limit\x18\x01 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x05limit\x12\x1e\n" +
-	"\x06offset\x18\x02 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x06offset\"7\n" +
+	"\x05limit\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x05limit\x12\x1e\n" +
+	"\x06offset\x18\x02 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x06offset\"7\n" +
 	"\x10ListUserResponse\x12#\n" +
 	"\x05users\x18\x01 \x03(\v2\r.entlite.UserR\x05users2\xa1\x02\n" +
 	"\vUserService\x123\n" +

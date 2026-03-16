@@ -12,12 +12,13 @@ import (
 type CreateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
-	Age sql.NullInt64 `json:"age"`
+	Age sql.NullInt32 `json:"age"`
 	Score float64 `json:"score"`
 	IsAdmin bool `json:"is_admin"`
+	LastLoginMs int64 `json:"last_login_ms"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
 	if !logic.StartsWithCapital(arg.Name) {
 		return 0, fmt.Errorf("Failed create: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
@@ -29,6 +30,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		Uuid: logic.GetUuidStr(),
 		IsAdmin: arg.IsAdmin,
 		ApiKey: logic.GenerateAPIKey(),
+		LastLoginMs: arg.LastLoginMs,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -38,10 +40,11 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
-	Age sql.NullInt64 `json:"age"`
+	Age sql.NullInt32 `json:"age"`
 	Score float64 `json:"score"`
 	IsAdmin bool `json:"is_admin"`
-	ID int64 `json:"id"`
+	LastLoginMs int64 `json:"last_login_ms"`
+	ID int32 `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -54,6 +57,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		Age: arg.Age,
 		Score: arg.Score,
 		IsAdmin: arg.IsAdmin,
+		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}
 	return (*internal.Queries)(q).UpdateUser(ctx, internalArg)

@@ -150,6 +150,13 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 							field.Name = strings.Trim(lit.Value, "\"")
 						}
 					}
+				case "Int64":
+					field.Type = schema.FieldTypeInt64
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Name = strings.Trim(lit.Value, "\"")
+						}
+					}
 				case "Float":
 					field.Type = schema.FieldTypeFloat
 					if len(e.Args) > 0 {

@@ -10,14 +10,15 @@ import (
 )
 
 type User struct {
-	ID        int64         `json:"id"`
-	Email     string        `json:"email"`
-	Name      string        `json:"name"`
-	Age       sql.NullInt64 `json:"age"`
-	Score     float64       `json:"score"`
-	Uuid      string        `json:"uuid"`
-	IsAdmin   bool          `json:"is_admin"`
-	ApiKey    []byte        `json:"api_key"`
-	CreatedAt time.Time     `json:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at"`
+	ID          int32         `json:"id"`
+	Email       string        `json:"email"`
+	Name        string        `json:"name"`
+	Age         sql.NullInt32 `json:"age"`
+	Score       float64       `json:"score"`
+	Uuid        string        `json:"uuid"`
+	IsAdmin     bool          `json:"is_admin"`
+	ApiKey      []byte        `json:"api_key"`
+	LastLoginMs int64         `json:"last_login_ms"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }

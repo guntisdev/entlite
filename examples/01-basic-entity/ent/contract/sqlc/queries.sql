@@ -12,6 +12,7 @@ INSERT INTO "user" (
   uuid,
   is_admin,
   api_key,
+  last_login_ms,
   created_at,
   updated_at
 ) VALUES (
@@ -23,7 +24,8 @@ INSERT INTO "user" (
   $6,
   $7,
   $8,
-  $9
+  $9,
+  $10
 ) RETURNING id;
 
 -- name: GetUser :one
@@ -39,8 +41,9 @@ UPDATE "user" SET
   age = $3,
   score = $4,
   is_admin = $5,
-  updated_at = $6
-WHERE id = $7
+  last_login_ms = $6,
+  updated_at = $7
+WHERE id = $8
 RETURNING *;
 
 -- name: DeleteUser :exec
