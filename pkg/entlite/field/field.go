@@ -177,13 +177,13 @@ func (f *BoolField) Validate(fn func(bool) bool) BoolFieldBuilder {
 }
 
 // --------------------------------- int ---------------------------------
-// int uses int64 as type under the hood - for sqlite and JS compatibility
+// int uses int32 as type under the hood - for DX experience with JS number
 type IntFieldBuilder interface {
-	Default(int64) IntFieldBuilder
+	Default(int32) IntFieldBuilder
 	ProtoField(int) IntFieldBuilder
 	Comment(string) IntFieldBuilder
 	Optional() IntFieldBuilder
-	Validate(func(int64) bool) IntFieldBuilder
+	Validate(func(int32) bool) IntFieldBuilder
 
 	// to satisfy entlite.Field interface
 	Field()
@@ -191,11 +191,11 @@ type IntFieldBuilder interface {
 
 type IntField struct {
 	name       string
-	defaultVal *int64
+	defaultVal *int32
 	protoField *int
 	comment    *string
 	optional   bool
-	validate   func(int64) bool
+	validate   func(int32) bool
 }
 
 func (*IntField) Field() {}
@@ -204,7 +204,7 @@ func Int(name string) IntFieldBuilder {
 	return &IntField{name: name}
 }
 
-func (f *IntField) GetDefault() *int64 {
+func (f *IntField) GetDefault() *int32 {
 	return f.defaultVal
 }
 
@@ -220,11 +220,11 @@ func (f *IntField) GetOptional() bool {
 	return f.optional
 }
 
-func (f *IntField) GetValidate() func(int64) bool {
+func (f *IntField) GetValidate() func(int32) bool {
 	return f.validate
 }
 
-func (f *IntField) Default(value int64) IntFieldBuilder {
+func (f *IntField) Default(value int32) IntFieldBuilder {
 	f.defaultVal = &value
 	return f
 }
@@ -244,7 +244,79 @@ func (f *IntField) Optional() IntFieldBuilder {
 	return f
 }
 
-func (f *IntField) Validate(fn func(int64) bool) IntFieldBuilder {
+func (f *IntField) Validate(fn func(int32) bool) IntFieldBuilder {
+	f.validate = fn
+	return f
+}
+
+// --------------------------------- int64 ---------------------------------
+type Int64FieldBuilder interface {
+	Default(int64) Int64FieldBuilder
+	ProtoField(int) Int64FieldBuilder
+	Comment(string) Int64FieldBuilder
+	Optional() Int64FieldBuilder
+	Validate(func(int64) bool) Int64FieldBuilder
+
+	// to satisfy entlite.Field interface
+	Field()
+}
+
+type Int64Field struct {
+	name       string
+	defaultVal *int64
+	protoField *int
+	comment    *string
+	optional   bool
+	validate   func(int64) bool
+}
+
+func (*Int64Field) Field() {}
+
+func Int64(name string) Int64FieldBuilder {
+	return &Int64Field{name: name}
+}
+
+func (f *Int64Field) GetDefault() *int64 {
+	return f.defaultVal
+}
+
+func (f *Int64Field) GetProtoField() *int {
+	return f.protoField
+}
+
+func (f *Int64Field) GetComment() *string {
+	return f.comment
+}
+
+func (f *Int64Field) GetOptional() bool {
+	return f.optional
+}
+
+func (f *Int64Field) GetValidate() func(int64) bool {
+	return f.validate
+}
+
+func (f *Int64Field) Default(value int64) Int64FieldBuilder {
+	f.defaultVal = &value
+	return f
+}
+
+func (f *Int64Field) ProtoField(num int) Int64FieldBuilder {
+	f.protoField = &num
+	return f
+}
+
+func (f *Int64Field) Comment(text string) Int64FieldBuilder {
+	f.comment = &text
+	return f
+}
+
+func (f *Int64Field) Optional() Int64FieldBuilder {
+	f.optional = true
+	return f
+}
+
+func (f *Int64Field) Validate(fn func(int64) bool) Int64FieldBuilder {
 	f.validate = fn
 	return f
 }
