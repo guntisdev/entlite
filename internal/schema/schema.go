@@ -61,7 +61,8 @@ type FieldType string
 
 const (
 	FieldTypeString FieldType = "string"
-	FieldTypeInt    FieldType = "int64"
+	FieldTypeInt    FieldType = "int32"
+	FieldTypeInt64  FieldType = "int64"
 	FieldTypeFloat  FieldType = "float64"
 	FieldTypeBool   FieldType = "bool"
 	FieldTypeTime   FieldType = "time"
