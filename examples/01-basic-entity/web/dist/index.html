@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entlite Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      color: #333;
+    }
+    
+    h1 {
+      margin-bottom: 0.5rem;
+      color: #2563eb;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid #e5e5e5;
+    }
+    
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    #createBtn {
+      background: #10b981;
+      color: white;
+    }
+    
+    #getBtn {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    #listBtn {
+      background: #8b5cf6;
+      color: white;
+    }
+    
+    #updateBtn {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    #deleteBtn {
+      background: #ef4444;
+      color: white;
+    }
+    
+    #clearBtn {
+      background: #6b7280;
+      color: white;
+      margin-left: auto;
+    }
+    
+    #output {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 4px;
+      min-height: 200px;
+      max-height: 500px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    
+    #output div {
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #334155;
+    }
+    
+    #output div:last-child {
+      border-bottom: none;
+    }
+    
+    .info {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Entlite Demo</h1>
+    <p class="subtitle">Testing generated TypeScript types and gRPC Connect client</p>
+    
+    <div class="controls">
+      <button id="createBtn">Create User</button>
+      <button id="getBtn">Get User</button>
+      <button id="listBtn">List Users</button>
+      <button id="updateBtn">Update User</button>
+      <button id="deleteBtn">Delete User</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+    
+    <div id="output"></div>
+    
+    <div class="info">
+      <strong>What's happening:</strong><br>
+      This page uses TypeScript types generated from your proto schema. 
+      The client uses Connect-Web to call your Go gRPC server.
+      All types are fully type-safe!
+    </div>
+  </div>
+  
+  <script type="module" src="bundle.js"></script>
+</body>
+</html>
