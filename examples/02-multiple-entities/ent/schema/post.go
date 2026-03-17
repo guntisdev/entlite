@@ -1,4 +1,4 @@
-package ent
+package schema
 
 import (
 	"github.com/guntisdev/entlite/pkg/entlite"
