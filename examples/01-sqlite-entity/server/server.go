@@ -36,8 +36,8 @@ func (s *UserServer) Create(
 	userID, err := wrappedQueries.CreateUser(ctx, db.CreateUserParams{
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
-		Age:         convert.PtrToNullInt32(req.Msg.Age),
-		IsAdmin:     req.Msg.IsAdmin,
+		Age:         convert.SQLitePtrInt32ToNullInt64(req.Msg.Age),
+		IsAdmin:     convert.SQLiteBoolToInt(req.Msg.IsAdmin),
 		LastLoginMs: req.Msg.LastLoginMs,
 	})
 	if err != nil {
@@ -61,7 +61,7 @@ func (s *UserServer) Get(
 
 	queries := db.New(s.db)
 
-	dbUser, err := queries.GetUser(ctx, req.Msg.Id)
+	dbUser, err := queries.GetUser(ctx, convert.SQLiteInt32ToInt64(req.Msg.Id))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
@@ -83,11 +83,11 @@ func (s *UserServer) Update(
 	wrappedQueries := (*db.Queries)(queries)
 
 	dbUser, err := wrappedQueries.UpdateUser(ctx, db.UpdateUserParams{
-		ID:          req.Msg.Id,
+		ID:          convert.SQLiteInt32ToInt64(req.Msg.Id),
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
-		Age:         convert.PtrToNullInt32(req.Msg.Age),
-		IsAdmin:     req.Msg.IsAdmin,
+		Age:         convert.SQLitePtrInt32ToNullInt64(req.Msg.Age),
+		IsAdmin:     convert.SQLiteBoolToInt(req.Msg.IsAdmin),
 		LastLoginMs: req.Msg.LastLoginMs,
 	})
 	if err != nil {
@@ -109,7 +109,7 @@ func (s *UserServer) Delete(
 
 	queries := db.New(s.db)
 
-	err := queries.DeleteUser(ctx, req.Msg.Id)
+	err := queries.DeleteUser(ctx, convert.SQLiteInt32ToInt64(req.Msg.Id))
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete user: %w", err))
 	}

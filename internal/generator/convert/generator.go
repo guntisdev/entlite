@@ -26,7 +26,7 @@ func Generate(entities []schema.Entity, imports []string, sqlDialect sqlc.SQLDia
 	content.WriteString("package convert\n\n")
 
 	content.WriteString("import (\n")
-	timeAndSqlImports := []string{"database/sql", "time", "google.golang.org/protobuf/types/known/timestamppb"}
+	timeAndSqlImports := []string{"database/sql", "math", "time", "google.golang.org/protobuf/types/known/timestamppb"}
 	allImports := append(timeAndSqlImports, imports...)
 	for _, importPath := range allImports {
 		content.WriteString(fmt.Sprintf("\t\"%s\"\n", importPath))
@@ -111,8 +111,17 @@ func generateEntityConversion(entity schema.Entity, sqlDialect sqlc.SQLDialect) 
 func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string, sqlDialect sqlc.SQLDialect) string {
 	dbFieldRef := fmt.Sprintf("%s.%s", dbPrefix, dbFieldName)
 
-	if sqlDialect == sqlc.SQLite && field.Type == schema.FieldTypeBool {
-		return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
+	if sqlDialect == sqlc.SQLite {
+		if field.Type == schema.FieldTypeBool {
+			return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
+		}
+		if field.Type == schema.FieldTypeInt {
+			if field.Optional {
+				return fmt.Sprintf("SQLiteNullInt64ToPtrInt32(%s)", dbFieldRef)
+			} else {
+				return fmt.Sprintf("SQLiteInt64ToInt32(%s)", dbFieldRef)
+			}
+		}
 	}
 
 	if field.Optional {
@@ -157,8 +166,17 @@ func fieldDBToProto(field schema.Field, dbFieldName string, dbPrefix string, sql
 func fieldProtoToDB(field schema.Field, protoFieldName string, pbPrefix string, sqlDialect sqlc.SQLDialect) string {
 	pbFieldRef := fmt.Sprintf("%s.%s", pbPrefix, protoFieldName)
 
-	if sqlDialect == sqlc.SQLite && field.Type == schema.FieldTypeBool {
-		return fmt.Sprintf("SQLiteBoolToInt(%s)", pbFieldRef)
+	if sqlDialect == sqlc.SQLite {
+		if field.Type == schema.FieldTypeBool {
+			return fmt.Sprintf("SQLiteBoolToInt(%s)", pbFieldRef)
+		}
+		if field.Type == schema.FieldTypeInt {
+			if field.Optional {
+				return fmt.Sprintf("SQLitePtrInt32ToNullInt64(%s)", pbFieldRef)
+			} else {
+				return fmt.Sprintf("SQLiteInt32ToInt64(%s)", pbFieldRef)
+			}
+		}
 	}
 
 	if field.Optional {

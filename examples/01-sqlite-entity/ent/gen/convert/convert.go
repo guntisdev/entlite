@@ -3,6 +3,7 @@ package convert
 
 import (
 	"database/sql"
+	"math"
 	"time"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/db"
@@ -18,10 +19,10 @@ func UserDBToProto(db *db.User) *pb.User {
 	}
 
 	return &pb.User{
-		Id: db.ID,
+		Id: SQLiteInt64ToInt32(db.ID),
 		Email: db.Email,
 		Name: db.Name,
-		Age: NullInt32ToPtr(db.Age),
+		Age: SQLiteNullInt64ToPtrInt32(db.Age),
 		Score: db.Score,
 		Uuid: db.Uuid,
 		IsAdmin: SQLiteIntToBool(db.IsAdmin),
@@ -39,10 +40,10 @@ func UserProtoToDB(pb *pb.User) *db.User {
 	}
 
 	return &db.User{
-		ID: pb.Id,
+		ID: SQLiteInt32ToInt64(pb.Id),
 		Email: pb.Email,
 		Name: pb.Name,
-		Age: PtrToNullInt32(pb.Age),
+		Age: SQLitePtrInt32ToNullInt64(pb.Age),
 		Score: pb.Score,
 		Uuid: pb.Uuid,
 		IsAdmin: SQLiteBoolToInt(pb.IsAdmin),
@@ -194,4 +195,30 @@ func SQLiteBoolToInt(b bool) int64 {
     } else {
         return 0
     }
+}
+
+// --- SQLite int converters int32 - int64 ---
+func SQLiteInt64ToInt32(n int64) int32 {
+    if n < math.MinInt32 || n > math.MaxInt32 {
+		panic("Unable convert sqlite int64 to int32")
+	}
+	return int32(n)
+}
+
+func SQLiteInt32ToInt64(n int32) int64 {
+    return int64(n)
+}
+
+// --- SQLite null-int converters int32 - int64 ---
+func SQLiteNullInt64ToPtrInt32(n sql.NullInt64) *int32 {
+	if !n.Valid { return nil }
+    v := SQLiteInt64ToInt32(n.Int64)
+	return &v
+}
+
+func SQLitePtrInt32ToNullInt64(i *int32) sql.NullInt64 {
+    if i == nil {
+		return sql.NullInt64{Valid: false}
+	}
+	return sql.NullInt64{ Int64: int64(*i), Valid: true }
 }
