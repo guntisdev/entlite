@@ -1,3 +1,3 @@
-//go:generate go run ../../../../cmd/entlite gen .
+//go:generate go run github.com/guntisdev/entlite/cmd/entlite gen .
 
-package ent
+package schema

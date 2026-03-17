@@ -29,3 +29,23 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
     ├── sqlc.yaml
     └── generate.go     # go generate - creates contracts, launches sqlc, buf, light db wrapper and convert
 ```
+
+## Launch example
+Go to one of examples and generate types
+```bash
+cd examples/01-basic-entity
+cd ent/
+go generate
+```
+Build JavaScript
+```bash
+cd examples/01-basic-entity
+cd web/
+npm install
+npm run build
+```
+Run go web server
+```bash
+cd examples/01-basic-entity
+go run main.go
+```

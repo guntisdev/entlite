@@ -163,13 +163,11 @@ plugins:
     opt: 
       - paths=source_relative
       - package_suffix=
-  - remote: buf.build/bufbuild/es
+  - remote: buf.build/bufbuild/es:v2.11.0
     out: gen/ts
-    opt: target=ts
-  - remote: buf.build/connectrpc/es
-    out: gen/ts
-    opt: target=ts
-`
+    opt: 
+      - target=ts
+    include_imports: true`
 
 	path := filepath.Join(dir, "buf.gen.yaml")
 	return createIfNotExist(path, content)
