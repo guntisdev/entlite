@@ -3,11 +3,14 @@ package server
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/convert"
+	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/db"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/pb"
 )
 
@@ -27,15 +30,26 @@ func (s *UserServer) Create(
 ) (*connect.Response[pb.User], error) {
 	log.Printf("Create user: %+v", req.Msg)
 
-	// TODO: Implement user creation logic
-	user := &pb.User{
-		Id:      1, // This should come from database
-		Email:   req.Msg.Email,
-		Name:    req.Msg.Name,
-		Age:     req.Msg.Age,
-		IsAdmin: req.Msg.IsAdmin,
+	queries := db.New(s.db)
+	wrappedQueries := (*db.Queries)(queries)
+
+	userID, err := wrappedQueries.CreateUser(ctx, db.CreateUserParams{
+		Email:       req.Msg.Email,
+		Name:        req.Msg.Name,
+		Age:         convert.PtrToNullInt32(req.Msg.Age),
+		IsAdmin:     req.Msg.IsAdmin,
+		LastLoginMs: req.Msg.LastLoginMs,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create user: %w", err))
 	}
 
+	dbUser, err := queries.GetUser(ctx, userID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created user: %w", err))
+	}
+
+	user := convert.UserDBToProto((*db.User)(&dbUser))
 	return connect.NewResponse(user), nil
 }
 
@@ -45,14 +59,17 @@ func (s *UserServer) Get(
 ) (*connect.Response[pb.User], error) {
 	log.Printf("Get user: id=%d", req.Msg.Id)
 
-	// TODO: Implement user retrieval logic
-	user := &pb.User{
-		Id:      req.Msg.Id,
-		Email:   "user@example.com",
-		Name:    "Example User",
-		IsAdmin: false,
+	queries := db.New(s.db)
+
+	dbUser, err := queries.GetUser(ctx, req.Msg.Id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get user: %w", err))
 	}
 
+	user := convert.UserDBToProto((*db.User)(&dbUser))
 	return connect.NewResponse(user), nil
 }
 
@@ -62,15 +79,25 @@ func (s *UserServer) Update(
 ) (*connect.Response[pb.User], error) {
 	log.Printf("Update user: id=%d, %+v", req.Msg.Id, req.Msg)
 
-	// TODO: Implement user update logic
-	user := &pb.User{
-		Id:      req.Msg.Id,
-		Email:   req.Msg.Email,
-		Name:    req.Msg.Name,
-		Age:     req.Msg.Age,
-		IsAdmin: req.Msg.IsAdmin,
+	queries := db.New(s.db)
+	wrappedQueries := (*db.Queries)(queries)
+
+	dbUser, err := wrappedQueries.UpdateUser(ctx, db.UpdateUserParams{
+		ID:          req.Msg.Id,
+		Email:       req.Msg.Email,
+		Name:        req.Msg.Name,
+		Age:         convert.PtrToNullInt32(req.Msg.Age),
+		IsAdmin:     req.Msg.IsAdmin,
+		LastLoginMs: req.Msg.LastLoginMs,
+	})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to update user: %w", err))
 	}
 
+	user := convert.UserDBToProto((*db.User)(&dbUser))
 	return connect.NewResponse(user), nil
 }
 
@@ -80,7 +107,12 @@ func (s *UserServer) Delete(
 ) (*connect.Response[emptypb.Empty], error) {
 	log.Printf("Delete user: id=%d", req.Msg.Id)
 
-	// TODO: Implement user deletion logic
+	queries := db.New(s.db)
+
+	err := queries.DeleteUser(ctx, req.Msg.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete user: %w", err))
+	}
 
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
@@ -91,21 +123,19 @@ func (s *UserServer) List(
 ) (*connect.Response[pb.ListUserResponse], error) {
 	log.Printf("List users: limit=%d, offset=%d", req.Msg.Limit, req.Msg.Offset)
 
-	// TODO: Implement user listing logic
-	users := []*pb.User{
-		{
-			Id:      1,
-			Email:   "user1@example.com",
-			Name:    "User One",
-			IsAdmin: false,
-		},
-		{
-			Id:      2,
-			Email:   "user2@example.com",
-			Name:    "User Two",
-			IsAdmin: true,
-		},
+	queries := db.New(s.db)
+
+	dbUsers, err := queries.ListUser(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
+
+	dbUserPtrs := make([]*db.User, len(dbUsers))
+	for i := range dbUsers {
+		dbUserPtrs[i] = (*db.User)(&dbUsers[i])
+	}
+
+	users := convert.UserDBSliceToProtoSlice(dbUserPtrs)
 
 	response := &pb.ListUserResponse{
 		Users: users,
