@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"time"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"github.com/guntisdev/entlite/examples/02-multiple-entities/ent/gen/db"
-	"github.com/guntisdev/entlite/examples/02-multiple-entities/ent/gen/pb"
+	"github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/db"
+	"github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/pb"
 )
 
 // +++++ Post conversion functions
