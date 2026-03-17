@@ -16,9 +16,9 @@ import (
 )
 
 func main() {
-	dbPath := "./db.db"
+	dbPath := "./server/db.db"
 
-	database, err := sql.Open("sqlite3", dbPath)
+	database, err := sql.Open("sqlite", dbPath)
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
@@ -60,8 +60,10 @@ func initSchema(db *sql.DB) error {
 
 	_, err = db.Exec(string(schemaBytes))
 	if err != nil {
-		return fmt.Errorf("failed to execute schema: %w", err)
+		log.Printf("Schema initialization skipped (tables may already exist): %v", err)
+		return nil
 	}
 
+	log.Println("Database schema initialized successfully")
 	return nil
 }

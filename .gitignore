@@ -4,6 +4,8 @@
 *.swp            
 bin/
 
-node_modules/
-dist/bundle.js
-dist/bundle.js.map
+/**/node_modules/
+/**/dist/bundle.js
+/**/dist/bundle.js.map
+
+/**/server/db.db
