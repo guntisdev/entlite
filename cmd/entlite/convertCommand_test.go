@@ -130,6 +130,7 @@ package convert
 
 import (
 	"database/sql"
+	"math"
 	"time"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/db"
@@ -321,6 +322,32 @@ func SQLiteBoolToInt(b bool) int64 {
     } else {
         return 0
     }
+}
+
+// --- SQLite int converters int32 - int64 ---
+func SQLiteInt64ToInt32(n int64) int32 {
+    if n < math.MinInt32 || n > math.MaxInt32 {
+		panic("Unable convert sqlite int64 to int32")
+	}
+	return int32(n)
+}
+
+func SQLiteInt32ToInt64(n int32) int64 {
+    return int64(n)
+}
+
+// --- SQLite null-int converters int32 - int64 ---
+func SQLiteNullInt64ToPtrInt32(n sql.NullInt64) *int32 {
+	if !n.Valid { return nil }
+    v := SQLiteInt64ToInt32(n.Int64)
+	return &v
+}
+
+func SQLitePtrInt32ToNullInt64(i *int32) sql.NullInt64 {
+    if i == nil {
+		return sql.NullInt64{Valid: false}
+	}
+	return sql.NullInt64{ Int64: int64(*i), Valid: true }
 }`
 
 	if d := util.Diff(expectedContent, string(actualContent)); d != "" {
