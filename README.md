@@ -6,10 +6,12 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
 * handle sql dialect passing to newCommand
-* read sql dialect from sqlc.yaml when generate.go - use for correct convertion/validation/wrapping
-* fix sqlite convertion types (integer=int64, boolean=int64)
 * check each field if it added in further generation (for example Comment)
-* add more field types: int64? float32? float64?
+* figure out field methods to forbid creation/update from client. forbid exposing to proto
+* Maybe WriteSkip() and ReadSkip() - like WriteSkip() for createdAt and ReadSkip() for password?
+* Or maybe .Permission() - with arguments inside?
+* Figure out better DX for pb-db type conversion. Like SQLitePtrInt32ToNullInt64. Maybe put something in sqlcWrap code
+* Update 01-sqlite-entity with better logs (not only input, but also output and error on go side)
 
 ## Folder structure
 ```
@@ -33,19 +35,17 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 ## Launch example
 Go to one of examples and generate types
 ```bash
-cd examples/01-basic-entity
+cd examples/01-sqlite-entity
 cd ent/
 go generate
 ```
 Build JavaScript
 ```bash
-cd examples/01-basic-entity
 cd web/
 npm install
 npm run build
 ```
 Run go web server
 ```bash
-cd examples/01-basic-entity
 go run main.go
 ```

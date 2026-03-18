@@ -1,131 +1,4 @@
-package main
-
-import (
-	"os"
-	"path/filepath"
-	"testing"
-
-	"github.com/guntisdev/entlite/internal/util"
-)
-
-func TestConvertCommand(t *testing.T) {
-
-	tmpDir := t.TempDir()
-
-	schemaDir := filepath.Join(tmpDir, "ent", "schema")
-	logicDir := filepath.Join(tmpDir, "ent", "logic")
-	dbDir := filepath.Join(tmpDir, "ent", "gen", "db")
-	pbDir := filepath.Join(tmpDir, "ent", "gen", "pb")
-
-	if err := os.MkdirAll(schemaDir, 0755); err != nil {
-		t.Fatalf("Failed to create schema directory: %v", err)
-	}
-
-	if err := os.MkdirAll(logicDir, 0755); err != nil {
-		t.Fatalf("Failed to create logic directory: %v", err)
-	}
-
-	if err := os.MkdirAll(dbDir, 0755); err != nil {
-		t.Fatalf("Failed to create db directory: %v", err)
-	}
-
-	if err := os.MkdirAll(pbDir, 0755); err != nil {
-		t.Fatalf("Failed to create pb directory: %v", err)
-	}
-
-	// Write common test input files
-	writeTestGoMod(t, tmpDir)
-	writeTestUserSchema(t, schemaDir)
-	writeTestLogic(t, logicDir)
-
-	dbContent := `package db
-
-import (
-	"database/sql"
-	"time"
-)
-
-type User struct {
-	ID        int32
-	Email     string
-	Name      string
-	Age       sql.NullInt32
-	Score     float64
-	Uuid      string
-	IsAdmin   bool
-	ApiKey    []byte
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}`
-	dbPath := filepath.Join(dbDir, "db.go")
-	if err := os.WriteFile(dbPath, []byte(dbContent), 0644); err != nil {
-		t.Fatalf("Failed to write db file: %v", err)
-	}
-
-	pbContent := `package pb
-
-import (
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-)
-
-type User struct {
-	Id        int32
-	Email     string
-	Name      string
-	Age       *int32
-	Score     float64
-	Uuid      string
-	IsAdmin   bool
-	ApiKey    []byte
-	CreatedAt *timestamppb.Timestamp
-	UpdatedAt *timestamppb.Timestamp
-}`
-	pbPath := filepath.Join(pbDir, "pb.go")
-	if err := os.WriteFile(pbPath, []byte(pbContent), 0644); err != nil {
-		t.Fatalf("Failed to write pb file: %v", err)
-	}
-
-	// Change to tmpDir to simulate working in the project
-	originalDir, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Failed to get current directory: %v", err)
-	}
-	// run convert command from t.TempDir()/ent/
-	if err := os.Chdir(filepath.Join(tmpDir, "ent")); err != nil {
-		t.Fatalf("Failed to change directory: %v", err)
-	}
-	defer os.Chdir(originalDir)
-
-	// Create sqlc.yaml
-	sqlcYamlContent := `version: "2"
-sql:
-  - schema: "contract/sqlc/schema.sql"
-    queries: "contract/sqlc/queries.sql"    
-    engine: "postgresql"
-    gen:
-      go:
-        package: "internal"
-        out: "gen/db/internal"
-        emit_json_tags: true`
-
-	sqlcYamlPath := filepath.Join(tmpDir, "ent", "sqlc.yaml")
-	if err := os.WriteFile(sqlcYamlPath, []byte(sqlcYamlContent), 0644); err != nil {
-		t.Fatalf("Failed to write sqlc.yaml: %v", err)
-	}
-
-	convertCommand([]string{dbDir, pbDir})
-
-	convertPath := filepath.Join(tmpDir, "ent", "gen", "convert", "convert.go")
-	if _, err := os.Stat(convertPath); os.IsNotExist(err) {
-		t.Fatalf("Expected convert.go was not created at %s", convertPath)
-	}
-
-	actualContent, err := os.ReadFile(convertPath)
-	if err != nil {
-		t.Fatalf("Failed to read generated convert.go: %v", err)
-	}
-
-	expectedContent := `// generate convertion between db and pb types
+// generate convertion between db and pb types
 package convert
 
 import (
@@ -133,9 +6,51 @@ import (
 	"math"
 	"time"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/db"
-	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/pb"
+	"github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/db"
+	"github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/pb"
 )
+
+// +++++ Post conversion functions
+
+// PostDBToProto converts a database model to proto message
+func PostDBToProto(db *db.Post) *pb.Post {
+	if db == nil {
+		return nil
+	}
+
+	return &pb.Post{
+		Id: db.ID,
+		Title: db.Title,
+		Content: db.Content,
+		Published: db.Published,
+	}
+}
+
+// PostProtoToDB converts a proto message to database model
+func PostProtoToDB(pb *pb.Post) *db.Post {
+	if pb == nil {
+		return nil
+	}
+
+	return &db.Post{
+		ID: pb.Id,
+		Title: pb.Title,
+		Content: pb.Content,
+		Published: pb.Published,
+	}
+}
+// PostDBSliceToProtoSlice converts db slice to proto array message
+func PostDBSliceToProtoSlice(dbSlice []*db.Post) []*pb.Post {
+	if dbSlice == nil {
+		return nil
+	}
+
+	result := make([]*pb.Post, len(dbSlice))
+	for i, row := range dbSlice {
+		result[i] = PostDBToProto(row)
+	}
+	return result
+}
 
 // +++++ User conversion functions
 
@@ -149,14 +64,6 @@ func UserDBToProto(db *db.User) *pb.User {
 		Id: db.ID,
 		Email: db.Email,
 		Name: db.Name,
-		Age: NullInt32ToPtr(db.Age),
-		Score: db.Score,
-		Uuid: db.Uuid,
-		IsAdmin: db.IsAdmin,
-		ApiKey: db.ApiKey,
-		LastLoginMs: db.LastLoginMs,
-		CreatedAt: TimeToProto(db.CreatedAt),
-		UpdatedAt: TimeToProto(db.UpdatedAt),
 	}
 }
 
@@ -170,14 +77,6 @@ func UserProtoToDB(pb *pb.User) *db.User {
 		ID: pb.Id,
 		Email: pb.Email,
 		Name: pb.Name,
-		Age: PtrToNullInt32(pb.Age),
-		Score: pb.Score,
-		Uuid: pb.Uuid,
-		IsAdmin: pb.IsAdmin,
-		ApiKey: pb.ApiKey,
-		LastLoginMs: pb.LastLoginMs,
-		CreatedAt: ProtoToTime(pb.CreatedAt),
-		UpdatedAt: ProtoToTime(pb.UpdatedAt),
 	}
 }
 // UserDBSliceToProtoSlice converts db slice to proto array message
@@ -348,9 +247,4 @@ func SQLitePtrInt32ToNullInt64(i *int32) sql.NullInt64 {
 		return sql.NullInt64{Valid: false}
 	}
 	return sql.NullInt64{ Int64: int64(*i), Valid: true }
-}`
-
-	if d := util.Diff(expectedContent, string(actualContent)); d != "" {
-		t.Errorf("Convert.go content mismatch (-expected +actual):\n%s", d)
-	}
 }
