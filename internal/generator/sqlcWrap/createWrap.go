@@ -10,27 +10,28 @@ import (
 
 func generateCreateStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
 	var sb strings.Builder
-
-	defaultFuncFields := make(map[string]bool)
-	for _, field := range entity.Fields {
-		if field.DefaultFunc != nil {
-			defaultFuncFields[toExportedName(field.Name)] = true
-		}
-	}
-
 	sb.WriteString(fmt.Sprintf("type %s struct {\n", structName))
 
-	for _, field := range structType.Fields.List {
-		if len(field.Names) > 0 {
-			fieldName := field.Names[0].Name
-			// Skip fields that have DefaultFunc
-			if !defaultFuncFields[fieldName] {
-				sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, formatType(field.Type)))
-				if field.Tag != nil {
-					sb.WriteString(fmt.Sprintf(" %s", field.Tag.Value))
-				}
-				sb.WriteString("\n")
+	for _, astField := range structType.Fields.List {
+		if len(astField.Names) > 0 {
+			fieldName := astField.Names[0].Name
+			fieldPtr := getFieldByName(entity, fieldName)
+			if fieldPtr == nil {
+				continue
 			}
+			field := *fieldPtr
+			// Skip fields that have DefaultFunc
+			// TODO - change logic - DefaultFunc could be used if no real value passed
+			// proly .WriteSkip() or .Permissions() with arguments should be used
+			if field.DefaultFunc != nil {
+				continue
+			}
+
+			sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, fieldToGoType(field)))
+			if astField.Tag != nil {
+				sb.WriteString(fmt.Sprintf(" %s", astField.Tag.Value))
+			}
+			sb.WriteString("\n")
 		}
 	}
 
@@ -82,60 +83,4 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	sb.WriteString("}\n\n")
 
 	return sb.String()
-}
-
-func addValidationChecks(entity schema.Entity, sqlQuery string, returnType string) string {
-	var sb strings.Builder
-
-	var zeroValue string
-	switch returnType {
-	case "", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
-		zeroValue = "0"
-	case "float32", "float64":
-		zeroValue = "0.0"
-	case "bool":
-		zeroValue = "false"
-	case "string":
-		zeroValue = "\"\""
-	default:
-		// Handle pointers, slices, and maps
-		if strings.HasPrefix(returnType, "*") || strings.HasPrefix(returnType, "[]") || strings.HasPrefix(returnType, "map[") {
-			zeroValue = "nil"
-		} else {
-			// Assume it's a struct type
-			zeroValue = returnType + "{}"
-		}
-	}
-
-	for _, field := range entity.Fields {
-		if field.Validate == nil {
-			continue
-		}
-
-		validateName := field.Validate().(string)
-		fieldName := toDBFieldName(field)
-		sb.WriteString(fmt.Sprintf("\tif !%s(arg.%s) {\n", validateName, fieldName))
-		sb.WriteString(fmt.Sprintf("\t\treturn %s, fmt.Errorf(\"Failed %s: incorrect value for '%s' in field '%s', validated by '%s'\")\n", zeroValue, sqlQuery, entity.Name, field.Name, validateName))
-		sb.WriteString("\t}\n")
-	}
-	return sb.String()
-}
-
-// match sqlc conversion - ID and CamelCase names
-func toDBFieldName(field schema.Field) string {
-	if field.IsID() {
-		return "ID"
-	}
-	return snakeToCamelCase(field.Name)
-}
-
-func snakeToCamelCase(s string) string {
-	parts := strings.Split(s, "_")
-	result := ""
-	for _, part := range parts {
-		if len(part) > 0 {
-			result += strings.ToUpper(part[:1]) + part[1:]
-		}
-	}
-	return result
 }

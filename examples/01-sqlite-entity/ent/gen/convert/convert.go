@@ -19,7 +19,7 @@ func UserDBToProto(db *db.User) *pb.User {
 	}
 
 	return &pb.User{
-		Id: SQLiteInt64ToInt32(db.ID),
+		ID: SQLiteInt64ToInt32(db.ID),
 		Email: db.Email,
 		Name: db.Name,
 		Age: SQLiteNullInt64ToPtrInt32(db.Age),
@@ -40,7 +40,7 @@ func UserProtoToDB(pb *pb.User) *db.User {
 	}
 
 	return &db.User{
-		ID: SQLiteInt32ToInt64(pb.Id),
+		ID: SQLiteInt32ToInt64(pb.ID),
 		Email: pb.Email,
 		Name: pb.Name,
 		Age: SQLitePtrInt32ToNullInt64(pb.Age),

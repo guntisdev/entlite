@@ -10,27 +10,25 @@ import (
 
 func generateUpdateStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
 	var sb strings.Builder
-
-	defaultFuncFields := make(map[string]bool)
-	for _, field := range entity.Fields {
-		if field.DefaultFunc != nil {
-			defaultFuncFields[toExportedName(field.Name)] = true
-		}
-	}
-
 	sb.WriteString(fmt.Sprintf("type %s struct {\n", structName))
 
-	for _, field := range structType.Fields.List {
-		if len(field.Names) > 0 {
-			fieldName := field.Names[0].Name
-			// Skip fields that have DefaultFunc
-			if !defaultFuncFields[fieldName] {
-				sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, formatType(field.Type)))
-				if field.Tag != nil {
-					sb.WriteString(fmt.Sprintf(" %s", field.Tag.Value))
-				}
-				sb.WriteString("\n")
+	for _, astField := range structType.Fields.List {
+		if len(astField.Names) > 0 {
+			fieldName := astField.Names[0].Name
+			fieldPtr := getFieldByName(entity, fieldName)
+			if fieldPtr == nil {
+				continue
 			}
+			field := *fieldPtr
+			if field.DefaultFunc != nil {
+				continue
+			}
+			fmt.Printf("Field: %s\n", field.Name)
+			sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, fieldToGoType(field)))
+			if astField.Tag != nil {
+				sb.WriteString(fmt.Sprintf(" %s", astField.Tag.Value))
+			}
+			sb.WriteString("\n")
 		}
 	}
 

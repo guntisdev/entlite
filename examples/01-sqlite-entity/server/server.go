@@ -36,8 +36,8 @@ func (s *UserServer) Create(
 	userID, err := wrappedQueries.CreateUser(ctx, db.CreateUserParams{
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
-		Age:         convert.SQLitePtrInt32ToNullInt64(req.Msg.Age),
-		IsAdmin:     convert.SQLiteBoolToInt(req.Msg.IsAdmin),
+		Age:         req.Msg.Age,
+		IsAdmin:     req.Msg.IsAdmin,
 		LastLoginMs: req.Msg.LastLoginMs,
 	})
 	if err != nil {
@@ -57,11 +57,11 @@ func (s *UserServer) Get(
 	ctx context.Context,
 	req *connect.Request[pb.GetUserRequest],
 ) (*connect.Response[pb.User], error) {
-	log.Printf("Get user: id=%d", req.Msg.Id)
+	log.Printf("Get user: id=%d", req.Msg.ID)
 
 	queries := db.New(s.db)
 
-	dbUser, err := queries.GetUser(ctx, convert.SQLiteInt32ToInt64(req.Msg.Id))
+	dbUser, err := queries.GetUser(ctx, convert.SQLiteInt32ToInt64(req.Msg.ID))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
@@ -77,17 +77,17 @@ func (s *UserServer) Update(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateUserRequest],
 ) (*connect.Response[pb.User], error) {
-	log.Printf("Update user: id=%d, %+v", req.Msg.Id, req.Msg)
+	log.Printf("Update user: id=%d, %+v", req.Msg.ID, req.Msg)
 
 	queries := db.New(s.db)
 	wrappedQueries := (*db.Queries)(queries)
 
 	dbUser, err := wrappedQueries.UpdateUser(ctx, db.UpdateUserParams{
-		ID:          convert.SQLiteInt32ToInt64(req.Msg.Id),
+		ID:          req.Msg.ID,
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
-		Age:         convert.SQLitePtrInt32ToNullInt64(req.Msg.Age),
-		IsAdmin:     convert.SQLiteBoolToInt(req.Msg.IsAdmin),
+		Age:         req.Msg.Age,
+		IsAdmin:     req.Msg.IsAdmin,
 		LastLoginMs: req.Msg.LastLoginMs,
 	})
 	if err != nil {
@@ -105,11 +105,11 @@ func (s *UserServer) Delete(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteUserRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	log.Printf("Delete user: id=%d", req.Msg.Id)
+	log.Printf("Delete user: id=%d", req.Msg.ID)
 
 	queries := db.New(s.db)
 
-	err := queries.DeleteUser(ctx, convert.SQLiteInt32ToInt64(req.Msg.Id))
+	err := queries.DeleteUser(ctx, convert.SQLiteInt32ToInt64(req.Msg.ID))
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete user: %w", err))
 	}

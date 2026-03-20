@@ -12,9 +12,9 @@ import (
 type CreateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
-	Age sql.NullInt64 `json:"age"`
+	Age *int32 `json:"age"`
 	Score float64 `json:"score"`
-	IsAdmin int64 `json:"is_admin"`
+	IsAdmin bool `json:"is_admin"`
 	LastLoginMs int64 `json:"last_login_ms"`
 }
 
@@ -40,11 +40,11 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
-	Age sql.NullInt64 `json:"age"`
+	Age *int32 `json:"age"`
 	Score float64 `json:"score"`
-	IsAdmin int64 `json:"is_admin"`
+	IsAdmin bool `json:"is_admin"`
 	LastLoginMs int64 `json:"last_login_ms"`
-	ID int64 `json:"id"`
+	ID int32 `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
