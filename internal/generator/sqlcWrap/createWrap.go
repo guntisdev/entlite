@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
@@ -39,7 +40,7 @@ func generateCreateStruct(structName string, structType *ast.StructType, entity 
 	return sb.String()
 }
 
-func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string) string {
+func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect sqlc.SQLDialect) string {
 	var sb strings.Builder
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
@@ -73,7 +74,8 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 			funcName := field.DefaultFunc().(string)
 			sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
 		} else {
-			sb.WriteString(fmt.Sprintf("\t\t%s: arg.%s,\n", exportedName, exportedName))
+			convertField := fieldProtoToDB(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+			sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))
 		}
 	}
 

@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
@@ -36,7 +37,6 @@ func fieldToGoType(field schema.Field) string {
 
 func getFieldByName(entity schema.Entity, name string) *schema.Field {
 	for _, field := range entity.Fields {
-		fmt.Printf(">> %s %s\n", field.Name, name)
 		if toDBFieldName(field) == name {
 			return &field
 		}
@@ -174,4 +174,38 @@ func toExportedName(name string) string {
 		}
 	}
 	return strings.Join(parts, "")
+}
+
+// func fieldDBToProto(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect) string {
+// 	if sqlDialect == sqlc.SQLite {
+// 		if field.Type == schema.FieldTypeBool {
+// 			return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
+// 		}
+// 		if field.Type == schema.FieldTypeInt {
+// 			if field.Optional {
+// 				return fmt.Sprintf("SQLiteNullInt64ToPtrInt32(%s)", dbFieldRef)
+// 			} else {
+// 				return fmt.Sprintf("SQLiteInt64ToInt32(%s)", dbFieldRef)
+// 			}
+// 		}
+// 	}
+
+// 	return dbFieldRef
+// }
+
+func fieldProtoToDB(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) string {
+	if sqlDialect == sqlc.SQLite {
+		if field.Type == schema.FieldTypeBool {
+			return fmt.Sprintf("SQLiteBoolToInt(%s)", pbFieldRef)
+		}
+		if field.Type == schema.FieldTypeInt {
+			if field.Optional {
+				return fmt.Sprintf("SQLitePtrInt32ToNullInt64(%s)", pbFieldRef)
+			} else {
+				return fmt.Sprintf("SQLiteInt32ToInt64(%s)", pbFieldRef)
+			}
+		}
+	}
+
+	return pbFieldRef
 }

@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
@@ -23,7 +24,6 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 			if field.DefaultFunc != nil {
 				continue
 			}
-			fmt.Printf("Field: %s\n", field.Name)
 			sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, fieldToGoType(field)))
 			if astField.Tag != nil {
 				sb.WriteString(fmt.Sprintf(" %s", astField.Tag.Value))
@@ -36,7 +36,7 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 	return sb.String()
 }
 
-func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string) string {
+func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect sqlc.SQLDialect) string {
 	var sb strings.Builder
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
@@ -73,7 +73,8 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 			funcName := field.DefaultFunc().(string)
 			sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
 		} else {
-			sb.WriteString(fmt.Sprintf("\t\t%s: arg.%s,\n", exportedName, exportedName))
+			convertField := fieldProtoToDB(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+			sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))
 		}
 	}
 

@@ -9,12 +9,13 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	internalParser "github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
 )
 
-func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo) (string, error) {
+func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect sqlc.SQLDialect) (string, error) {
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, inputFilePath, nil, parser.ParseComments)
 	if err != nil {
@@ -98,6 +99,7 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	}
 
 	sb.WriteString("import (\n")
+	// TODO figure out imports
 	if needsContextImport {
 		sb.WriteString("\t\"context\"\n")
 	}
@@ -107,6 +109,12 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 	if needsFmtImport {
 		sb.WriteString("\t\"fmt\"\n")
 	}
+	if filepath.Base(inputFilePath) == "queries.sql.go" {
+		sb.WriteString("\t\"math\"\n")
+		// sb.WriteString("\t\"time\"\n")
+		sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
+	}
+
 	// we need these imports only for overriden queries
 	if filepath.Base(inputFilePath) == "queries.sql.go" {
 		// Sort keys for consistent output
@@ -133,6 +141,7 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 						if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, "Params") {
 							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
 							if entity, ok := entityMap[entityName]; ok {
+								// TODO - need to include also for sql type conversion
 								if hasDefaultFuncFields(entity) || hasValidateField(entity) {
 									// Generate custom struct without DefaultFunc fields, also put Validate
 									sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity))
@@ -174,17 +183,21 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Create") {
 				entityName := strings.TrimPrefix(d.Name.Name, "Create")
 				if entity, ok := entityMap[entityName]; ok && hasDefaultFuncFields(entity) {
-					sb.WriteString(generateCreateMethod(d, entity, inputPackageName))
+					sb.WriteString(generateCreateMethod(d, entity, inputPackageName, sqlDialect))
 					continue
 				}
 			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Update") {
 				entityName := strings.TrimPrefix(d.Name.Name, "Update")
 				if entity, ok := entityMap[entityName]; ok && hasDefaultFuncAndNoImmutable(entity) {
-					sb.WriteString(generateUpdateMethod(d, entity, inputPackageName))
+					sb.WriteString(generateUpdateMethod(d, entity, inputPackageName, sqlDialect))
 					continue
 				}
 			}
 		}
+	}
+
+	if filepath.Base(inputFilePath) == "queries.sql.go" {
+		sb.WriteString(generateConverterFunctions())
 	}
 
 	return sb.String(), nil

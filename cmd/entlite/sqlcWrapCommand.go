@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	sqlcwrap "github.com/guntisdev/entlite/internal/generator/sqlcWrap"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
 func sqlcWrapCommand(args []string) {
@@ -47,6 +48,12 @@ func sqlcWrapCommand(args []string) {
 		os.Exit(1)
 	}
 
+	dialect, err := util.GetSqlDialectFromSqlcYaml("./sqlc.yaml")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
+		os.Exit(1)
+	}
+
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -57,7 +64,7 @@ func sqlcWrapCommand(args []string) {
 			inputFilePath := filepath.Join(inputDir, fileName)
 			outputFilePath := filepath.Join(outputDir, fileName)
 
-			content, err := sqlcwrap.Generate(inputFilePath, parsedEntities, entityImports)
+			content, err := sqlcwrap.Generate(inputFilePath, parsedEntities, entityImports, dialect)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating wrapper content for %s: %v\n", fileName, err)
 				os.Exit(1)
