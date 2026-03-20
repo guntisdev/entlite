@@ -31,9 +31,8 @@ func (s *UserServer) Create(
 	log.Printf("Create user: %+v", req.Msg)
 
 	queries := db.New(s.db)
-	wrappedQueries := (*db.Queries)(queries)
 
-	userID, err := wrappedQueries.CreateUser(ctx, db.CreateUserParams{
+	userID, err := queries.CreateUser(ctx, db.CreateUserParams{
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
 		Age:         req.Msg.Age,

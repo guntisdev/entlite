@@ -179,7 +179,12 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 			}
 		case *ast.FuncDecl:
 			if d.Name.IsExported() && d.Recv == nil {
-				sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", d.Name.Name, inputPackageName, d.Name.Name))
+				// Special handling for New function to return wrapped Queries type
+				if d.Name.Name == "New" {
+					sb.WriteString(fmt.Sprintf("func %s(db DBTX) *Queries { return (*Queries)(%s.%s(db)) }\n", d.Name.Name, inputPackageName, d.Name.Name))
+				} else {
+					sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", d.Name.Name, inputPackageName, d.Name.Name))
+				}
 			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Create") {
 				entityName := strings.TrimPrefix(d.Name.Name, "Create")
 				if entity, ok := entityMap[entityName]; ok && hasDefaultFuncFields(entity) {
