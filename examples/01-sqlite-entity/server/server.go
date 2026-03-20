@@ -43,12 +43,11 @@ func (s *UserServer) Create(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create user: %w", err))
 	}
 
-	dbUser, err := queries.GetUser(ctx, userID)
+	user, err := queries.GetUser(ctx, userID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created user: %w", err))
 	}
 
-	user := convert.UserDBToProto((*db.User)(&dbUser))
 	return connect.NewResponse(user), nil
 }
 
@@ -60,7 +59,7 @@ func (s *UserServer) Get(
 
 	queries := db.New(s.db)
 
-	dbUser, err := queries.GetUser(ctx, convert.SQLiteInt32ToInt64(req.Msg.ID))
+	user, err := queries.GetUser(ctx, req.Msg.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
@@ -68,7 +67,6 @@ func (s *UserServer) Get(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get user: %w", err))
 	}
 
-	user := convert.UserDBToProto((*db.User)(&dbUser))
 	return connect.NewResponse(user), nil
 }
 
@@ -108,7 +106,7 @@ func (s *UserServer) Delete(
 
 	queries := db.New(s.db)
 
-	err := queries.DeleteUser(ctx, convert.SQLiteInt32ToInt64(req.Msg.ID))
+	err := queries.DeleteUser(ctx, req.Msg.ID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete user: %w", err))
 	}
@@ -129,13 +127,7 @@ func (s *UserServer) List(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
 
-	dbUserPtrs := make([]*db.User, len(dbUsers))
-	for i := range dbUsers {
-		dbUserPtrs[i] = (*db.User)(&dbUsers[i])
-	}
-
-	users := convert.UserDBSliceToProtoSlice(dbUserPtrs)
-
+	users := make([]*pb.User, len(dbUsers))
 	response := &pb.ListUserResponse{
 		Users: users,
 	}

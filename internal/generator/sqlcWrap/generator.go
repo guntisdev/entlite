@@ -117,6 +117,9 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 
 	// we need these imports only for overriden queries
 	if filepath.Base(inputFilePath) == "queries.sql.go" {
+		basePath := filepath.Dir(filepath.Dir(importPath)) // Remove "/db/internal"
+		sb.WriteString(fmt.Sprintf("\tpb \"%s/pb\"\n", basePath))
+
 		// Sort keys for consistent output
 		keys := make([]string, 0, len(entityImports))
 		for key := range entityImports {
@@ -195,6 +198,24 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 				entityName := strings.TrimPrefix(d.Name.Name, "Update")
 				if entity, ok := entityMap[entityName]; ok && hasDefaultFuncAndNoImmutable(entity) {
 					sb.WriteString(generateUpdateMethod(d, entity, inputPackageName, sqlDialect))
+					continue
+				}
+			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Get") {
+				entityName := strings.TrimPrefix(d.Name.Name, "Get")
+				if entity, ok := entityMap[entityName]; ok {
+					sb.WriteString(generateGetMethod(d, entity, inputPackageName, sqlDialect))
+					continue
+				}
+			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "List") {
+				entityName := strings.TrimPrefix(d.Name.Name, "List")
+				if entity, ok := entityMap[entityName]; ok {
+					sb.WriteString(generateListMethod(d, entity, inputPackageName, sqlDialect))
+					continue
+				}
+			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Delete") {
+				entityName := strings.TrimPrefix(d.Name.Name, "Delete")
+				if entity, ok := entityMap[entityName]; ok {
+					sb.WriteString(generateDeleteMethod(d, entity, inputPackageName, sqlDialect))
 					continue
 				}
 			}
