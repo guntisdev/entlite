@@ -9,7 +9,6 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/convert"
 	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/db"
 	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/pb"
 )
@@ -77,9 +76,8 @@ func (s *UserServer) Update(
 	log.Printf("Update user: id=%d, %+v", req.Msg.ID, req.Msg)
 
 	queries := db.New(s.db)
-	wrappedQueries := (*db.Queries)(queries)
 
-	dbUser, err := wrappedQueries.UpdateUser(ctx, db.UpdateUserParams{
+	dbUser, err := queries.UpdateUser(ctx, db.UpdateUserParams{
 		ID:          req.Msg.ID,
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
@@ -94,8 +92,9 @@ func (s *UserServer) Update(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to update user: %w", err))
 	}
 
-	user := convert.UserDBToProto((*db.User)(&dbUser))
-	return connect.NewResponse(user), nil
+	// TODO actually db user should be already converted to go types (no sql types exposed)
+	pbUser := db.UserDBToProto(&dbUser)
+	return connect.NewResponse(pbUser), nil
 }
 
 func (s *UserServer) Delete(
@@ -127,9 +126,8 @@ func (s *UserServer) List(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
 
-	users := make([]*pb.User, len(dbUsers))
 	response := &pb.ListUserResponse{
-		Users: users,
+		Users: dbUsers,
 	}
 
 	return connect.NewResponse(response), nil
