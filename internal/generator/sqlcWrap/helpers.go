@@ -118,16 +118,6 @@ func hasDefaultFuncFields(entity schema.Entity) bool {
 	return false
 }
 
-// for example updated_at field
-func hasDefaultFuncAndNoImmutable(entity schema.Entity) bool {
-	for _, field := range entity.Fields {
-		if field.DefaultFunc != nil && !field.Immutable {
-			return true
-		}
-	}
-	return false
-}
-
 func usesSQLTypes(structType *ast.StructType) bool {
 	for _, field := range structType.Fields.List {
 		if usesSQLType(field.Type) {

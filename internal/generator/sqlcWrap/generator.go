@@ -144,18 +144,15 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 						if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, "Params") {
 							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
 							if entity, ok := entityMap[entityName]; ok {
-								// TODO - need to include also for sql type conversion
-								if hasDefaultFuncFields(entity) || hasValidateField(entity) {
-									// Generate custom struct without DefaultFunc fields, also put Validate
-									sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity))
-									continue
-								}
+								// Generate custom struct without DefaultFunc fields, also put Validate
+								sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity))
+								continue
 							}
 						}
 
 						if strings.HasPrefix(s.Name.Name, "Update") && strings.HasSuffix(s.Name.Name, "Params") {
 							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Update"), "Params")
-							if entity, ok := entityMap[entityName]; ok && hasDefaultFuncAndNoImmutable(entity) {
+							if entity, ok := entityMap[entityName]; ok {
 								sb.WriteString(generateUpdateStruct(s.Name.Name, updateParamsStructs[s.Name.Name], entity))
 								continue
 							}
@@ -190,13 +187,13 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 				}
 			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Create") {
 				entityName := strings.TrimPrefix(d.Name.Name, "Create")
-				if entity, ok := entityMap[entityName]; ok && hasDefaultFuncFields(entity) {
+				if entity, ok := entityMap[entityName]; ok {
 					sb.WriteString(generateCreateMethod(d, entity, inputPackageName, sqlDialect))
 					continue
 				}
 			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Update") {
 				entityName := strings.TrimPrefix(d.Name.Name, "Update")
-				if entity, ok := entityMap[entityName]; ok && hasDefaultFuncAndNoImmutable(entity) {
+				if entity, ok := entityMap[entityName]; ok {
 					sb.WriteString(generateUpdateMethod(d, entity, inputPackageName, sqlDialect))
 					continue
 				}
