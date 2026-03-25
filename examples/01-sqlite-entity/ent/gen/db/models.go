@@ -2,6 +2,8 @@ package db
 
 import (
 	"time"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	pb "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/pb"
 	internal "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/db/internal"
 )
 
@@ -57,6 +59,27 @@ func UserFromSQL(db *internal.User) *User {
 		LastLoginMs: db.LastLoginMs,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
+	}
+}
+
+// ToProto converts User to proto format
+func (m *User) ToProto() *pb.User {
+	if m == nil {
+		return nil
+	}
+
+	return &pb.User{
+		ID: m.ID,
+		Email: m.Email,
+		Name: m.Name,
+		Age: m.Age,
+		Score: m.Score,
+		Uuid: m.Uuid,
+		IsAdmin: m.IsAdmin,
+		ApiKey: m.ApiKey,
+		LastLoginMs: m.LastLoginMs,
+		CreatedAt: timestamppb.New(m.CreatedAt),
+		UpdatedAt: timestamppb.New(m.UpdatedAt),
 	}
 }
 

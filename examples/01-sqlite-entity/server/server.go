@@ -47,7 +47,7 @@ func (s *UserServer) Create(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created user: %w", err))
 	}
 
-	return connect.NewResponse(user), nil
+	return connect.NewResponse(user.ToProto()), nil
 }
 
 func (s *UserServer) Get(
@@ -66,7 +66,7 @@ func (s *UserServer) Get(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get user: %w", err))
 	}
 
-	return connect.NewResponse(user), nil
+	return connect.NewResponse(user.ToProto()), nil
 }
 
 func (s *UserServer) Update(
@@ -92,9 +92,7 @@ func (s *UserServer) Update(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to update user: %w", err))
 	}
 
-	// TODO actually db user should be already converted to go types (no sql types exposed)
-	pbUser := db.UserDBToProto(&dbUser)
-	return connect.NewResponse(pbUser), nil
+	return connect.NewResponse(dbUser.ToProto()), nil
 }
 
 func (s *UserServer) Delete(
@@ -126,8 +124,13 @@ func (s *UserServer) List(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
 
+	pbUsers := make([]*pb.User, len(dbUsers))
+	for i, dbUser := range dbUsers {
+		pbUsers[i] = dbUser.ToProto()
+	}
+
 	response := &pb.ListUserResponse{
-		Users: dbUsers,
+		Users: pbUsers,
 	}
 
 	return connect.NewResponse(response), nil

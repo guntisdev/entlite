@@ -29,8 +29,10 @@ func sqlcWrapCommand(args []string) {
 		os.Exit(1)
 	}
 
+	// TODO read directories from yaml files
 	inputDir := args[0]
 	outputDir := args[1]
+	pbDir := filepath.Join(filepath.Dir(outputDir), "pb")
 
 	if _, err := os.Stat(inputDir); os.IsNotExist(err) {
 		fmt.Fprintf(os.Stderr, "Error: input directory does not exist: %s\n", inputDir)
@@ -64,7 +66,7 @@ func sqlcWrapCommand(args []string) {
 			inputFilePath := filepath.Join(inputDir, fileName)
 			outputFilePath := filepath.Join(outputDir, fileName)
 
-			content, err := sqlcwrap.Generate(inputFilePath, parsedEntities, entityImports, dialect)
+			content, err := sqlcwrap.Generate(inputFilePath, pbDir, parsedEntities, entityImports, dialect)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating wrapper content for %s: %v\n", fileName, err)
 				os.Exit(1)

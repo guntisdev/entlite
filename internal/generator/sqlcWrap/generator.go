@@ -39,7 +39,7 @@ func detectFileType(filename string) FileType {
 	return FileTypeUnknown
 }
 
-func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect sqlc.SQLDialect) (string, error) {
+func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect sqlc.SQLDialect) (string, error) {
 	fileType := detectFileType(inputFilePath)
 
 	fset := token.NewFileSet()
@@ -55,6 +55,14 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 		return "", fmt.Errorf("failed to convert path to import: %w", err)
 	}
 
+	pbImportPath := ""
+	if pbDir != "" {
+		pbImportPath, err = util.PathToImport(pbDir)
+		if err != nil {
+			return "", fmt.Errorf("failed to convert pb path to import: %w", err)
+		}
+	}
+
 	entityMap := make(map[string]schema.Entity)
 	for _, entity := range parsedEntities {
 		entityMap[entity.Name] = entity
@@ -66,6 +74,7 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 		inputPackageName:    inputPackageName,
 		absInputDir:         absInputDir,
 		importPath:          importPath,
+		pbImportPath:        pbImportPath,
 		node:                node,
 		entityMap:           entityMap,
 		parsedEntities:      parsedEntities,
@@ -107,6 +116,7 @@ type generationContext struct {
 	inputPackageName    string
 	absInputDir         string
 	importPath          string
+	pbImportPath        string
 	node                *ast.File
 	entityMap           map[string]schema.Entity
 	parsedEntities      []schema.Entity
@@ -192,7 +202,6 @@ func (ctx *generationContext) generateImports() string {
 		}
 
 	case FileTypeModel:
-		// Models need time for time.Time fields (check if any entity has time fields)
 		hasTimeField := false
 		for _, entity := range ctx.parsedEntities {
 			for _, field := range entity.Fields {
@@ -207,6 +216,11 @@ func (ctx *generationContext) generateImports() string {
 		}
 		if hasTimeField {
 			sb.WriteString("\t\"time\"\n")
+		}
+
+		sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
+		if ctx.pbImportPath != "" {
+			sb.WriteString(fmt.Sprintf("\tpb \"%s\"\n", ctx.pbImportPath))
 		}
 	}
 
@@ -467,6 +481,11 @@ func (ctx *generationContext) generateModelFileDeclarations() string {
 		sb.WriteString("\n")
 	}
 
+	for _, entity := range ctx.parsedEntities {
+		sb.WriteString(ctx.generateProtoConverter(entity))
+		sb.WriteString("\n")
+	}
+
 	return sb.String()
 }
 
@@ -507,6 +526,33 @@ func (ctx *generationContext) generateModelConverters(entity schema.Entity) stri
 		fieldName := toDBFieldName(field)
 		convertedValue := goFromSQL(field, "db."+fieldName, ctx.sqlDialect)
 		sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", fieldName, convertedValue))
+	}
+
+	sb.WriteString("\t}\n}\n")
+
+	return sb.String()
+}
+func (ctx *generationContext) generateProtoConverter(entity schema.Entity) string {
+	var sb strings.Builder
+	protoPackage := "pb"
+
+	sb.WriteString(fmt.Sprintf("// ToProto converts %s to proto format\n", entity.Name))
+	sb.WriteString(fmt.Sprintf("func (m *%s) ToProto() *%s.%s {\n", entity.Name, protoPackage, entity.Name))
+	sb.WriteString("\tif m == nil {\n\t\treturn nil\n\t}\n\n")
+	sb.WriteString(fmt.Sprintf("\treturn &%s.%s{\n", protoPackage, entity.Name))
+
+	for _, field := range entity.Fields {
+		fieldName := toDBFieldName(field)
+
+		if field.Type == schema.FieldTypeTime {
+			if field.Optional {
+				sb.WriteString(fmt.Sprintf("\t\t%s: func() *timestamppb.Timestamp { if m.%s != nil { return timestamppb.New(*m.%s) }; return nil }(),\n", fieldName, fieldName, fieldName))
+			} else {
+				sb.WriteString(fmt.Sprintf("\t\t%s: timestamppb.New(m.%s),\n", fieldName, fieldName))
+			}
+		} else {
+			sb.WriteString(fmt.Sprintf("\t\t%s: m.%s,\n", fieldName, fieldName))
+		}
 	}
 
 	sb.WriteString("\t}\n}\n")
