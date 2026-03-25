@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	pb "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/pb"
 	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/logic"
 	"time"
 	internal "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/db/internal"
@@ -45,22 +44,22 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteUser(ctx, SQLiteInt32ToInt64(id))
 }
 
-func (q *Queries) GetUser(ctx context.Context, id int32) (*pb.User, error) {
+func (q *Queries) GetUser(ctx context.Context, id int32) (*User, error) {
 	dbResult, err := (*internal.Queries)(q).GetUser(ctx, SQLiteInt32ToInt64(id))
 	if err != nil {
 		return nil, err
 	}
-	return UserDBToProto(&dbResult), nil
+	return UserFromSQL(&dbResult), nil
 }
 
-func (q *Queries) ListUser(ctx context.Context) ([]*pb.User, error) {
+func (q *Queries) ListUser(ctx context.Context) ([]*User, error) {
 	dbResults, err := (*internal.Queries)(q).ListUser(ctx)
 	if err != nil {
 		return nil, err
 	}
-	result := make([]*pb.User, len(dbResults))
+	result := make([]*User, len(dbResults))
 	for i := range dbResults {
-		result[i] = UserDBToProto(&dbResults[i])
+		result[i] = UserFromSQL(&dbResults[i])
 	}
 	return result, nil
 }
@@ -75,9 +74,9 @@ type UpdateUserParams struct {
 	ID int32 `json:"id"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
 	if !logic.StartsWithCapital(arg.Name) {
-		return User{}, fmt.Errorf("Failed update: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
+		return nil, fmt.Errorf("Failed update: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
 	internalArg := internal.UpdateUserParams{
 		Email: arg.Email,
@@ -88,7 +87,12 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}
-	return (*internal.Queries)(q).UpdateUser(ctx, internalArg)
+
+	dbUser, err := (*internal.Queries)(q).UpdateUser(ctx, internalArg)
+	if err != nil {
+		return nil, err
+	}
+	return UserFromSQL(&dbUser), nil
 }
 
 
@@ -243,57 +247,4 @@ func SQLitePtrInt32ToNullInt64(i *int32) sql.NullInt64 {
 		return sql.NullInt64{Valid: false}
 	}
 	return sql.NullInt64{ Int64: int64(*i), Valid: true }
-}
-// UserDBToProto converts a database model to proto message
-func UserDBToProto(db *internal.User) *pb.User {
-	if db == nil {
-		return nil
-	}
-
-	return &pb.User{
-		ID: SQLiteInt64ToInt32(db.ID),
-		Email: db.Email,
-		Name: db.Name,
-		Age: SQLiteNullInt64ToPtrInt32(db.Age),
-		Score: db.Score,
-		Uuid: db.Uuid,
-		IsAdmin: SQLiteIntToBool(db.IsAdmin),
-		ApiKey: db.ApiKey,
-		LastLoginMs: db.LastLoginMs,
-		CreatedAt: TimeToProto(db.CreatedAt),
-		UpdatedAt: TimeToProto(db.UpdatedAt),
-	}
-}
-
-// UserProtoToDB converts a proto message to database model
-func UserProtoToDB(pb *pb.User) *internal.User {
-	if pb == nil {
-		return nil
-	}
-
-	return &internal.User{
-		ID: SQLiteInt32ToInt64(pb.ID),
-		Email: pb.Email,
-		Name: pb.Name,
-		Age: SQLitePtrInt32ToNullInt64(pb.Age),
-		Score: pb.Score,
-		Uuid: pb.Uuid,
-		IsAdmin: SQLiteBoolToInt(pb.IsAdmin),
-		ApiKey: pb.ApiKey,
-		LastLoginMs: pb.LastLoginMs,
-		CreatedAt: ProtoToTime(pb.CreatedAt),
-		UpdatedAt: ProtoToTime(pb.UpdatedAt),
-	}
-}
-// UserDBSliceToProtoSlice converts db slice to proto array message
-func UserDBSliceToProtoSlice(dbSlice []*internal.User) []*pb.User {
-	if dbSlice == nil {
-		return nil
-	}
-
-	result := make([]*pb.User, len(dbSlice))
-	for i, row := range dbSlice {
-		result[i] = UserDBToProto(row)
-	}
-	return result
 }

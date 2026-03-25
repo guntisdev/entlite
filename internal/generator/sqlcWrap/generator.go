@@ -15,7 +15,33 @@ import (
 	"github.com/guntisdev/entlite/internal/util"
 )
 
+// FileType represents the type of sqlc-generated file being wrapped
+type FileType int
+
+const (
+	FileTypeUnknown FileType = iota
+	FileTypeQuery            // *.sql.go files (queries.sql.go, etc.)
+	FileTypeModel            // models.go
+	FileTypeDB               // db.go
+)
+
+func detectFileType(filename string) FileType {
+	base := filepath.Base(filename)
+	if base == "models.go" {
+		return FileTypeModel
+	}
+	if base == "db.go" {
+		return FileTypeDB
+	}
+	if strings.HasSuffix(base, ".sql.go") {
+		return FileTypeQuery
+	}
+	return FileTypeUnknown
+}
+
 func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect sqlc.SQLDialect) (string, error) {
+	fileType := detectFileType(inputFilePath)
+
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, inputFilePath, nil, parser.ParseComments)
 	if err != nil {
@@ -34,194 +60,456 @@ func Generate(inputFilePath string, parsedEntities []schema.Entity, entityImport
 		entityMap[entity.Name] = entity
 	}
 
-	createParamsStructs := make(map[string]*ast.StructType)
-	createFuncs := make(map[string]*ast.FuncDecl)
+	ctx := &generationContext{
+		fileType:            fileType,
+		inputFilePath:       inputFilePath,
+		inputPackageName:    inputPackageName,
+		absInputDir:         absInputDir,
+		importPath:          importPath,
+		node:                node,
+		entityMap:           entityMap,
+		parsedEntities:      parsedEntities,
+		entityImports:       entityImports,
+		sqlDialect:          sqlDialect,
+		createParamsStructs: make(map[string]*ast.StructType),
+		updateParamsStructs: make(map[string]*ast.StructType),
+	}
 
-	updateParamsStructs := make(map[string]*ast.StructType)
-	updateFuncs := make(map[string]*ast.FuncDecl)
+	ctx.collectDeclarations()
 
-	for _, decl := range node.Decls {
+	var sb strings.Builder
+	packageName := filepath.Base(filepath.Dir(absInputDir))
+	sb.WriteString(fmt.Sprintf("package %s\n\n", packageName))
+	sb.WriteString(ctx.generateImports())
+
+	switch fileType {
+	case FileTypeQuery:
+		sb.WriteString(ctx.generateQueryFileDeclarations())
+	case FileTypeModel:
+		sb.WriteString(ctx.generateModelFileDeclarations())
+	case FileTypeDB:
+		sb.WriteString(ctx.generateDBFileDeclarations())
+	default:
+		sb.WriteString(ctx.generateGenericDeclarations())
+	}
+
+	if fileType == FileTypeQuery {
+		sb.WriteString(generateConverterFunctions())
+	}
+
+	return sb.String(), nil
+}
+
+// generationContext holds all the context needed for generating wrapped code
+type generationContext struct {
+	fileType            FileType
+	inputFilePath       string
+	inputPackageName    string
+	absInputDir         string
+	importPath          string
+	node                *ast.File
+	entityMap           map[string]schema.Entity
+	parsedEntities      []schema.Entity
+	entityImports       map[string]internalParser.ImportInfo
+	sqlDialect          sqlc.SQLDialect
+	createParamsStructs map[string]*ast.StructType
+	updateParamsStructs map[string]*ast.StructType
+}
+
+func (ctx *generationContext) collectDeclarations() {
+	for _, decl := range ctx.node.Decls {
 		switch d := decl.(type) {
 		case *ast.GenDecl:
 			for _, spec := range d.Specs {
 				if typeSpec, ok := spec.(*ast.TypeSpec); ok {
 					if structType, ok := typeSpec.Type.(*ast.StructType); ok {
-						// Check if this is a Create{Entity}Params struct
 						if strings.HasPrefix(typeSpec.Name.Name, "Create") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
-							createParamsStructs[typeSpec.Name.Name] = structType
+							ctx.createParamsStructs[typeSpec.Name.Name] = structType
 						}
 						if strings.HasPrefix(typeSpec.Name.Name, "Update") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
-							updateParamsStructs[typeSpec.Name.Name] = structType
+							ctx.updateParamsStructs[typeSpec.Name.Name] = structType
 						}
 					}
 				}
 			}
-		case *ast.FuncDecl:
-			// Find Create{Entity} functions
-			if strings.HasPrefix(d.Name.Name, "Create") && d.Recv != nil {
-				createFuncs[d.Name.Name] = d
-			}
-			if strings.HasPrefix(d.Name.Name, "Update") && d.Recv != nil {
-				updateFuncs[d.Name.Name] = d
-			}
 		}
 	}
+}
 
+func (ctx *generationContext) generateImports() string {
 	var sb strings.Builder
-
-	packageName := filepath.Base(filepath.Dir(absInputDir))
-	sb.WriteString(fmt.Sprintf("package %s\n\n", packageName))
-
-	needsContextImport := false
-	needsSQLImport := false
-	needsFmtImport := false
-
-	for structName := range createParamsStructs {
-		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
-		if entity, ok := entityMap[entityName]; ok {
-			if hasDefaultFuncFields(entity) {
-				needsContextImport = true
-			}
-		}
-		if structType, ok := createParamsStructs[structName]; ok {
-			if usesSQLTypes(structType) {
-				needsSQLImport = true
-			}
-		}
-	}
-
-	if filepath.Base(inputFilePath) == "queries.sql.go" {
-		for _, entity := range parsedEntities {
-			if hasValidateField(entity) {
-				needsFmtImport = true
-			}
-		}
-	}
-
 	sb.WriteString("import (\n")
-	// TODO figure out imports
-	if needsContextImport {
+
+	needsContext := false
+	needsSQL := false
+	needsFmt := false
+
+	for structName := range ctx.createParamsStructs {
+		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
+		if entity, ok := ctx.entityMap[entityName]; ok {
+			if hasDefaultFuncFields(entity) {
+				needsContext = true
+			}
+		}
+		if structType, ok := ctx.createParamsStructs[structName]; ok {
+			if usesSQLTypes(structType) {
+				needsSQL = true
+			}
+		}
+	}
+
+	if ctx.fileType == FileTypeQuery {
+		for _, entity := range ctx.parsedEntities {
+			if hasValidateField(entity) {
+				needsFmt = true
+			}
+		}
+	}
+
+	if needsContext {
 		sb.WriteString("\t\"context\"\n")
 	}
-	if needsSQLImport {
+	if needsSQL || ctx.fileType == FileTypeQuery {
 		sb.WriteString("\t\"database/sql\"\n")
 	}
-	if needsFmtImport {
+	if needsFmt {
 		sb.WriteString("\t\"fmt\"\n")
 	}
-	if filepath.Base(inputFilePath) == "queries.sql.go" {
+
+	switch ctx.fileType {
+	case FileTypeQuery:
 		sb.WriteString("\t\"math\"\n")
-		// sb.WriteString("\t\"time\"\n")
 		sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
-	}
 
-	// we need these imports only for overriden queries
-	if filepath.Base(inputFilePath) == "queries.sql.go" {
-		basePath := filepath.Dir(filepath.Dir(importPath)) // Remove "/db/internal"
-		sb.WriteString(fmt.Sprintf("\tpb \"%s/pb\"\n", basePath))
-
-		// Sort keys for consistent output
-		keys := make([]string, 0, len(entityImports))
-		for key := range entityImports {
+		keys := make([]string, 0, len(ctx.entityImports))
+		for key := range ctx.entityImports {
 			keys = append(keys, key)
 		}
 		sort.Strings(keys)
 		for _, key := range keys {
-			importInfo := entityImports[key]
+			importInfo := ctx.entityImports[key]
 			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importInfo.Path))
 		}
+
+	case FileTypeModel:
+		// Models need time for time.Time fields (check if any entity has time fields)
+		hasTimeField := false
+		for _, entity := range ctx.parsedEntities {
+			for _, field := range entity.Fields {
+				if field.Type == schema.FieldTypeTime {
+					hasTimeField = true
+					break
+				}
+			}
+			if hasTimeField {
+				break
+			}
+		}
+		if hasTimeField {
+			sb.WriteString("\t\"time\"\n")
+		}
 	}
-	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", inputPackageName, importPath))
+
+	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", ctx.inputPackageName, ctx.importPath))
 	sb.WriteString(")\n\n")
 
-	for _, decl := range node.Decls {
+	return sb.String()
+}
+
+func (ctx *generationContext) generateGenericDeclarations() string {
+	var sb strings.Builder
+
+	for _, decl := range ctx.node.Decls {
 		switch d := decl.(type) {
 		case *ast.GenDecl:
-			for _, spec := range d.Specs {
-				switch s := spec.(type) {
-				case *ast.TypeSpec:
-					if s.Name.IsExported() {
-						if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, "Params") {
-							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
-							if entity, ok := entityMap[entityName]; ok {
-								// Generate custom struct without DefaultFunc fields, also put Validate
-								sb.WriteString(generateCreateStruct(s.Name.Name, createParamsStructs[s.Name.Name], entity))
-								continue
-							}
-						}
+			ctx.reexportGenDecl(&sb, d)
+		case *ast.FuncDecl:
+			ctx.reexportFunc(&sb, d)
+		}
+	}
 
-						if strings.HasPrefix(s.Name.Name, "Update") && strings.HasSuffix(s.Name.Name, "Params") {
-							entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Update"), "Params")
-							if entity, ok := entityMap[entityName]; ok {
-								sb.WriteString(generateUpdateStruct(s.Name.Name, updateParamsStructs[s.Name.Name], entity))
-								continue
-							}
-						}
+	return sb.String()
+}
 
-						// For Queries type, use a proper type (not alias) so we can add methods
-						if s.Name.Name == "Queries" {
-							sb.WriteString(fmt.Sprintf("type %s %s.%s\n", s.Name.Name, inputPackageName, s.Name.Name))
-						} else {
-							sb.WriteString(fmt.Sprintf("type %s = %s.%s\n", s.Name.Name, inputPackageName, s.Name.Name))
-						}
-					}
-				case *ast.ValueSpec:
-					for _, name := range s.Names {
-						if name.IsExported() {
-							if d.Tok == token.CONST {
-								sb.WriteString(fmt.Sprintf("const %s = %s.%s\n", name.Name, inputPackageName, name.Name))
-							} else {
-								sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", name.Name, inputPackageName, name.Name))
-							}
-						}
+func (ctx *generationContext) reexportGenDecl(sb *strings.Builder, decl *ast.GenDecl) {
+	for _, spec := range decl.Specs {
+		switch s := spec.(type) {
+		case *ast.TypeSpec:
+			if s.Name.IsExported() {
+				sb.WriteString(fmt.Sprintf("type %s = %s.%s\n", s.Name.Name, ctx.inputPackageName, s.Name.Name))
+			}
+		case *ast.ValueSpec:
+			for _, name := range s.Names {
+				if name.IsExported() {
+					if decl.Tok == token.CONST {
+						sb.WriteString(fmt.Sprintf("const %s = %s.%s\n", name.Name, ctx.inputPackageName, name.Name))
+					} else {
+						sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", name.Name, ctx.inputPackageName, name.Name))
 					}
 				}
 			}
+		}
+	}
+}
+
+func (ctx *generationContext) reexportFunc(sb *strings.Builder, funcDecl *ast.FuncDecl) {
+	if funcDecl.Name.IsExported() && funcDecl.Recv == nil {
+		sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
+	}
+}
+
+// generateDBFileDeclarations handles db.go with special Queries type handling
+func (ctx *generationContext) generateDBFileDeclarations() string {
+	var sb strings.Builder
+
+	for _, decl := range ctx.node.Decls {
+		switch d := decl.(type) {
+		case *ast.GenDecl:
+			ctx.processDBGenDecl(&sb, d)
 		case *ast.FuncDecl:
-			if d.Name.IsExported() && d.Recv == nil {
-				// Special handling for New function to return wrapped Queries type
-				if d.Name.Name == "New" {
-					sb.WriteString(fmt.Sprintf("func %s(db DBTX) *Queries { return (*Queries)(%s.%s(db)) }\n", d.Name.Name, inputPackageName, d.Name.Name))
-				} else {
-					sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", d.Name.Name, inputPackageName, d.Name.Name))
+			ctx.processDBFunc(&sb, d)
+		}
+	}
+
+	return sb.String()
+}
+
+// processDBGenDecl processes type declarations for db.go
+func (ctx *generationContext) processDBGenDecl(sb *strings.Builder, decl *ast.GenDecl) {
+	for _, spec := range decl.Specs {
+		switch s := spec.(type) {
+		case *ast.TypeSpec:
+			if !s.Name.IsExported() {
+				continue
+			}
+
+			// For Queries type, use a proper type (not alias) so we can add methods
+			if s.Name.Name == "Queries" {
+				sb.WriteString(fmt.Sprintf("type %s %s.%s\n", s.Name.Name, ctx.inputPackageName, s.Name.Name))
+			} else {
+				sb.WriteString(fmt.Sprintf("type %s = %s.%s\n", s.Name.Name, ctx.inputPackageName, s.Name.Name))
+			}
+
+		case *ast.ValueSpec:
+			for _, name := range s.Names {
+				if name.IsExported() {
+					if decl.Tok == token.CONST {
+						sb.WriteString(fmt.Sprintf("const %s = %s.%s\n", name.Name, ctx.inputPackageName, name.Name))
+					} else {
+						sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", name.Name, ctx.inputPackageName, name.Name))
+					}
 				}
-			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Create") {
-				entityName := strings.TrimPrefix(d.Name.Name, "Create")
-				if entity, ok := entityMap[entityName]; ok {
-					sb.WriteString(generateCreateMethod(d, entity, inputPackageName, sqlDialect))
+			}
+		}
+	}
+}
+
+// processDBFunc processes function declarations for db.go
+func (ctx *generationContext) processDBFunc(sb *strings.Builder, funcDecl *ast.FuncDecl) {
+	if funcDecl.Name.IsExported() && funcDecl.Recv == nil {
+		// Special handling for New function to return wrapped Queries type
+		if funcDecl.Name.Name == "New" {
+			sb.WriteString(fmt.Sprintf("func %s(db DBTX) *Queries { return (*Queries)(%s.%s(db)) }\n",
+				funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
+		} else {
+			sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
+		}
+	}
+}
+
+// generateQueryFileDeclarations handles *.sql.go files with query method overrides
+func (ctx *generationContext) generateQueryFileDeclarations() string {
+	var sb strings.Builder
+
+	for _, decl := range ctx.node.Decls {
+		switch d := decl.(type) {
+		case *ast.GenDecl:
+			ctx.processQueryGenDecl(&sb, d)
+		case *ast.FuncDecl:
+			ctx.processQueryFunc(&sb, d)
+		}
+	}
+
+	return sb.String()
+}
+
+func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast.GenDecl) {
+	for _, spec := range decl.Specs {
+		switch s := spec.(type) {
+		case *ast.TypeSpec:
+			if !s.Name.IsExported() {
+				continue
+			}
+
+			if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, "Params") {
+				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
+				if entity, ok := ctx.entityMap[entityName]; ok {
+					sb.WriteString(generateCreateStruct(s.Name.Name, ctx.createParamsStructs[s.Name.Name], entity))
 					continue
 				}
-			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Update") {
-				entityName := strings.TrimPrefix(d.Name.Name, "Update")
-				if entity, ok := entityMap[entityName]; ok {
-					sb.WriteString(generateUpdateMethod(d, entity, inputPackageName, sqlDialect))
+			}
+
+			if strings.HasPrefix(s.Name.Name, "Update") && strings.HasSuffix(s.Name.Name, "Params") {
+				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Update"), "Params")
+				if entity, ok := ctx.entityMap[entityName]; ok {
+					sb.WriteString(generateUpdateStruct(s.Name.Name, ctx.updateParamsStructs[s.Name.Name], entity))
 					continue
 				}
-			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Get") {
-				entityName := strings.TrimPrefix(d.Name.Name, "Get")
-				if entity, ok := entityMap[entityName]; ok {
-					sb.WriteString(generateGetMethod(d, entity, inputPackageName, sqlDialect))
-					continue
+			}
+
+			if s.Name.Name == "Queries" {
+				sb.WriteString(fmt.Sprintf("type %s %s.%s\n", s.Name.Name, ctx.inputPackageName, s.Name.Name))
+			} else {
+				sb.WriteString(fmt.Sprintf("type %s = %s.%s\n", s.Name.Name, ctx.inputPackageName, s.Name.Name))
+			}
+
+		case *ast.ValueSpec:
+			for _, name := range s.Names {
+				if name.IsExported() {
+					if decl.Tok == token.CONST {
+						sb.WriteString(fmt.Sprintf("const %s = %s.%s\n", name.Name, ctx.inputPackageName, name.Name))
+					} else {
+						sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", name.Name, ctx.inputPackageName, name.Name))
+					}
 				}
-			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "List") {
-				entityName := strings.TrimPrefix(d.Name.Name, "List")
-				if entity, ok := entityMap[entityName]; ok {
-					sb.WriteString(generateListMethod(d, entity, inputPackageName, sqlDialect))
-					continue
-				}
-			} else if d.Recv != nil && strings.HasPrefix(d.Name.Name, "Delete") {
-				entityName := strings.TrimPrefix(d.Name.Name, "Delete")
-				if entity, ok := entityMap[entityName]; ok {
-					sb.WriteString(generateDeleteMethod(d, entity, inputPackageName, sqlDialect))
-					continue
+			}
+		}
+	}
+}
+
+func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *ast.FuncDecl) {
+	if funcDecl.Name.IsExported() && funcDecl.Recv == nil {
+		if funcDecl.Name.Name == "New" {
+			sb.WriteString(fmt.Sprintf("func %s(db DBTX) *Queries { return (*Queries)(%s.%s(db)) }\n",
+				funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
+		} else {
+			sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
+		}
+		return
+	}
+
+	if funcDecl.Recv != nil {
+		// CRUD method overrides
+		if strings.HasPrefix(funcDecl.Name.Name, "Create") {
+			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Create")
+			if entity, ok := ctx.entityMap[entityName]; ok {
+				sb.WriteString(generateCreateMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				return
+			}
+		}
+		if strings.HasPrefix(funcDecl.Name.Name, "Update") {
+			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Update")
+			if entity, ok := ctx.entityMap[entityName]; ok {
+				sb.WriteString(generateUpdateMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				return
+			}
+		}
+		if strings.HasPrefix(funcDecl.Name.Name, "Get") {
+			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Get")
+			if entity, ok := ctx.entityMap[entityName]; ok {
+				sb.WriteString(generateGetMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				return
+			}
+		}
+		if strings.HasPrefix(funcDecl.Name.Name, "List") {
+			entityName := strings.TrimPrefix(funcDecl.Name.Name, "List")
+			if entity, ok := ctx.entityMap[entityName]; ok {
+				sb.WriteString(generateListMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				return
+			}
+		}
+		if strings.HasPrefix(funcDecl.Name.Name, "Delete") {
+			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Delete")
+			if entity, ok := ctx.entityMap[entityName]; ok {
+				sb.WriteString(generateDeleteMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				return
+			}
+		}
+	}
+}
+
+func (ctx *generationContext) generateModelFileDeclarations() string {
+	var sb strings.Builder
+
+	for _, decl := range ctx.node.Decls {
+		if genDecl, ok := decl.(*ast.GenDecl); ok {
+			for _, spec := range genDecl.Specs {
+				if typeSpec, ok := spec.(*ast.TypeSpec); ok {
+					if !typeSpec.Name.IsExported() {
+						continue
+					}
+
+					isEntityModel := false
+					for _, entity := range ctx.parsedEntities {
+						if typeSpec.Name.Name == entity.Name {
+							isEntityModel = true
+							break
+						}
+					}
+
+					if !isEntityModel {
+						sb.WriteString(fmt.Sprintf("type %s = %s.%s\n", typeSpec.Name.Name, ctx.inputPackageName, typeSpec.Name.Name))
+					}
 				}
 			}
 		}
 	}
 
-	if filepath.Base(inputFilePath) == "queries.sql.go" {
-		sb.WriteString(generateConverterFunctions())
+	sb.WriteString("\n")
+
+	for _, entity := range ctx.parsedEntities {
+		sb.WriteString(ctx.generateEntityModel(entity))
+		sb.WriteString("\n")
 	}
 
-	return sb.String(), nil
+	for _, entity := range ctx.parsedEntities {
+		sb.WriteString(ctx.generateModelConverters(entity))
+		sb.WriteString("\n")
+	}
+
+	return sb.String()
+}
+
+func (ctx *generationContext) generateEntityModel(entity schema.Entity) string {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("type %s struct {\n", entity.Name))
+
+	for _, field := range entity.Fields {
+		fieldName := toDBFieldName(field)
+		goType := fieldToGoType(field)
+		sb.WriteString(fmt.Sprintf("\t%s %s `json:\"%s\"`\n", fieldName, goType, field.Name))
+	}
+
+	sb.WriteString("}\n")
+	return sb.String()
+}
+
+func (ctx *generationContext) generateModelConverters(entity schema.Entity) string {
+	var sb strings.Builder
+
+	sb.WriteString(fmt.Sprintf("func (m *%s) %sToSQL() *%s.%s {\n", entity.Name, entity.Name, ctx.inputPackageName, entity.Name))
+	sb.WriteString("\tif m == nil {\n\t\treturn nil\n\t}\n\n")
+	sb.WriteString(fmt.Sprintf("\treturn &%s.%s{\n", ctx.inputPackageName, entity.Name))
+
+	for _, field := range entity.Fields {
+		fieldName := toDBFieldName(field)
+		convertedValue := sqlToGo(field, "m."+fieldName, ctx.sqlDialect)
+		sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", fieldName, convertedValue))
+	}
+
+	sb.WriteString("\t}\n}\n\n")
+
+	sb.WriteString(fmt.Sprintf("func %sFromSQL(db *%s.%s) *%s {\n", entity.Name, ctx.inputPackageName, entity.Name, entity.Name))
+	sb.WriteString("\tif db == nil {\n\t\treturn nil\n\t}\n\n")
+	sb.WriteString(fmt.Sprintf("\treturn &%s{\n", entity.Name))
+
+	for _, field := range entity.Fields {
+		fieldName := toDBFieldName(field)
+		convertedValue := goFromSQL(field, "db."+fieldName, ctx.sqlDialect)
+		sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", fieldName, convertedValue))
+	}
+
+	sb.WriteString("\t}\n}\n")
+
+	return sb.String()
 }

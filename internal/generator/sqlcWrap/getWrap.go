@@ -36,7 +36,7 @@ func generateGetMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg st
 	sb.WriteString(") ")
 
 	if funcDecl.Type.Results != nil && len(funcDecl.Type.Results.List) == 2 {
-		sb.WriteString(fmt.Sprintf("(*pb.%s, error)", entity.Name))
+		sb.WriteString(fmt.Sprintf("(*%s, error)", entity.Name))
 	}
 
 	sb.WriteString(" {\n")
@@ -67,7 +67,7 @@ func generateGetMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg st
 	sb.WriteString("\t\treturn nil, err\n")
 	sb.WriteString("\t}\n")
 
-	sb.WriteString(fmt.Sprintf("\treturn %sDBToProto(&dbResult), nil\n", entity.Name))
+	sb.WriteString(fmt.Sprintf("\treturn %sFromSQL(&dbResult), nil\n", entity.Name))
 	sb.WriteString("}\n\n")
 
 	return sb.String()
@@ -91,7 +91,7 @@ func generateListMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg s
 	sb.WriteString(") ")
 
 	if funcDecl.Type.Results != nil && len(funcDecl.Type.Results.List) == 2 {
-		sb.WriteString(fmt.Sprintf("([]*pb.%s, error)", entity.Name))
+		sb.WriteString(fmt.Sprintf("([]*%s, error)", entity.Name))
 	}
 
 	sb.WriteString(" {\n")
@@ -112,9 +112,9 @@ func generateListMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg s
 	sb.WriteString("\t\treturn nil, err\n")
 	sb.WriteString("\t}\n")
 
-	sb.WriteString(fmt.Sprintf("\tresult := make([]*pb.%s, len(dbResults))\n", entity.Name))
+	sb.WriteString(fmt.Sprintf("\tresult := make([]*%s, len(dbResults))\n", entity.Name))
 	sb.WriteString("\tfor i := range dbResults {\n")
-	sb.WriteString(fmt.Sprintf("\t\tresult[i] = %sDBToProto(&dbResults[i])\n", entity.Name))
+	sb.WriteString(fmt.Sprintf("\t\tresult[i] = %sFromSQL(&dbResults[i])\n", entity.Name))
 	sb.WriteString("\t}\n")
 	sb.WriteString("\treturn result, nil\n")
 	sb.WriteString("}\n\n")

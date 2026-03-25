@@ -58,13 +58,7 @@ func addValidationChecks(entity schema.Entity, sqlQuery string, returnType strin
 	case "string":
 		zeroValue = "\"\""
 	default:
-		// Handle pointers, slices, and maps
-		if strings.HasPrefix(returnType, "*") || strings.HasPrefix(returnType, "[]") || strings.HasPrefix(returnType, "map[") {
-			zeroValue = "nil"
-		} else {
-			// Assume it's a struct type
-			zeroValue = returnType + "{}"
-		}
+		zeroValue = "nil"
 	}
 
 	for _, field := range entity.Fields {
@@ -166,24 +160,7 @@ func toExportedName(name string) string {
 	return strings.Join(parts, "")
 }
 
-// func fieldDBToProto(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect) string {
-// 	if sqlDialect == sqlc.SQLite {
-// 		if field.Type == schema.FieldTypeBool {
-// 			return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
-// 		}
-// 		if field.Type == schema.FieldTypeInt {
-// 			if field.Optional {
-// 				return fmt.Sprintf("SQLiteNullInt64ToPtrInt32(%s)", dbFieldRef)
-// 			} else {
-// 				return fmt.Sprintf("SQLiteInt64ToInt32(%s)", dbFieldRef)
-// 			}
-// 		}
-// 	}
-
-// 	return dbFieldRef
-// }
-
-func fieldProtoToDB(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) string {
+func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) string {
 	if sqlDialect == sqlc.SQLite {
 		if field.Type == schema.FieldTypeBool {
 			return fmt.Sprintf("SQLiteBoolToInt(%s)", pbFieldRef)
@@ -197,5 +174,95 @@ func fieldProtoToDB(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDi
 		}
 	}
 
-	return pbFieldRef
+	if field.Optional {
+		switch field.Type {
+		case schema.FieldTypeString:
+			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
+		case schema.FieldTypeInt:
+			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
+		case schema.FieldTypeInt64:
+			return fmt.Sprintf("PtrToNullInt64(%s)", pbFieldRef)
+		case schema.FieldTypeFloat:
+			return fmt.Sprintf("PtrToNullFloat64(%s)", pbFieldRef)
+		case schema.FieldTypeBool:
+			return fmt.Sprintf("PtrToNullBool(%s)", pbFieldRef)
+		case schema.FieldTypeTime:
+			return pbFieldRef
+		case schema.FieldTypeByte:
+			return fmt.Sprintf("PtrToNullBytes(%s)", pbFieldRef)
+		default:
+			return pbFieldRef
+		}
+	}
+
+	switch field.Type {
+	case schema.FieldTypeString:
+		return pbFieldRef
+	case schema.FieldTypeInt:
+		return pbFieldRef
+	case schema.FieldTypeFloat:
+		return pbFieldRef
+	case schema.FieldTypeBool:
+		return pbFieldRef
+	case schema.FieldTypeTime:
+		return pbFieldRef
+	case schema.FieldTypeByte:
+		return pbFieldRef
+	default:
+		return pbFieldRef
+	}
+}
+
+// goFromSQL converts from SQL types to Go types (inverse of sqlToGo)
+func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect) string {
+	if sqlDialect == sqlc.SQLite {
+		if field.Type == schema.FieldTypeBool {
+			return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
+		}
+		if field.Type == schema.FieldTypeInt {
+			if field.Optional {
+				return fmt.Sprintf("SQLiteNullInt64ToPtrInt32(%s)", dbFieldRef)
+			} else {
+				return fmt.Sprintf("SQLiteInt64ToInt32(%s)", dbFieldRef)
+			}
+		}
+	}
+
+	if field.Optional {
+		switch field.Type {
+		case schema.FieldTypeString:
+			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeInt:
+			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeInt64:
+			return fmt.Sprintf("NullInt64ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeFloat:
+			return fmt.Sprintf("NullFloat64ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeBool:
+			return fmt.Sprintf("NullBoolToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeTime:
+			return dbFieldRef
+		case schema.FieldTypeByte:
+			return fmt.Sprintf("NullBytesToPtr(%s)", dbFieldRef)
+		default:
+			return dbFieldRef
+		}
+	}
+
+	switch field.Type {
+	case schema.FieldTypeString:
+		return dbFieldRef
+	case schema.FieldTypeInt:
+		return dbFieldRef
+	case schema.FieldTypeFloat:
+		return dbFieldRef
+	case schema.FieldTypeBool:
+		return dbFieldRef
+	case schema.FieldTypeTime:
+		return dbFieldRef
+	case schema.FieldTypeByte:
+		return dbFieldRef
+	default:
+		return dbFieldRef
+	}
 }

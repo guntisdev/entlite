@@ -15,66 +15,9 @@ func generateConverterFunctions() string {
 	content.WriteString(nullableBytes)
 	content.WriteString(sqliteBools)
 	content.WriteString(sqlLiteInts)
-	content.WriteString(tmp)
 
 	return content.String()
 }
-
-// TODO - take logic from converter for dynamic conversion
-const tmp = `// UserDBToProto converts a database model to proto message
-func UserDBToProto(db *internal.User) *pb.User {
-	if db == nil {
-		return nil
-	}
-
-	return &pb.User{
-		ID: SQLiteInt64ToInt32(db.ID),
-		Email: db.Email,
-		Name: db.Name,
-		Age: SQLiteNullInt64ToPtrInt32(db.Age),
-		Score: db.Score,
-		Uuid: db.Uuid,
-		IsAdmin: SQLiteIntToBool(db.IsAdmin),
-		ApiKey: db.ApiKey,
-		LastLoginMs: db.LastLoginMs,
-		CreatedAt: TimeToProto(db.CreatedAt),
-		UpdatedAt: TimeToProto(db.UpdatedAt),
-	}
-}
-
-// UserProtoToDB converts a proto message to database model
-func UserProtoToDB(pb *pb.User) *internal.User {
-	if pb == nil {
-		return nil
-	}
-
-	return &internal.User{
-		ID: SQLiteInt32ToInt64(pb.ID),
-		Email: pb.Email,
-		Name: pb.Name,
-		Age: SQLitePtrInt32ToNullInt64(pb.Age),
-		Score: pb.Score,
-		Uuid: pb.Uuid,
-		IsAdmin: SQLiteBoolToInt(pb.IsAdmin),
-		ApiKey: pb.ApiKey,
-		LastLoginMs: pb.LastLoginMs,
-		CreatedAt: ProtoToTime(pb.CreatedAt),
-		UpdatedAt: ProtoToTime(pb.UpdatedAt),
-	}
-}
-// UserDBSliceToProtoSlice converts db slice to proto array message
-func UserDBSliceToProtoSlice(dbSlice []*internal.User) []*pb.User {
-	if dbSlice == nil {
-		return nil
-	}
-
-	result := make([]*pb.User, len(dbSlice))
-	for i, row := range dbSlice {
-		result[i] = UserDBToProto(row)
-	}
-	return result
-}
-`
 
 func nullableConverters() string {
 	var buf bytes.Buffer

@@ -82,7 +82,7 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 			funcName := field.DefaultFunc().(string)
 			sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
 		} else {
-			convertField := fieldProtoToDB(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+			convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
 			sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))
 		}
 	}
