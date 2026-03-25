@@ -10,6 +10,9 @@ import (
 )
 
 func convertCommand(args []string) {
+	// TODO for now not needed to generate convert
+	return
+
 	if len(args) < 2 {
 		fmt.Fprintf(os.Stderr, "Error: sqlc and proto export directories needed")
 	}

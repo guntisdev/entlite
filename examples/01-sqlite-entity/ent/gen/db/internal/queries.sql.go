@@ -36,7 +36,7 @@ INSERT INTO "user" (
   ?,
   ?,
   ?
-) RETURNING id
+) RETURNING ID
 `
 
 type CreateUserParams struct {
@@ -74,7 +74,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 }
 
 const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM "user" WHERE id = ?
+DELETE FROM "user" WHERE ID = ?
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
@@ -83,7 +83,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, name, age, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE id = ?
+SELECT id, email, name, age, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE ID = ?
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
@@ -106,7 +106,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 }
 
 const listUser = `-- name: ListUser :many
-SELECT id, email, name, age, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" ORDER BY id
+SELECT id, email, name, age, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" ORDER BY ID
 `
 
 func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
@@ -153,7 +153,7 @@ UPDATE "user" SET
   is_admin = ?,
   last_login_ms = ?,
   updated_at = ?
-WHERE id = ?
+WHERE ID = ?
 RETURNING id, email, name, age, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at
 `
 

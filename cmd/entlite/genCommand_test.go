@@ -86,7 +86,7 @@ import "buf/validate/validate.proto";
 
 // User represents as user entity
 message User {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int32 ID = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
@@ -109,10 +109,10 @@ message CreateUserRequest {
   int64 last_login_ms = 11 [(buf.validate.field).required = true];
 }
 message GetUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int32 ID = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int32 ID = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
@@ -121,7 +121,7 @@ message UpdateUserRequest {
   int64 last_login_ms = 11 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int32 ID = 1 [(buf.validate.field).required = true];
 }
 message ListUserRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
@@ -157,7 +157,7 @@ service UserService {
 
 -- user table
 CREATE TABLE "user"(
-  id SERIAL PRIMARY KEY,
+  ID SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
   age INT,
@@ -209,13 +209,13 @@ INSERT INTO "user" (
   $8,
   $9,
   $10
-) RETURNING id;
+) RETURNING ID;
 
 -- name: GetUser :one
-SELECT * FROM "user" WHERE id = $1;
+SELECT * FROM "user" WHERE ID = $1;
 
 -- name: ListUser :many
-SELECT * FROM "user" ORDER BY id;
+SELECT * FROM "user" ORDER BY ID;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
@@ -226,11 +226,11 @@ UPDATE "user" SET
   is_admin = $5,
   last_login_ms = $6,
   updated_at = $7
-WHERE id = $8
+WHERE ID = $8
 RETURNING *;
 
 -- name: DeleteUser :exec
-DELETE FROM "user" WHERE id = $1;`
+DELETE FROM "user" WHERE ID = $1;`
 
 	if content, err := os.ReadFile(sqlQueriesPath); err != nil {
 		t.Fatalf("Failed to read SQL queries file: %v", err)

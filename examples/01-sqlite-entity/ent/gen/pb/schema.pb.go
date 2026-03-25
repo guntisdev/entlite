@@ -27,7 +27,7 @@ const (
 // User represents as user entity
 type User struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Id    int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ID    int32                  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Email string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	// First name and surname
 	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
@@ -73,9 +73,9 @@ func (*User) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *User) GetId() int32 {
+func (x *User) GetID() int32 {
 	if x != nil {
-		return x.Id
+		return x.ID
 	}
 	return 0
 }
@@ -229,7 +229,7 @@ func (x *CreateUserRequest) GetLastLoginMs() int64 {
 
 type GetUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ID            int32                  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -264,16 +264,16 @@ func (*GetUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetUserRequest) GetId() int32 {
+func (x *GetUserRequest) GetID() int32 {
 	if x != nil {
-		return x.Id
+		return x.ID
 	}
 	return 0
 }
 
 type UpdateUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Id    int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ID    int32                  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Email string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	// First name and surname
 	Name          string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
@@ -314,9 +314,9 @@ func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *UpdateUserRequest) GetId() int32 {
+func (x *UpdateUserRequest) GetID() int32 {
 	if x != nil {
-		return x.Id
+		return x.ID
 	}
 	return 0
 }
@@ -358,7 +358,7 @@ func (x *UpdateUserRequest) GetLastLoginMs() int64 {
 
 type DeleteUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ID            int32                  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -393,9 +393,9 @@ func (*DeleteUserRequest) Descriptor() ([]byte, []int) {
 	return file_schema_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *DeleteUserRequest) GetId() int32 {
+func (x *DeleteUserRequest) GetID() int32 {
 	if x != nil {
-		return x.Id
+		return x.ID
 	}
 	return 0
 }
@@ -502,7 +502,7 @@ const file_schema_proto_rawDesc = "" +
 	"\n" +
 	"\fschema.proto\x12\aentlite\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"\xa7\x03\n" +
 	"\x04User\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
+	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12\x15\n" +
 	"\x03age\x18\x04 \x01(\x05H\x00R\x03age\x88\x01\x01\x12\x1c\n" +
@@ -525,9 +525,9 @@ const file_schema_proto_rawDesc = "" +
 	"\rlast_login_ms\x18\v \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\vlastLoginMsB\x06\n" +
 	"\x04_age\"(\n" +
 	"\x0eGetUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\"\xd3\x01\n" +
+	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\"\xd3\x01\n" +
 	"\x11UpdateUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\x12\x1c\n" +
+	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12\x15\n" +
 	"\x03age\x18\x04 \x01(\x05H\x00R\x03age\x88\x01\x01\x12!\n" +
@@ -535,7 +535,7 @@ const file_schema_proto_rawDesc = "" +
 	"\rlast_login_ms\x18\v \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\vlastLoginMsB\x06\n" +
 	"\x04_age\"+\n" +
 	"\x11DeleteUserRequest\x12\x16\n" +
-	"\x02id\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02id\"O\n" +
+	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\"O\n" +
 	"\x0fListUserRequest\x12\x1c\n" +
 	"\x05limit\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x05limit\x12\x1e\n" +
 	"\x06offset\x18\x02 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x06offset\"7\n" +

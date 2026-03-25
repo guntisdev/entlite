@@ -40,6 +40,15 @@ type Entity struct {
 	Annotations []Annotation
 }
 
+func (e Entity) GetIdField() *Field {
+	for _, field := range e.Fields {
+		if field.IsID() {
+			return &field
+		}
+	}
+	return nil
+}
+
 type Field struct {
 	Name         string
 	Type         FieldType
