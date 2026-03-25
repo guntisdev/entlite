@@ -68,7 +68,7 @@ const createUser = ` + "`-- name: CreateUser :one\nINSERT INTO users (email, nam
 type CreateUserParams struct {
 	Email     string
 	Name      string
-	Age       sql.NullInt64
+	Age       *int32
 	Score     float64
 	Uuid      string
 	IsAdmin   bool
@@ -81,7 +81,7 @@ type User struct {
 	ID        int64
 	Email     string
 	Name      string
-	Age       sql.NullInt64
+	Age       *int32
 	Score     float64
 	Uuid      string
 	IsAdmin   bool
@@ -124,7 +124,7 @@ type UpdateUserParams struct {
 	ID        int64
 	Email     string
 	Name      string
-	Age       sql.NullInt64
+	Age       int32
 	Score     float64
 	IsAdmin   bool
 	UpdatedAt time.Time
@@ -170,6 +170,22 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	}
 	defer os.Chdir(originalDir)
 
+	sqlcYamlContent := `version: "2"
+sql:
+  - schema: "contract/sqlc/schema.sql"
+    queries: "contract/sqlc/queries.sql"
+    engine: "sqlite"
+    gen:
+      go:
+        package: "internal"
+        out: "gen/db/internal"
+        emit_json_tags: true
+`
+	sqlcYamlPath := filepath.Join(tmpDir, "ent", "sqlc.yaml")
+	if err := os.WriteFile(sqlcYamlPath, []byte(sqlcYamlContent), 0644); err != nil {
+		t.Fatalf("Failed to write sqlc.yaml file: %v", err)
+	}
+
 	sqlcWrapCommand([]string{inputDir, outputDir})
 
 	outputPath := filepath.Join(outputDir, "queries.sql.go")
@@ -188,65 +204,227 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/logic"
 	"time"
 	db "github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/db"
 )
 
 type DBTX = db.DBTX
-var New = db.New
+func New(db DBTX) *Queries { return (*Queries)(db.New(db)) }
 type Queries db.Queries
 type CreateUserParams struct {
 	Email string
 	Name string
-	Age sql.NullInt64
+	Age *int32
 	Score float64
 	IsAdmin bool
 }
 
 type User = db.User
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
 	if !logic.StartsWithCapital(arg.Name) {
-		return User{}, fmt.Errorf("Failed create: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
+		return 0, fmt.Errorf("Failed create: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
 	internalArg := db.CreateUserParams{
 		Email: arg.Email,
 		Name: arg.Name,
-		Age: arg.Age,
+		Age: SQLitePtrInt32ToNullInt64(arg.Age),
 		Score: arg.Score,
 		Uuid: logic.GetUuidStr(),
-		IsAdmin: arg.IsAdmin,
+		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
 		ApiKey: logic.GenerateAPIKey(),
 		LastLoginMs: arg.LastLoginMs,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	return (*db.Queries)(q).CreateUser(ctx, internalArg)
+	id, err := (*db.Queries)(q).CreateUser(ctx, internalArg)
+	return SQLiteInt64ToInt32(id), err
 }
 
 type UpdateUserParams struct {
-	ID int64
+	ID int32
 	Email string
 	Name string
-	Age sql.NullInt64
+	Age *int32
 	Score float64
 	IsAdmin bool
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
 	if !logic.StartsWithCapital(arg.Name) {
-		return User{}, fmt.Errorf("Failed update: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
+		return nil, fmt.Errorf("Failed update: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
 	internalArg := db.UpdateUserParams{
 		Email: arg.Email,
 		Name: arg.Name,
-		Age: arg.Age,
+		Age: SQLitePtrInt32ToNullInt64(arg.Age),
 		Score: arg.Score,
-		IsAdmin: arg.IsAdmin,
+		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
 		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}
-	return (*db.Queries)(q).UpdateUser(ctx, internalArg)
+
+	dbUser, err := (*db.Queries)(q).UpdateUser(ctx, internalArg)
+	if err != nil {
+		return nil, err
+	}
+	return UserFromSQL(&dbUser), nil
+}
+
+
+// TimeToProto converts time.Time to timestamppb.Timestamp pointer
+func TimeToProto(t time.Time) *timestamppb.Timestamp {
+	return timestamppb.New(t)
+}
+
+// Note: If the pointer is nil, it returns a zero time.Time{}
+func ProtoToTime(t *timestamppb.Timestamp) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return t.AsTime()
+}
+
+// --- Int32 Converters ---
+func NullInt32ToPtr(n sql.NullInt32) *int32 {
+	if !n.Valid { return nil }
+	return &n.Int32
+}
+
+func PtrToNullInt32(i *int32) sql.NullInt32 {
+	if i == nil {
+		return sql.NullInt32{Valid: false}
+	}
+	return sql.NullInt32{ Int32: *i, Valid: true }
+}
+
+// --- Int64 Converters ---
+func NullInt64ToPtr(n sql.NullInt64) *int64 {
+	if !n.Valid { return nil }
+	return &n.Int64
+}
+
+func PtrToNullInt64(i *int64) sql.NullInt64 {
+	if i == nil {
+		return sql.NullInt64{Valid: false}
+	}
+	return sql.NullInt64{ Int64: *i, Valid: true }
+}
+
+// --- Float64 Converters ---
+func NullFloat64ToPtr(n sql.NullFloat64) *float64 {
+	if !n.Valid { return nil }
+	return &n.Float64
+}
+
+func PtrToNullFloat64(i *float64) sql.NullFloat64 {
+	if i == nil {
+		return sql.NullFloat64{Valid: false}
+	}
+	return sql.NullFloat64{ Float64: *i, Valid: true }
+}
+
+// --- String Converters ---
+func NullStringToPtr(n sql.NullString) *string {
+	if !n.Valid { return nil }
+	return &n.String
+}
+
+func PtrToNullString(i *string) sql.NullString {
+	if i == nil {
+		return sql.NullString{Valid: false}
+	}
+	return sql.NullString{ String: *i, Valid: true }
+}
+
+// --- Bool Converters ---
+func NullBoolToPtr(n sql.NullBool) *bool {
+	if !n.Valid { return nil }
+	return &n.Bool
+}
+
+func PtrToNullBool(i *bool) sql.NullBool {
+	if i == nil {
+		return sql.NullBool{Valid: false}
+	}
+	return sql.NullBool{ Bool: *i, Valid: true }
+}
+
+// --- Time Converters ---
+func NullTimeToProto(n sql.NullTime) *timestamppb.Timestamp {
+	if !n.Valid {
+		return nil
+	}
+	return timestamppb.New(n.Time)
+}
+
+func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
+	if t == nil {
+		return sql.NullTime{Valid: false}
+	}
+	return sql.NullTime{
+		Time:  t.AsTime(),
+		Valid: true,
+	}
+}
+
+// --- Bytes Converters ---
+func NullBytesToPtr(b []byte) *[]byte {
+    if b == nil { return nil }
+    return &b
+}
+
+func PtrToNullBytes(b *[]byte) []byte {
+    if b == nil { return nil }
+    return *b
+}
+
+// --- SQLite bool converters ---
+func SQLiteIntToBool(i int64) bool {
+    switch i {
+    case 0:
+        return false
+    case 1:
+        return true
+    default:
+        panic("Unable convert sqlite int to bool")
+    }
+}
+
+func SQLiteBoolToInt(b bool) int64 {
+    if b {
+        return 1
+    } else {
+        return 0
+    }
+}
+
+// --- SQLite int converters int32 - int64 ---
+func SQLiteInt64ToInt32(n int64) int32 {
+    if n < math.MinInt32 || n > math.MaxInt32 {
+		panic("Unable convert sqlite int64 to int32")
+	}
+	return int32(n)
+}
+
+func SQLiteInt32ToInt64(n int32) int64 {
+    return int64(n)
+}
+
+// --- SQLite null-int converters int32 - int64 ---
+func SQLiteNullInt64ToPtrInt32(n sql.NullInt64) *int32 {
+	if !n.Valid { return nil }
+    v := SQLiteInt64ToInt32(n.Int64)
+	return &v
+}
+
+func SQLitePtrInt32ToNullInt64(i *int32) sql.NullInt64 {
+    if i == nil {
+		return sql.NullInt64{Valid: false}
+	}
+	return sql.NullInt64{ Int64: int64(*i), Valid: true }
 }`
 
 	if d := util.Diff(expectedContent, string(actualContent)); d != "" {
