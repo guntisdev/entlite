@@ -32,6 +32,13 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
     └── generate.go     # go generate - creates contracts, launches sqlc, buf, light db wrapper and convert
 ```
 
+## Get started
+sql dialect flag: postgresql (default) or sqlite or mysql
+arguments: entity names
+```bash
+go run github.com/guntisdev/entlite/cmd/entlite new --dialect sqlite User Post
+```
+
 ## Launch example
 Go to one of examples and generate types
 ```bash
