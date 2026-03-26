@@ -10,8 +10,8 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * figure out field methods to forbid creation/update from client. forbid exposing to proto
 * Maybe WriteSkip() and ReadSkip() - like WriteSkip() for createdAt and ReadSkip() for password?
 * Or maybe .Permission() - with arguments inside?
-* Figure out better DX for pb-db type conversion. Like SQLitePtrInt32ToNullInt64. Maybe put something in sqlcWrap code
 * Update 01-sqlite-entity with better logs (not only input, but also output and error on go side)
+* Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
 
 ## Folder structure
 ```
