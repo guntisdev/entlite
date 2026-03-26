@@ -10,7 +10,7 @@ import "buf/validate/validate.proto";
 
 // User represents as user entity
 message User {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int32 ID = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
@@ -33,10 +33,10 @@ message CreateUserRequest {
   int64 last_login_ms = 11 [(buf.validate.field).required = true];
 }
 message GetUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int32 ID = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int32 ID = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
@@ -45,7 +45,7 @@ message UpdateUserRequest {
   int64 last_login_ms = 11 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {
-  int32 id = 1 [(buf.validate.field).required = true];
+  int32 ID = 1 [(buf.validate.field).required = true];
 }
 message ListUserRequest {
   int32 limit = 1 [(buf.validate.field).required = true];

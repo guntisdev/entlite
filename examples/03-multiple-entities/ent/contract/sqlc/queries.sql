@@ -12,24 +12,24 @@ INSERT INTO "post" (
   $1,
   $2,
   $3
-) RETURNING id;
+) RETURNING ID;
 
 -- name: GetPost :one
-SELECT * FROM "post" WHERE id = $1;
+SELECT * FROM "post" WHERE ID = $1;
 
 -- name: ListPost :many
-SELECT * FROM "post" ORDER BY id;
+SELECT * FROM "post" ORDER BY ID;
 
 -- name: UpdatePost :one
 UPDATE "post" SET
   title = $1,
   content = $2,
   published = $3
-WHERE id = $4
+WHERE ID = $4
 RETURNING *;
 
 -- name: DeletePost :exec
-DELETE FROM "post" WHERE id = $1;
+DELETE FROM "post" WHERE ID = $1;
 
 -- User CRUD operations
 
@@ -40,21 +40,21 @@ INSERT INTO "user" (
 ) VALUES (
   $1,
   $2
-) RETURNING id;
+) RETURNING ID;
 
 -- name: GetUser :one
-SELECT * FROM "user" WHERE id = $1;
+SELECT * FROM "user" WHERE ID = $1;
 
 -- name: ListUser :many
-SELECT * FROM "user" ORDER BY id;
+SELECT * FROM "user" ORDER BY ID;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
   email = $1,
   name = $2
-WHERE id = $3
+WHERE ID = $3
 RETURNING *;
 
 -- name: DeleteUser :exec
-DELETE FROM "user" WHERE id = $1;
+DELETE FROM "user" WHERE ID = $1;
 

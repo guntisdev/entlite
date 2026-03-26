@@ -3,7 +3,7 @@
 
 -- post table
 CREATE TABLE "post"(
-  id SERIAL PRIMARY KEY,
+  ID SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
   published BOOLEAN DEFAULT false NOT NULL
@@ -11,7 +11,7 @@ CREATE TABLE "post"(
 
 -- user table
 CREATE TABLE "user"(
-  id SERIAL PRIMARY KEY,
+  ID SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL
 );

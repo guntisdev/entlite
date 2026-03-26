@@ -26,13 +26,13 @@ INSERT INTO "user" (
   $8,
   $9,
   $10
-) RETURNING id;
+) RETURNING ID;
 
 -- name: GetUser :one
-SELECT * FROM "user" WHERE id = $1;
+SELECT * FROM "user" WHERE ID = $1;
 
 -- name: ListUser :many
-SELECT * FROM "user" ORDER BY id;
+SELECT * FROM "user" ORDER BY ID;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
@@ -43,9 +43,9 @@ UPDATE "user" SET
   is_admin = $5,
   last_login_ms = $6,
   updated_at = $7
-WHERE id = $8
+WHERE ID = $8
 RETURNING *;
 
 -- name: DeleteUser :exec
-DELETE FROM "user" WHERE id = $1;
+DELETE FROM "user" WHERE ID = $1;
 
