@@ -8,11 +8,12 @@ import (
 	"github.com/guntisdev/entlite/internal/generator/sqlc"
 )
 
-func TestGetSqlDialectFromSqlcYaml_Success(t *testing.T) {
+func TestGetSqlcConfigFromYaml_Success(t *testing.T) {
 	tests := []struct {
-		name            string
-		yamlContent     string
-		expectedDialect sqlc.SQLDialect
+		name             string
+		yamlContent      string
+		expectedDialect  sqlc.SQLDialect
+		expectedInputDir string
 	}{
 		{
 			name: "postgresql dialect",
@@ -26,7 +27,8 @@ sql:
         package: "internal"
         out: "gen/db/internal"
         emit_json_tags: true`,
-			expectedDialect: sqlc.PostgreSQL,
+			expectedDialect:  sqlc.PostgreSQL,
+			expectedInputDir: "gen/db/internal",
 		},
 		{
 			name: "sqlite dialect",
@@ -40,7 +42,8 @@ sql:
         package: "internal"
         out: "gen/db/internal"
         emit_json_tags: true`,
-			expectedDialect: sqlc.SQLite,
+			expectedDialect:  sqlc.SQLite,
+			expectedInputDir: "gen/db/internal",
 		},
 	}
 
@@ -53,19 +56,23 @@ sql:
 				t.Fatalf("Failed to create temp file: %v", err)
 			}
 
-			dialect, err := GetSqlDialectFromSqlcYaml(tmpFile)
+			config, err := GetSqlcConfigFromYaml(tmpFile)
 			if err != nil {
 				t.Fatalf("Expected no error, got: %v", err)
 			}
 
-			if dialect != tt.expectedDialect {
-				t.Errorf("Expected dialect %s, got %s", tt.expectedDialect, dialect)
+			if config.Dialect != tt.expectedDialect {
+				t.Errorf("Expected dialect %s, got %s", tt.expectedDialect, config.Dialect)
+			}
+
+			if config.InputDir != tt.expectedInputDir {
+				t.Errorf("Expected input dir %s, got %s", tt.expectedInputDir, config.InputDir)
 			}
 		})
 	}
 }
 
-func TestGetSqlDialectFromSqlcYaml_Failures(t *testing.T) {
+func TestGetSqlcConfigFromYaml_Failures(t *testing.T) {
 	tests := []struct {
 		name        string
 		yamlContent string
@@ -115,7 +122,7 @@ sql: []`,
 				t.Fatalf("Failed to create temp file: %v", err)
 			}
 
-			_, err := GetSqlDialectFromSqlcYaml(tmpFile)
+			_, err := GetSqlcConfigFromYaml(tmpFile)
 			if err == nil {
 				t.Fatal("Expected error, got none")
 			}

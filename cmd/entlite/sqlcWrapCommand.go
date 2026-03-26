@@ -10,12 +10,7 @@ import (
 	"github.com/guntisdev/entlite/internal/util"
 )
 
-func sqlcWrapCommand(args []string) {
-	if len(args) < 2 {
-		fmt.Fprintf(os.Stderr, "Error: need at least two arguments (input_dir output_dir)\n")
-		os.Exit(1)
-	}
-
+func sqlcWrapCommand() {
 	entityDir := "./schema"
 	parsedEntities, err := loadEntities(entityDir)
 	if err != nil {
@@ -29,9 +24,14 @@ func sqlcWrapCommand(args []string) {
 		os.Exit(1)
 	}
 
-	// TODO read directories from yaml files
-	inputDir := args[0]
-	outputDir := args[1]
+	sqlcConfig, err := util.GetSqlcConfigFromYaml("./sqlc.yaml")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
+		os.Exit(1)
+	}
+
+	inputDir := sqlcConfig.InputDir
+	outputDir := filepath.Dir(inputDir)
 	pbDir := filepath.Join(filepath.Dir(outputDir), "pb")
 
 	if _, err := os.Stat(inputDir); os.IsNotExist(err) {
@@ -50,12 +50,6 @@ func sqlcWrapCommand(args []string) {
 		os.Exit(1)
 	}
 
-	dialect, err := util.GetSqlDialectFromSqlcYaml("./sqlc.yaml")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
-		os.Exit(1)
-	}
-
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -66,7 +60,7 @@ func sqlcWrapCommand(args []string) {
 			inputFilePath := filepath.Join(inputDir, fileName)
 			outputFilePath := filepath.Join(outputDir, fileName)
 
-			content, err := sqlcwrap.Generate(inputFilePath, pbDir, parsedEntities, entityImports, dialect)
+			content, err := sqlcwrap.Generate(inputFilePath, pbDir, parsedEntities, entityImports, sqlcConfig.Dialect)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating wrapper content for %s: %v\n", fileName, err)
 				os.Exit(1)

@@ -20,7 +20,7 @@ func main() {
 	case "gen":
 		genCommand(os.Args[2:])
 	case "sqlc-wrap":
-		sqlcWrapCommand(os.Args[2:])
+		sqlcWrapCommand()
 	case "proto-validate":
 		protoValidate(os.Args[2:])
 	default:

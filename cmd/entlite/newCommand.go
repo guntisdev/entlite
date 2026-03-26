@@ -2,15 +2,37 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/guntisdev/entlite/internal/generator/sqlc"
 )
 
-func newCommand(entityNames []string) {
+func newCommand(args []string) {
+	fs := flag.NewFlagSet("new", flag.ExitOnError)
+	dialect := fs.String("dialect", "postgresql", "SQL dialect: postgresql, sqlite, or mysql")
+
+	fs.Parse(args)
+	entityNames := fs.Args()
+
 	if len(entityNames) == 0 {
 		fmt.Fprintln(os.Stderr, "Please specify at least one entity name")
+		os.Exit(1)
+	}
+
+	validDialects := []sqlc.SQLDialect{sqlc.PostgreSQL, sqlc.SQLite, sqlc.MySQL}
+	isValid := false
+	for _, valid := range validDialects {
+		if string(valid) == *dialect {
+			isValid = true
+			break
+		}
+	}
+	if !isValid {
+		fmt.Fprintf(os.Stderr, "Invalid dialect '%s'. Must be postgresql, sqlite, or mysql\n", *dialect)
 		os.Exit(1)
 	}
 
@@ -38,7 +60,7 @@ func newCommand(entityNames []string) {
 		os.Exit(1)
 	}
 
-	if err := createSqlcYamlFile(entDir); err != nil {
+	if err := createSqlcYamlFile(entDir, *dialect); err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating sqlc.yaml: %v\n", err)
 		os.Exit(1)
 	}
@@ -106,7 +128,7 @@ func createGenFile(dir string) error {
 //go:generate go tool sqlc generate
 //go:generate go tool buf dep update
 //go:generate go tool buf generate
-//go:generate go run github.com/guntisdev/entlite/cmd/entlite sqlc-wrap ./gen/db/internal ./gen/db
+//go:generate go run github.com/guntisdev/entlite/cmd/entlite sqlc-wrap
 //go:generate go run github.com/guntisdev/entlite/cmd/entlite proto-validate ./gen/pb
 
 package ent
@@ -116,18 +138,18 @@ package ent
 	return createIfNotExist(filePath, content)
 }
 
-func createSqlcYamlFile(dir string) error {
-	content := `version: "2"
+func createSqlcYamlFile(dir, dialect string) error {
+	content := fmt.Sprintf(`version: "2"
 sql:
   - schema: "contract/sqlc/schema.sql"
     queries: "contract/sqlc/queries.sql"    
-    engine: "postgresql"       # postgresql or sqlite or mysql
+    engine: "%s"       # postgresql or sqlite or mysql
     gen:
       go:
         package: "internal"
         out: "gen/db/internal"
         emit_json_tags: true  
-`
+`, dialect)
 
 	path := filepath.Join(dir, "sqlc.yaml")
 	return createIfNotExist(path, content)

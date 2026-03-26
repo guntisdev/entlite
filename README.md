@@ -5,13 +5,12 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Add to proto required field check `[(buf.validate.field).required = true];` 
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
-* handle sql dialect passing to newCommand
 * check each field if it added in further generation (for example Comment)
 * figure out field methods to forbid creation/update from client. forbid exposing to proto
 * Maybe WriteSkip() and ReadSkip() - like WriteSkip() for createdAt and ReadSkip() for password?
 * Or maybe .Permission() - with arguments inside?
-* Figure out better DX for pb-db type conversion. Like SQLitePtrInt32ToNullInt64. Maybe put something in sqlcWrap code
 * Update 01-sqlite-entity with better logs (not only input, but also output and error on go side)
+* Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
 
 ## Folder structure
 ```
@@ -30,6 +29,13 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
     ├── buf.gen.yaml
     ├── sqlc.yaml
     └── generate.go     # go generate - creates contracts, launches sqlc, buf, light db wrapper and convert
+```
+
+## Get started
+sql dialect flag: postgresql (default) or sqlite or mysql
+arguments: entity names
+```bash
+go run github.com/guntisdev/entlite/cmd/entlite new --dialect sqlite User Post
 ```
 
 ## Launch example
