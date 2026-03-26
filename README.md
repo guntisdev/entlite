@@ -5,7 +5,6 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Add to proto required field check `[(buf.validate.field).required = true];` 
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
-* handle sql dialect passing to newCommand
 * check each field if it added in further generation (for example Comment)
 * figure out field methods to forbid creation/update from client. forbid exposing to proto
 * Maybe WriteSkip() and ReadSkip() - like WriteSkip() for createdAt and ReadSkip() for password?
