@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUi0AIKBFVzZXISEgoCaWQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgIIAEoAUIGukgDyAEBEhQKBHV1aWQYCSABKAlCBrpIA8gBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEhcKB2FwaV9rZXkYCiABKAxCBrpIA8gBARIdCg1sYXN0X2xvZ2luX21zGAsgASgDQga6SAPIAQESNgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UikwEKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgLIAEoA0IGukgDyAEBQgYKBF9hZ2UiJAoOR2V0VXNlclJlcXVlc3QSEgoCaWQYASABKAVCBrpIA8gBASKnAQoRVXBkYXRlVXNlclJlcXVlc3QSEgoCaWQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEh0KDWxhc3RfbG9naW5fbXMYCyABKANCBrpIA8gBAUIGCgRfYWdlIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAmlkGAEgASgFQga6SAPIAQEiQAoPTGlzdFVzZXJSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESFgoGb2Zmc2V0GAIgASgFQga6SAPIAQEiMAoQTGlzdFVzZXJSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlcjKhAgoLVXNlclNlcnZpY2USMwoGQ3JlYXRlEhouZW50bGl0ZS5DcmVhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchItCgNHZXQSFy5lbnRsaXRlLkdldFVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgRMaXN0EhguZW50bGl0ZS5MaXN0VXNlclJlcXVlc3QaGS5lbnRsaXRlLkxpc3RVc2VyUmVzcG9uc2VCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUi0AIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgIIAEoAUIGukgDyAEBEhQKBHV1aWQYCSABKAlCBrpIA8gBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEhcKB2FwaV9rZXkYCiABKAxCBrpIA8gBARIdCg1sYXN0X2xvZ2luX21zGAsgASgDQga6SAPIAQESNgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UikwEKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgLIAEoA0IGukgDyAEBQgYKBF9hZ2UiJAoOR2V0VXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASKnAQoRVXBkYXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEh0KDWxhc3RfbG9naW5fbXMYCyABKANCBrpIA8gBAUIGCgRfYWdlIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiQAoPTGlzdFVzZXJSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESFgoGb2Zmc2V0GAIgASgFQga6SAPIAQEiMAoQTGlzdFVzZXJSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlcjKhAgoLVXNlclNlcnZpY2USMwoGQ3JlYXRlEhouZW50bGl0ZS5DcmVhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchItCgNHZXQSFy5lbnRsaXRlLkdldFVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgRMaXN0EhguZW50bGl0ZS5MaXN0VXNlclJlcXVlc3QaGS5lbnRsaXRlLkxpc3RVc2VyUmVzcG9uc2VCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -22,9 +22,9 @@ export const file_schema: GenFile = /*@__PURE__*/
  */
 export type User = Message<"entlite.User"> & {
   /**
-   * @generated from field: int32 id = 1;
+   * @generated from field: int32 ID = 1;
    */
-  id: number;
+  ID: number;
 
   /**
    * @generated from field: string email = 2;
@@ -130,9 +130,9 @@ export const CreateUserRequestSchema: GenMessage<CreateUserRequest> = /*@__PURE_
  */
 export type GetUserRequest = Message<"entlite.GetUserRequest"> & {
   /**
-   * @generated from field: int32 id = 1;
+   * @generated from field: int32 ID = 1;
    */
-  id: number;
+  ID: number;
 };
 
 /**
@@ -147,9 +147,9 @@ export const GetUserRequestSchema: GenMessage<GetUserRequest> = /*@__PURE__*/
  */
 export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
   /**
-   * @generated from field: int32 id = 1;
+   * @generated from field: int32 ID = 1;
    */
-  id: number;
+  ID: number;
 
   /**
    * @generated from field: string email = 2;
@@ -191,9 +191,9 @@ export const UpdateUserRequestSchema: GenMessage<UpdateUserRequest> = /*@__PURE_
  */
 export type DeleteUserRequest = Message<"entlite.DeleteUserRequest"> & {
   /**
-   * @generated from field: int32 id = 1;
+   * @generated from field: int32 ID = 1;
    */
-  id: number;
+  ID: number;
 };
 
 /**

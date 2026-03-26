@@ -20,7 +20,7 @@ INSERT INTO "post" (
   $1,
   $2,
   $3
-) RETURNING id
+) RETURNING ID
 `
 
 type CreatePostParams struct {
@@ -47,7 +47,7 @@ INSERT INTO "user" (
 ) VALUES (
   $1,
   $2
-) RETURNING id
+) RETURNING ID
 `
 
 type CreateUserParams struct {
@@ -64,7 +64,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 }
 
 const deletePost = `-- name: DeletePost :exec
-DELETE FROM "post" WHERE id = $1
+DELETE FROM "post" WHERE ID = $1
 `
 
 func (q *Queries) DeletePost(ctx context.Context, id int32) error {
@@ -73,7 +73,7 @@ func (q *Queries) DeletePost(ctx context.Context, id int32) error {
 }
 
 const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM "user" WHERE id = $1
+DELETE FROM "user" WHERE ID = $1
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
@@ -82,7 +82,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getPost = `-- name: GetPost :one
-SELECT id, title, content, published FROM "post" WHERE id = $1
+SELECT id, title, content, published FROM "post" WHERE ID = $1
 `
 
 func (q *Queries) GetPost(ctx context.Context, id int32) (Post, error) {
@@ -98,7 +98,7 @@ func (q *Queries) GetPost(ctx context.Context, id int32) (Post, error) {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, name FROM "user" WHERE id = $1
+SELECT id, email, name FROM "user" WHERE ID = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
@@ -109,7 +109,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 }
 
 const listPost = `-- name: ListPost :many
-SELECT id, title, content, published FROM "post" ORDER BY id
+SELECT id, title, content, published FROM "post" ORDER BY ID
 `
 
 func (q *Queries) ListPost(ctx context.Context) ([]Post, error) {
@@ -141,7 +141,7 @@ func (q *Queries) ListPost(ctx context.Context) ([]Post, error) {
 }
 
 const listUser = `-- name: ListUser :many
-SELECT id, email, name FROM "user" ORDER BY id
+SELECT id, email, name FROM "user" ORDER BY ID
 `
 
 func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
@@ -172,7 +172,7 @@ UPDATE "post" SET
   title = $1,
   content = $2,
   published = $3
-WHERE id = $4
+WHERE ID = $4
 RETURNING id, title, content, published
 `
 
@@ -204,7 +204,7 @@ const updateUser = `-- name: UpdateUser :one
 UPDATE "user" SET
   email = $1,
   name = $2
-WHERE id = $3
+WHERE ID = $3
 RETURNING id, email, name
 `
 

@@ -23,8 +23,6 @@ func main() {
 		sqlcWrapCommand(os.Args[2:])
 	case "proto-validate":
 		protoValidate(os.Args[2:])
-	case "convert":
-		convertCommand(os.Args[2:])
 	default:
 		// TODO print usage with new and gen commands
 		fmt.Println("Unknow argument")

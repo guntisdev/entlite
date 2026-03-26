@@ -5,5 +5,5 @@ import (
 )
 
 type DBTX = internal.DBTX
-var New = internal.New
+func New(db DBTX) *Queries { return (*Queries)(internal.New(db)) }
 type Queries internal.Queries

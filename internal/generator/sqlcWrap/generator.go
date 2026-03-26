@@ -103,7 +103,19 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 	}
 
 	if fileType == FileTypeQuery {
-		sb.WriteString(generateConverterFunctions())
+		hasTimeField := false
+		for _, entity := range ctx.parsedEntities {
+			for _, field := range entity.Fields {
+				if field.Type == schema.FieldTypeTime {
+					hasTimeField = true
+					break
+				}
+			}
+			if hasTimeField {
+				break
+			}
+		}
+		sb.WriteString(generateConverterFunctions(hasTimeField))
 	}
 
 	return sb.String(), nil
@@ -154,6 +166,11 @@ func (ctx *generationContext) generateImports() string {
 	needsSQL := false
 	needsFmt := false
 
+	// Query files always need context import (all methods have ctx context.Context parameter)
+	if ctx.fileType == FileTypeQuery {
+		needsContext = true
+	}
+
 	for structName := range ctx.createParamsStructs {
 		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
 		if entity, ok := ctx.entityMap[entityName]; ok {
@@ -189,7 +206,22 @@ func (ctx *generationContext) generateImports() string {
 	switch ctx.fileType {
 	case FileTypeQuery:
 		sb.WriteString("\t\"math\"\n")
-		sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
+
+		hasTimeField := false
+		for _, entity := range ctx.parsedEntities {
+			for _, field := range entity.Fields {
+				if field.Type == schema.FieldTypeTime {
+					hasTimeField = true
+					break
+				}
+			}
+			if hasTimeField {
+				break
+			}
+		}
+		if hasTimeField {
+			sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
+		}
 
 		keys := make([]string, 0, len(ctx.entityImports))
 		for key := range ctx.entityImports {
@@ -216,9 +248,8 @@ func (ctx *generationContext) generateImports() string {
 		}
 		if hasTimeField {
 			sb.WriteString("\t\"time\"\n")
+			sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
 		}
-
-		sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
 		if ctx.pbImportPath != "" {
 			sb.WriteString(fmt.Sprintf("\tpb \"%s\"\n", ctx.pbImportPath))
 		}
