@@ -186,7 +186,7 @@ sql:
 		t.Fatalf("Failed to write sqlc.yaml file: %v", err)
 	}
 
-	sqlcWrapCommand([]string{inputDir, outputDir})
+	sqlcWrapCommand()
 
 	outputPath := filepath.Join(outputDir, "queries.sql.go")
 	if _, err := os.Stat(outputPath); os.IsNotExist(err) {

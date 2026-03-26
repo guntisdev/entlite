@@ -10,12 +10,7 @@ import (
 	"github.com/guntisdev/entlite/internal/util"
 )
 
-func sqlcWrapCommand(args []string) {
-	if len(args) < 2 {
-		fmt.Fprintf(os.Stderr, "Error: need at least two arguments (input_dir output_dir)\n")
-		os.Exit(1)
-	}
-
+func sqlcWrapCommand() {
 	entityDir := "./schema"
 	parsedEntities, err := loadEntities(entityDir)
 	if err != nil {
@@ -29,9 +24,12 @@ func sqlcWrapCommand(args []string) {
 		os.Exit(1)
 	}
 
-	// TODO read directories from yaml files
-	inputDir := args[0]
-	outputDir := args[1]
+	inputDir, err := util.GetSqlcOutputDirFromYaml("./sqlc.yaml")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed reading output directory from sqlc.yaml: %v\n", err)
+		os.Exit(1)
+	}
+	outputDir := filepath.Dir(inputDir)
 	pbDir := filepath.Join(filepath.Dir(outputDir), "pb")
 
 	if _, err := os.Stat(inputDir); os.IsNotExist(err) {
