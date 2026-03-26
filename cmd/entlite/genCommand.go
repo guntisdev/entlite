@@ -44,14 +44,14 @@ func genCommand(args []string) {
 	}
 
 	sqlcYamlPath := filepath.Join(filepath.Dir(dir), "sqlc.yaml")
-	dialect, err := util.GetSqlDialectFromSqlcYaml(sqlcYamlPath)
+	sqlcConfig, err := util.GetSqlcConfigFromYaml(sqlcYamlPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
 		os.Exit(1)
 	}
 
 	// SQLC
-	sqlcGenerator := sqlc.NewGenerator(dialect)
+	sqlcGenerator := sqlc.NewGenerator(sqlcConfig.Dialect)
 	if err := sqlcGenerator.Generate(parsedEntities, sqlcDir); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed generating sqlc: %v\n", err)
 		os.Exit(1)

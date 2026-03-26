@@ -24,11 +24,13 @@ func sqlcWrapCommand() {
 		os.Exit(1)
 	}
 
-	inputDir, err := util.GetSqlcOutputDirFromYaml("./sqlc.yaml")
+	sqlcConfig, err := util.GetSqlcConfigFromYaml("./sqlc.yaml")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed reading output directory from sqlc.yaml: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
 		os.Exit(1)
 	}
+
+	inputDir := sqlcConfig.InputDir
 	outputDir := filepath.Dir(inputDir)
 	pbDir := filepath.Join(filepath.Dir(outputDir), "pb")
 
@@ -48,12 +50,6 @@ func sqlcWrapCommand() {
 		os.Exit(1)
 	}
 
-	dialect, err := util.GetSqlDialectFromSqlcYaml("./sqlc.yaml")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
-		os.Exit(1)
-	}
-
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -64,7 +60,7 @@ func sqlcWrapCommand() {
 			inputFilePath := filepath.Join(inputDir, fileName)
 			outputFilePath := filepath.Join(outputDir, fileName)
 
-			content, err := sqlcwrap.Generate(inputFilePath, pbDir, parsedEntities, entityImports, dialect)
+			content, err := sqlcwrap.Generate(inputFilePath, pbDir, parsedEntities, entityImports, sqlcConfig.Dialect)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating wrapper content for %s: %v\n", fileName, err)
 				os.Exit(1)

@@ -8,77 +8,56 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type SqlcConfig struct {
-	Version string      `yaml:"version"`
-	SQL     []SqlConfig `yaml:"sql"`
+type SqlcGenConfig struct {
+	InputDir string
+	Dialect  sqlc.SQLDialect
 }
 
-type SqlConfig struct {
-	Schema  string    `yaml:"schema"`
-	Queries string    `yaml:"queries"`
-	Engine  string    `yaml:"engine"`
-	Gen     GenConfig `yaml:"gen"`
-}
-
-type GenConfig struct {
-	Go GoConfig `yaml:"go"`
-}
-
-type GoConfig struct {
-	Package      string `yaml:"package"`
-	Out          string `yaml:"out"`
-	EmitJsonTags bool   `yaml:"emit_json_tags"`
-}
-
-func GetSqlDialectFromSqlcYaml(sqlcYamlPath string) (sqlc.SQLDialect, error) {
+func GetSqlcConfigFromYaml(sqlcYamlPath string) (*SqlcGenConfig, error) {
 	data, err := os.ReadFile(sqlcYamlPath)
 	if err != nil {
-		return "", fmt.Errorf("failed to read sqlc.yaml: %w", err)
+		return nil, fmt.Errorf("failed to read sqlc.yaml: %w", err)
 	}
 
-	var config SqlcConfig
+	var config struct {
+		SQL []struct {
+			Engine string `yaml:"engine"`
+			Gen    struct {
+				Go struct {
+					Out string `yaml:"out"`
+				} `yaml:"go"`
+			} `yaml:"gen"`
+		} `yaml:"sql"`
+	}
+
 	if err := yaml.Unmarshal(data, &config); err != nil {
-		return "", fmt.Errorf("failed to parse sqlc.yaml: %w", err)
+		return nil, fmt.Errorf("failed to parse sqlc.yaml: %w", err)
 	}
 
 	if len(config.SQL) == 0 {
-		return "", fmt.Errorf("no SQL configurations found in sqlc.yaml")
+		return nil, fmt.Errorf("no SQL configurations found in sqlc.yaml")
 	}
 
 	engine := config.SQL[0].Engine
 	if engine == "" {
-		return "", fmt.Errorf("engine not specified in sqlc.yaml")
+		return nil, fmt.Errorf("engine not specified in sqlc.yaml")
 	}
 
 	dialect := sqlc.SQLDialect(engine)
 	switch dialect {
 	case sqlc.PostgreSQL, sqlc.MySQL, sqlc.SQLite:
-		return dialect, nil
 	default:
-		return "", fmt.Errorf("unsupported SQL dialect '%s' in sqlc.yaml, must be one of: %s, %s, %s",
+		return nil, fmt.Errorf("unsupported SQL dialect '%s' in sqlc.yaml, must be one of: %s, %s, %s",
 			engine, sqlc.PostgreSQL, sqlc.MySQL, sqlc.SQLite)
-	}
-}
-
-func GetSqlcOutputDirFromYaml(sqlcYamlPath string) (string, error) {
-	data, err := os.ReadFile(sqlcYamlPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to read sqlc.yaml: %w", err)
-	}
-
-	var config SqlcConfig
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return "", fmt.Errorf("failed to parse sqlc.yaml: %w", err)
-	}
-
-	if len(config.SQL) == 0 {
-		return "", fmt.Errorf("no SQL configurations found in sqlc.yaml")
 	}
 
 	outputDir := config.SQL[0].Gen.Go.Out
 	if outputDir == "" {
-		return "", fmt.Errorf("gen.go.out not specified in sqlc.yaml")
+		return nil, fmt.Errorf("gen.go.out not specified in sqlc.yaml")
 	}
 
-	return outputDir, nil
+	return &SqlcGenConfig{
+		InputDir: outputDir,
+		Dialect:  dialect,
+	}, nil
 }
