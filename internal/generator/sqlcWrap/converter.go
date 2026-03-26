@@ -6,12 +6,16 @@ import (
 	"text/template"
 )
 
-func generateConverterFunctions() string {
+func generateConverterFunctions(hasTimeField bool) string {
 	var content strings.Builder
 
-	content.WriteString(timeToproto)
+	if hasTimeField {
+		content.WriteString(timeToproto)
+	}
 	content.WriteString(nullableConverters())
-	content.WriteString(nullableTime)
+	if hasTimeField {
+		content.WriteString(nullableTime)
+	}
 	content.WriteString(nullableBytes)
 	content.WriteString(sqliteBools)
 	content.WriteString(sqlLiteInts)

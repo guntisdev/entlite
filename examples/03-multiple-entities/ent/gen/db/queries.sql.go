@@ -1,9 +1,9 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"math"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	internal "github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/db/internal"
 )
 
@@ -124,19 +124,6 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 }
 
 
-// TimeToProto converts time.Time to timestamppb.Timestamp pointer
-func TimeToProto(t time.Time) *timestamppb.Timestamp {
-	return timestamppb.New(t)
-}
-
-// Note: If the pointer is nil, it returns a zero time.Time{}
-func ProtoToTime(t *timestamppb.Timestamp) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return t.AsTime()
-}
-
 // --- Int32 Converters ---
 func NullInt32ToPtr(n sql.NullInt32) *int32 {
 	if !n.Valid { return nil }
@@ -200,24 +187,6 @@ func PtrToNullBool(i *bool) sql.NullBool {
 		return sql.NullBool{Valid: false}
 	}
 	return sql.NullBool{ Bool: *i, Valid: true }
-}
-
-// --- Time Converters ---
-func NullTimeToProto(n sql.NullTime) *timestamppb.Timestamp {
-	if !n.Valid {
-		return nil
-	}
-	return timestamppb.New(n.Time)
-}
-
-func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
-	if t == nil {
-		return sql.NullTime{Valid: false}
-	}
-	return sql.NullTime{
-		Time:  t.AsTime(),
-		Valid: true,
-	}
 }
 
 // --- Bytes Converters ---

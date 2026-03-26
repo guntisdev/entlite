@@ -1,7 +1,6 @@
 package db
 
 import (
-	"google.golang.org/protobuf/types/known/timestamppb"
 	pb "github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/pb"
 	internal "github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/db/internal"
 )
