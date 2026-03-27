@@ -57,10 +57,8 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 
 	for _, field := range entity.Fields {
 		exportedName := toExportedName(field.Name)
-		if field.IsID() && field.DefaultFunc == nil {
-			continue
-		}
-		if field.Immutable {
+		// Skip immutable fields (except ID which is needed for WHERE clause)
+		if field.Immutable && !field.IsID() {
 			continue
 		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
