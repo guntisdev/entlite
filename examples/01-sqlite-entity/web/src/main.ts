@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
+import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 const transport = createConnectTransport({
     baseUrl: "http://localhost:8080",
@@ -12,111 +13,101 @@ function log(message: string, data?: any) {
     console.log(message, data);
     const output = document.getElementById("output")!;
     const line = document.createElement("div");
-    line.textContent = data 
-        ? `${message} ${JSON.stringify(data, (_, value) => 
-            typeof value === 'bigint' ? value.toString() : value, 2)}`
-        : message;
+    line.textContent = data ? `${message} ${toString(data)}` : message;
     output.appendChild(line);
 }
 
-async function createUser() {
-    try {
-        log("Creating user...");
-        const response = await client.create({
-        email: "test@example.com",
-        name: "Test User",
-        age: 25,
+function createUser() {
+    log("Creating user...");
+    const fullName = randomFullName();
+    const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
+    client.create({
+        email: email,
+        name: fullName,
+        age: Math.ceil(Math.random() * 100),
         isAdmin: false,
         lastLoginMs: BigInt(Date.now()),
-        });
+    })
+    .then((response) => {
         log("✓ User created:", response);
-        log(`  - ID: ${response.id}`);
-        log(`  - Email: ${response.email}`);
-        log(`  - Name: ${response.name}`);
-        log(`  - Score: ${response.score}`);
-        log(`  - UUID: ${response.uuid}`);
-        log(`  - API Key: ${response.apiKey}`);
-        log(`  - Last Login: ${response.lastLoginMs}`);
-    } catch (error) {
+    })
+    .catch((error) => {
         log("✗ Error creating user:", error);
-    }
+    });
 }
 
-async function getUser() {
-    try {
-        log("Getting user...");
-        const response = await client.get({ id: 1 });
-        log("✓ User retrieved:");
-        log(`  - ID: ${response.id}`);
-        log(`  - Email: ${response.email}`);
-        log(`  - Name: ${response.name}`);
-        log(`  - Age: ${response.age}`);
-        log(`  - Score: ${response.score}`);
-        log(`  - UUID: ${response.uuid}`);
-        log(`  - Is Admin: ${response.isAdmin}`);
-        log(`  - API Key length: ${response.apiKey.length} bytes`);
-        log(`  - Last Login: ${response.lastLoginMs}`);
-        log(`  - Created At: ${response.createdAt}`);
-        log(`  - Updated At: ${response.updatedAt}`);
-    } catch (error) {
+function getUser() {
+    const idInput = document.getElementById("getId") as HTMLInputElement;
+    const id = parseInt(idInput.value);
+    if (isNaN(id) || id <= 0) {
+        log("✗ Invalid user ID");
+        return;
+    }
+    log(`Getting user ${id}...`);
+    client.get({ ID: id })
+    .then((response) => {
+        log("✓ User retrieved:", response);
+    })
+    .catch((error) => {
         log("✗ Error getting user:", error);
-    }
+    });
 }
 
-async function listUsers() {
-    try {
-        log("Listing users...");
-        const response = await client.list({ limit: 10, offset: 0 });
+function listUsers() {
+    log("Listing users...");
+    client.list({ limit: 10, offset: 0 })
+    .then((response) => {
         log(`✓ Users listed (${response.users.length} users):`);
         response.users.forEach((user, index) => {
-            log(`  User ${index + 1}:`);
-            log(`    - ID: ${user.id}`);
-            log(`    - Email: ${user.email}`);
-            log(`    - Name: ${user.name}`);
-            log(`    - Age: ${user.age}`);
-            log(`    - Score: ${user.score}`);
-            log(`    - UUID: ${user.uuid}`);
-            log(`    - Is Admin: ${user.isAdmin}`);
-            log(`    - Last Login: ${user.lastLoginMs}`);
+            log(`ID: ${user.ID} ${user.name} ${user.age} ${user.email}`);
         });
-    } catch (error) {
+    })
+    .catch((error) => {
         log("✗ Error listing users:", error);
-    }
+    });
 }
 
-async function updateUser() {
-    try {
-        log("Updating user...");
-        const response = await client.update({
-        id: 1,
-        email: "updated@example.com",
-        name: "Updated User",
-        age: 30,
+function updateUser() {
+    const idInput = document.getElementById("updateId") as HTMLInputElement;
+    const id = parseInt(idInput.value);
+    if (isNaN(id) || id <= 0) {
+        log("✗ Invalid user ID");
+        return;
+    }
+    const fullName = "Updated " + randomName();
+    const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
+    log(`Updating user ${id}...`);
+    client.update({
+        ID: id,
+        email: email,
+        name: fullName,
+        age: Math.ceil(Math.random() * 100),
         isAdmin: true,
         lastLoginMs: BigInt(Date.now()),
-        });
-        log("✓ User updated:");
-        log(`  - ID: ${response.id}`);
-        log(`  - Email: ${response.email}`);
-        log(`  - Name: ${response.name}`);
-        log(`  - Age: ${response.age}`);
-        log(`  - Score: ${response.score}`);
-        log(`  - UUID: ${response.uuid}`);
-        log(`  - Is Admin: ${response.isAdmin}`);
-        log(`  - Last Login: ${response.lastLoginMs}`);
-    } catch (error) {
+    })
+    .then((response) => {
+        log("✓ User updated:", response);
+    })
+    .catch((error) => {
         log("✗ Error updating user:", error);
-    }
+    });
 }
 
-async function deleteUser() {
-    try {
-        log("Deleting user...");
-        const response = await client.delete({ id: 1 });
-        log("✓ User deleted:", response);
-    } catch (error) {
-        log("✗ Error deleting user:", error);
+function deleteUser() {
+    const idInput = document.getElementById("deleteId") as HTMLInputElement;
+    const id = parseInt(idInput.value);
+    if (isNaN(id) || id <= 0) {
+        log("✗ Invalid user ID");
+        return;
     }
+    log(`Deleting user ${id}...`);
+    client.delete({ ID: id })
+    .then((response) => {
+        log("✓ User deleted:", response);
+    })
+    .catch((error) => {
+        log("✗ Error deleting user:", error);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
-  <title>Entlite Demo</title>
+  <title>Basic entity sqlite</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,7 +21,7 @@
     
     h1 {
       margin-bottom: 0.5rem;
-      color: #2563eb;
+      color: #333;
     }
     
     .subtitle {
@@ -42,6 +42,7 @@
     .controls {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       gap: 0.5rem;
       margin-bottom: 1.5rem;
       padding-bottom: 1.5rem;
@@ -49,7 +50,9 @@
     }
     
     button {
-      padding: 0.75rem 1.5rem;
+      min-width: 80px;
+      height: 40px;
+      padding: 0 1.5rem;
       border: none;
       border-radius: 4px;
       cursor: pointer;
@@ -65,6 +68,40 @@
     
     button:active {
       transform: translateY(0);
+    }
+    
+    .button-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem;
+      background: rgba(0,0,0,0.03);
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.1);
+      height: 40px;
+    }
+    
+    .button-group input {
+      width: 50px;
+      height: 30px;
+      padding: 0 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    
+    .button-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Hide number input spinner arrows */
+    .button-group input[type="number"]::-webkit-inner-spin-button,
+    .button-group input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
     
     #createBtn {
@@ -95,7 +132,6 @@
     #clearBtn {
       background: #6b7280;
       color: white;
-      margin-left: auto;
     }
     
     #output {
@@ -103,7 +139,7 @@
       color: #e2e8f0;
       padding: 1rem;
       border-radius: 4px;
-      min-height: 200px;
+      min-height: 300px;
       max-height: 500px;
       overflow-y: auto;
       font-family: 'Monaco', 'Courier New', monospace;
@@ -120,8 +156,15 @@
       border-bottom: none;
     }
     
-    .info {
+    .info-container {
       margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .info {
+      flex: 1;
       padding: 1rem;
       background: #eff6ff;
       border-left: 4px solid #3b82f6;
@@ -132,25 +175,36 @@
 </head>
 <body>
   <div class="container">
-    <h1>🚀 Entlite Demo</h1>
+    <h1>Basic entity sqlite</h1>
     <p class="subtitle">Testing generated TypeScript types and gRPC Connect client</p>
     
     <div class="controls">
-      <button id="createBtn">Create User</button>
-      <button id="getBtn">Get User</button>
-      <button id="listBtn">List Users</button>
-      <button id="updateBtn">Update User</button>
-      <button id="deleteBtn">Delete User</button>
-      <button id="clearBtn">Clear</button>
+      <button id="createBtn">Create</button>
+      <div class="button-group">
+        <input type="number" id="getId" placeholder="ID" value="1">
+        <button id="getBtn">Get</button>
+      </div>
+      <div class="button-group">
+        <input type="number" id="updateId" placeholder="ID" value="1">
+        <button id="updateBtn">Update</button>
+      </div>
+      <button id="listBtn">List</button>
+      <div class="button-group">
+        <input type="number" id="deleteId" placeholder="ID" value="1">
+        <button id="deleteBtn">Delete</button>
+      </div>
     </div>
     
     <div id="output"></div>
     
-    <div class="info">
-      <strong>What's happening:</strong><br>
-      This page uses TypeScript types generated from your proto schema. 
-      The client uses Connect-Web to call your Go gRPC server.
-      All types are fully type-safe!
+    <div class="info-container">
+      <div class="info">
+        <strong>What's happening:</strong><br>
+        This page uses TypeScript types generated from your proto schema. 
+        The client uses Connect-Web to call your Go gRPC server.
+        All types are fully type-safe!
+      </div>
+      <button id="clearBtn">Clear</button>
     </div>
   </div>
   

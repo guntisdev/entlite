@@ -73,7 +73,7 @@ func (s *UserServer) Update(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateUserRequest],
 ) (*connect.Response[pb.User], error) {
-	log.Printf("Update user: id=%d, %+v", req.Msg.ID, req.Msg)
+	log.Printf("Update user: ID=%d, %+v", req.Msg.ID, req.Msg)
 
 	queries := db.New(s.db)
 
@@ -99,7 +99,7 @@ func (s *UserServer) Delete(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteUserRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	log.Printf("Delete user: id=%d", req.Msg.ID)
+	log.Printf("Delete user: ID=%d", req.Msg.ID)
 
 	queries := db.New(s.db)
 

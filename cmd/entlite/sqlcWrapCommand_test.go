@@ -257,6 +257,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		return nil, fmt.Errorf("Failed update: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
 	internalArg := internal.UpdateUserParams{
+		ID: SQLiteInt32ToInt64(arg.ID),
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: SQLitePtrInt32ToNullInt64(arg.Age),
