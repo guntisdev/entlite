@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
-import { createHash, randomFullName } from "./utils.js";
+import { createHash, randomFullName, toString } from "./utils.js";
 
 const transport = createConnectTransport({
     baseUrl: "http://localhost:8080",
@@ -13,10 +13,7 @@ function log(message: string, data?: any) {
     console.log(message, data);
     const output = document.getElementById("output")!;
     const line = document.createElement("div");
-    line.textContent = data 
-        ? `${message} ${JSON.stringify(data, (_, value) => 
-            typeof value === 'bigint' ? value.toString() : value, 2)}`
-        : message;
+    line.textContent = data ? `${message} ${toString(data)}` : message;
     output.appendChild(line);
 }
 
@@ -27,18 +24,23 @@ function createUser() {
     client.create({
         email: email,
         name: fullName,
-        age: 25,
+        age: Math.ceil(Math.random() * 100),
         isAdmin: false,
         lastLoginMs: BigInt(Date.now()),
     })
     .then((response) => {
         log("✓ User created:", response);
-        Object.entries(response).forEach(([key, value]) => {
-            log(`  - ${key}: ${value}`);
-        });
+        // Object.entries(response).forEach(([key, value]) => {
+        //     log(`  - ${key}: ${toString(value)}`);
+        // });
     })
     .catch((error) => {
-        log("✗ Error creating user:", error);
+        log("✗ Error creating user:", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            ...error
+        });
     });
 }
 
@@ -66,7 +68,12 @@ function getUser() {
         log(`  - Updated At: ${response.updatedAt}`);
     })
     .catch((error) => {
-        log("✗ Error getting user:", error);
+        log("✗ Error getting user:", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            ...error
+        });
     });
 }
 
@@ -88,7 +95,12 @@ function listUsers() {
         });
     })
     .catch((error) => {
-        log("✗ Error listing users:", error);
+        log("✗ Error listing users:", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            ...error
+        });
     });
 }
 
@@ -120,7 +132,12 @@ function updateUser() {
         log(`  - Last Login: ${response.lastLoginMs}`);
     })
     .catch((error) => {
-        log("✗ Error updating user:", error);
+        log("✗ Error updating user:", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            ...error
+        });
     });
 }
 
@@ -137,7 +154,12 @@ function deleteUser() {
         log("✓ User deleted:", response);
     })
     .catch((error) => {
-        log("✗ Error deleting user:", error);
+        log("✗ Error deleting user:", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            ...error
+        });
     });
 }
 

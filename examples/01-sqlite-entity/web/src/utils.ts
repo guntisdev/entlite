@@ -1,3 +1,27 @@
+export function toString(value: unknown): string {
+    console.log(typeof value, value);
+    
+    if (typeof value === "bigint") {
+        return value.toString() + "n";
+    }
+    if (value === null) {
+        return "null";
+    }
+    if (typeof value === "object") {
+        const converted: any = Array.isArray(value) ? [] : {};
+        for (const [key, val] of Object.entries(value)) {
+            const stringResult = toString(val);
+            try {
+                converted[Array.isArray(value) ? parseInt(key) : key] = JSON.parse(stringResult);
+            } catch {
+                converted[Array.isArray(value) ? parseInt(key) : key] = stringResult;
+            }
+        }
+        return JSON.stringify(converted);
+    }
+    return JSON.stringify(value);
+}
+
 export function createHash(length: number = 4): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
