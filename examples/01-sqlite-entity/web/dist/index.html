@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
-  <title>Entlite Demo</title>
+  <title>Basic entity sqlite</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,7 +21,7 @@
     
     h1 {
       margin-bottom: 0.5rem;
-      color: #2563eb;
+      color: #333;
     }
     
     .subtitle {
@@ -95,7 +95,6 @@
     #clearBtn {
       background: #6b7280;
       color: white;
-      margin-left: auto;
     }
     
     #output {
@@ -103,7 +102,7 @@
       color: #e2e8f0;
       padding: 1rem;
       border-radius: 4px;
-      min-height: 200px;
+      min-height: 300px;
       max-height: 500px;
       overflow-y: auto;
       font-family: 'Monaco', 'Courier New', monospace;
@@ -120,8 +119,15 @@
       border-bottom: none;
     }
     
-    .info {
+    .info-container {
       margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .info {
+      flex: 1;
       padding: 1rem;
       background: #eff6ff;
       border-left: 4px solid #3b82f6;
@@ -132,7 +138,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>🚀 Entlite Demo</h1>
+    <h1>Basic entity sqlite</h1>
     <p class="subtitle">Testing generated TypeScript types and gRPC Connect client</p>
     
     <div class="controls">
@@ -141,16 +147,18 @@
       <button id="listBtn">List Users</button>
       <button id="updateBtn">Update User</button>
       <button id="deleteBtn">Delete User</button>
-      <button id="clearBtn">Clear</button>
     </div>
     
     <div id="output"></div>
     
-    <div class="info">
-      <strong>What's happening:</strong><br>
-      This page uses TypeScript types generated from your proto schema. 
-      The client uses Connect-Web to call your Go gRPC server.
-      All types are fully type-safe!
+    <div class="info-container">
+      <div class="info">
+        <strong>What's happening:</strong><br>
+        This page uses TypeScript types generated from your proto schema. 
+        The client uses Connect-Web to call your Go gRPC server.
+        All types are fully type-safe!
+      </div>
+      <button id="clearBtn">Clear</button>
     </div>
   </div>
   
