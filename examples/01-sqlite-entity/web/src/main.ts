@@ -32,7 +32,7 @@ function createUser() {
         log("✓ User created:", response);
     })
     .catch((error) => {
-        log("✗ Error creating user:", toString(error));
+        log("✗ Error creating user:", error);
     });
 }
 
@@ -49,7 +49,7 @@ function getUser() {
         log("✓ User retrieved:", response);
     })
     .catch((error) => {
-        log("✗ Error getting user:", toString(error));
+        log("✗ Error getting user:", error);
     });
 }
 
@@ -71,7 +71,7 @@ function listUsers() {
         });
     })
     .catch((error) => {
-        log("✗ Error listing users:", toString(error));
+        log("✗ Error listing users:", error);
     });
 }
 
@@ -103,7 +103,7 @@ function updateUser() {
         log(`  - Last Login: ${response.lastLoginMs}`);
     })
     .catch((error) => {
-        log("✗ Error updating user:", toString(error));
+        log("✗ Error updating user:", error);
     });
 }
 
@@ -120,7 +120,7 @@ function deleteUser() {
         log("✓ User deleted:", response);
     })
     .catch((error) => {
-        log("✗ Error deleting user:", toString(error));
+        log("✗ Error deleting user:", error);
     });
 }
 

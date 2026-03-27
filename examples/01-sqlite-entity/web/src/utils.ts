@@ -1,4 +1,7 @@
 export function toString(value: unknown): string {
+    if (value === undefined) {
+        return "null";
+    }
     if (typeof value === "bigint") {
         return value.toString() + "n";
     }
@@ -11,7 +14,12 @@ export function toString(value: unknown): string {
             name: value.name,
         };
         for (const [key, val] of Object.entries(value)) {
-            errorObj[key] = JSON.parse(toString(val));
+            const stringResult = toString(val);
+            try {
+                errorObj[key] = JSON.parse(stringResult);
+            } catch {
+                errorObj[key] = stringResult;
+            }
         }
         return JSON.stringify(errorObj);
     }
@@ -27,7 +35,8 @@ export function toString(value: unknown): string {
         }
         return JSON.stringify(converted);
     }
-    return JSON.stringify(value);
+    const result = JSON.stringify(value);
+    return result !== undefined ? result : "null";
 }
 
 export function createHash(length: number = 4): string {
