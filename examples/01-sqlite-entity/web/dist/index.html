@@ -42,6 +42,7 @@
     .controls {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       gap: 0.5rem;
       margin-bottom: 1.5rem;
       padding-bottom: 1.5rem;
@@ -49,7 +50,9 @@
     }
     
     button {
-      padding: 0.75rem 1.5rem;
+      min-width: 80px;
+      height: 40px;
+      padding: 0 1.5rem;
       border: none;
       border-radius: 4px;
       cursor: pointer;
@@ -65,6 +68,40 @@
     
     button:active {
       transform: translateY(0);
+    }
+    
+    .button-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem;
+      background: rgba(0,0,0,0.03);
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.1);
+      height: 40px;
+    }
+    
+    .button-group input {
+      width: 50px;
+      height: 30px;
+      padding: 0 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    
+    .button-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Hide number input spinner arrows */
+    .button-group input[type="number"]::-webkit-inner-spin-button,
+    .button-group input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
     
     #createBtn {
@@ -142,11 +179,20 @@
     <p class="subtitle">Testing generated TypeScript types and gRPC Connect client</p>
     
     <div class="controls">
-      <button id="createBtn">Create User</button>
-      <button id="getBtn">Get User</button>
-      <button id="listBtn">List Users</button>
-      <button id="updateBtn">Update User</button>
-      <button id="deleteBtn">Delete User</button>
+      <button id="createBtn">Create</button>
+      <div class="button-group">
+        <input type="number" id="getId" placeholder="ID" value="1">
+        <button id="getBtn">Get</button>
+      </div>
+      <div class="button-group">
+        <input type="number" id="updateId" placeholder="ID" value="1">
+        <button id="updateBtn">Update</button>
+      </div>
+      <button id="listBtn">List</button>
+      <div class="button-group">
+        <input type="number" id="deleteId" placeholder="ID" value="1">
+        <button id="deleteBtn">Delete</button>
+      </div>
     </div>
     
     <div id="output"></div>

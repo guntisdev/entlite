@@ -30,7 +30,7 @@ async function createUser() {
         lastLoginMs: BigInt(Date.now()),
         });
         log("✓ User created:", response);
-        log(`  - ID: ${response.id}`);
+        log(`  - ID: ${response.ID}`);
         log(`  - Email: ${response.email}`);
         log(`  - Name: ${response.name}`);
         log(`  - Score: ${response.score}`);
@@ -44,10 +44,16 @@ async function createUser() {
 
 async function getUser() {
     try {
-        log("Getting user...");
-        const response = await client.get({ id: 1 });
+        const idInput = document.getElementById("getId") as HTMLInputElement;
+        const id = parseInt(idInput.value);
+        if (isNaN(id) || id <= 0) {
+            log("✗ Invalid user ID");
+            return;
+        }
+        log(`Getting user ${id}...`);
+        const response = await client.get({ ID: id });
         log("✓ User retrieved:");
-        log(`  - ID: ${response.id}`);
+        log(`  - ID: ${response.ID}`);
         log(`  - Email: ${response.email}`);
         log(`  - Name: ${response.name}`);
         log(`  - Age: ${response.age}`);
@@ -70,7 +76,7 @@ async function listUsers() {
         log(`✓ Users listed (${response.users.length} users):`);
         response.users.forEach((user, index) => {
             log(`  User ${index + 1}:`);
-            log(`    - ID: ${user.id}`);
+            log(`    - ID: ${user.ID}`);
             log(`    - Email: ${user.email}`);
             log(`    - Name: ${user.name}`);
             log(`    - Age: ${user.age}`);
@@ -86,9 +92,15 @@ async function listUsers() {
 
 async function updateUser() {
     try {
-        log("Updating user...");
+        const idInput = document.getElementById("updateId") as HTMLInputElement;
+        const id = parseInt(idInput.value);
+        if (isNaN(id) || id <= 0) {
+            log("✗ Invalid user ID");
+            return;
+        }
+        log(`Updating user ${id}...`);
         const response = await client.update({
-        id: 1,
+        ID: id,
         email: "updated@example.com",
         name: "Updated User",
         age: 30,
@@ -96,7 +108,7 @@ async function updateUser() {
         lastLoginMs: BigInt(Date.now()),
         });
         log("✓ User updated:");
-        log(`  - ID: ${response.id}`);
+        log(`  - ID: ${response.ID}`);
         log(`  - Email: ${response.email}`);
         log(`  - Name: ${response.name}`);
         log(`  - Age: ${response.age}`);
@@ -111,8 +123,14 @@ async function updateUser() {
 
 async function deleteUser() {
     try {
-        log("Deleting user...");
-        const response = await client.delete({ id: 1 });
+        const idInput = document.getElementById("deleteId") as HTMLInputElement;
+        const id = parseInt(idInput.value);
+        if (isNaN(id) || id <= 0) {
+            log("✗ Invalid user ID");
+            return;
+        }
+        log(`Deleting user ${id}...`);
+        const response = await client.delete({ ID: id });
         log("✓ User deleted:", response);
     } catch (error) {
         log("✗ Error deleting user:", error);
