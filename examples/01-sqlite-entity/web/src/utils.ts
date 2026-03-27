@@ -1,11 +1,19 @@
 export function toString(value: unknown): string {
-    console.log(typeof value, value);
-    
     if (typeof value === "bigint") {
         return value.toString() + "n";
     }
     if (value === null) {
         return "null";
+    }
+    if (value instanceof Error) {
+        const errorObj: any = {
+            message: value.message,
+            name: value.name,
+        };
+        for (const [key, val] of Object.entries(value)) {
+            errorObj[key] = JSON.parse(toString(val));
+        }
+        return JSON.stringify(errorObj);
     }
     if (typeof value === "object") {
         const converted: any = Array.isArray(value) ? [] : {};

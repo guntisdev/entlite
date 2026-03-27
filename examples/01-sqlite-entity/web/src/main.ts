@@ -30,17 +30,9 @@ function createUser() {
     })
     .then((response) => {
         log("✓ User created:", response);
-        // Object.entries(response).forEach(([key, value]) => {
-        //     log(`  - ${key}: ${toString(value)}`);
-        // });
     })
     .catch((error) => {
-        log("✗ Error creating user:", {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-            ...error
-        });
+        log("✗ Error creating user:", toString(error));
     });
 }
 
@@ -54,26 +46,10 @@ function getUser() {
     log(`Getting user ${id}...`);
     client.get({ ID: id })
     .then((response) => {
-        log("✓ User retrieved:");
-        log(`  - ID: ${response.ID}`);
-        log(`  - Email: ${response.email}`);
-        log(`  - Name: ${response.name}`);
-        log(`  - Age: ${response.age}`);
-        log(`  - Score: ${response.score}`);
-        log(`  - UUID: ${response.uuid}`);
-        log(`  - Is Admin: ${response.isAdmin}`);
-        log(`  - API Key length: ${response.apiKey.length} bytes`);
-        log(`  - Last Login: ${response.lastLoginMs}`);
-        log(`  - Created At: ${response.createdAt}`);
-        log(`  - Updated At: ${response.updatedAt}`);
+        log("✓ User retrieved:", response);
     })
     .catch((error) => {
-        log("✗ Error getting user:", {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-            ...error
-        });
+        log("✗ Error getting user:", toString(error));
     });
 }
 
@@ -95,12 +71,7 @@ function listUsers() {
         });
     })
     .catch((error) => {
-        log("✗ Error listing users:", {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-            ...error
-        });
+        log("✗ Error listing users:", toString(error));
     });
 }
 
@@ -132,12 +103,7 @@ function updateUser() {
         log(`  - Last Login: ${response.lastLoginMs}`);
     })
     .catch((error) => {
-        log("✗ Error updating user:", {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-            ...error
-        });
+        log("✗ Error updating user:", toString(error));
     });
 }
 
@@ -154,12 +120,7 @@ function deleteUser() {
         log("✓ User deleted:", response);
     })
     .catch((error) => {
-        log("✗ Error deleting user:", {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-            ...error
-        });
+        log("✗ Error deleting user:", toString(error));
     });
 }
 
