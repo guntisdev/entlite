@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
+import { createHash, randomFullName } from "./utils.js";
 
 const transport = createConnectTransport({
     baseUrl: "http://localhost:8080",
@@ -19,16 +20,18 @@ function log(message: string, data?: any) {
     output.appendChild(line);
 }
 
-async function createUser() {
-    try {
-        log("Creating user...");
-        const response = await client.create({
-        email: "test@example.com",
-        name: "Test User",
+function createUser() {
+    log("Creating user...");
+    const fullName = randomFullName();
+    const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
+    client.create({
+        email: email,
+        name: fullName,
         age: 25,
         isAdmin: false,
         lastLoginMs: BigInt(Date.now()),
-        });
+    })
+    .then((response) => {
         log("✓ User created:", response);
         log(`  - ID: ${response.ID}`);
         log(`  - Email: ${response.email}`);
@@ -37,21 +40,22 @@ async function createUser() {
         log(`  - UUID: ${response.uuid}`);
         log(`  - API Key: ${response.apiKey}`);
         log(`  - Last Login: ${response.lastLoginMs}`);
-    } catch (error) {
+    })
+    .catch((error) => {
         log("✗ Error creating user:", error);
-    }
+    });
 }
 
-async function getUser() {
-    try {
-        const idInput = document.getElementById("getId") as HTMLInputElement;
-        const id = parseInt(idInput.value);
-        if (isNaN(id) || id <= 0) {
-            log("✗ Invalid user ID");
-            return;
-        }
-        log(`Getting user ${id}...`);
-        const response = await client.get({ ID: id });
+function getUser() {
+    const idInput = document.getElementById("getId") as HTMLInputElement;
+    const id = parseInt(idInput.value);
+    if (isNaN(id) || id <= 0) {
+        log("✗ Invalid user ID");
+        return;
+    }
+    log(`Getting user ${id}...`);
+    client.get({ ID: id })
+    .then((response) => {
         log("✓ User retrieved:");
         log(`  - ID: ${response.ID}`);
         log(`  - Email: ${response.email}`);
@@ -64,15 +68,16 @@ async function getUser() {
         log(`  - Last Login: ${response.lastLoginMs}`);
         log(`  - Created At: ${response.createdAt}`);
         log(`  - Updated At: ${response.updatedAt}`);
-    } catch (error) {
+    })
+    .catch((error) => {
         log("✗ Error getting user:", error);
-    }
+    });
 }
 
-async function listUsers() {
-    try {
-        log("Listing users...");
-        const response = await client.list({ limit: 10, offset: 0 });
+function listUsers() {
+    log("Listing users...");
+    client.list({ limit: 10, offset: 0 })
+    .then((response) => {
         log(`✓ Users listed (${response.users.length} users):`);
         response.users.forEach((user, index) => {
             log(`  User ${index + 1}:`);
@@ -85,28 +90,29 @@ async function listUsers() {
             log(`    - Is Admin: ${user.isAdmin}`);
             log(`    - Last Login: ${user.lastLoginMs}`);
         });
-    } catch (error) {
+    })
+    .catch((error) => {
         log("✗ Error listing users:", error);
-    }
+    });
 }
 
-async function updateUser() {
-    try {
-        const idInput = document.getElementById("updateId") as HTMLInputElement;
-        const id = parseInt(idInput.value);
-        if (isNaN(id) || id <= 0) {
-            log("✗ Invalid user ID");
-            return;
-        }
-        log(`Updating user ${id}...`);
-        const response = await client.update({
+function updateUser() {
+    const idInput = document.getElementById("updateId") as HTMLInputElement;
+    const id = parseInt(idInput.value);
+    if (isNaN(id) || id <= 0) {
+        log("✗ Invalid user ID");
+        return;
+    }
+    log(`Updating user ${id}...`);
+    client.update({
         ID: id,
         email: "updated@example.com",
         name: "Updated User",
         age: 30,
         isAdmin: true,
         lastLoginMs: BigInt(Date.now()),
-        });
+    })
+    .then((response) => {
         log("✓ User updated:");
         log(`  - ID: ${response.ID}`);
         log(`  - Email: ${response.email}`);
@@ -116,25 +122,27 @@ async function updateUser() {
         log(`  - UUID: ${response.uuid}`);
         log(`  - Is Admin: ${response.isAdmin}`);
         log(`  - Last Login: ${response.lastLoginMs}`);
-    } catch (error) {
+    })
+    .catch((error) => {
         log("✗ Error updating user:", error);
-    }
+    });
 }
 
-async function deleteUser() {
-    try {
-        const idInput = document.getElementById("deleteId") as HTMLInputElement;
-        const id = parseInt(idInput.value);
-        if (isNaN(id) || id <= 0) {
-            log("✗ Invalid user ID");
-            return;
-        }
-        log(`Deleting user ${id}...`);
-        const response = await client.delete({ ID: id });
-        log("✓ User deleted:", response);
-    } catch (error) {
-        log("✗ Error deleting user:", error);
+function deleteUser() {
+    const idInput = document.getElementById("deleteId") as HTMLInputElement;
+    const id = parseInt(idInput.value);
+    if (isNaN(id) || id <= 0) {
+        log("✗ Invalid user ID");
+        return;
     }
+    log(`Deleting user ${id}...`);
+    client.delete({ ID: id })
+    .then((response) => {
+        log("✓ User deleted:", response);
+    })
+    .catch((error) => {
+        log("✗ Error deleting user:", error);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
