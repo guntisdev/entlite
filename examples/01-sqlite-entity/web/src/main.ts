@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
-import { createHash, randomFullName, toString } from "./utils.js";
+import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 const transport = createConnectTransport({
     baseUrl: "http://localhost:8080",
@@ -59,15 +59,7 @@ function listUsers() {
     .then((response) => {
         log(`✓ Users listed (${response.users.length} users):`);
         response.users.forEach((user, index) => {
-            log(`  User ${index + 1}:`);
-            log(`    - ID: ${user.ID}`);
-            log(`    - Email: ${user.email}`);
-            log(`    - Name: ${user.name}`);
-            log(`    - Age: ${user.age}`);
-            log(`    - Score: ${user.score}`);
-            log(`    - UUID: ${user.uuid}`);
-            log(`    - Is Admin: ${user.isAdmin}`);
-            log(`    - Last Login: ${user.lastLoginMs}`);
+            log(`ID: ${user.ID} ${user.name} ${user.age} ${user.email}`);
         });
     })
     .catch((error) => {
@@ -82,25 +74,19 @@ function updateUser() {
         log("✗ Invalid user ID");
         return;
     }
+    const fullName = "Updated " + randomName();
+    const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
     log(`Updating user ${id}...`);
     client.update({
         ID: id,
-        email: "updated@example.com",
-        name: "Updated User",
-        age: 30,
+        email: email,
+        name: fullName,
+        age: Math.ceil(Math.random() * 100),
         isAdmin: true,
         lastLoginMs: BigInt(Date.now()),
     })
     .then((response) => {
-        log("✓ User updated:");
-        log(`  - ID: ${response.ID}`);
-        log(`  - Email: ${response.email}`);
-        log(`  - Name: ${response.name}`);
-        log(`  - Age: ${response.age}`);
-        log(`  - Score: ${response.score}`);
-        log(`  - UUID: ${response.uuid}`);
-        log(`  - Is Admin: ${response.isAdmin}`);
-        log(`  - Last Login: ${response.lastLoginMs}`);
+        log("✓ User updated:", response);
     })
     .catch((error) => {
         log("✗ Error updating user:", error);
