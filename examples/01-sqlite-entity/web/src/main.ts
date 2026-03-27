@@ -33,13 +33,9 @@ function createUser() {
     })
     .then((response) => {
         log("✓ User created:", response);
-        log(`  - ID: ${response.ID}`);
-        log(`  - Email: ${response.email}`);
-        log(`  - Name: ${response.name}`);
-        log(`  - Score: ${response.score}`);
-        log(`  - UUID: ${response.uuid}`);
-        log(`  - API Key: ${response.apiKey}`);
-        log(`  - Last Login: ${response.lastLoginMs}`);
+        Object.entries(response).forEach(([key, value]) => {
+            log(`  - ${key}: ${value}`);
+        });
     })
     .catch((error) => {
         log("✗ Error creating user:", error);
