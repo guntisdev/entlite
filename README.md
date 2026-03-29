@@ -2,6 +2,9 @@
 Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
 ## TODO
+* Add .Permissions() field with bitmask (db read/write, api read/write) with aliases: ReadOnly, Sensitive, Internal...
+* Add sqlc COALESCE for sensitive fields (like password)
+* Add universal methods for all fields (like: .Comment, .Permissions)
 * Add to proto required field check `[(buf.validate.field).required = true];` 
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
