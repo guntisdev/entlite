@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func ParseEntities(discoveredEntities []DiscoveredEntity) ([]schema.Entity, error) {
@@ -198,6 +199,10 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
 							field.Comment = strings.Trim(lit.Value, "\"")
 						}
+					}
+				case "Permissions":
+					if len(e.Args) > 0 {
+						field.Permissions = parsePermissionsExpression(e.Args[0])
 					}
 				case "Unique":
 					field.Unique = true
@@ -447,4 +452,43 @@ func parseMethodsArguments(expr ast.Expr) []schema.Method {
 	}
 
 	return methods
+}
+
+func parsePermissionsExpression(expr ast.Expr) permissions.Permission {
+	var perm permissions.Permission
+
+	if binExpr, ok := expr.(*ast.BinaryExpr); ok && binExpr.Op == token.OR {
+		// Handle binary OR expressions like permissions.DbRead | permissions.ApiRead
+		leftPerm := parsePermissionsExpression(binExpr.X)
+		rightPerm := parsePermissionsExpression(binExpr.Y)
+		perm = leftPerm | rightPerm
+	} else if selExpr, ok := expr.(*ast.SelectorExpr); ok {
+		// Handle selector expressions like permissions.Standard
+		if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "permissions" {
+			switch selExpr.Sel.Name {
+			case "DbRead":
+				perm = permissions.DbRead
+			case "DbWrite":
+				perm = permissions.DbWrite
+			case "ApiRead":
+				perm = permissions.ApiRead
+			case "ApiWrite":
+				perm = permissions.ApiWrite
+			case "Standard":
+				perm = permissions.Standard
+			case "ReadOnly":
+				perm = permissions.ReadOnly
+			case "WriteOnly":
+				perm = permissions.WriteOnly
+			case "Internal":
+				perm = permissions.Internal
+			case "Sensitive":
+				perm = permissions.Sensitive
+			case "Virtual":
+				perm = permissions.Virtual
+			}
+		}
+	}
+
+	return perm
 }
