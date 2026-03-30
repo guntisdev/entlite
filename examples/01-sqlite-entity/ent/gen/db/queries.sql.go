@@ -77,7 +77,6 @@ type UpdateUserParams struct {
 	IsAdmin bool `json:"is_admin"`
 	ApiKey *[]byte `json:"api_key"`
 	LastLoginMs int64 `json:"last_login_ms"`
-	UpdatedAt *time.Time `json:"updated_at"`
 	ID int32 `json:"id"`
 }
 

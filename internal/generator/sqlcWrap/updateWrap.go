@@ -23,6 +23,11 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 			}
 			field := *fieldPtr
 
+			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			if !canApiWrite {
+				continue
+			}
+
 			// special case for psw etc - if not readable then no obligatory to update
 			canApiRead := (field.Permissions & permissions.ApiRead) != 0
 			if field.DefaultFunc != nil || !canApiRead {

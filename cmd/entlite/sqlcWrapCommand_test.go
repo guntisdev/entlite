@@ -63,71 +63,69 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	}
 }
 
-const createUser = ` + "`-- name: CreateUser :one\nINSERT INTO users (email, name, age, score, uuid, is_admin, api_key, created_at, updated_at)\nVALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)\nRETURNING id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at\n`" + `
+const createUser = ` + "`-- name: CreateUser :one\nINSERT INTO users (email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at)\nVALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)\nRETURNING id\n`" + `
 
 type CreateUserParams struct {
-	Email     string
-	Name      string
-	Age       *int32
-	Score     float64
-	Uuid      string
-	IsAdmin   bool
-	ApiKey    []byte
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Email       string
+	Name        string
+	Age         *int32
+	Password    string
+	Score       float64
+	Uuid        string
+	IsAdmin     bool
+	ApiKey      []byte
+	LastLoginMs int64
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type User struct {
-	ID        int64
-	Email     string
-	Name      string
-	Age       *int32
-	Score     float64
-	Uuid      string
-	IsAdmin   bool
-	ApiKey    []byte
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID          int64
+	Email       string
+	Name        string
+	Age         *int32
+	Password    string
+	Score       float64
+	Uuid        string
+	IsAdmin     bool
+	ApiKey      []byte
+	LastLoginMs int64
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Email,
 		arg.Name,
 		arg.Age,
+		arg.Password,
 		arg.Score,
 		arg.Uuid,
 		arg.IsAdmin,
 		arg.ApiKey,
+		arg.LastLoginMs,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Name,
-		&i.Age,
-		&i.Score,
-		&i.Uuid,
-		&i.IsAdmin,
-		&i.ApiKey,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
+	var i int64
+	err := row.Scan(&i)
 	return i, err
 }
 
-const updateUser = ` + "`-- name: UpdateUser :one\nUPDATE users\nSET email = $2, name = $3, age = $4, score = $5, is_admin = $6, updated_at = $7\nWHERE id = $1\nRETURNING id, email, name, age, score, uuid, is_admin, api_key, created_at, updated_at\n`" + `
+const updateUser = ` + "`-- name: UpdateUser :one\nUPDATE users\nSET email = $2, name = $3, age = $4, password = COALESCE(sqlc.narg('password'), password), score = $5, is_admin = $6, api_key = $7, last_login_ms = $8, updated_at = $9\nWHERE id = $1\nRETURNING id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at\n`" + `
 
 type UpdateUserParams struct {
-	ID        int64
-	Email     string
-	Name      string
-	Age       int32
-	Score     float64
-	IsAdmin   bool
-	UpdatedAt time.Time
+	ID          int64
+	Email       string
+	Name        string
+	Age         sql.NullInt64
+	Password    sql.NullString
+	Score       float64
+	IsAdmin     int64
+	ApiKey      []byte
+	LastLoginMs int64
+	UpdatedAt   time.Time
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -136,8 +134,11 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Email,
 		arg.Name,
 		arg.Age,
+		arg.Password,
 		arg.Score,
 		arg.IsAdmin,
+		arg.ApiKey,
+		arg.LastLoginMs,
 		arg.UpdatedAt,
 	)
 	var i User
@@ -146,10 +147,12 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Email,
 		&i.Name,
 		&i.Age,
+		&i.Password,
 		&i.Score,
 		&i.Uuid,
 		&i.IsAdmin,
 		&i.ApiKey,
+		&i.LastLoginMs,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -218,8 +221,12 @@ type CreateUserParams struct {
 	Email string
 	Name string
 	Age *int32
+	Password string
 	Score float64
+	Uuid *string
 	IsAdmin bool
+	ApiKey *[]byte
+	LastLoginMs int64
 }
 
 type User = internal.User
@@ -231,10 +238,11 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: SQLitePtrInt32ToNullInt64(arg.Age),
+		Password: arg.Password,
 		Score: arg.Score,
-		Uuid: logic.GetUuidStr(),
+		Uuid: OptionalWithFallback(arg.Uuid, logic.GetUuidStr()),
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
-		ApiKey: logic.GenerateAPIKey(),
+		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
 		LastLoginMs: arg.LastLoginMs,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -248,8 +256,11 @@ type UpdateUserParams struct {
 	Email string
 	Name string
 	Age *int32
+	Password *string
 	Score float64
 	IsAdmin bool
+	ApiKey *[]byte
+	LastLoginMs int64
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
@@ -261,8 +272,10 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: SQLitePtrInt32ToNullInt64(arg.Age),
+		Password: PtrToNullString(arg.Password),
 		Score: arg.Score,
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
+		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
 		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}
@@ -371,6 +384,13 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 	}
 }
 
+// OptionalWithFallback chooses fallback if optional value is nil
+func OptionalWithFallback[T any](val *T, fallback T) T {
+    if val != nil {
+        return *val
+    }
+    return fallback
+}
 // --- Bytes Converters ---
 func NullBytesToPtr(b []byte) *[]byte {
     if b == nil { return nil }
