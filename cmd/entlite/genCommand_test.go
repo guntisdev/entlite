@@ -91,11 +91,11 @@ message User {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
-  double score = 8 [(buf.validate.field).required = true];
-  string uuid = 9 [(buf.validate.field).required = true];
+  double score = 9 [(buf.validate.field).required = true];
+  string uuid = 10 [(buf.validate.field).required = true];
   bool is_admin = 5 [(buf.validate.field).required = true];
-  bytes api_key = 10 [(buf.validate.field).required = true];
-  int64 last_login_ms = 11 [(buf.validate.field).required = true];
+  bytes api_key = 11 [(buf.validate.field).required = true];
+  int64 last_login_ms = 12 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 6 [(buf.validate.field).required = true];
   google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
 }
@@ -105,8 +105,12 @@ message CreateUserRequest {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
+  string password = 8 [(buf.validate.field).required = true];
+  optional double score = 9;
+  optional string uuid = 10;
   bool is_admin = 5 [(buf.validate.field).required = true];
-  int64 last_login_ms = 11 [(buf.validate.field).required = true];
+  optional bytes api_key = 11;
+  int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
 message GetUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
@@ -117,8 +121,11 @@ message UpdateUserRequest {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
+  optional string password = 8;
+  optional double score = 9;
   bool is_admin = 5 [(buf.validate.field).required = true];
-  int64 last_login_ms = 11 [(buf.validate.field).required = true];
+  optional bytes api_key = 11;
+  int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
@@ -161,7 +168,8 @@ CREATE TABLE "user"(
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
   age INT,
-  score DOUBLE PRECISION DEFAULT 0 NOT NULL,
+  password TEXT NOT NULL,
+  score DOUBLE PRECISION DEFAULT 4.2 NOT NULL,
   uuid TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL,
   api_key BYTEA NOT NULL,
@@ -191,6 +199,7 @@ INSERT INTO "user" (
   email,
   name,
   age,
+  password,
   score,
   uuid,
   is_admin,
@@ -208,7 +217,8 @@ INSERT INTO "user" (
   $7,
   $8,
   $9,
-  $10
+  $10,
+  $11
 ) RETURNING ID;
 
 -- name: GetUser :one
@@ -222,11 +232,13 @@ UPDATE "user" SET
   email = $1,
   name = $2,
   age = $3,
+  password = COALESCE(sqlc.narg('password'), password),
   score = $4,
   is_admin = $5,
-  last_login_ms = $6,
-  updated_at = $7
-WHERE ID = $8
+  api_key = $6,
+  last_login_ms = $7,
+  updated_at = $8
+WHERE ID = $9
 RETURNING *;
 
 -- name: DeleteUser :exec

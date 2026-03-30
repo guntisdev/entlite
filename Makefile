@@ -1,4 +1,4 @@
-all: tidy build test
+all: tidy lint build test
 
 tidy:
 	go mod tidy
@@ -6,6 +6,9 @@ tidy:
 
 build:
 	go build ./...
+
+lint:
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./examples/01-sqlite-entity/server/...
 
 test:
 	go test -v ./...

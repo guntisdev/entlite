@@ -16,6 +16,7 @@ func generateConverterFunctions(hasTimeField bool) string {
 	if hasTimeField {
 		content.WriteString(nullableTime)
 	}
+	content.WriteString(optionalWithFallback)
 	content.WriteString(nullableBytes)
 	content.WriteString(sqliteBools)
 	content.WriteString(sqlLiteInts)
@@ -45,6 +46,15 @@ func nullableConverters() string {
 
 	return buf.String()
 }
+
+const optionalWithFallback = `
+// OptionalWithFallback chooses fallback if optional value is nil
+func OptionalWithFallback[T any](val *T, fallback T) T {
+    if val != nil {
+        return *val
+    }
+    return fallback
+}`
 
 const timeToproto = `
 // TimeToProto converts time.Time to timestamppb.Timestamp pointer

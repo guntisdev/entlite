@@ -1,6 +1,10 @@
 package schema
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
+)
 
 type Schema struct {
 	Entities []Entity
@@ -57,6 +61,7 @@ type Field struct {
 	DefaultFunc  func() any
 	ProtoField   int
 	Comment      string
+	Permissions  permissions.Permission
 	Immutable    bool
 	Optional     bool
 	Validate     func() any

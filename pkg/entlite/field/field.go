@@ -1,8 +1,10 @@
 package field
 
-import "time"
+import (
+	"time"
 
-// TODO implement Byte field, and then all int/float types like uint8, int32 etc
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
+)
 
 // --------------------------------- string ---------------------------------
 type StringFieldBuilder interface {
@@ -11,10 +13,10 @@ type StringFieldBuilder interface {
 	DefaultFunc(func() string) StringFieldBuilder
 	ProtoField(int) StringFieldBuilder
 	Comment(string) StringFieldBuilder
+	Permissions(permissions.Permission) StringFieldBuilder
 	Immutable() StringFieldBuilder
 	Optional() StringFieldBuilder
 	Validate(func(string) bool) StringFieldBuilder
-	// maybe ProtoExclude() - meant to not send out password?
 
 	// to satisfy entlite.Field interface
 	Field()
@@ -27,6 +29,7 @@ type StringField struct {
 	defaultFunc func() string
 	protoField  *int
 	comment     *string
+	permissions permissions.Permission
 	immutable   bool
 	optional    bool
 	validate    func(string) bool
@@ -58,6 +61,10 @@ func (f *StringField) GetProtoField() *int {
 
 func (f *StringField) GetComment() *string {
 	return f.comment
+}
+
+func (f *StringField) GetPermissions() permissions.Permission {
+	return f.permissions
 }
 
 func (f *StringField) GetImmutable() bool {
@@ -100,6 +107,11 @@ func (f *StringField) Comment(text string) StringFieldBuilder {
 	return f
 }
 
+func (f *StringField) Permissions(permission permissions.Permission) StringFieldBuilder {
+	f.permissions = permission
+	return f
+}
+
 func (f *StringField) Immutable() StringFieldBuilder {
 	f.immutable = true
 	return f
@@ -120,6 +132,7 @@ type BoolFieldBuilder interface {
 	Default(bool) BoolFieldBuilder
 	ProtoField(int) BoolFieldBuilder
 	Comment(string) BoolFieldBuilder
+	Permissions(permissions.Permission) BoolFieldBuilder
 	Validate(func(bool) bool) BoolFieldBuilder
 
 	// to satisfy entlite.Field interface
@@ -127,11 +140,12 @@ type BoolFieldBuilder interface {
 }
 
 type BoolField struct {
-	name       string
-	defaultVal *bool
-	protoField *int
-	comment    *string
-	validate   func(bool) bool
+	name        string
+	defaultVal  *bool
+	protoField  *int
+	comment     *string
+	permissions permissions.Permission
+	validate    func(bool) bool
 }
 
 func (*BoolField) Field() {}
@@ -150,6 +164,10 @@ func (f *BoolField) GetProtoField() *int {
 
 func (f *BoolField) GetComment() *string {
 	return f.comment
+}
+
+func (f *BoolField) GetPermissions() permissions.Permission {
+	return f.permissions
 }
 
 func (f *BoolField) GetValidate() func(bool) bool {
@@ -171,6 +189,11 @@ func (f *BoolField) Comment(text string) BoolFieldBuilder {
 	return f
 }
 
+func (f *BoolField) Permissions(permission permissions.Permission) BoolFieldBuilder {
+	f.permissions = permission
+	return f
+}
+
 func (f *BoolField) Validate(fn func(bool) bool) BoolFieldBuilder {
 	f.validate = fn
 	return f
@@ -182,6 +205,7 @@ type IntFieldBuilder interface {
 	Default(int32) IntFieldBuilder
 	ProtoField(int) IntFieldBuilder
 	Comment(string) IntFieldBuilder
+	Permissions(permissions.Permission) IntFieldBuilder
 	Optional() IntFieldBuilder
 	Validate(func(int32) bool) IntFieldBuilder
 
@@ -190,12 +214,13 @@ type IntFieldBuilder interface {
 }
 
 type IntField struct {
-	name       string
-	defaultVal *int32
-	protoField *int
-	comment    *string
-	optional   bool
-	validate   func(int32) bool
+	name        string
+	defaultVal  *int32
+	protoField  *int
+	comment     *string
+	permissions permissions.Permission
+	optional    bool
+	validate    func(int32) bool
 }
 
 func (*IntField) Field() {}
@@ -214,6 +239,10 @@ func (f *IntField) GetProtoField() *int {
 
 func (f *IntField) GetComment() *string {
 	return f.comment
+}
+
+func (f *IntField) GetPermissions() permissions.Permission {
+	return f.permissions
 }
 
 func (f *IntField) GetOptional() bool {
@@ -239,6 +268,11 @@ func (f *IntField) Comment(text string) IntFieldBuilder {
 	return f
 }
 
+func (f *IntField) Permissions(permission permissions.Permission) IntFieldBuilder {
+	f.permissions = permission
+	return f
+}
+
 func (f *IntField) Optional() IntFieldBuilder {
 	f.optional = true
 	return f
@@ -254,6 +288,7 @@ type Int64FieldBuilder interface {
 	Default(int64) Int64FieldBuilder
 	ProtoField(int) Int64FieldBuilder
 	Comment(string) Int64FieldBuilder
+	Permissions(permissions.Permission) Int64FieldBuilder
 	Optional() Int64FieldBuilder
 	Validate(func(int64) bool) Int64FieldBuilder
 
@@ -262,12 +297,13 @@ type Int64FieldBuilder interface {
 }
 
 type Int64Field struct {
-	name       string
-	defaultVal *int64
-	protoField *int
-	comment    *string
-	optional   bool
-	validate   func(int64) bool
+	name        string
+	defaultVal  *int64
+	protoField  *int
+	comment     *string
+	permissions permissions.Permission
+	optional    bool
+	validate    func(int64) bool
 }
 
 func (*Int64Field) Field() {}
@@ -286,6 +322,10 @@ func (f *Int64Field) GetProtoField() *int {
 
 func (f *Int64Field) GetComment() *string {
 	return f.comment
+}
+
+func (f *Int64Field) GetPermissions() permissions.Permission {
+	return f.permissions
 }
 
 func (f *Int64Field) GetOptional() bool {
@@ -311,6 +351,11 @@ func (f *Int64Field) Comment(text string) Int64FieldBuilder {
 	return f
 }
 
+func (f *Int64Field) Permissions(permission permissions.Permission) Int64FieldBuilder {
+	f.permissions = permission
+	return f
+}
+
 func (f *Int64Field) Optional() Int64FieldBuilder {
 	f.optional = true
 	return f
@@ -326,6 +371,7 @@ type FloatFieldBuilder interface {
 	Default(float64) FloatFieldBuilder
 	ProtoField(int) FloatFieldBuilder
 	Comment(string) FloatFieldBuilder
+	Permissions(permissions.Permission) FloatFieldBuilder
 	Optional() FloatFieldBuilder
 	Validate(func(float64) bool) FloatFieldBuilder
 
@@ -333,12 +379,13 @@ type FloatFieldBuilder interface {
 }
 
 type FloatField struct {
-	name       string
-	defaultVal *float64
-	protoField *int
-	comment    *string
-	optional   bool
-	validate   func(float64) bool
+	name        string
+	defaultVal  *float64
+	protoField  *int
+	comment     *string
+	permissions permissions.Permission
+	optional    bool
+	validate    func(float64) bool
 }
 
 func (*FloatField) Field() {}
@@ -357,6 +404,10 @@ func (f *FloatField) GetProtoField() *int {
 
 func (f *FloatField) GetComment() *string {
 	return f.comment
+}
+
+func (f *FloatField) GetPermissions() permissions.Permission {
+	return f.permissions
 }
 
 func (f *FloatField) GetOptional() bool {
@@ -382,6 +433,11 @@ func (f *FloatField) Comment(text string) FloatFieldBuilder {
 	return f
 }
 
+func (f *FloatField) Permissions(permission permissions.Permission) FloatFieldBuilder {
+	f.permissions = permission
+	return f
+}
+
 func (f *FloatField) Optional() FloatFieldBuilder {
 	f.optional = true
 	return f
@@ -398,6 +454,7 @@ type TimeFieldBuilder interface {
 	DefaultFunc(func() time.Time) TimeFieldBuilder
 	ProtoField(int) TimeFieldBuilder
 	Comment(string) TimeFieldBuilder
+	Permissions(permissions.Permission) TimeFieldBuilder
 	Immutable() TimeFieldBuilder
 	Optional() TimeFieldBuilder
 	Validate(func(time.Time) bool) TimeFieldBuilder
@@ -411,6 +468,7 @@ type TimeField struct {
 	defaultFunc func() time.Time
 	protoField  *int
 	comment     *string
+	permissions permissions.Permission
 	immutable   bool
 	optional    bool
 	validate    func(time.Time) bool
@@ -436,6 +494,10 @@ func (f *TimeField) GetProtoField() *int {
 
 func (f *TimeField) GetComment() *string {
 	return f.comment
+}
+
+func (f *TimeField) GetPermissions() permissions.Permission {
+	return f.permissions
 }
 
 func (f *TimeField) GetImmutable() bool {
@@ -472,6 +534,11 @@ func (f *TimeField) Comment(text string) TimeFieldBuilder {
 	return f
 }
 
+func (f *TimeField) Permissions(permission permissions.Permission) TimeFieldBuilder {
+	f.permissions = permission
+	return f
+}
+
 func (f *TimeField) Immutable() TimeFieldBuilder {
 	f.immutable = true
 	return f
@@ -494,6 +561,7 @@ type ByteFieldBuilder interface {
 	Immutable() ByteFieldBuilder
 	ProtoField(int) ByteFieldBuilder
 	Comment(string) ByteFieldBuilder
+	Permissions(permissions.Permission) ByteFieldBuilder
 	DefaultFunc(func() []byte) ByteFieldBuilder
 	Validate(func([]byte) bool) ByteFieldBuilder
 
@@ -507,6 +575,7 @@ type ByteField struct {
 	immutable   bool
 	protoField  *int
 	comment     *string
+	permissions permissions.Permission
 	defaultFunc func() []byte
 	validate    func([]byte) bool
 }
@@ -535,6 +604,10 @@ func (f *ByteField) GetProtoField() *int {
 
 func (f *ByteField) GetComment() *string {
 	return f.comment
+}
+
+func (f *ByteField) GetPermissions() permissions.Permission {
+	return f.permissions
 }
 
 func (f *ByteField) GetDefaultFunc() func() []byte {
@@ -567,6 +640,11 @@ func (f *ByteField) ProtoField(num int) ByteFieldBuilder {
 
 func (f *ByteField) Comment(text string) ByteFieldBuilder {
 	f.comment = &text
+	return f
+}
+
+func (f *ByteField) Permissions(permission permissions.Permission) ByteFieldBuilder {
+	f.permissions = permission
 	return f
 }
 

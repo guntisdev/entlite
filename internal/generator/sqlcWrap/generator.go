@@ -13,6 +13,7 @@ import (
 	internalParser "github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 // FileType represents the type of sqlc-generated file being wrapped
@@ -573,6 +574,11 @@ func (ctx *generationContext) generateProtoConverter(entity schema.Entity) strin
 	sb.WriteString(fmt.Sprintf("\treturn &%s.%s{\n", protoPackage, entity.Name))
 
 	for _, field := range entity.Fields {
+		canRead := (field.Permissions & permissions.ApiRead) != 0
+		if !canRead {
+			continue
+		}
+
 		fieldName := toDBFieldName(field)
 
 		if field.Type == schema.FieldTypeTime {

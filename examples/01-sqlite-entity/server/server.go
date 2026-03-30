@@ -35,7 +35,11 @@ func (s *UserServer) Create(
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
 		Age:         req.Msg.Age,
+		Password:    req.Msg.Password,
+		Score:       *req.Msg.Score,
+		Uuid:        req.Msg.Uuid,
 		IsAdmin:     req.Msg.IsAdmin,
+		ApiKey:      &req.Msg.ApiKey,
 		LastLoginMs: req.Msg.LastLoginMs,
 	})
 	if err != nil {
@@ -82,7 +86,10 @@ func (s *UserServer) Update(
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
 		Age:         req.Msg.Age,
+		Password:    req.Msg.Password,
+		Score:       *req.Msg.Score,
 		IsAdmin:     req.Msg.IsAdmin,
+		ApiKey:      &req.Msg.ApiKey,
 		LastLoginMs: req.Msg.LastLoginMs,
 	})
 	if err != nil {

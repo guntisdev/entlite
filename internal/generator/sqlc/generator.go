@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 type SQLDialect string
@@ -137,6 +138,10 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var insertPlaceholders []string
 
 	for _, field := range entity.Fields {
+		canWrite := (field.Permissions & permissions.DbWrite) != 0
+		if !canWrite {
+			continue
+		}
 		if field.IsID() && field.DefaultFunc == nil {
 			continue
 		}
@@ -156,10 +161,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// READ (get by id)
 	content.WriteString(fmt.Sprintf("\n-- name: Get%s :one\n", entity.Name))
+	// TODO implement !permissions.DbRead
 	content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
 
 	// LIST
 	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n", entity.Name))
+	// TODO implement !permissions.DbRead
 	content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDER BY %s;\n", g.quote(tableName), idField.Name))
 
 	// UPDATE
@@ -173,11 +180,25 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var updateFields []string
 	placeholderIndex := 1
 	for _, field := range entity.Fields {
+		canWrite := (field.Permissions & permissions.DbWrite) != 0
+		if !canWrite {
+			continue
+		}
 		if field.IsID() || field.Immutable {
 			continue
 		}
-		updateFields = append(updateFields, fmt.Sprintf("  %s = %s", field.Name, g.getParameterPlaceholder(placeholderIndex)))
-		placeholderIndex++
+
+		canApiRead := (field.Permissions & permissions.ApiRead) != 0
+		var fieldUpdate string
+		if !canApiRead {
+			// For non-readable fields (like passwords), use COALESCE with nullable parameter
+			// This makes the field optional in updates - if NULL is passed, keep existing value
+			fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
+		} else {
+			fieldUpdate = fmt.Sprintf("  %s = %s", field.Name, g.getParameterPlaceholder(placeholderIndex))
+			placeholderIndex++
+		}
+		updateFields = append(updateFields, fieldUpdate)
 	}
 
 	content.WriteString(strings.Join(updateFields, ",\n"))

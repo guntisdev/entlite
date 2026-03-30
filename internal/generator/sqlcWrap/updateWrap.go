@@ -7,6 +7,7 @@ import (
 
 	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func generateUpdateStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
@@ -21,9 +22,18 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 				continue
 			}
 			field := *fieldPtr
-			if field.DefaultFunc != nil {
+
+			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			if !canApiWrite {
 				continue
 			}
+
+			// special case for psw etc - if not readable then no obligatory to update
+			canApiRead := (field.Permissions & permissions.ApiRead) != 0
+			if field.DefaultFunc != nil || !canApiRead {
+				field.Optional = true
+			}
+
 			sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, fieldToGoType(field)))
 			if astField.Tag != nil {
 				sb.WriteString(fmt.Sprintf(" %s", astField.Tag.Value))
@@ -61,9 +71,20 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 		if field.Immutable && !field.IsID() {
 			continue
 		}
+		// special case for psw etc - if not readable then no obligatory to update
+		canApiRead := (field.Permissions & permissions.ApiRead) != 0
+		if !canApiRead {
+			field.Optional = true
+		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			funcName := field.DefaultFunc().(string)
-			sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
+			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			if canApiWrite {
+				convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s()),\n", exportedName, convertField, funcName))
+			} else {
+				sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
+			}
 		} else {
 			convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
 			sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))

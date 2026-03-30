@@ -13,6 +13,7 @@ type User struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
+	Password string `json:"password"`
 	Score float64 `json:"score"`
 	Uuid string `json:"uuid"`
 	IsAdmin bool `json:"is_admin"`
@@ -32,6 +33,7 @@ func (m *User) UserToSQL() *internal.User {
 		Email: m.Email,
 		Name: m.Name,
 		Age: SQLitePtrInt32ToNullInt64(m.Age),
+		Password: m.Password,
 		Score: m.Score,
 		Uuid: m.Uuid,
 		IsAdmin: SQLiteBoolToInt(m.IsAdmin),
@@ -52,6 +54,7 @@ func UserFromSQL(db *internal.User) *User {
 		Email: db.Email,
 		Name: db.Name,
 		Age: SQLiteNullInt64ToPtrInt32(db.Age),
+		Password: db.Password,
 		Score: db.Score,
 		Uuid: db.Uuid,
 		IsAdmin: SQLiteIntToBool(db.IsAdmin),

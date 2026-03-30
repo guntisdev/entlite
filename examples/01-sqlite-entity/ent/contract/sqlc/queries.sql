@@ -8,6 +8,7 @@ INSERT INTO "user" (
   email,
   name,
   age,
+  password,
   score,
   uuid,
   is_admin,
@@ -16,6 +17,7 @@ INSERT INTO "user" (
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -39,8 +41,10 @@ UPDATE "user" SET
   email = ?,
   name = ?,
   age = ?,
+  password = COALESCE(sqlc.narg('password'), password),
   score = ?,
   is_admin = ?,
+  api_key = ?,
   last_login_ms = ?,
   updated_at = ?
 WHERE ID = ?
