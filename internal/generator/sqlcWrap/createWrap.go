@@ -22,6 +22,10 @@ func generateCreateStruct(structName string, structType *ast.StructType, entity 
 				continue
 			}
 			field := *fieldPtr
+			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			if !canApiWrite {
+				continue
+			}
 			if field.DefaultFunc != nil {
 				field.Optional = true
 			}

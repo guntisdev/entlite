@@ -32,10 +32,16 @@ func (s *UserServer) Create(
 	queries := db.New(s.db)
 
 	userID, err := queries.CreateUser(ctx, db.CreateUserParams{
-		Email:       req.Msg.Email,
-		Name:        req.Msg.Name,
-		Age:         req.Msg.Age,
-		IsAdmin:     req.Msg.IsAdmin,
+		Email:    req.Msg.Email,
+		Name:     req.Msg.Name,
+		Age:      req.Msg.Age,
+		Password: req.Msg.Password,
+		// TODO fix to accept optional value
+		Score:   0.0,
+		Uuid:    req.Msg.Uuid,
+		IsAdmin: req.Msg.IsAdmin,
+		// TODO set apikey as optional in proto
+		ApiKey:      &req.Msg.ApiKey,
 		LastLoginMs: req.Msg.LastLoginMs,
 	})
 	if err != nil {
@@ -78,11 +84,16 @@ func (s *UserServer) Update(
 	queries := db.New(s.db)
 
 	dbUser, err := queries.UpdateUser(ctx, db.UpdateUserParams{
-		ID:          req.Msg.ID,
-		Email:       req.Msg.Email,
-		Name:        req.Msg.Name,
-		Age:         req.Msg.Age,
-		IsAdmin:     req.Msg.IsAdmin,
+		ID:       req.Msg.ID,
+		Email:    req.Msg.Email,
+		Name:     req.Msg.Name,
+		Age:      req.Msg.Age,
+		Password: req.Msg.Password,
+		// TODO fix to accept optional value
+		Score:   0.0,
+		IsAdmin: req.Msg.IsAdmin,
+		// TODO set apikey as optional in proto
+		ApiKey:      &req.Msg.ApiKey,
 		LastLoginMs: req.Msg.LastLoginMs,
 	})
 	if err != nil {
