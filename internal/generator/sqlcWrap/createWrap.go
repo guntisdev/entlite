@@ -7,6 +7,7 @@ import (
 
 	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func generateCreateStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
@@ -77,7 +78,13 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			funcName := field.DefaultFunc().(string)
-			sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
+			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			if canApiWrite {
+				convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s()),\n", exportedName, convertField, funcName))
+			} else {
+				sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
+			}
 		} else {
 			convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
 			sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))

@@ -35,9 +35,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		Age: SQLitePtrInt32ToNullInt64(arg.Age),
 		Password: arg.Password,
 		Score: arg.Score,
-		Uuid: logic.GetUuidStr(),
+		Uuid: OptionalWithFallback(arg.Uuid, logic.GetUuidStr()),
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
-		ApiKey: logic.GenerateAPIKey(),
+		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
 		LastLoginMs: arg.LastLoginMs,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -95,7 +95,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Password: PtrToNullString(arg.Password),
 		Score: arg.Score,
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
-		ApiKey: logic.GenerateAPIKey(),
+		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
 		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}
@@ -204,6 +204,13 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 	}
 }
 
+// OptionalWithFallback chooses fallback if optional value is nil
+func OptionalWithFallback[T any](val *T, fallback T) T {
+    if val != nil {
+        return *val
+    }
+    return fallback
+}
 // --- Bytes Converters ---
 func NullBytesToPtr(b []byte) *[]byte {
     if b == nil { return nil }
