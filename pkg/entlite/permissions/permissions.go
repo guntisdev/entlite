@@ -12,7 +12,7 @@ const (
 	ApiWrite Permission = 1 << 3 // 8
 
 	// Common Shortcuts (Aliases)
-	Standard  = DbRead | DbWrite | ApiRead | ApiWrite // 15 (Full CRUD)
+	Default   = DbRead | DbWrite | ApiRead | ApiWrite // 15 (Full CRUD)
 	ReadOnly  = DbRead | ApiRead                      // 5  (System fields like createdAt)
 	WriteOnly = DbWrite | ApiWrite                    // 10 (Password during signup)
 	Internal  = DbRead | DbWrite                      // 3  (Internal metadata, no Proto)

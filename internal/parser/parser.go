@@ -474,8 +474,8 @@ func parsePermissionsExpression(expr ast.Expr) permissions.Permission {
 				perm = permissions.ApiRead
 			case "ApiWrite":
 				perm = permissions.ApiWrite
-			case "Standard":
-				perm = permissions.Standard
+			case "Default":
+				perm = permissions.Default
 			case "ReadOnly":
 				perm = permissions.ReadOnly
 			case "WriteOnly":
