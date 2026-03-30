@@ -21,11 +21,8 @@ func generateCreateStruct(structName string, structType *ast.StructType, entity 
 				continue
 			}
 			field := *fieldPtr
-			// Skip fields that have DefaultFunc
-			// TODO - change logic - DefaultFunc could be used if no real value passed
-			// proly .WriteSkip() or .Permissions() with arguments should be used
 			if field.DefaultFunc != nil {
-				continue
+				field.Optional = true
 			}
 
 			sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, fieldToGoType(field)))

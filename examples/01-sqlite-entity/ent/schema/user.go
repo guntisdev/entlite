@@ -29,7 +29,7 @@ func (User) Fields() []entlite.Field {
 		field.Float("score").Default(4.2),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),
-		field.Byte("api_key").Immutable().DefaultFunc(logic.GenerateAPIKey),
+		field.Byte("api_key").DefaultFunc(logic.GenerateAPIKey),
 		field.Int64("last_login_ms"),
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(6).Immutable(),
 		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(7),

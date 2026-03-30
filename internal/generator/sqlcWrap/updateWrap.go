@@ -21,19 +21,14 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 			if fieldPtr == nil {
 				continue
 			}
-			// this is copy, so it is safe later to modify Optional
 			field := *fieldPtr
 
 			// special case for psw etc - if not readable then no obligatory to update
 			canApiRead := (field.Permissions & permissions.ApiRead) != 0
-			if !canApiRead {
+			if field.DefaultFunc != nil || !canApiRead {
 				field.Optional = true
 			}
 
-			// TODO proly instead of exclude - accept optional?
-			if field.DefaultFunc != nil {
-				continue
-			}
 			sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, fieldToGoType(field)))
 			if astField.Tag != nil {
 				sb.WriteString(fmt.Sprintf(" %s", astField.Tag.Value))

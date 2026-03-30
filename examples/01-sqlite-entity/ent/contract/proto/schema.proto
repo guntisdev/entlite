@@ -48,6 +48,7 @@ message UpdateUserRequest {
   optional string password = 8;
   optional double score = 9;
   bool is_admin = 5 [(buf.validate.field).required = true];
+  optional bytes api_key = 11;
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {

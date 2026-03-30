@@ -313,6 +313,7 @@ type UpdateUserRequest struct {
 	Password      *string  `protobuf:"bytes,8,opt,name=password,proto3,oneof" json:"password,omitempty"`
 	Score         *float64 `protobuf:"fixed64,9,opt,name=score,proto3,oneof" json:"score,omitempty"`
 	IsAdmin       bool     `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
+	ApiKey        []byte   `protobuf:"bytes,11,opt,name=api_key,json=apiKey,proto3,oneof" json:"api_key,omitempty"`
 	LastLoginMs   int64    `protobuf:"varint,12,opt,name=last_login_ms,json=lastLoginMs,proto3" json:"last_login_ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -395,6 +396,13 @@ func (x *UpdateUserRequest) GetIsAdmin() bool {
 		return x.IsAdmin
 	}
 	return false
+}
+
+func (x *UpdateUserRequest) GetApiKey() []byte {
+	if x != nil {
+		return x.ApiKey
+	}
+	return nil
 }
 
 func (x *UpdateUserRequest) GetLastLoginMs() int64 {
@@ -582,7 +590,7 @@ const file_schema_proto_rawDesc = "" +
 	"\n" +
 	"\b_api_key\"(\n" +
 	"\x0eGetUserRequest\x12\x16\n" +
-	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\"\xa6\x02\n" +
+	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\"\xd0\x02\n" +
 	"\x11UpdateUserRequest\x12\x16\n" +
 	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
@@ -590,11 +598,14 @@ const file_schema_proto_rawDesc = "" +
 	"\x03age\x18\x04 \x01(\x05H\x00R\x03age\x88\x01\x01\x12\x1f\n" +
 	"\bpassword\x18\b \x01(\tH\x01R\bpassword\x88\x01\x01\x12\x19\n" +
 	"\x05score\x18\t \x01(\x01H\x02R\x05score\x88\x01\x01\x12!\n" +
-	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12*\n" +
+	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12\x1c\n" +
+	"\aapi_key\x18\v \x01(\fH\x03R\x06apiKey\x88\x01\x01\x12*\n" +
 	"\rlast_login_ms\x18\f \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\vlastLoginMsB\x06\n" +
 	"\x04_ageB\v\n" +
 	"\t_passwordB\b\n" +
-	"\x06_score\"+\n" +
+	"\x06_scoreB\n" +
+	"\n" +
+	"\b_api_key\"+\n" +
 	"\x11DeleteUserRequest\x12\x16\n" +
 	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\"O\n" +
 	"\x0fListUserRequest\x12\x1c\n" +

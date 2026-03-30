@@ -17,8 +17,12 @@ type CreateUserParams struct {
 	Age *int32 `json:"age"`
 	Password string `json:"password"`
 	Score float64 `json:"score"`
+	Uuid *string `json:"uuid"`
 	IsAdmin bool `json:"is_admin"`
+	ApiKey *[]byte `json:"api_key"`
 	LastLoginMs int64 `json:"last_login_ms"`
+	CreatedAt *time.Time `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
@@ -73,7 +77,9 @@ type UpdateUserParams struct {
 	Password *string `json:"password"`
 	Score float64 `json:"score"`
 	IsAdmin bool `json:"is_admin"`
+	ApiKey *[]byte `json:"api_key"`
 	LastLoginMs int64 `json:"last_login_ms"`
+	UpdatedAt *time.Time `json:"updated_at"`
 	ID int32 `json:"id"`
 }
 
@@ -89,6 +95,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Password: PtrToNullString(arg.Password),
 		Score: arg.Score,
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
+		ApiKey: logic.GenerateAPIKey(),
 		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}

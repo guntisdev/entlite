@@ -44,6 +44,7 @@ UPDATE "user" SET
   password = COALESCE(sqlc.narg('password'), password),
   score = ?,
   is_admin = ?,
+  api_key = ?,
   last_login_ms = ?,
   updated_at = ?
 WHERE ID = ?
