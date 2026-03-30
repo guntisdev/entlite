@@ -127,6 +127,8 @@ func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
 func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 	field := schema.Field{}
 
+	field.Permissions = permissions.Default // default all permission
+
 	// Handle method chaining like entlite.String("name").ProtoField(2)
 	currentExpr := expr
 

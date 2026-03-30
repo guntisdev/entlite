@@ -15,7 +15,6 @@ message User {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
-  string password = 8 [(buf.validate.field).required = true];
   double score = 9 [(buf.validate.field).required = true];
   string uuid = 10 [(buf.validate.field).required = true];
   bool is_admin = 5 [(buf.validate.field).required = true];
@@ -31,7 +30,9 @@ message CreateUserRequest {
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
   string password = 8 [(buf.validate.field).required = true];
+  string uuid = 10 [(buf.validate.field).required = true];
   bool is_admin = 5 [(buf.validate.field).required = true];
+  bytes api_key = 11 [(buf.validate.field).required = true];
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
 message GetUserRequest {
@@ -43,7 +44,7 @@ message UpdateUserRequest {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
-  string password = 8 [(buf.validate.field).required = true];
+  optional string password = 8;
   bool is_admin = 5 [(buf.validate.field).required = true];
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }

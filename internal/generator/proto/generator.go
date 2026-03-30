@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 // TODO add mandatory field check like this: `[(buf.validate.field).required = true];`
@@ -76,6 +77,10 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 		content.WriteString(fmt.Sprintf("message %s {\n", entity.Name))
 
 		for _, field := range entity.Fields {
+			canRead := (field.Permissions & permissions.ApiRead) != 0
+			if !canRead {
+				continue
+			}
 			if field.Comment != "" {
 				content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
 			}
@@ -144,7 +149,8 @@ func generateServiceMessages(entity schema.Entity) string {
 		case schema.MethodCreate:
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
-				if field.IsID() || field.DefaultValue != nil || field.DefaultFunc != nil {
+				canWrite := (field.Permissions & permissions.ApiWrite) != 0
+				if field.IsID() || field.DefaultValue != nil || !canWrite {
 					continue
 				}
 				if field.Comment != "" {
@@ -168,8 +174,9 @@ func generateServiceMessages(entity schema.Entity) string {
 		case schema.MethodUpdate:
 			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
+				canWrite := (field.Permissions & permissions.ApiWrite) != 0
 				if !field.IsID() {
-					if field.Immutable || field.DefaultValue != nil || field.DefaultFunc != nil {
+					if field.Immutable || field.DefaultValue != nil || !canWrite {
 						continue
 					}
 				}
@@ -179,7 +186,9 @@ func generateServiceMessages(entity schema.Entity) string {
 				protoType := getProtoType(field.Type)
 				var optional string
 				var required string
-				if field.Optional {
+				// special case for psw etc - if not readable then no obligatory to update
+				canRead := (field.Permissions & permissions.ApiRead) != 0
+				if field.Optional || !canRead {
 					optional = "optional "
 				} else {
 					required = fmt.Sprintf(" %s", requiredStr)
