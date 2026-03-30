@@ -13,9 +13,8 @@ const (
 
 	// Common Shortcuts (Aliases)
 	Default   = DbRead | DbWrite | ApiRead | ApiWrite // 15 (Full CRUD)
-	ReadOnly  = DbRead | ApiRead                      // 5  (System fields like createdAt)
-	WriteOnly = DbWrite | ApiWrite                    // 10 (Password during signup)
+	ReadOnly  = DbWrite | DbRead | ApiRead            // 7  (System fields like createdAt)
+	WriteOnly = DbRead | DbWrite | ApiWrite           // 11 (Password during signup)
 	Internal  = DbRead | DbWrite                      // 3  (Internal metadata, no Proto)
-	Sensitive = DbRead | DbWrite | ApiWrite           // 11 (Can set it, but never see it back)
 	Virtual   = ApiRead | ApiWrite                    // 12 (Exists only in proto, never stored in DB)
 )

@@ -25,7 +25,7 @@ func (User) Fields() []entlite.Field {
 		field.String("email").Unique().ProtoField(2),
 		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
 		field.Int("age").Optional(),
-		field.String("password").Permissions(permissions.Sensitive),
+		field.String("password").Permissions(permissions.WriteOnly),
 		field.Float("score").Default(0.0),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),

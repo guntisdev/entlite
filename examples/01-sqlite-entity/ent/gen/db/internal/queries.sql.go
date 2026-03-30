@@ -155,7 +155,7 @@ UPDATE "user" SET
   email = ?,
   name = ?,
   age = ?,
-  password = ?,
+  password = COALESCE(?9, password),
   score = ?,
   is_admin = ?,
   last_login_ms = ?,
@@ -165,15 +165,15 @@ RETURNING id, email, name, age, password, score, uuid, is_admin, api_key, last_l
 `
 
 type UpdateUserParams struct {
-	Email       string        `json:"email"`
-	Name        string        `json:"name"`
-	Age         sql.NullInt64 `json:"age"`
-	Password    string        `json:"password"`
-	Score       float64       `json:"score"`
-	IsAdmin     int64         `json:"is_admin"`
-	LastLoginMs int64         `json:"last_login_ms"`
-	UpdatedAt   time.Time     `json:"updated_at"`
-	ID          int64         `json:"id"`
+	Email       string         `json:"email"`
+	Name        string         `json:"name"`
+	Age         sql.NullInt64  `json:"age"`
+	Password    sql.NullString `json:"password"`
+	Score       float64        `json:"score"`
+	IsAdmin     int64          `json:"is_admin"`
+	LastLoginMs int64          `json:"last_login_ms"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	ID          int64          `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

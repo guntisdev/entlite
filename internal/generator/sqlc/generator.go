@@ -185,8 +185,18 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		if field.IsID() || field.Immutable {
 			continue
 		}
-		updateFields = append(updateFields, fmt.Sprintf("  %s = %s", field.Name, g.getParameterPlaceholder(placeholderIndex)))
-		placeholderIndex++
+
+		canApiRead := (field.Permissions & permissions.ApiRead) != 0
+		var fieldUpdate string
+		if !canApiRead {
+			// For non-readable fields (like passwords), use COALESCE with nullable parameter
+			// This makes the field optional in updates - if NULL is passed, keep existing value
+			fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
+		} else {
+			fieldUpdate = fmt.Sprintf("  %s = %s", field.Name, g.getParameterPlaceholder(placeholderIndex))
+			placeholderIndex++
+		}
+		updateFields = append(updateFields, fieldUpdate)
 	}
 
 	content.WriteString(strings.Join(updateFields, ",\n"))

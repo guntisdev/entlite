@@ -41,7 +41,7 @@ UPDATE "user" SET
   email = ?,
   name = ?,
   age = ?,
-  password = ?,
+  password = COALESCE(sqlc.narg('password'), password),
   score = ?,
   is_admin = ?,
   last_login_ms = ?,

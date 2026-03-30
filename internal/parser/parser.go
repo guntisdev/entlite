@@ -484,8 +484,6 @@ func parsePermissionsExpression(expr ast.Expr) permissions.Permission {
 				perm = permissions.WriteOnly
 			case "Internal":
 				perm = permissions.Internal
-			case "Sensitive":
-				perm = permissions.Sensitive
 			case "Virtual":
 				perm = permissions.Virtual
 			}
