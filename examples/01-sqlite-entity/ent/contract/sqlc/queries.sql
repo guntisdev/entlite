@@ -8,6 +8,7 @@ INSERT INTO "user" (
   email,
   name,
   age,
+  password,
   score,
   uuid,
   is_admin,
@@ -16,6 +17,7 @@ INSERT INTO "user" (
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -39,6 +41,7 @@ UPDATE "user" SET
   email = ?,
   name = ?,
   age = ?,
+  password = ?,
   score = ?,
   is_admin = ?,
   last_login_ms = ?,

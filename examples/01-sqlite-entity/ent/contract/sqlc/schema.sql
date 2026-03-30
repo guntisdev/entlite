@@ -7,6 +7,7 @@ CREATE TABLE "user"(
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
   age INTEGER,
+  password TEXT NOT NULL,
   score REAL DEFAULT 0 NOT NULL,
   uuid TEXT NOT NULL,
   is_admin INTEGER NOT NULL,
