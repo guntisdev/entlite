@@ -161,10 +161,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// READ (get by id)
 	content.WriteString(fmt.Sprintf("\n-- name: Get%s :one\n", entity.Name))
+	// TODO implement !permissions.DbRead
 	content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
 
 	// LIST
 	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n", entity.Name))
+	// TODO implement !permissions.DbRead
 	content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDER BY %s;\n", g.quote(tableName), idField.Name))
 
 	// UPDATE

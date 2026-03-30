@@ -7,6 +7,7 @@ import (
 
 	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func generateUpdateStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
@@ -20,7 +21,16 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 			if fieldPtr == nil {
 				continue
 			}
+			// this is copy, so it is safe later to modify Optional
 			field := *fieldPtr
+
+			// special case for psw etc - if not readable then no obligatory to update
+			canApiRead := (field.Permissions & permissions.ApiRead) != 0
+			if !canApiRead {
+				field.Optional = true
+			}
+
+			// TODO proly instead of exclude - accept optional?
 			if field.DefaultFunc != nil {
 				continue
 			}
@@ -60,6 +70,11 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 		// Skip immutable fields (except ID which is needed for WHERE clause)
 		if field.Immutable && !field.IsID() {
 			continue
+		}
+		// special case for psw etc - if not readable then no obligatory to update
+		canApiRead := (field.Permissions & permissions.ApiRead) != 0
+		if !canApiRead {
+			field.Optional = true
 		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			funcName := field.DefaultFunc().(string)

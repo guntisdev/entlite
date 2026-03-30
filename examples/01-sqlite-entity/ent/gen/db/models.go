@@ -76,7 +76,6 @@ func (m *User) ToProto() *pb.User {
 		Email: m.Email,
 		Name: m.Name,
 		Age: m.Age,
-		Password: m.Password,
 		Score: m.Score,
 		Uuid: m.Uuid,
 		IsAdmin: m.IsAdmin,

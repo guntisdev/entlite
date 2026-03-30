@@ -70,7 +70,7 @@ type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
-	Password string `json:"password"`
+	Password *string `json:"password"`
 	Score float64 `json:"score"`
 	IsAdmin bool `json:"is_admin"`
 	LastLoginMs int64 `json:"last_login_ms"`
@@ -86,7 +86,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: SQLitePtrInt32ToNullInt64(arg.Age),
-		Password: arg.Password,
+		Password: PtrToNullString(arg.Password),
 		Score: arg.Score,
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
 		LastLoginMs: arg.LastLoginMs,
