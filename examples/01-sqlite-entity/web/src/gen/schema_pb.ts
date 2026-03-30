@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUi0AIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEhcKB2FwaV9rZXkYCyABKAxCBrpIA8gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQESNgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2Ui3AEKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAggASgJQga6SAPIAQESFAoEdXVpZBgKIAEoCUIGukgDyAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFwoHYXBpX2tleRgLIAEoDEIGukgDyAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlIiQKDkdldFVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiywEKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZCInChFEZWxldGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIkAKD0xpc3RVc2VyUmVxdWVzdBIVCgVsaW1pdBgBIAEoBUIGukgDyAEBEhYKBm9mZnNldBgCIAEoBUIGukgDyAEBIjAKEExpc3RVc2VyUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIyoQIKC1VzZXJTZXJ2aWNlEjMKBkNyZWF0ZRIaLmVudGxpdGUuQ3JlYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISLQoDR2V0EhcuZW50bGl0ZS5HZXRVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchIzCgZVcGRhdGUSGi5lbnRsaXRlLlVwZGF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjwKBkRlbGV0ZRIaLmVudGxpdGUuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSOwoETGlzdBIYLmVudGxpdGUuTGlzdFVzZXJSZXF1ZXN0GhkuZW50bGl0ZS5MaXN0VXNlclJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUi0AIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIYCghpc19hZG1pbhgFIAEoCEIGukgDyAEBEhcKB2FwaV9rZXkYCyABKAxCBrpIA8gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQESNgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UiiQIKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAggASgJQga6SAPIAQESEgoFc2NvcmUYCSABKAFIAYgBARIRCgR1dWlkGAogASgJSAKIAQESGAoIaXNfYWRtaW4YBSABKAhCBrpIA8gBARIUCgdhcGlfa2V5GAsgASgMSAOIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBQgYKBF9hZ2VCCAoGX3Njb3JlQgcKBV91dWlkQgoKCF9hcGlfa2V5IiQKDkdldFVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEi6QEKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBQgYKBF9hZ2VCCwoJX3Bhc3N3b3JkQggKBl9zY29yZSInChFEZWxldGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIkAKD0xpc3RVc2VyUmVxdWVzdBIVCgVsaW1pdBgBIAEoBUIGukgDyAEBEhYKBm9mZnNldBgCIAEoBUIGukgDyAEBIjAKEExpc3RVc2VyUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIyoQIKC1VzZXJTZXJ2aWNlEjMKBkNyZWF0ZRIaLmVudGxpdGUuQ3JlYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISLQoDR2V0EhcuZW50bGl0ZS5HZXRVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchIzCgZVcGRhdGUSGi5lbnRsaXRlLlVwZGF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjwKBkRlbGV0ZRIaLmVudGxpdGUuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSOwoETGlzdBIYLmVudGxpdGUuTGlzdFVzZXJSZXF1ZXN0GhkuZW50bGl0ZS5MaXN0VXNlclJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -113,9 +113,14 @@ export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
   password: string;
 
   /**
-   * @generated from field: string uuid = 10;
+   * @generated from field: optional double score = 9;
    */
-  uuid: string;
+  score?: number;
+
+  /**
+   * @generated from field: optional string uuid = 10;
+   */
+  uuid?: string;
 
   /**
    * @generated from field: bool is_admin = 5;
@@ -123,9 +128,9 @@ export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
   isAdmin: boolean;
 
   /**
-   * @generated from field: bytes api_key = 11;
+   * @generated from field: optional bytes api_key = 11;
    */
-  apiKey: Uint8Array;
+  apiKey?: Uint8Array;
 
   /**
    * @generated from field: int64 last_login_ms = 12;
@@ -187,6 +192,11 @@ export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
    * @generated from field: optional string password = 8;
    */
   password?: string;
+
+  /**
+   * @generated from field: optional double score = 9;
+   */
+  score?: number;
 
   /**
    * @generated from field: bool is_admin = 5;

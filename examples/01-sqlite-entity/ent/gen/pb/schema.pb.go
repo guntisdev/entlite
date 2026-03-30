@@ -154,13 +154,14 @@ type CreateUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Email string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	// First name and surname
-	Name          string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Age           *int32 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
-	Password      string `protobuf:"bytes,8,opt,name=password,proto3" json:"password,omitempty"`
-	Uuid          string `protobuf:"bytes,10,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	IsAdmin       bool   `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
-	ApiKey        []byte `protobuf:"bytes,11,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
-	LastLoginMs   int64  `protobuf:"varint,12,opt,name=last_login_ms,json=lastLoginMs,proto3" json:"last_login_ms,omitempty"`
+	Name          string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Age           *int32   `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
+	Password      string   `protobuf:"bytes,8,opt,name=password,proto3" json:"password,omitempty"`
+	Score         *float64 `protobuf:"fixed64,9,opt,name=score,proto3,oneof" json:"score,omitempty"`
+	Uuid          *string  `protobuf:"bytes,10,opt,name=uuid,proto3,oneof" json:"uuid,omitempty"`
+	IsAdmin       bool     `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
+	ApiKey        []byte   `protobuf:"bytes,11,opt,name=api_key,json=apiKey,proto3,oneof" json:"api_key,omitempty"`
+	LastLoginMs   int64    `protobuf:"varint,12,opt,name=last_login_ms,json=lastLoginMs,proto3" json:"last_login_ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -223,9 +224,16 @@ func (x *CreateUserRequest) GetPassword() string {
 	return ""
 }
 
+func (x *CreateUserRequest) GetScore() float64 {
+	if x != nil && x.Score != nil {
+		return *x.Score
+	}
+	return 0
+}
+
 func (x *CreateUserRequest) GetUuid() string {
-	if x != nil {
-		return x.Uuid
+	if x != nil && x.Uuid != nil {
+		return *x.Uuid
 	}
 	return ""
 }
@@ -300,11 +308,12 @@ type UpdateUserRequest struct {
 	ID    int32                  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Email string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
 	// First name and surname
-	Name          string  `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Age           *int32  `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
-	Password      *string `protobuf:"bytes,8,opt,name=password,proto3,oneof" json:"password,omitempty"`
-	IsAdmin       bool    `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
-	LastLoginMs   int64   `protobuf:"varint,12,opt,name=last_login_ms,json=lastLoginMs,proto3" json:"last_login_ms,omitempty"`
+	Name          string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Age           *int32   `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
+	Password      *string  `protobuf:"bytes,8,opt,name=password,proto3,oneof" json:"password,omitempty"`
+	Score         *float64 `protobuf:"fixed64,9,opt,name=score,proto3,oneof" json:"score,omitempty"`
+	IsAdmin       bool     `protobuf:"varint,5,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
+	LastLoginMs   int64    `protobuf:"varint,12,opt,name=last_login_ms,json=lastLoginMs,proto3" json:"last_login_ms,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -372,6 +381,13 @@ func (x *UpdateUserRequest) GetPassword() string {
 		return *x.Password
 	}
 	return ""
+}
+
+func (x *UpdateUserRequest) GetScore() float64 {
+	if x != nil && x.Score != nil {
+		return *x.Score
+	}
+	return 0
 }
 
 func (x *UpdateUserRequest) GetIsAdmin() bool {
@@ -548,30 +564,37 @@ const file_schema_proto_rawDesc = "" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\tcreatedAt\x12A\n" +
 	"\n" +
 	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\tupdatedAtB\x06\n" +
-	"\x04_age\"\x9c\x02\n" +
+	"\x04_age\"\xd0\x02\n" +
 	"\x11CreateUserRequest\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12\x15\n" +
 	"\x03age\x18\x04 \x01(\x05H\x00R\x03age\x88\x01\x01\x12\"\n" +
-	"\bpassword\x18\b \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\bpassword\x12\x1a\n" +
+	"\bpassword\x18\b \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\bpassword\x12\x19\n" +
+	"\x05score\x18\t \x01(\x01H\x01R\x05score\x88\x01\x01\x12\x17\n" +
 	"\x04uuid\x18\n" +
-	" \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04uuid\x12!\n" +
-	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12\x1f\n" +
-	"\aapi_key\x18\v \x01(\fB\x06\xbaH\x03\xc8\x01\x01R\x06apiKey\x12*\n" +
+	" \x01(\tH\x02R\x04uuid\x88\x01\x01\x12!\n" +
+	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12\x1c\n" +
+	"\aapi_key\x18\v \x01(\fH\x03R\x06apiKey\x88\x01\x01\x12*\n" +
 	"\rlast_login_ms\x18\f \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\vlastLoginMsB\x06\n" +
-	"\x04_age\"(\n" +
+	"\x04_ageB\b\n" +
+	"\x06_scoreB\a\n" +
+	"\x05_uuidB\n" +
+	"\n" +
+	"\b_api_key\"(\n" +
 	"\x0eGetUserRequest\x12\x16\n" +
-	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\"\x81\x02\n" +
+	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\"\xa6\x02\n" +
 	"\x11UpdateUserRequest\x12\x16\n" +
 	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\x12\x1c\n" +
 	"\x05email\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05email\x12\x1a\n" +
 	"\x04name\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x04name\x12\x15\n" +
 	"\x03age\x18\x04 \x01(\x05H\x00R\x03age\x88\x01\x01\x12\x1f\n" +
-	"\bpassword\x18\b \x01(\tH\x01R\bpassword\x88\x01\x01\x12!\n" +
+	"\bpassword\x18\b \x01(\tH\x01R\bpassword\x88\x01\x01\x12\x19\n" +
+	"\x05score\x18\t \x01(\x01H\x02R\x05score\x88\x01\x01\x12!\n" +
 	"\bis_admin\x18\x05 \x01(\bB\x06\xbaH\x03\xc8\x01\x01R\aisAdmin\x12*\n" +
 	"\rlast_login_ms\x18\f \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\vlastLoginMsB\x06\n" +
 	"\x04_ageB\v\n" +
-	"\t_password\"+\n" +
+	"\t_passwordB\b\n" +
+	"\x06_score\"+\n" +
 	"\x11DeleteUserRequest\x12\x16\n" +
 	"\x02ID\x18\x01 \x01(\x05B\x06\xbaH\x03\xc8\x01\x01R\x02ID\"O\n" +
 	"\x0fListUserRequest\x12\x1c\n" +

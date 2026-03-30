@@ -150,7 +150,7 @@ func generateServiceMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
 				canWrite := (field.Permissions & permissions.ApiWrite) != 0
-				if field.IsID() || field.DefaultValue != nil || !canWrite {
+				if field.IsID() || !canWrite {
 					continue
 				}
 				if field.Comment != "" {
@@ -159,7 +159,7 @@ func generateServiceMessages(entity schema.Entity) string {
 				protoType := getProtoType(field.Type)
 				var optional string
 				var required string
-				if field.Optional {
+				if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
 					optional = "optional "
 				} else {
 					required = fmt.Sprintf(" %s", requiredStr)
@@ -176,7 +176,7 @@ func generateServiceMessages(entity schema.Entity) string {
 			for _, field := range entity.Fields {
 				canWrite := (field.Permissions & permissions.ApiWrite) != 0
 				if !field.IsID() {
-					if field.Immutable || field.DefaultValue != nil || !canWrite {
+					if field.Immutable || !canWrite {
 						continue
 					}
 				}
@@ -188,7 +188,7 @@ func generateServiceMessages(entity schema.Entity) string {
 				var required string
 				// special case for psw etc - if not readable then no obligatory to update
 				canRead := (field.Permissions & permissions.ApiRead) != 0
-				if field.Optional || !canRead {
+				if field.Optional || !canRead || field.DefaultValue != nil || field.DefaultFunc != nil {
 					optional = "optional "
 				} else {
 					required = fmt.Sprintf(" %s", requiredStr)

@@ -8,7 +8,7 @@ CREATE TABLE "user"(
   name TEXT NOT NULL,
   age INTEGER,
   password TEXT NOT NULL,
-  score REAL DEFAULT 0 NOT NULL,
+  score REAL DEFAULT 4.2 NOT NULL,
   uuid TEXT NOT NULL,
   is_admin INTEGER NOT NULL,
   api_key BLOB NOT NULL,
