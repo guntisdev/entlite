@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 type SQLDialect string
@@ -137,6 +138,10 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var insertPlaceholders []string
 
 	for _, field := range entity.Fields {
+		canWrite := (field.Permissions & permissions.DbWrite) != 0
+		if !canWrite {
+			continue
+		}
 		if field.IsID() && field.DefaultFunc == nil {
 			continue
 		}
@@ -173,6 +178,10 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var updateFields []string
 	placeholderIndex := 1
 	for _, field := range entity.Fields {
+		canWrite := (field.Permissions & permissions.DbWrite) != 0
+		if !canWrite {
+			continue
+		}
 		if field.IsID() || field.Immutable {
 			continue
 		}
