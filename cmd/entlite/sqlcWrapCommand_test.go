@@ -119,8 +119,8 @@ type UpdateUserParams struct {
 	ID          int64
 	Email       string
 	Name        string
-	Age         sql.NullInt64
-	Password    sql.NullString
+	Age         *int64
+	Password    *string
 	Score       float64
 	IsAdmin     int64
 	ApiKey      []byte
@@ -207,7 +207,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"math"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/logic"
 	"time"
@@ -237,7 +236,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 	internalArg := internal.CreateUserParams{
 		Email: arg.Email,
 		Name: arg.Name,
-		Age: SQLitePtrInt32ToNullInt64(arg.Age),
+		Age: IntPtrConvert[int32, int64](arg.Age),
 		Password: arg.Password,
 		Score: arg.Score,
 		Uuid: OptionalWithFallback(arg.Uuid, logic.GetUuidStr()),
@@ -248,7 +247,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		UpdatedAt: time.Now(),
 	}
 	id, err := (*internal.Queries)(q).CreateUser(ctx, internalArg)
-	return SQLiteInt64ToInt32(id), err
+	return IntConvert[int64, int32](id), err
 }
 
 type UpdateUserParams struct {
@@ -268,11 +267,11 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		return nil, fmt.Errorf("Failed update: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
 	internalArg := internal.UpdateUserParams{
-		ID: SQLiteInt32ToInt64(arg.ID),
+		ID: IntConvert[int32, int64](arg.ID),
 		Email: arg.Email,
 		Name: arg.Name,
-		Age: SQLitePtrInt32ToNullInt64(arg.Age),
-		Password: PtrToNullString(arg.Password),
+		Age: IntPtrConvert[int32, int64](arg.Age),
+		Password: arg.Password,
 		Score: arg.Score,
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
 		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
@@ -299,71 +298,6 @@ func ProtoToTime(t *timestamppb.Timestamp) time.Time {
 		return time.Time{}
 	}
 	return t.AsTime()
-}
-
-// --- Int32 Converters ---
-func NullInt32ToPtr(n sql.NullInt32) *int32 {
-	if !n.Valid { return nil }
-	return &n.Int32
-}
-
-func PtrToNullInt32(i *int32) sql.NullInt32 {
-	if i == nil {
-		return sql.NullInt32{Valid: false}
-	}
-	return sql.NullInt32{ Int32: *i, Valid: true }
-}
-
-// --- Int64 Converters ---
-func NullInt64ToPtr(n sql.NullInt64) *int64 {
-	if !n.Valid { return nil }
-	return &n.Int64
-}
-
-func PtrToNullInt64(i *int64) sql.NullInt64 {
-	if i == nil {
-		return sql.NullInt64{Valid: false}
-	}
-	return sql.NullInt64{ Int64: *i, Valid: true }
-}
-
-// --- Float64 Converters ---
-func NullFloat64ToPtr(n sql.NullFloat64) *float64 {
-	if !n.Valid { return nil }
-	return &n.Float64
-}
-
-func PtrToNullFloat64(i *float64) sql.NullFloat64 {
-	if i == nil {
-		return sql.NullFloat64{Valid: false}
-	}
-	return sql.NullFloat64{ Float64: *i, Valid: true }
-}
-
-// --- String Converters ---
-func NullStringToPtr(n sql.NullString) *string {
-	if !n.Valid { return nil }
-	return &n.String
-}
-
-func PtrToNullString(i *string) sql.NullString {
-	if i == nil {
-		return sql.NullString{Valid: false}
-	}
-	return sql.NullString{ String: *i, Valid: true }
-}
-
-// --- Bool Converters ---
-func NullBoolToPtr(n sql.NullBool) *bool {
-	if !n.Valid { return nil }
-	return &n.Bool
-}
-
-func PtrToNullBool(i *bool) sql.NullBool {
-	if i == nil {
-		return sql.NullBool{Valid: false}
-	}
-	return sql.NullBool{ Bool: *i, Valid: true }
 }
 
 // --- Time Converters ---
@@ -422,30 +356,19 @@ func SQLiteBoolToInt(b bool) int64 {
     }
 }
 
-// --- SQLite int converters int32 - int64 ---
-func SQLiteInt64ToInt32(n int64) int32 {
-    if n < math.MinInt32 || n > math.MaxInt32 {
-		panic("Unable convert sqlite int64 to int32")
+// example: IntPtrConvert[int64, int32](dbRow.Age)
+func IntPtrConvert[From, To ~int | ~int32 | ~int64 | ~float32 | ~float64](src *From) *To {
+	if src == nil {
+		return nil
 	}
-	return int32(n)
+	val := To(*src)
+	return &val
 }
-
-func SQLiteInt32ToInt64(n int32) int64 {
-    return int64(n)
-}
-
-// --- SQLite null-int converters int32 - int64 ---
-func SQLiteNullInt64ToPtrInt32(n sql.NullInt64) *int32 {
-	if !n.Valid { return nil }
-    v := SQLiteInt64ToInt32(n.Int64)
-	return &v
-}
-
-func SQLitePtrInt32ToNullInt64(i *int32) sql.NullInt64 {
-    if i == nil {
-		return sql.NullInt64{Valid: false}
-	}
-	return sql.NullInt64{ Int64: int64(*i), Valid: true }
+	
+func IntConvert[From, To ~int | ~int8 | ~int16 | ~int32 | ~int64 | 
+    ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | 
+    ~float32 | ~float64](src From) To {
+    return To(src)
 }`
 
 	if d := util.Diff(expectedContent, string(actualContent)); d != "" {
