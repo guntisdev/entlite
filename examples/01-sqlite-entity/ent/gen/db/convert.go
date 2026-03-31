@@ -56,6 +56,75 @@ func PtrToNullBytes(b *[]byte) []byte {
     return *b
 }
 
+// --- Nullable SQL Type Converters ---
+func NullInt32ToPtr(n sql.NullInt32) *int32 {
+	if !n.Valid {
+		return nil
+	}
+	return &n.Int32
+}
+
+func PtrToNullInt32(p *int32) sql.NullInt32 {
+	if p == nil {
+		return sql.NullInt32{Valid: false}
+	}
+	return sql.NullInt32{
+		Int32: *p,
+		Valid: true,
+	}
+}
+
+func NullInt64ToPtr(n sql.NullInt64) *int64 {
+	if !n.Valid {
+		return nil
+	}
+	return &n.Int64
+}
+
+func PtrToNullInt64(p *int64) sql.NullInt64 {
+	if p == nil {
+		return sql.NullInt64{Valid: false}
+	}
+	return sql.NullInt64{
+		Int64: *p,
+		Valid: true,
+	}
+}
+
+func NullFloat64ToPtr(n sql.NullFloat64) *float64 {
+	if !n.Valid {
+		return nil
+	}
+	return &n.Float64
+}
+
+func PtrToNullFloat64(p *float64) sql.NullFloat64 {
+	if p == nil {
+		return sql.NullFloat64{Valid: false}
+	}
+	return sql.NullFloat64{
+		Float64: *p,
+		Valid:   true,
+	}
+}
+
+func NullStringToPtr(n sql.NullString) *string {
+	if !n.Valid {
+		return nil
+	}
+	return &n.String
+}
+
+func PtrToNullString(p *string) sql.NullString {
+	if p == nil {
+		return sql.NullString{Valid: false}
+	}
+	return sql.NullString{
+		String: *p,
+		Valid:  true,
+	}
+}
+
 // --- SQLite bool converters ---
 func SQLiteIntToBool(i int64) bool {
     switch i {
