@@ -148,7 +148,8 @@ sql:
       go:
         package: "internal"
         out: "gen/db/internal"
-        emit_json_tags: true  
+        emit_json_tags: true
+		emit_pointers_for_null_types: true
 `, dialect)
 
 	path := filepath.Join(dir, "sqlc.yaml")
@@ -176,7 +177,7 @@ deps:
 func createBufGenYamlFile(dir string) error {
 	content := `version: v2
 plugins:
-  - remote: buf.build/protocolbuffers/go
+  - remote: buf.build/protocolbuffers/go:v1.34.2
     out: gen/pb
     opt: paths=source_relative
   - remote: buf.build/connectrpc/go
