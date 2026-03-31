@@ -7,13 +7,14 @@ package internal
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
-const createUser = `-- name: CreateUser :one
+const createUser = `-- name: CreateUser :exec
 
 
-INSERT INTO "user" (
+INSERT INTO ` + "`" + `user` + "`" + ` (
   email,
   name,
   age,
@@ -37,28 +38,28 @@ INSERT INTO "user" (
   ?,
   ?,
   ?
-) RETURNING ID
+)
 `
 
 type CreateUserParams struct {
-	Email       string    `json:"email"`
-	Name        string    `json:"name"`
-	Age         *int64    `json:"age"`
-	Password    string    `json:"password"`
-	Score       float64   `json:"score"`
-	Uuid        string    `json:"uuid"`
-	IsAdmin     int64     `json:"is_admin"`
-	ApiKey      []byte    `json:"api_key"`
-	LastLoginMs int64     `json:"last_login_ms"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Email       string        `json:"email"`
+	Name        string        `json:"name"`
+	Age         sql.NullInt32 `json:"age"`
+	Password    string        `json:"password"`
+	Score       float64       `json:"score"`
+	Uuid        string        `json:"uuid"`
+	IsAdmin     bool          `json:"is_admin"`
+	ApiKey      []byte        `json:"api_key"`
+	LastLoginMs int64         `json:"last_login_ms"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 // Generate queries.sql
 // This file contains SQLC-compatible queries definitions
 // User CRUD operations
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, createUser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.db.ExecContext(ctx, createUser,
 		arg.Email,
 		arg.Name,
 		arg.Age,
@@ -71,25 +72,23 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+	return err
 }
 
 const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM "user" WHERE ID = ?
+DELETE FROM ` + "`" + `user` + "`" + ` WHERE ID = ?
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
+func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE ID = ?
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE ID = ?
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
+func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(
@@ -110,7 +109,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 }
 
 const listUser = `-- name: ListUser :many
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" ORDER BY ID
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM ` + "`" + `user` + "`" + ` ORDER BY ID
 `
 
 func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
@@ -149,36 +148,35 @@ func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
-const updateUser = `-- name: UpdateUser :one
-UPDATE "user" SET
+const updateUser = `-- name: UpdateUser :exec
+UPDATE ` + "`" + `user` + "`" + ` SET
   email = ?,
   name = ?,
   age = ?,
-  password = COALESCE(?10, password),
+  password = COALESCE(?, password),
   score = ?,
   is_admin = ?,
   api_key = ?,
   last_login_ms = ?,
   updated_at = ?
 WHERE ID = ?
-RETURNING id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	Email       string    `json:"email"`
-	Name        string    `json:"name"`
-	Age         *int64    `json:"age"`
-	Password    *string   `json:"password"`
-	Score       float64   `json:"score"`
-	IsAdmin     int64     `json:"is_admin"`
-	ApiKey      []byte    `json:"api_key"`
-	LastLoginMs int64     `json:"last_login_ms"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	ID          int64     `json:"id"`
+	Email       string         `json:"email"`
+	Name        string         `json:"name"`
+	Age         sql.NullInt32  `json:"age"`
+	Password    sql.NullString `json:"password"`
+	Score       float64        `json:"score"`
+	IsAdmin     bool           `json:"is_admin"`
+	ApiKey      []byte         `json:"api_key"`
+	LastLoginMs int64          `json:"last_login_ms"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	ID          int32          `json:"id"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.ExecContext(ctx, updateUser,
 		arg.Email,
 		arg.Name,
 		arg.Age,
@@ -190,20 +188,5 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.UpdatedAt,
 		arg.ID,
 	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Name,
-		&i.Age,
-		&i.Password,
-		&i.Score,
-		&i.Uuid,
-		&i.IsAdmin,
-		&i.ApiKey,
-		&i.LastLoginMs,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+	return err
 }

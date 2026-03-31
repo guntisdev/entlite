@@ -151,7 +151,7 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) 
 		}
 	}
 
-	if sqlDialect == sqlc.PostgreSQL && field.Optional {
+	if field.Optional && (sqlDialect == sqlc.PostgreSQL || sqlDialect == sqlc.MySQL) {
 		switch field.Type {
 		case schema.FieldTypeString:
 			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
@@ -184,7 +184,7 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect
 		}
 	}
 
-	if sqlDialect == sqlc.PostgreSQL && field.Optional {
+	if field.Optional && (sqlDialect == sqlc.PostgreSQL || sqlDialect == sqlc.MySQL) {
 		switch field.Type {
 		case schema.FieldTypeString:
 			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)

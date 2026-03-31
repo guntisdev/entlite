@@ -3,8 +3,8 @@ package db
 import (
 	"time"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	pb "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/pb"
-	internal "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/db/internal"
+	pb "github.com/guntisdev/entlite/examples/03-mysql-entity/ent/gen/pb"
+	internal "github.com/guntisdev/entlite/examples/03-mysql-entity/ent/gen/db/internal"
 )
 
 
@@ -29,14 +29,14 @@ func (m *User) UserToSQL() *internal.User {
 	}
 
 	return &internal.User{
-		ID: IntConvert[int32, int64](m.ID),
+		ID: m.ID,
 		Email: m.Email,
 		Name: m.Name,
-		Age: IntPtrConvert[int32, int64](m.Age),
+		Age: PtrToNullInt32(m.Age),
 		Password: m.Password,
 		Score: m.Score,
 		Uuid: m.Uuid,
-		IsAdmin: SQLiteBoolToInt(m.IsAdmin),
+		IsAdmin: m.IsAdmin,
 		ApiKey: m.ApiKey,
 		LastLoginMs: m.LastLoginMs,
 		CreatedAt: m.CreatedAt,
@@ -50,14 +50,14 @@ func UserFromSQL(db *internal.User) *User {
 	}
 
 	return &User{
-		ID: IntConvert[int64, int32](db.ID),
+		ID: db.ID,
 		Email: db.Email,
 		Name: db.Name,
-		Age: IntPtrConvert[int64, int32](db.Age),
+		Age: NullInt32ToPtr(db.Age),
 		Password: db.Password,
 		Score: db.Score,
 		Uuid: db.Uuid,
-		IsAdmin: SQLiteIntToBool(db.IsAdmin),
+		IsAdmin: db.IsAdmin,
 		ApiKey: db.ApiKey,
 		LastLoginMs: db.LastLoginMs,
 		CreatedAt: db.CreatedAt,

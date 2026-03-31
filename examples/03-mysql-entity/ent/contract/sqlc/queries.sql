@@ -35,7 +35,7 @@ SELECT * FROM `user` WHERE ID = ?;
 -- name: ListUser :many
 SELECT * FROM `user` ORDER BY ID;
 
---name: UpdateUser :exec
+-- name: UpdateUser :exec
 UPDATE `user` SET
   email = ?,
   name = ?,

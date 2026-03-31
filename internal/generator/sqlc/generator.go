@@ -173,7 +173,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	if g.supportsReturning() {
 		content.WriteString(fmt.Sprintf("\n-- name: Update%s :one\n", entity.Name))
 	} else {
-		content.WriteString(fmt.Sprintf("\n--name: Update%s :exec\n", entity.Name))
+		content.WriteString(fmt.Sprintf("\n-- name: Update%s :exec\n", entity.Name))
 	}
 	content.WriteString(fmt.Sprintf("UPDATE %s SET\n", g.quote(tableName)))
 
