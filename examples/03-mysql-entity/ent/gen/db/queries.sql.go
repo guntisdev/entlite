@@ -20,7 +20,7 @@ type CreateUserParams struct {
 	LastLoginMs int64 `json:"last_login_ms"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams)  {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
 	if !logic.StartsWithCapital(arg.Name) {
 		return 0, fmt.Errorf("Failed create: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
@@ -37,7 +37,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams)  {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	return (*internal.Queries)(q).CreateUser(ctx, internalArg)
+	id, err := (*internal.Queries)(q).CreateUser(ctx, internalArg)
+	return IntConvert[int64, int32](id), err
 }
 
 func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
@@ -93,7 +94,11 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		UpdatedAt: time.Now(),
 	}
 
-	dbUser, err := (*internal.Queries)(q).UpdateUser(ctx, internalArg)
+	err := (*internal.Queries)(q).UpdateUser(ctx, internalArg)
+	if err != nil {
+		return nil, err
+	}
+	dbUser, err := (*internal.Queries)(q).GetUser(ctx, arg.ID)
 	if err != nil {
 		return nil, err
 	}

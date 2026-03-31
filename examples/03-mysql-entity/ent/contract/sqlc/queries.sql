@@ -3,7 +3,7 @@
 
 -- User CRUD operations
 
--- name: CreateUser :exec
+-- name: CreateUser :execlastid
 INSERT INTO `user` (
   email,
   name,

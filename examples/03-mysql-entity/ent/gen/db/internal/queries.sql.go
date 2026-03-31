@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const createUser = `-- name: CreateUser :exec
+const createUser = `-- name: CreateUser :execlastid
 
 
 INSERT INTO ` + "`" + `user` + "`" + ` (
@@ -58,8 +58,8 @@ type CreateUserParams struct {
 // Generate queries.sql
 // This file contains SQLC-compatible queries definitions
 // User CRUD operations
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.db.ExecContext(ctx, createUser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, createUser,
 		arg.Email,
 		arg.Name,
 		arg.Age,
@@ -72,7 +72,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
 }
 
 const deleteUser = `-- name: DeleteUser :exec

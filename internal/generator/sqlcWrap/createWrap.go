@@ -99,7 +99,7 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 
 	// Handle return value conversion for SQLite ID (int64 -> int32)
 	idField := entity.GetIdField()
-	if idField != nil && sqlDialect == sqlc.SQLite && idField.Type == schema.FieldTypeInt {
+	if (sqlDialect == sqlc.SQLite || sqlDialect == sqlc.MySQL) && idField != nil && idField.Type == schema.FieldTypeInt {
 		sb.WriteString(fmt.Sprintf("\tid, err := (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
 		sb.WriteString("\treturn IntConvert[int64, int32](id), err\n")
 	} else {
