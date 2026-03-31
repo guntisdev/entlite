@@ -2,41 +2,7 @@ package db
 
 import (
 	"database/sql"
-	"time"
-
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
-
-// TimeToProto converts time.Time to timestamppb.Timestamp pointer
-func TimeToProto(t time.Time) *timestamppb.Timestamp {
-	return timestamppb.New(t)
-}
-
-// Note: If the pointer is nil, it returns a zero time.Time{}
-func ProtoToTime(t *timestamppb.Timestamp) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	return t.AsTime()
-}
-
-// --- Time Converters ---
-func NullTimeToProto(n sql.NullTime) *timestamppb.Timestamp {
-	if !n.Valid {
-		return nil
-	}
-	return timestamppb.New(n.Time)
-}
-
-func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
-	if t == nil {
-		return sql.NullTime{Valid: false}
-	}
-	return sql.NullTime{
-		Time:  t.AsTime(),
-		Valid: true,
-	}
-}
 
 // OptionalWithFallback chooses fallback if optional value is nil
 func OptionalWithFallback[T any](val *T, fallback T) T {

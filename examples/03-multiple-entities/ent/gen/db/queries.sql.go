@@ -2,8 +2,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
-	"math"
 	internal "github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/db/internal"
 )
 
@@ -92,6 +90,7 @@ type UpdatePostParams struct {
 
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (*Post, error) {
 	internalArg := internal.UpdatePostParams{
+		ID: arg.ID,
 		Title: arg.Title,
 		Content: arg.Content,
 		Published: arg.Published,
@@ -112,6 +111,7 @@ type UpdateUserParams struct {
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
 	internalArg := internal.UpdateUserParams{
+		ID: arg.ID,
 		Email: arg.Email,
 		Name: arg.Name,
 	}
@@ -123,125 +123,3 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 	return UserFromSQL(&dbUser), nil
 }
 
-
-// --- Int32 Converters ---
-func NullInt32ToPtr(n sql.NullInt32) *int32 {
-	if !n.Valid { return nil }
-	return &n.Int32
-}
-
-func PtrToNullInt32(i *int32) sql.NullInt32 {
-	if i == nil {
-		return sql.NullInt32{Valid: false}
-	}
-	return sql.NullInt32{ Int32: *i, Valid: true }
-}
-
-// --- Int64 Converters ---
-func NullInt64ToPtr(n sql.NullInt64) *int64 {
-	if !n.Valid { return nil }
-	return &n.Int64
-}
-
-func PtrToNullInt64(i *int64) sql.NullInt64 {
-	if i == nil {
-		return sql.NullInt64{Valid: false}
-	}
-	return sql.NullInt64{ Int64: *i, Valid: true }
-}
-
-// --- Float64 Converters ---
-func NullFloat64ToPtr(n sql.NullFloat64) *float64 {
-	if !n.Valid { return nil }
-	return &n.Float64
-}
-
-func PtrToNullFloat64(i *float64) sql.NullFloat64 {
-	if i == nil {
-		return sql.NullFloat64{Valid: false}
-	}
-	return sql.NullFloat64{ Float64: *i, Valid: true }
-}
-
-// --- String Converters ---
-func NullStringToPtr(n sql.NullString) *string {
-	if !n.Valid { return nil }
-	return &n.String
-}
-
-func PtrToNullString(i *string) sql.NullString {
-	if i == nil {
-		return sql.NullString{Valid: false}
-	}
-	return sql.NullString{ String: *i, Valid: true }
-}
-
-// --- Bool Converters ---
-func NullBoolToPtr(n sql.NullBool) *bool {
-	if !n.Valid { return nil }
-	return &n.Bool
-}
-
-func PtrToNullBool(i *bool) sql.NullBool {
-	if i == nil {
-		return sql.NullBool{Valid: false}
-	}
-	return sql.NullBool{ Bool: *i, Valid: true }
-}
-
-// --- Bytes Converters ---
-func NullBytesToPtr(b []byte) *[]byte {
-    if b == nil { return nil }
-    return &b
-}
-
-func PtrToNullBytes(b *[]byte) []byte {
-    if b == nil { return nil }
-    return *b
-}
-
-// --- SQLite bool converters ---
-func SQLiteIntToBool(i int64) bool {
-    switch i {
-    case 0:
-        return false
-    case 1:
-        return true
-    default:
-        panic("Unable convert sqlite int to bool")
-    }
-}
-
-func SQLiteBoolToInt(b bool) int64 {
-    if b {
-        return 1
-    } else {
-        return 0
-    }
-}
-
-// --- SQLite int converters int32 - int64 ---
-func SQLiteInt64ToInt32(n int64) int32 {
-    if n < math.MinInt32 || n > math.MaxInt32 {
-		panic("Unable convert sqlite int64 to int32")
-	}
-	return int32(n)
-}
-
-func SQLiteInt32ToInt64(n int32) int64 {
-    return int64(n)
-}
-
-// --- SQLite null-int converters int32 - int64 ---
-func SQLiteNullInt64ToPtrInt32(n sql.NullInt64) *int32 {
-	if !n.Valid { return nil }
-    v := SQLiteInt64ToInt32(n.Int64)
-	return &v
-}
-
-func SQLitePtrInt32ToNullInt64(i *int32) sql.NullInt64 {
-    if i == nil {
-		return sql.NullInt64{Valid: false}
-	}
-	return sql.NullInt64{ Int64: int64(*i), Valid: true }
-}

@@ -112,29 +112,6 @@ func hasDefaultFuncFields(entity schema.Entity) bool {
 	return false
 }
 
-func usesSQLTypes(structType *ast.StructType) bool {
-	for _, field := range structType.Fields.List {
-		if usesSQLType(field.Type) {
-			return true
-		}
-	}
-	return false
-}
-
-func usesSQLType(expr ast.Expr) bool {
-	switch t := expr.(type) {
-	case *ast.SelectorExpr:
-		if ident, ok := t.X.(*ast.Ident); ok {
-			return ident.Name == "sql"
-		}
-	case *ast.StarExpr:
-		return usesSQLType(t.X)
-	case *ast.ArrayType:
-		return usesSQLType(t.Elt)
-	}
-	return false
-}
-
 func formatType(expr ast.Expr) string {
 	switch t := expr.(type) {
 	case *ast.Ident:
@@ -174,6 +151,21 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) 
 		}
 	}
 
+	if sqlDialect == sqlc.PostgreSQL && field.Optional {
+		switch field.Type {
+		case schema.FieldTypeString:
+			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
+		case schema.FieldTypeInt:
+			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
+		case schema.FieldTypeInt64:
+			return fmt.Sprintf("PtrToNullInt64(%s)", pbFieldRef)
+		case schema.FieldTypeFloat:
+			return fmt.Sprintf("PtrToNullFloat64(%s)", pbFieldRef)
+		case schema.FieldTypeBool:
+			return fmt.Sprintf("PtrToNullBool(%s)", pbFieldRef)
+		}
+	}
+
 	return pbFieldRef
 }
 
@@ -189,6 +181,21 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect
 			} else {
 				return fmt.Sprintf("IntConvert[%s, %s](%s)", "int64", "int32", dbFieldRef)
 			}
+		}
+	}
+
+	if sqlDialect == sqlc.PostgreSQL && field.Optional {
+		switch field.Type {
+		case schema.FieldTypeString:
+			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeInt:
+			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeInt64:
+			return fmt.Sprintf("NullInt64ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeFloat:
+			return fmt.Sprintf("NullFloat64ToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeBool:
+			return fmt.Sprintf("NullBoolToPtr(%s)", dbFieldRef)
 		}
 	}
 
