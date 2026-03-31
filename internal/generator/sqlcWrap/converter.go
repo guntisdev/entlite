@@ -4,6 +4,26 @@ import (
 	"strings"
 )
 
+func GenerateConvertFile(packageName string, hasTimeField bool) string {
+	var content strings.Builder
+
+	content.WriteString("package ")
+	content.WriteString(packageName)
+	content.WriteString("\n\n")
+
+	content.WriteString("import (\n")
+	content.WriteString("\t\"database/sql\"\n")
+	if hasTimeField {
+		content.WriteString("\t\"time\"\n\n")
+		content.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
+	}
+	content.WriteString(")\n")
+
+	content.WriteString(generateConverterFunctions(hasTimeField))
+
+	return content.String()
+}
+
 func generateConverterFunctions(hasTimeField bool) string {
 	var content strings.Builder
 
