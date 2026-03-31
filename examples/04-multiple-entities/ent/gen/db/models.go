@@ -1,8 +1,8 @@
 package db
 
 import (
-	pb "github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/pb"
-	internal "github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/db/internal"
+	pb "github.com/guntisdev/entlite/examples/04-multiple-entities/ent/gen/pb"
+	internal "github.com/guntisdev/entlite/examples/04-multiple-entities/ent/gen/db/internal"
 )
 
 

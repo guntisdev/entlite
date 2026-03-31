@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	internal "github.com/guntisdev/entlite/examples/03-multiple-entities/ent/gen/db/internal"
+	internal "github.com/guntisdev/entlite/examples/04-multiple-entities/ent/gen/db/internal"
 )
 
 type CreatePostParams struct {
