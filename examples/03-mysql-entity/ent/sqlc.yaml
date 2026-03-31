@@ -1,0 +1,11 @@
+version: "2"
+sql:
+  - schema: "contract/sqlc/schema.sql"
+    queries: "contract/sqlc/queries.sql"    
+    engine: "mysql"       # postgresql or sqlite or mysql
+    gen:
+      go:
+        package: "internal"
+        out: "gen/db/internal"
+        emit_json_tags: true  
+        emit_pointers_for_null_types: true
