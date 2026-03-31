@@ -103,22 +103,6 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 		sb.WriteString(ctx.generateGenericDeclarations())
 	}
 
-	if fileType == FileTypeQuery {
-		hasTimeField := false
-		for _, entity := range ctx.parsedEntities {
-			for _, field := range entity.Fields {
-				if field.Type == schema.FieldTypeTime {
-					hasTimeField = true
-					break
-				}
-			}
-			if hasTimeField {
-				break
-			}
-		}
-		sb.WriteString(generateConverterFunctions(hasTimeField))
-	}
-
 	return sb.String(), nil
 }
 
@@ -164,7 +148,6 @@ func (ctx *generationContext) generateImports() string {
 	sb.WriteString("import (\n")
 
 	needsContext := false
-	needsSQL := false
 	needsFmt := false
 
 	// Query files always need context import (all methods have ctx context.Context parameter)
@@ -177,11 +160,6 @@ func (ctx *generationContext) generateImports() string {
 		if entity, ok := ctx.entityMap[entityName]; ok {
 			if hasDefaultFuncFields(entity) {
 				needsContext = true
-			}
-		}
-		if structType, ok := ctx.createParamsStructs[structName]; ok {
-			if usesSQLTypes(structType) {
-				needsSQL = true
 			}
 		}
 	}
@@ -197,31 +175,12 @@ func (ctx *generationContext) generateImports() string {
 	if needsContext {
 		sb.WriteString("\t\"context\"\n")
 	}
-	if needsSQL || ctx.fileType == FileTypeQuery {
-		sb.WriteString("\t\"database/sql\"\n")
-	}
 	if needsFmt {
 		sb.WriteString("\t\"fmt\"\n")
 	}
 
 	switch ctx.fileType {
 	case FileTypeQuery:
-		hasTimeField := false
-		for _, entity := range ctx.parsedEntities {
-			for _, field := range entity.Fields {
-				if field.Type == schema.FieldTypeTime {
-					hasTimeField = true
-					break
-				}
-			}
-			if hasTimeField {
-				break
-			}
-		}
-		if hasTimeField {
-			sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
-		}
-
 		keys := make([]string, 0, len(ctx.entityImports))
 		for key := range ctx.entityImports {
 			keys = append(keys, key)

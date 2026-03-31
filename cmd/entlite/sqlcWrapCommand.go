@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	sqlcwrap "github.com/guntisdev/entlite/internal/generator/sqlcWrap"
+	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
 )
 
@@ -72,5 +73,27 @@ func sqlcWrapCommand() {
 				os.Exit(1)
 			}
 		}
+	}
+
+	// Generate convert.go file with converter helper functions
+	hasTimeField := false
+	for _, entity := range parsedEntities {
+		for _, field := range entity.Fields {
+			if field.Type == schema.FieldTypeTime {
+				hasTimeField = true
+				break
+			}
+		}
+		if hasTimeField {
+			break
+		}
+	}
+
+	convertFilePath := filepath.Join(outputDir, "convert.go")
+	convertContent := sqlcwrap.GenerateConvertFile("db", hasTimeField)
+	err = os.WriteFile(convertFilePath, []byte(convertContent), 0644)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error writing convert.go file: %v\n", err)
+		os.Exit(1)
 	}
 }
