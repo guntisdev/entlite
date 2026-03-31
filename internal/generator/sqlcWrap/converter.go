@@ -1,9 +1,7 @@
 package sqlcwrap
 
 import (
-	"bytes"
 	"strings"
-	"text/template"
 )
 
 func generateConverterFunctions(hasTimeField bool) string {
@@ -12,7 +10,6 @@ func generateConverterFunctions(hasTimeField bool) string {
 	if hasTimeField {
 		content.WriteString(timeToproto)
 	}
-	content.WriteString(nullableConverters())
 	if hasTimeField {
 		content.WriteString(nullableTime)
 	}
@@ -22,29 +19,6 @@ func generateConverterFunctions(hasTimeField bool) string {
 	content.WriteString(sqlLiteInts)
 
 	return content.String()
-}
-
-func nullableConverters() string {
-	var buf bytes.Buffer
-
-	type Config struct {
-		Type      string
-		Primitive string
-	}
-
-	fields := []Config{
-		{Type: "Int32", Primitive: "int32"},
-		{Type: "Int64", Primitive: "int64"},
-		{Type: "Float64", Primitive: "float64"},
-		{Type: "String", Primitive: "string"},
-		{Type: "Bool", Primitive: "bool"},
-	}
-
-	for _, field := range fields {
-		_ = nullableConvertersTemplate.Execute(&buf, field)
-	}
-
-	return buf.String()
 }
 
 const optionalWithFallback = `
@@ -70,21 +44,6 @@ func ProtoToTime(t *timestamppb.Timestamp) time.Time {
 	return t.AsTime()
 }
 `
-
-var nullableConvertersTemplate = template.Must(template.New("converters").Parse(`
-// --- {{.Type}} Converters ---
-func Null{{.Type}}ToPtr(n sql.Null{{.Type}}) *{{.Primitive}} {
-	if !n.Valid { return nil }
-	return &n.{{.Type}}
-}
-
-func PtrToNull{{.Type}}(i *{{.Primitive}}) sql.Null{{.Type}} {
-	if i == nil {
-		return sql.Null{{.Type}}{Valid: false}
-	}
-	return sql.Null{{.Type}}{ {{.Type}}: *i, Valid: true }
-}
-`))
 
 const nullableTime = `
 // --- Time Converters ---
@@ -142,29 +101,17 @@ func SQLiteBoolToInt(b bool) int64 {
 `
 
 const sqlLiteInts = `
-// --- SQLite int converters int32 - int64 ---
-func SQLiteInt64ToInt32(n int64) int32 {
-    if n < math.MinInt32 || n > math.MaxInt32 {
-		panic("Unable convert sqlite int64 to int32")
+// example: IntPtrConvert[int64, int32](dbRow.Age)
+func IntPtrConvert[From, To ~int | ~int32 | ~int64 | ~float32 | ~float64](src *From) *To {
+	if src == nil {
+		return nil
 	}
-	return int32(n)
+	val := To(*src)
+	return &val
 }
-
-func SQLiteInt32ToInt64(n int32) int64 {
-    return int64(n)
-}
-
-// --- SQLite null-int converters int32 - int64 ---
-func SQLiteNullInt64ToPtrInt32(n sql.NullInt64) *int32 {
-	if !n.Valid { return nil }
-    v := SQLiteInt64ToInt32(n.Int64)
-	return &v
-}
-
-func SQLitePtrInt32ToNullInt64(i *int32) sql.NullInt64 {
-    if i == nil {
-		return sql.NullInt64{Valid: false}
-	}
-	return sql.NullInt64{ Int64: int64(*i), Valid: true }
-}
-`
+	
+func IntConvert[From, To ~int | ~int8 | ~int16 | ~int32 | ~int64 | 
+    ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | 
+    ~float32 | ~float64](src From) To {
+    return To(src)
+}`

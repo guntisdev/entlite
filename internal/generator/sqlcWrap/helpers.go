@@ -167,50 +167,14 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) 
 		}
 		if field.Type == schema.FieldTypeInt {
 			if field.Optional {
-				return fmt.Sprintf("SQLitePtrInt32ToNullInt64(%s)", pbFieldRef)
+				return fmt.Sprintf("IntPtrConvert[%s, %s](%s)", "int32", "int64", pbFieldRef)
 			} else {
-				return fmt.Sprintf("SQLiteInt32ToInt64(%s)", pbFieldRef)
+				return fmt.Sprintf("IntConvert[%s, %s](%s)", "int32", "int64", pbFieldRef)
 			}
 		}
 	}
 
-	if field.Optional {
-		switch field.Type {
-		case schema.FieldTypeString:
-			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
-		case schema.FieldTypeInt:
-			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
-		case schema.FieldTypeInt64:
-			return fmt.Sprintf("PtrToNullInt64(%s)", pbFieldRef)
-		case schema.FieldTypeFloat:
-			return fmt.Sprintf("PtrToNullFloat64(%s)", pbFieldRef)
-		case schema.FieldTypeBool:
-			return fmt.Sprintf("PtrToNullBool(%s)", pbFieldRef)
-		case schema.FieldTypeTime:
-			return pbFieldRef
-		case schema.FieldTypeByte:
-			return fmt.Sprintf("PtrToNullBytes(%s)", pbFieldRef)
-		default:
-			return pbFieldRef
-		}
-	}
-
-	switch field.Type {
-	case schema.FieldTypeString:
-		return pbFieldRef
-	case schema.FieldTypeInt:
-		return pbFieldRef
-	case schema.FieldTypeFloat:
-		return pbFieldRef
-	case schema.FieldTypeBool:
-		return pbFieldRef
-	case schema.FieldTypeTime:
-		return pbFieldRef
-	case schema.FieldTypeByte:
-		return pbFieldRef
-	default:
-		return pbFieldRef
-	}
+	return pbFieldRef
 }
 
 // goFromSQL converts from SQL types to Go types (inverse of sqlToGo)
@@ -221,48 +185,12 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect
 		}
 		if field.Type == schema.FieldTypeInt {
 			if field.Optional {
-				return fmt.Sprintf("SQLiteNullInt64ToPtrInt32(%s)", dbFieldRef)
+				return fmt.Sprintf("IntPtrConvert[%s, %s](%s)", "int64", "int32", dbFieldRef)
 			} else {
-				return fmt.Sprintf("SQLiteInt64ToInt32(%s)", dbFieldRef)
+				return fmt.Sprintf("IntConvert[%s, %s](%s)", "int64", "int32", dbFieldRef)
 			}
 		}
 	}
 
-	if field.Optional {
-		switch field.Type {
-		case schema.FieldTypeString:
-			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
-		case schema.FieldTypeInt:
-			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)
-		case schema.FieldTypeInt64:
-			return fmt.Sprintf("NullInt64ToPtr(%s)", dbFieldRef)
-		case schema.FieldTypeFloat:
-			return fmt.Sprintf("NullFloat64ToPtr(%s)", dbFieldRef)
-		case schema.FieldTypeBool:
-			return fmt.Sprintf("NullBoolToPtr(%s)", dbFieldRef)
-		case schema.FieldTypeTime:
-			return dbFieldRef
-		case schema.FieldTypeByte:
-			return fmt.Sprintf("NullBytesToPtr(%s)", dbFieldRef)
-		default:
-			return dbFieldRef
-		}
-	}
-
-	switch field.Type {
-	case schema.FieldTypeString:
-		return dbFieldRef
-	case schema.FieldTypeInt:
-		return dbFieldRef
-	case schema.FieldTypeFloat:
-		return dbFieldRef
-	case schema.FieldTypeBool:
-		return dbFieldRef
-	case schema.FieldTypeTime:
-		return dbFieldRef
-	case schema.FieldTypeByte:
-		return dbFieldRef
-	default:
-		return dbFieldRef
-	}
+	return dbFieldRef
 }

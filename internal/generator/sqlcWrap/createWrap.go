@@ -101,7 +101,7 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	idField := entity.GetIdField()
 	if idField != nil && sqlDialect == sqlc.SQLite && idField.Type == schema.FieldTypeInt {
 		sb.WriteString(fmt.Sprintf("\tid, err := (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
-		sb.WriteString("\treturn SQLiteInt64ToInt32(id), err\n")
+		sb.WriteString("\treturn IntConvert[int64, int32](id), err\n")
 	} else {
 		sb.WriteString(fmt.Sprintf("\treturn (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
 	}
