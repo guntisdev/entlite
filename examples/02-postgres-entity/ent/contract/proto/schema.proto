@@ -29,8 +29,13 @@ message CreateUserRequest {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
+  optional double score = 8;
+  optional string uuid = 9;
   bool is_admin = 5 [(buf.validate.field).required = true];
+  optional bytes api_key = 10;
   int64 last_login_ms = 11 [(buf.validate.field).required = true];
+  optional google.protobuf.Timestamp created_at = 6;
+  optional google.protobuf.Timestamp updated_at = 7;
 }
 message GetUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
@@ -41,8 +46,10 @@ message UpdateUserRequest {
   // First name and surname
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
+  optional double score = 8;
   bool is_admin = 5 [(buf.validate.field).required = true];
   int64 last_login_ms = 11 [(buf.validate.field).required = true];
+  optional google.protobuf.Timestamp updated_at = 7;
 }
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
