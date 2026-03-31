@@ -51,7 +51,7 @@ func generateGetMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg st
 					idField := entity.GetIdField()
 					if idField != nil && sqlDialect == sqlc.SQLite && idField.Type == schema.FieldTypeInt {
 						// TODO use field converter
-						sb.WriteString(", SQLiteInt32ToInt64(id)")
+						sb.WriteString(", IntConvert[int32, int64](id)")
 					} else {
 						sb.WriteString(fmt.Sprintf(", %s", name.Name))
 					}
@@ -158,7 +158,7 @@ func generateDeleteMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 					idField := entity.GetIdField()
 					if idField != nil && sqlDialect == sqlc.SQLite && idField.Type == schema.FieldTypeInt {
 						// TODO use field converter
-						sb.WriteString(", SQLiteInt32ToInt64(id)")
+						sb.WriteString(", IntConvert[int32, int64](id)")
 					} else {
 						sb.WriteString(fmt.Sprintf(", %s", name.Name))
 					}

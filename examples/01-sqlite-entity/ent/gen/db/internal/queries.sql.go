@@ -7,7 +7,6 @@ package internal
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -42,17 +41,17 @@ INSERT INTO "user" (
 `
 
 type CreateUserParams struct {
-	Email       string        `json:"email"`
-	Name        string        `json:"name"`
-	Age         sql.NullInt64 `json:"age"`
-	Password    string        `json:"password"`
-	Score       float64       `json:"score"`
-	Uuid        string        `json:"uuid"`
-	IsAdmin     int64         `json:"is_admin"`
-	ApiKey      []byte        `json:"api_key"`
-	LastLoginMs int64         `json:"last_login_ms"`
-	CreatedAt   time.Time     `json:"created_at"`
-	UpdatedAt   time.Time     `json:"updated_at"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Age         *int64    `json:"age"`
+	Password    string    `json:"password"`
+	Score       float64   `json:"score"`
+	Uuid        string    `json:"uuid"`
+	IsAdmin     int64     `json:"is_admin"`
+	ApiKey      []byte    `json:"api_key"`
+	LastLoginMs int64     `json:"last_login_ms"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // Generate queries.sql
@@ -166,16 +165,16 @@ RETURNING id, email, name, age, password, score, uuid, is_admin, api_key, last_l
 `
 
 type UpdateUserParams struct {
-	Email       string         `json:"email"`
-	Name        string         `json:"name"`
-	Age         sql.NullInt64  `json:"age"`
-	Password    sql.NullString `json:"password"`
-	Score       float64        `json:"score"`
-	IsAdmin     int64          `json:"is_admin"`
-	ApiKey      []byte         `json:"api_key"`
-	LastLoginMs int64          `json:"last_login_ms"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	ID          int64          `json:"id"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Age         *int64    `json:"age"`
+	Password    *string   `json:"password"`
+	Score       float64   `json:"score"`
+	IsAdmin     int64     `json:"is_admin"`
+	ApiKey      []byte    `json:"api_key"`
+	LastLoginMs int64     `json:"last_login_ms"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int64     `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

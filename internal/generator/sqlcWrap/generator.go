@@ -206,8 +206,6 @@ func (ctx *generationContext) generateImports() string {
 
 	switch ctx.fileType {
 	case FileTypeQuery:
-		sb.WriteString("\t\"math\"\n")
-
 		hasTimeField := false
 		for _, entity := range ctx.parsedEntities {
 			for _, field := range entity.Fields {

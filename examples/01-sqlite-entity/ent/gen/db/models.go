@@ -29,10 +29,10 @@ func (m *User) UserToSQL() *internal.User {
 	}
 
 	return &internal.User{
-		ID: SQLiteInt32ToInt64(m.ID),
+		ID: IntConvert[int32, int64](m.ID),
 		Email: m.Email,
 		Name: m.Name,
-		Age: SQLitePtrInt32ToNullInt64(m.Age),
+		Age: IntPtrConvert[int32, int64](m.Age),
 		Password: m.Password,
 		Score: m.Score,
 		Uuid: m.Uuid,
@@ -50,10 +50,10 @@ func UserFromSQL(db *internal.User) *User {
 	}
 
 	return &User{
-		ID: SQLiteInt64ToInt32(db.ID),
+		ID: IntConvert[int64, int32](db.ID),
 		Email: db.Email,
 		Name: db.Name,
-		Age: SQLiteNullInt64ToPtrInt32(db.Age),
+		Age: IntPtrConvert[int64, int32](db.Age),
 		Password: db.Password,
 		Score: db.Score,
 		Uuid: db.Uuid,
