@@ -30,7 +30,7 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 
 			// special case for psw etc - if not readable then no obligatory to update
 			canApiRead := (field.Permissions & permissions.ApiRead) != 0
-			if field.DefaultFunc != nil || !canApiRead {
+			if field.DefaultFunc != nil || field.DefaultValue != nil || !canApiRead {
 				field.Optional = true
 			}
 
@@ -59,9 +59,13 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
 
 	defaultFuncFields := make(map[string]schema.Field)
+	defaultValueFields := make(map[string]schema.Field)
 	for _, field := range entity.Fields {
 		if field.DefaultFunc != nil {
 			defaultFuncFields[toExportedName(field.Name)] = field
+		}
+		if field.DefaultValue != nil {
+			defaultValueFields[toExportedName(field.Name)] = field
 		}
 	}
 
@@ -81,9 +85,20 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
 			if canApiWrite {
 				convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+				// TODO instead of this for update use COALESCE in sql?
 				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s()),\n", exportedName, convertField, funcName))
 			} else {
 				sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
+			}
+		} else if defValField, hasDefaultVal := defaultValueFields[exportedName]; hasDefaultVal {
+			valueLiteral := formatDefaultValue(defValField)
+			canApiWrite := (defValField.Permissions & permissions.ApiWrite) != 0
+			if canApiWrite {
+				convertField := sqlToGo(defValField, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+				// TODO instead of this for update use COALESCE in sql?
+				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s),\n", exportedName, convertField, valueLiteral))
+			} else {
+				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, valueLiteral))
 			}
 		} else {
 			convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
