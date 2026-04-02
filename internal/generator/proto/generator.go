@@ -89,6 +89,9 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 			var required string
 			if field.Optional {
 				optional = "optional "
+			} else if field.Type == schema.FieldTypeBool {
+				// proto does not differentiat between bool undefined or false
+				required = ""
 			} else {
 				required = fmt.Sprintf(" %s", requiredStr)
 			}
@@ -161,6 +164,8 @@ func generateServiceMessages(entity schema.Entity) string {
 				var required string
 				if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
 					optional = "optional "
+				} else if field.Type == schema.FieldTypeBool {
+					required = ""
 				} else {
 					required = fmt.Sprintf(" %s", requiredStr)
 				}
