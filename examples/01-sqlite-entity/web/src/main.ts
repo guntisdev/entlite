@@ -25,6 +25,7 @@ function createUser() {
         email: email,
         name: fullName,
         age: Math.ceil(Math.random() * 100),
+        password: createHash(12),
         isAdmin: false,
         lastLoginMs: BigInt(Date.now()),
     })
