@@ -1,7 +1,10 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
+import type { CreateUserRequest } from "./gen/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
+
+type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
 
 const transport = createConnectTransport({
     baseUrl: "http://localhost:8080",
@@ -21,14 +24,15 @@ function createUser() {
     log("Creating user...");
     const fullName = randomFullName();
     const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
-    client.create({
+    const request: StrictMessageInput<CreateUserRequest>  = {
         email: email,
         name: fullName,
         age: Math.ceil(Math.random() * 100),
         password: createHash(12),
         isAdmin: false,
         lastLoginMs: BigInt(Date.now()),
-    })
+    };
+    client.create(request)
     .then((response) => {
         log("✓ User created:", response);
     })
