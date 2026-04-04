@@ -37,16 +37,16 @@ SELECT * FROM `user` ORDER BY ID;
 
 -- name: UpdateUser :exec
 UPDATE `user` SET
-  email = ?,
-  name = ?,
-  age = ?,
+  email = sqlc.arg('email'),
+  name = sqlc.arg('name'),
+  age = sqlc.arg('age'),
   password = COALESCE(sqlc.narg('password'), password),
-  score = ?,
-  is_admin = ?,
-  api_key = ?,
-  last_login_ms = ?,
-  updated_at = ?
-WHERE ID = ?;
+  score = COALESCE(sqlc.narg('score'), score),
+  is_admin = sqlc.arg('is_admin'),
+  api_key = COALESCE(sqlc.narg('api_key'), api_key),
+  last_login_ms = sqlc.arg('last_login_ms'),
+  updated_at = sqlc.arg('updated_at')
+WHERE ID = sqlc.arg('ID');
 
 -- name: DeleteUser :exec
 DELETE FROM `user` WHERE ID = ?;

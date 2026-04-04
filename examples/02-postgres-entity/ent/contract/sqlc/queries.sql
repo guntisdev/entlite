@@ -8,6 +8,7 @@ INSERT INTO "user" (
   email,
   name,
   age,
+  password,
   score,
   uuid,
   is_admin,
@@ -25,7 +26,8 @@ INSERT INTO "user" (
   $7,
   $8,
   $9,
-  $10
+  $10,
+  $11
 ) RETURNING ID;
 
 -- name: GetUser :one
@@ -36,14 +38,16 @@ SELECT * FROM "user" ORDER BY ID;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
-  email = $1,
-  name = $2,
-  age = $3,
-  score = $4,
-  is_admin = $5,
-  last_login_ms = $6,
-  updated_at = $7
-WHERE ID = $8
+  email = sqlc.arg('email'),
+  name = sqlc.arg('name'),
+  age = sqlc.arg('age'),
+  password = COALESCE(sqlc.narg('password'), password),
+  score = COALESCE(sqlc.narg('score'), score),
+  is_admin = sqlc.arg('is_admin'),
+  api_key = COALESCE(sqlc.narg('api_key'), api_key),
+  last_login_ms = sqlc.arg('last_login_ms'),
+  updated_at = sqlc.arg('updated_at')
+WHERE ID = sqlc.arg('ID')
 RETURNING *;
 
 -- name: DeleteUser :exec

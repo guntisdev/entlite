@@ -8,14 +8,14 @@ import (
 type CreatePostParams struct {
 	Title string `json:"title"`
 	Content string `json:"content"`
-	Published bool `json:"published"`
+	Published *bool `json:"published"`
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (int32, error) {
 	internalArg := internal.CreatePostParams{
 		Title: arg.Title,
 		Content: arg.Content,
-		Published: arg.Published,
+		Published: OptionalWithFallback(arg.Published, false),
 	}
 	return (*internal.Queries)(q).CreatePost(ctx, internalArg)
 }
@@ -84,8 +84,8 @@ func (q *Queries) ListUser(ctx context.Context) ([]*User, error) {
 type UpdatePostParams struct {
 	Title string `json:"title"`
 	Content string `json:"content"`
-	Published bool `json:"published"`
-	ID int32 `json:"id"`
+	Published *bool `json:"published"`
+	ID int32 `json:"ID"`
 }
 
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (*Post, error) {
@@ -93,7 +93,7 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (*Post, 
 		ID: arg.ID,
 		Title: arg.Title,
 		Content: arg.Content,
-		Published: arg.Published,
+		Published: PtrToNullBool(arg.Published),
 	}
 
 	dbPost, err := (*internal.Queries)(q).UpdatePost(ctx, internalArg)
@@ -106,7 +106,7 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (*Post, 
 type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
-	ID int32 `json:"id"`
+	ID int32 `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {

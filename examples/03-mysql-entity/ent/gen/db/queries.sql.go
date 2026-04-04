@@ -13,7 +13,7 @@ type CreateUserParams struct {
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
 	Password string `json:"password"`
-	Score float64 `json:"score"`
+	Score *float64 `json:"score"`
 	Uuid *string `json:"uuid"`
 	IsAdmin bool `json:"is_admin"`
 	ApiKey *[]byte `json:"api_key"`
@@ -29,7 +29,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		Name: arg.Name,
 		Age: PtrToNullInt32(arg.Age),
 		Password: arg.Password,
-		Score: arg.Score,
+		Score: OptionalWithFallback(arg.Score, 4.2),
 		Uuid: OptionalWithFallback(arg.Uuid, logic.GetUuidStr()),
 		IsAdmin: arg.IsAdmin,
 		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
@@ -70,11 +70,11 @@ type UpdateUserParams struct {
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
 	Password *string `json:"password"`
-	Score float64 `json:"score"`
+	Score *float64 `json:"score"`
 	IsAdmin bool `json:"is_admin"`
 	ApiKey *[]byte `json:"api_key"`
 	LastLoginMs int64 `json:"last_login_ms"`
-	ID int32 `json:"id"`
+	ID int32 `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
@@ -87,9 +87,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Name: arg.Name,
 		Age: PtrToNullInt32(arg.Age),
 		Password: PtrToNullString(arg.Password),
-		Score: arg.Score,
+		Score: PtrToNullFloat64(arg.Score),
 		IsAdmin: arg.IsAdmin,
-		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
+		ApiKey: PtrBytesToNullString(arg.ApiKey),
 		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}

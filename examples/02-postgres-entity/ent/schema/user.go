@@ -6,6 +6,7 @@ import (
 	"github.com/guntisdev/entlite/examples/02-postgres-entity/ent/logic"
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 type User struct {
@@ -24,12 +25,13 @@ func (User) Fields() []entlite.Field {
 		field.String("email").Unique().ProtoField(2),
 		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
 		field.Int("age").Optional(),
-		field.Float("score").Default(0.0),
+		field.String("password").Permissions(permissions.WriteOnly),
+		field.Float("score").Default(4.2),
 		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
 		field.Bool("is_admin").ProtoField(5),
-		field.Byte("api_key").DefaultFunc(logic.GenerateAPIKey).Immutable(),
+		field.Byte("api_key").DefaultFunc(logic.GenerateAPIKey),
 		field.Int64("last_login_ms"),
-		field.Time("created_at").DefaultFunc(time.Now).ProtoField(6).Immutable(),
-		field.Time("updated_at").DefaultFunc(time.Now).ProtoField(7),
+		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(6).Immutable(),
+		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(7),
 	}
 }

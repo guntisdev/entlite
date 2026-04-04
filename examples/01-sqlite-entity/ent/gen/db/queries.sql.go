@@ -74,7 +74,7 @@ type UpdateUserParams struct {
 	IsAdmin bool `json:"is_admin"`
 	ApiKey *[]byte `json:"api_key"`
 	LastLoginMs int64 `json:"last_login_ms"`
-	ID int32 `json:"id"`
+	ID int32 `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
@@ -87,9 +87,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Name: arg.Name,
 		Age: IntPtrConvert[int32, int64](arg.Age),
 		Password: arg.Password,
-		Score: OptionalWithFallback(arg.Score, 4.2),
+		Score: arg.Score,
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
-		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
+		ApiKey: *arg.ApiKey,
 		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}

@@ -152,6 +152,15 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) 
 		}
 	}
 
+	if sqlDialect == sqlc.MySQL && field.Optional {
+		if field.Type == schema.FieldTypeByte {
+			// Special case: some generated refs may be dereferenced (e.g. *arg.ApiKey),
+			// but PtrBytesToNullString expects a pointer, so strip a leading '*'.
+			normalizedRef := strings.TrimPrefix(pbFieldRef, "*")
+			return fmt.Sprintf("PtrBytesToNullString(%s)", normalizedRef)
+		}
+	}
+
 	if field.Optional && (sqlDialect == sqlc.PostgreSQL || sqlDialect == sqlc.MySQL) {
 		switch field.Type {
 		case schema.FieldTypeString:

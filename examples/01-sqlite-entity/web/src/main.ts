@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
-import type { CreateUserRequest, ListUserRequest } from "./gen/schema_pb.js";
+import type { CreateUserRequest, ListUserRequest, UpdateUserRequest } from "./gen/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
@@ -86,14 +86,15 @@ function updateUser() {
     const fullName = "Updated " + randomName();
     const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
     log(`Updating user ${id}...`);
-    client.update({
+    const request: StrictMessageInput<UpdateUserRequest> = {
         ID: id,
         email: email,
         name: fullName,
         age: Math.ceil(Math.random() * 100),
         isAdmin: true,
         lastLoginMs: BigInt(Date.now()),
-    })
+    };
+    client.update(request)
     .then((response) => {
         log("✓ User updated:", response);
     })
