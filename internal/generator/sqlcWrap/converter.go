@@ -13,6 +13,7 @@ func GenerateConvertFile(packageName string, hasTimeField bool) string {
 
 	content.WriteString("import (\n")
 	content.WriteString("\t\"database/sql\"\n")
+	content.WriteString("\t\"reflect\"\n")
 	if hasTimeField {
 		content.WriteString("\t\"time\"\n\n")
 		content.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
@@ -45,10 +46,16 @@ func generateConverterFunctions(hasTimeField bool) string {
 const optionalWithFallback = `
 // OptionalWithFallback chooses fallback if optional value is nil
 func OptionalWithFallback[T any](val *T, fallback T) T {
-    if val != nil {
-        return *val
-    }
-    return fallback
+	if val == nil {
+		return fallback
+	}
+
+	// For nil-able types like []byte, check if the dereferenced value is nil
+	if reflect.ValueOf(any(*val)).IsNil() {
+		return fallback
+	}
+
+	return *val
 }`
 
 const timeToproto = `
