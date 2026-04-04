@@ -93,7 +93,7 @@ message User {
   optional int32 age = 4;
   double score = 9 [(buf.validate.field).required = true];
   string uuid = 10 [(buf.validate.field).required = true];
-  bool is_admin = 5 [(buf.validate.field).required = true];
+  bool is_admin = 5;
   bytes api_key = 11 [(buf.validate.field).required = true];
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 6 [(buf.validate.field).required = true];
@@ -108,7 +108,7 @@ message CreateUserRequest {
   string password = 8 [(buf.validate.field).required = true];
   optional double score = 9;
   optional string uuid = 10;
-  bool is_admin = 5 [(buf.validate.field).required = true];
+  bool is_admin = 5;
   optional bytes api_key = 11;
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
@@ -132,7 +132,7 @@ message DeleteUserRequest {
 }
 message ListUserRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2 [(buf.validate.field).required = true];
+  int32 offset = 2;
 }
 
 message ListUserResponse {

@@ -3,6 +3,7 @@ package sqlcwrap
 import (
 	"fmt"
 	"go/ast"
+	"strconv"
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/generator/sqlc"
@@ -200,4 +201,25 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect
 	}
 
 	return dbFieldRef
+}
+
+func formatDefaultValue(field schema.Field) string {
+	switch v := field.DefaultValue.(type) {
+	case float64:
+		return strconv.FormatFloat(v, 'f', -1, 64)
+	case float32:
+		return strconv.FormatFloat(float64(v), 'f', -1, 32)
+	case int32:
+		return fmt.Sprintf("%d", v)
+	case int64:
+		return fmt.Sprintf("%d", v)
+	case int:
+		return fmt.Sprintf("%d", v)
+	case bool:
+		return fmt.Sprintf("%v", v)
+	case string:
+		return fmt.Sprintf("%q", v)
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }

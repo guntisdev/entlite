@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"connectrpc.com/connect"
+	"connectrpc.com/validate"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	_ "modernc.org/sqlite"
@@ -30,7 +32,10 @@ func main() {
 
 	userService := server.NewUserServiceServer(database)
 	mux := http.NewServeMux()
-	path, handler := pb.NewUserServiceHandler(userService)
+	path, handler := pb.NewUserServiceHandler(
+		userService,
+		connect.WithInterceptors(validate.NewInterceptor()),
+	)
 	mux.Handle(path, handler)
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

@@ -26,7 +26,7 @@ func generateCreateStruct(structName string, structType *ast.StructType, entity 
 			if !canApiWrite {
 				continue
 			}
-			if field.DefaultFunc != nil {
+			if field.DefaultFunc != nil || field.DefaultValue != nil {
 				field.Optional = true
 			}
 
@@ -69,15 +69,19 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
 
 	defaultFuncFields := make(map[string]schema.Field)
+	defaultValueFields := make(map[string]schema.Field)
 	for _, field := range entity.Fields {
 		if field.DefaultFunc != nil {
 			defaultFuncFields[toExportedName(field.Name)] = field
+		}
+		if field.DefaultValue != nil {
+			defaultValueFields[toExportedName(field.Name)] = field
 		}
 	}
 
 	for _, field := range entity.Fields {
 		exportedName := toExportedName(field.Name)
-		if field.IsID() && field.DefaultFunc == nil {
+		if field.IsID() && field.DefaultFunc == nil && field.DefaultValue == nil {
 			continue
 		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
@@ -88,6 +92,15 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s()),\n", exportedName, convertField, funcName))
 			} else {
 				sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
+			}
+		} else if defValField, hasDefaultVal := defaultValueFields[exportedName]; hasDefaultVal {
+			valueLiteral := formatDefaultValue(defValField)
+			canApiWrite := (defValField.Permissions & permissions.ApiWrite) != 0
+			if canApiWrite {
+				convertField := sqlToGo(defValField, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s),\n", exportedName, convertField, valueLiteral))
+			} else {
+				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, valueLiteral))
 			}
 		} else {
 			convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)

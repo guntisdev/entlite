@@ -89,6 +89,9 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 			var required string
 			if field.Optional {
 				optional = "optional "
+			} else if field.Type == schema.FieldTypeBool {
+				// proto does not differentiat between bool undefined or false
+				required = ""
 			} else {
 				required = fmt.Sprintf(" %s", requiredStr)
 			}
@@ -161,6 +164,8 @@ func generateServiceMessages(entity schema.Entity) string {
 				var required string
 				if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
 					optional = "optional "
+				} else if field.Type == schema.FieldTypeBool {
+					required = ""
 				} else {
 					required = fmt.Sprintf(" %s", requiredStr)
 				}
@@ -202,8 +207,9 @@ func generateServiceMessages(entity schema.Entity) string {
 			content.WriteString("}")
 		case schema.MethodList:
 			content.WriteString(fmt.Sprintf("message List%sRequest {\n", entity.Name))
+			// TODO proly change int type depending on ID field type
 			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
-			content.WriteString(fmt.Sprintf("  int32 offset = 2 %s;\n", requiredStr))
+			content.WriteString("  int32 offset = 2;\n")
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message List%sResponse {\n", entity.Name))
