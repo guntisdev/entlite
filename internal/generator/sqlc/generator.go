@@ -178,7 +178,6 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("UPDATE %s SET\n", g.quote(tableName)))
 
 	var updateFields []string
-	placeholderIndex := 1
 	for _, field := range entity.Fields {
 		canWrite := (field.Permissions & permissions.DbWrite) != 0
 		if !canWrite {
@@ -200,14 +199,13 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			// This makes the field optional in updates - if NULL is passed, keep existing value
 			fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
 		} else {
-			fieldUpdate = fmt.Sprintf("  %s = %s", field.Name, g.getParameterPlaceholder(placeholderIndex))
-			placeholderIndex++
+			fieldUpdate = fmt.Sprintf("  %s = sqlc.arg('%s')", field.Name, field.Name)
 		}
 		updateFields = append(updateFields, fieldUpdate)
 	}
 
 	content.WriteString(strings.Join(updateFields, ",\n"))
-	content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField.Name, g.getParameterPlaceholder(placeholderIndex)))
+	content.WriteString(fmt.Sprintf("\nWHERE %s = sqlc.arg('%s')", idField.Name, idField.Name))
 	if g.supportsReturning() {
 		content.WriteString("\nRETURNING *;\n")
 	} else {

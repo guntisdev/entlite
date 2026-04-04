@@ -74,7 +74,7 @@ type UpdateUserParams struct {
 	IsAdmin bool `json:"is_admin"`
 	ApiKey *[]byte `json:"api_key"`
 	LastLoginMs int64 `json:"last_login_ms"`
-	ID int32 `json:"id"`
+	ID int32 `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {

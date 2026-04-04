@@ -151,16 +151,16 @@ func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE "user" SET
-  email = ?,
-  name = ?,
-  age = ?,
-  password = COALESCE(?8, password),
-  score = COALESCE(?9, score),
-  is_admin = ?,
-  api_key = COALESCE(?10, api_key),
-  last_login_ms = ?,
-  updated_at = ?
-WHERE ID = ?
+  email = ?1,
+  name = ?2,
+  age = ?3,
+  password = COALESCE(?4, password),
+  score = COALESCE(?5, score),
+  is_admin = ?6,
+  api_key = COALESCE(?7, api_key),
+  last_login_ms = ?8,
+  updated_at = ?9
+WHERE ID = ?10
 RETURNING id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at
 `
 
@@ -174,7 +174,7 @@ type UpdateUserParams struct {
 	ApiKey      []byte    `json:"api_key"`
 	LastLoginMs int64     `json:"last_login_ms"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	ID          int64     `json:"id"`
+	ID          int64     `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
