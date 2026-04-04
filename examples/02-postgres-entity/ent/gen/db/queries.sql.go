@@ -12,13 +12,12 @@ type CreateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
-	Score float64 `json:"score"`
+	Password string `json:"password"`
+	Score *float64 `json:"score"`
 	Uuid *string `json:"uuid"`
 	IsAdmin bool `json:"is_admin"`
 	ApiKey *[]byte `json:"api_key"`
 	LastLoginMs int64 `json:"last_login_ms"`
-	CreatedAt *time.Time `json:"created_at"`
-	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
@@ -29,13 +28,14 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: PtrToNullInt32(arg.Age),
-		Score: arg.Score,
+		Password: arg.Password,
+		Score: OptionalWithFallback(arg.Score, 4.2),
 		Uuid: OptionalWithFallback(arg.Uuid, logic.GetUuidStr()),
 		IsAdmin: arg.IsAdmin,
 		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
 		LastLoginMs: arg.LastLoginMs,
-		CreatedAt: OptionalWithFallback(arg.CreatedAt, time.Now()),
-		UpdatedAt: OptionalWithFallback(arg.UpdatedAt, time.Now()),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 	return (*internal.Queries)(q).CreateUser(ctx, internalArg)
 }
@@ -68,11 +68,12 @@ type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
-	Score float64 `json:"score"`
+	Password *string `json:"password"`
+	Score *float64 `json:"score"`
 	IsAdmin bool `json:"is_admin"`
+	ApiKey *[]byte `json:"api_key"`
 	LastLoginMs int64 `json:"last_login_ms"`
-	UpdatedAt *time.Time `json:"updated_at"`
-	ID int32 `json:"id"`
+	ID int32 `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
@@ -84,10 +85,12 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Email: arg.Email,
 		Name: arg.Name,
 		Age: PtrToNullInt32(arg.Age),
-		Score: arg.Score,
+		Password: PtrToNullString(arg.Password),
+		Score: PtrToNullFloat64(arg.Score),
 		IsAdmin: arg.IsAdmin,
+		ApiKey: *arg.ApiKey,
 		LastLoginMs: arg.LastLoginMs,
-		UpdatedAt: OptionalWithFallback(arg.UpdatedAt, time.Now()),
+		UpdatedAt: time.Now(),
 	}
 
 	dbUser, err := (*internal.Queries)(q).UpdateUser(ctx, internalArg)

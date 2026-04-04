@@ -14,6 +14,7 @@ type User struct {
 	Email       string        `json:"email"`
 	Name        string        `json:"name"`
 	Age         sql.NullInt32 `json:"age"`
+	Password    string        `json:"password"`
 	Score       float64       `json:"score"`
 	Uuid        string        `json:"uuid"`
 	IsAdmin     bool          `json:"is_admin"`

@@ -89,13 +89,18 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			funcName := field.DefaultFunc().(string)
 			if canApiWrite {
-				sb.WriteString(fmt.Sprintf("\t\t%s: %sarg.%s,\n", exportedName, pointerStr, exportedName))
+				field.Optional = true
+				convertField := sqlToGo(field, fmt.Sprintf("%sarg.%s", pointerStr, exportedName), sqlDialect)
+				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))
 			} else {
 				sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
 			}
 		} else if _, hasDefaultVal := defaultValueFields[exportedName]; hasDefaultVal {
 			if canApiWrite {
-				sb.WriteString(fmt.Sprintf("\t\t%s: %sarg.%s,\n", exportedName, pointerStr, exportedName))
+				field.Optional = true
+				convertField := sqlToGo(field, fmt.Sprintf("%sarg.%s", pointerStr, exportedName), sqlDialect)
+				fmt.Printf("%s %s > %s \n", field.Name, sqlDialect, convertField)
+				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))
 			} else {
 				continue
 			}
