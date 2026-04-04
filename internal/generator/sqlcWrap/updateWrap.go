@@ -75,30 +75,29 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 		if field.Immutable && !field.IsID() {
 			continue
 		}
+
+		canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
 		// special case for psw etc - if not readable then no obligatory to update
 		canApiRead := (field.Permissions & permissions.ApiRead) != 0
 		if !canApiRead {
 			field.Optional = true
 		}
+		pointerStr := ""
+		if field.Type == schema.FieldTypeByte {
+			pointerStr = "*"
+		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			funcName := field.DefaultFunc().(string)
-			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
 			if canApiWrite {
-				convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
-				// TODO instead of this for update use COALESCE in sql?
-				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s()),\n", exportedName, convertField, funcName))
+				sb.WriteString(fmt.Sprintf("\t\t%s: %sarg.%s,\n", exportedName, pointerStr, exportedName))
 			} else {
 				sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
 			}
-		} else if defValField, hasDefaultVal := defaultValueFields[exportedName]; hasDefaultVal {
-			valueLiteral := formatDefaultValue(defValField)
-			canApiWrite := (defValField.Permissions & permissions.ApiWrite) != 0
+		} else if _, hasDefaultVal := defaultValueFields[exportedName]; hasDefaultVal {
 			if canApiWrite {
-				convertField := sqlToGo(defValField, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
-				// TODO instead of this for update use COALESCE in sql?
-				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s),\n", exportedName, convertField, valueLiteral))
+				sb.WriteString(fmt.Sprintf("\t\t%s: %sarg.%s,\n", exportedName, pointerStr, exportedName))
 			} else {
-				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, valueLiteral))
+				continue
 			}
 		} else {
 			convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)

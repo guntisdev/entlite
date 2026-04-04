@@ -188,10 +188,15 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			continue
 		}
 
+		// For non-readable fields (like passwords), use COALESCE with nullable parameter
 		canApiRead := (field.Permissions & permissions.ApiRead) != 0
+		canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+		acceptOptional := false
+		if canApiWrite && (field.DefaultFunc != nil || field.DefaultValue != nil) {
+			acceptOptional = true
+		}
 		var fieldUpdate string
-		if !canApiRead {
-			// For non-readable fields (like passwords), use COALESCE with nullable parameter
+		if !canApiRead || acceptOptional {
 			// This makes the field optional in updates - if NULL is passed, keep existing value
 			fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
 		} else {

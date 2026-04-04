@@ -42,9 +42,9 @@ UPDATE "user" SET
   name = ?,
   age = ?,
   password = COALESCE(sqlc.narg('password'), password),
-  score = ?,
+  score = COALESCE(sqlc.narg('score'), score),
   is_admin = ?,
-  api_key = ?,
+  api_key = COALESCE(sqlc.narg('api_key'), api_key),
   last_login_ms = ?,
   updated_at = ?
 WHERE ID = ?

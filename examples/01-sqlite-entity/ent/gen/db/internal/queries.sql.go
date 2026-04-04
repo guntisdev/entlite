@@ -154,10 +154,10 @@ UPDATE "user" SET
   email = ?,
   name = ?,
   age = ?,
-  password = COALESCE(?10, password),
-  score = ?,
+  password = COALESCE(?8, password),
+  score = COALESCE(?9, score),
   is_admin = ?,
-  api_key = ?,
+  api_key = COALESCE(?10, api_key),
   last_login_ms = ?,
   updated_at = ?
 WHERE ID = ?
@@ -169,7 +169,7 @@ type UpdateUserParams struct {
 	Name        string    `json:"name"`
 	Age         *int64    `json:"age"`
 	Password    *string   `json:"password"`
-	Score       float64   `json:"score"`
+	Score       *float64  `json:"score"`
 	IsAdmin     int64     `json:"is_admin"`
 	ApiKey      []byte    `json:"api_key"`
 	LastLoginMs int64     `json:"last_login_ms"`
