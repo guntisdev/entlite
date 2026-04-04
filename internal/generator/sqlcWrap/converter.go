@@ -39,6 +39,7 @@ func generateConverterFunctions(hasTimeField bool) string {
 	content.WriteString(nullableTypes)
 	content.WriteString(sqliteBools)
 	content.WriteString(sqlLiteInts)
+	content.WriteString(mysqlBytes)
 
 	return content.String()
 }
@@ -213,4 +214,16 @@ func IntConvert[From, To ~int | ~int8 | ~int16 | ~int32 | ~int64 |
     ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | 
     ~float32 | ~float64](src From) To {
     return To(src)
+}`
+
+const mysqlBytes = `
+// PtrBytesToNullString converts *[]byte to sql.NullString for MySQL compatibility
+func PtrBytesToNullString(p *[]byte) sql.NullString {
+    if p == nil || *p == nil {
+        return sql.NullString{Valid: false}
+    }
+    return sql.NullString{
+        String: string(*p),
+        Valid:  true,
+    }
 }`

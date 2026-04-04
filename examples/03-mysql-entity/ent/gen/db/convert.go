@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"reflect"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -40,10 +41,16 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 
 // OptionalWithFallback chooses fallback if optional value is nil
 func OptionalWithFallback[T any](val *T, fallback T) T {
-    if val != nil {
-        return *val
-    }
-    return fallback
+	if val == nil {
+		return fallback
+	}
+
+	// For nil-able types like []byte, check if the dereferenced value is nil
+	if reflect.ValueOf(any(*val)).IsNil() {
+		return fallback
+	}
+
+	return *val
 }
 // --- Bytes Converters ---
 func NullBytesToPtr(b []byte) *[]byte {
@@ -158,4 +165,14 @@ func IntConvert[From, To ~int | ~int8 | ~int16 | ~int32 | ~int64 |
     ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | 
     ~float32 | ~float64](src From) To {
     return To(src)
+}
+// PtrBytesToNullString converts *[]byte to sql.NullString for MySQL compatibility
+func PtrBytesToNullString(p *[]byte) sql.NullString {
+    if p == nil || *p == nil {
+        return sql.NullString{Valid: false}
+    }
+    return sql.NullString{
+        String: string(*p),
+        Valid:  true,
+    }
 }

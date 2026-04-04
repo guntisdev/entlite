@@ -99,7 +99,6 @@ func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 			if canApiWrite {
 				field.Optional = true
 				convertField := sqlToGo(field, fmt.Sprintf("%sarg.%s", pointerStr, exportedName), sqlDialect)
-				fmt.Printf("%s %s > %s \n", field.Name, sqlDialect, convertField)
 				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))
 			} else {
 				continue
