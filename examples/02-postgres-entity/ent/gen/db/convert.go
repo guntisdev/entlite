@@ -132,6 +132,23 @@ func PtrToNullString(p *string) sql.NullString {
 	}
 }
 
+func NullBoolToPtr(n sql.NullBool) *bool {
+	if !n.Valid {
+		return nil
+	}
+	return &n.Bool
+}
+
+func PtrToNullBool(p *bool) sql.NullBool {
+	if p == nil {
+		return sql.NullBool{Valid: false}
+	}
+	return sql.NullBool{
+		Bool:  *p,
+		Valid: true,
+	}
+}
+
 // --- SQLite bool converters ---
 func SQLiteIntToBool(i int64) bool {
     switch i {

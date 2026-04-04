@@ -7,6 +7,7 @@ package internal
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createPost = `-- name: CreatePost :one
@@ -171,16 +172,16 @@ const updatePost = `-- name: UpdatePost :one
 UPDATE "post" SET
   title = $1,
   content = $2,
-  published = $3
+  published = COALESCE($3, published)
 WHERE ID = $4
 RETURNING id, title, content, published
 `
 
 type UpdatePostParams struct {
-	Title     string `json:"title"`
-	Content   string `json:"content"`
-	Published bool   `json:"published"`
-	ID        int32  `json:"id"`
+	Title     string       `json:"title"`
+	Content   string       `json:"content"`
+	Published sql.NullBool `json:"published"`
+	ID        int32        `json:"ID"`
 }
 
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
@@ -211,7 +212,7 @@ RETURNING id, email, name
 type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
-	ID    int32  `json:"id"`
+	ID    int32  `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

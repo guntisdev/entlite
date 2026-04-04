@@ -22,10 +22,10 @@ SELECT * FROM "post" ORDER BY ID;
 
 -- name: UpdatePost :one
 UPDATE "post" SET
-  title = $1,
-  content = $2,
-  published = $3
-WHERE ID = $4
+  title = sqlc.arg('title'),
+  content = sqlc.arg('content'),
+  published = COALESCE(sqlc.narg('published'), published)
+WHERE ID = sqlc.arg('ID')
 RETURNING *;
 
 -- name: DeletePost :exec
@@ -50,9 +50,9 @@ SELECT * FROM "user" ORDER BY ID;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
-  email = $1,
-  name = $2
-WHERE ID = $3
+  email = sqlc.arg('email'),
+  name = sqlc.arg('name')
+WHERE ID = sqlc.arg('ID')
 RETURNING *;
 
 -- name: DeleteUser :exec

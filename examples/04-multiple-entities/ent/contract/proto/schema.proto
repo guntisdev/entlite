@@ -12,7 +12,7 @@ message Post {
   int32 ID = 1 [(buf.validate.field).required = true];
   string title = 2 [(buf.validate.field).required = true];
   string content = 3 [(buf.validate.field).required = true];
-  bool published = 4 [(buf.validate.field).required = true];
+  bool published = 4;
 }
 
 // User represents as user entity
@@ -27,7 +27,7 @@ message GetPostRequest {
 }
 message ListPostRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2 [(buf.validate.field).required = true];
+  int32 offset = 2;
 }
 
 message ListPostResponse {
@@ -57,7 +57,7 @@ message DeleteUserRequest {
 }
 message ListUserRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2 [(buf.validate.field).required = true];
+  int32 offset = 2;
 }
 
 message ListUserResponse {
