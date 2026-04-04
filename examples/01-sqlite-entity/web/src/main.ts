@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
-import type { CreateUserRequest } from "./gen/schema_pb.js";
+import type { CreateUserRequest, ListUserRequest } from "./gen/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
@@ -60,7 +60,11 @@ function getUser() {
 
 function listUsers() {
     log("Listing users...");
-    client.list({ limit: 10, offset: 0 })
+    const request: StrictMessageInput<ListUserRequest> = {
+        limit: 20,
+        offset: 0,
+    };
+    client.list(request)
     .then((response) => {
         log(`✓ Users listed (${response.users.length} users):`);
         response.users.forEach((user, index) => {
