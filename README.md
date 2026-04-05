@@ -2,32 +2,27 @@
 Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
 ## TODO
-* Add .Permissions() field with bitmask (db read/write, api read/write) with aliases: ReadOnly, Sensitive, Internal...
-* Add sqlc COALESCE for sensitive fields (like password)
-* Add universal methods for all fields (like: .Comment, .Permissions)
-* Add to proto required field check `[(buf.validate.field).required = true];` 
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
+* get export directory for proto validate from yaml file
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
 * check each field if it added in further generation (for example Comment)
-* figure out field methods to forbid creation/update from client. forbid exposing to proto
-* Maybe WriteSkip() and ReadSkip() - like WriteSkip() for createdAt and ReadSkip() for password?
-* Or maybe .Permission() - with arguments inside?
-* Update 01-sqlite-entity with better logs (not only input, but also output and error on go side)
 * Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
+* Edge case with all types optional
+* Split get/list/delete sqlc wraps in separate files
 
 ## Folder structure
 ```
 └── ent/
-    ├── schema/         # DSL entities
+    ├── schema/             # DSL entities
     ├── contract/
-    │   ├── proto/      # generated from DSL: schema.prot. Custom proto could be added here
-    │   └── sqlc/       # generated from DSL: schema.sql, queries.sql. Custom sql could be added here
+    │   ├── proto/          # generated from DSL: schema.prot. Custom proto could be added here
+    │   └── sqlc/           # generated from DSL: schema.sql, queries.sql. Custom sql could be added here
     ├── gen/
-    │   ├── db/         # generated from sqlc contract
-    │   ├── pb/         # generated from proto contract
-    │   ├── convert/    # generated from DSL - convertion between db and pb types
-    │   └── ts/         # generated from proto contract
-    ├── logic/          # optional, custom functions for DSL entities
+    │   ├── db/             # small wrapper for type convertions - nullptr etc
+    │   |   └── internal/   # generated from sqlc contract
+    │   ├── pb/             # generated from proto contract
+    │   └── ts/             # generated from proto contract
+    ├── logic/              # optional, custom functions for DSL entities
     ├── buf.yaml
     ├── buf.gen.yaml
     ├── sqlc.yaml

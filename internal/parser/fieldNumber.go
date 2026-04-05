@@ -9,13 +9,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
-/*
-   TODO add extra logic to put protoField values
-   - check if id exists with 1 - if no add it
-   - check if fields have duplicated protoField values - if so return error
-   - automatically add protoField value if not applied to field, check to not duplicate values
-*/
-
 func addFieldNumbers(fields []schema.Field) []schema.Field {
 	var usedNumbers []int
 	hasIdField := false
