@@ -8,7 +8,20 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * check each field if it added in further generation (for example Comment)
 * Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
 * Edge case with all types optional
+* Edge case with custom sqlc schema/queries and custom proto file
 * Split get/list/delete sqlc wraps in separate files
+* Add Queries:
+```bash
+func (User) Queries() []entlite.Query {
+    return []entlite.Query{
+        query.DefaultCRUD(), // Generates Create, Get, Update, Delete, List
+        query.GetBy("Email"),
+    }
+}
+```
+* Rename entlite.Service() to entlite.GRPC() . Later could think about .REST
+* Move default crud methods from entlite.GRPC() to Queries
+* Make annotations optional
 
 ## Folder structure
 ```
