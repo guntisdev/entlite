@@ -13,7 +13,7 @@ type Post struct {
 func (Post) Annotations() []entlite.Annotation {
 	return []entlite.Annotation{
 		entlite.Message(),
-		entlite.Service(
+		entlite.GRPC(
 			service.Methods(service.MethodGet | service.MethodList),
 		),
 	}

@@ -373,8 +373,8 @@ func parseAnnotationCall(callExpr *ast.CallExpr) schema.Annotation {
 			switch selExpr.Sel.Name {
 			case "Message":
 				annotation.Type = schema.AnnotationMessage
-			case "Service":
-				annotation.Type = schema.AnnotationService
+			case "GRPC":
+				annotation.Type = schema.AnnotationGRPC
 
 				var methods []schema.Method
 				if len(callExpr.Args) > 0 {

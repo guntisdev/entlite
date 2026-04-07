@@ -21,7 +21,7 @@ func (e Entity) HasMessage() bool {
 
 func (e Entity) HasService() bool {
 	for _, ann := range e.Annotations {
-		if ann.Type == AnnotationService {
+		if ann.Type == AnnotationGRPC {
 			return true
 		}
 	}
@@ -30,7 +30,7 @@ func (e Entity) HasService() bool {
 
 func (e Entity) GetMethods() []Method {
 	for _, ann := range e.Annotations {
-		if ann.Type == AnnotationService && len(ann.Methods) > 0 {
+		if ann.Type == AnnotationGRPC && len(ann.Methods) > 0 {
 			return ann.Methods
 		}
 	}
@@ -92,7 +92,7 @@ type AnnotationType string
 
 const (
 	AnnotationMessage AnnotationType = "message"
-	AnnotationService AnnotationType = "service"
+	AnnotationGRPC    AnnotationType = "grpc"
 	AnnotationMethods AnnotationType = "methods"
 )
 
