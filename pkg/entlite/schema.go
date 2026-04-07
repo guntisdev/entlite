@@ -18,10 +18,10 @@ func Message() Annotation {
 	return MessageAnnotation{}
 }
 
-type ServiceAnnotation struct{}
+type GRPCAnnotation struct{}
 
-func (ServiceAnnotation) Annotation() {}
+func (GRPCAnnotation) Annotation() {}
 
-func Service(annotations ...Annotation) Annotation {
-	return ServiceAnnotation{}
+func GRPC(annotations ...Annotation) Annotation {
+	return GRPCAnnotation{}
 }

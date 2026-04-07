@@ -12,7 +12,7 @@ type User struct {
 func (User) Annotations() []entlite.Annotation {
 	return []entlite.Annotation{
 		entlite.Message(),
-		entlite.Service(),
+		entlite.GRPC(),
 	}
 }
 
