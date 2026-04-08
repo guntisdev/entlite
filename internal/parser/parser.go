@@ -87,6 +87,15 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			entity.Fields = fields
 		}
 
+		// Parse Queries
+		if funcDecl.Name.Name == "Queries" {
+			queries, err := parseQueriesMethod(funcDecl)
+			if err != nil {
+				return entity, fmt.Errorf("failed to parse queries: %w", err)
+			}
+			entity.Queries = queries
+		}
+
 	}
 
 	return entity, nil
@@ -122,6 +131,87 @@ func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
 	}
 
 	return fields, nil
+}
+
+func parseQueriesMethod(funcDecl *ast.FuncDecl) ([]schema.Query, error) {
+	var queries []schema.Query
+
+	if funcDecl.Body == nil {
+		return queries, nil
+	}
+
+	for _, stmt := range funcDecl.Body.List {
+		retStmt, ok := stmt.(*ast.ReturnStmt)
+		if !ok {
+			continue
+		}
+
+		for _, result := range retStmt.Results {
+			if compLit, ok := result.(*ast.CompositeLit); ok {
+				for _, elt := range compLit.Elts {
+					query, err := parseQueryExpression(elt)
+					if err != nil {
+						return nil, err
+					}
+					queries = append(queries, query)
+				}
+
+			}
+		}
+	}
+
+	return queries, nil
+}
+
+func parseQueryExpression(expr ast.Expr) (schema.Query, error) {
+	query := schema.Query{}
+
+	if callExpr, ok := expr.(*ast.CallExpr); ok {
+		if selExpr, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
+			if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "query" {
+				switch selExpr.Sel.Name {
+				case "DefaultCRUD":
+					query.Type = schema.QueryCreate
+					query.Type = schema.QueryGetBy
+					query.Type = schema.QueryUpdate
+					query.Type = schema.QueryDelete
+					query.Type = schema.QueryListBy
+					query.Field = "ID"
+				case "Create":
+					query.Type = schema.QueryCreate
+					query.Field = "ID"
+				case "Get":
+					query.Type = schema.QueryGetBy
+					query.Field = "ID"
+				case "Update":
+					query.Type = schema.QueryUpdate
+					query.Field = "ID"
+				case "Delete":
+					query.Type = schema.QueryDelete
+					query.Field = "ID"
+				case "List":
+					query.Type = schema.QueryListBy
+					query.Field = "ID"
+				case "GetBy":
+					query.Type = schema.QueryGetBy
+					if len(callExpr.Args) > 0 {
+						if lit, ok := callExpr.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							query.Field = strings.Trim(lit.Value, "\"")
+						}
+					}
+				case "ListBy":
+					query.Type = schema.QueryListBy
+					if len(callExpr.Args) > 0 {
+						if lit, ok := callExpr.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							query.Field = strings.Trim(lit.Value, "\"")
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return query, nil
 }
 
 func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
