@@ -10,6 +10,10 @@ type Field interface {
 	Field()
 }
 
+type Query interface {
+	Query()
+}
+
 type MessageAnnotation struct{}
 
 func (MessageAnnotation) Annotation() {}
