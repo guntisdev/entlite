@@ -7,6 +7,7 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
+	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
 type User struct {
@@ -33,5 +34,12 @@ func (User) Fields() []entlite.Field {
 		field.Int64("last_login_ms"),
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(6).Immutable(),
 		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(7),
+	}
+}
+
+func (User) Queries() []entlite.Query {
+	return []entlite.Query{
+		query.GetBy("email"),
+		query.ListBy("age"),
 	}
 }
