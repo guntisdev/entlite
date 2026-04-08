@@ -42,6 +42,7 @@ type Entity struct {
 	Name        string
 	Fields      []Field
 	Annotations []Annotation
+	Queries     []Query
 }
 
 func (e Entity) GetIdField() *Field {
@@ -104,4 +105,19 @@ const (
 	MethodUpdate Method = "update"
 	MethodDelete Method = "delete"
 	MethodList   Method = "list"
+)
+
+type Query struct {
+	Type  QueryType
+	Field string
+}
+
+type QueryType string
+
+const (
+	QueryCreate QueryType = "create"
+	QueryUpdate QueryType = "update"
+	QueryDelete QueryType = "delete"
+	QueryGetBy  QueryType = "get_by"
+	QueryListBy QueryType = "list_by"
 )

@@ -1,4 +1,4 @@
-package service
+package grpc
 
 import "github.com/guntisdev/entlite/pkg/entlite"
 

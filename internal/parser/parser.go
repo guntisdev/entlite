@@ -17,7 +17,7 @@ func ParseEntities(discoveredEntities []DiscoveredEntity) ([]schema.Entity, erro
 	for _, discovered := range discoveredEntities {
 		parsed, err := parseEntityFromFile(discovered)
 		if err != nil {
-			continue
+			return nil, fmt.Errorf("entity %q in %s: %w", discovered.Name, discovered.Path, err)
 		}
 		entities = append(entities, parsed)
 	}
@@ -87,6 +87,18 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			entity.Fields = fields
 		}
 
+		// Parse Queries
+		if funcDecl.Name.Name == "Queries" {
+			queries, err := parseQueriesMethod(funcDecl)
+			if err != nil {
+				return entity, fmt.Errorf("failed to parse queries: %w", err)
+			}
+			entity.Queries = queries
+		}
+	}
+
+	if err := validateQueryFields(entity); err != nil {
+		return entity, err
 	}
 
 	return entity, nil
@@ -122,6 +134,113 @@ func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
 	}
 
 	return fields, nil
+}
+
+func parseQueriesMethod(funcDecl *ast.FuncDecl) ([]schema.Query, error) {
+	var queries []schema.Query
+
+	if funcDecl.Body == nil {
+		return queries, nil
+	}
+
+	for _, stmt := range funcDecl.Body.List {
+		retStmt, ok := stmt.(*ast.ReturnStmt)
+		if !ok {
+			continue
+		}
+
+		for _, result := range retStmt.Results {
+			if compLit, ok := result.(*ast.CompositeLit); ok {
+				for _, elt := range compLit.Elts {
+					parsedQueries, err := parseQueryExpression(elt)
+					if err != nil {
+						return nil, err
+					}
+					queries = append(queries, parsedQueries...)
+				}
+
+			}
+		}
+	}
+
+	return queries, nil
+}
+
+func parseQueryExpression(expr ast.Expr) ([]schema.Query, error) {
+	queries := []schema.Query{}
+
+	if callExpr, ok := expr.(*ast.CallExpr); ok {
+		if selExpr, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
+			if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "query" {
+				switch selExpr.Sel.Name {
+				case "DefaultCRUD":
+					queries = append(queries,
+						schema.Query{Type: schema.QueryCreate, Field: "ID"},
+						schema.Query{Type: schema.QueryGetBy, Field: "ID"},
+						schema.Query{Type: schema.QueryUpdate, Field: "ID"},
+						schema.Query{Type: schema.QueryDelete, Field: "ID"},
+						schema.Query{Type: schema.QueryListBy, Field: "ID"},
+					)
+				case "Create":
+					queries = append(queries, schema.Query{Type: schema.QueryCreate, Field: "ID"})
+				case "Get":
+					queries = append(queries, schema.Query{Type: schema.QueryGetBy, Field: "ID"})
+				case "Update":
+					queries = append(queries, schema.Query{Type: schema.QueryUpdate, Field: "ID"})
+				case "Delete":
+					queries = append(queries, schema.Query{Type: schema.QueryDelete, Field: "ID"})
+				case "List":
+					queries = append(queries, schema.Query{Type: schema.QueryListBy, Field: "ID"})
+				case "GetBy":
+					query := schema.Query{Type: schema.QueryGetBy}
+					if len(callExpr.Args) > 0 {
+						if lit, ok := callExpr.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							query.Field = strings.Trim(lit.Value, "\"")
+						}
+					}
+					queries = append(queries, query)
+				case "ListBy":
+					query := schema.Query{Type: schema.QueryListBy}
+					if len(callExpr.Args) > 0 {
+						if lit, ok := callExpr.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							query.Field = strings.Trim(lit.Value, "\"")
+						}
+					}
+					queries = append(queries, query)
+				}
+			}
+		}
+	}
+
+	return queries, nil
+}
+
+func validateQueryFields(entity schema.Entity) error {
+	if len(entity.Queries) == 0 {
+		return nil
+	}
+
+	for _, query := range entity.Queries {
+		if query.Field == "" {
+			return fmt.Errorf("entity %q has query %q with empty field", entity.Name, query.Type)
+		}
+
+		if !entityHasField(entity, query.Field) {
+			return fmt.Errorf("entity %q query %q references nonexisten field %q", entity.Name, query.Type, query.Field)
+		}
+	}
+
+	return nil
+}
+
+func entityHasField(entity schema.Entity, fieldName string) bool {
+	for _, field := range entity.Fields {
+		if strings.EqualFold(field.Name, fieldName) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func parseFieldExpression(expr ast.Expr) (schema.Field, error) {

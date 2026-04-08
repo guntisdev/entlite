@@ -3,7 +3,7 @@ package schema
 import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
-	"github.com/guntisdev/entlite/pkg/entlite/service"
+	"github.com/guntisdev/entlite/pkg/entlite/grpc"
 )
 
 type Post struct {
@@ -14,7 +14,7 @@ func (Post) Annotations() []entlite.Annotation {
 	return []entlite.Annotation{
 		entlite.Message(),
 		entlite.GRPC(
-			service.Methods(service.MethodGet | service.MethodList),
+			grpc.Methods(grpc.MethodGet | grpc.MethodList),
 		),
 	}
 }
