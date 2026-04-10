@@ -4,6 +4,7 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 ## TODO
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
 * get export directory for proto validate from yaml file
+* Add .Indexed() for fields (to index in sql)
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
 * check each field if it added in further generation (for example Comment)
 * Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
@@ -14,14 +15,26 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 ```bash
 func (User) Queries() []entlite.Query {
     return []entlite.Query{
-        query.DefaultCRUD(), // Generates Create, Get, Update, Delete, List
-        query.GetBy("Email"),
+        query.DefaultCRUD(), // Generates Create, Get, Update, Delete, List - by ID
+        query.Get(), // one of default crud. Translates to .GetBy("ID")
+        query.GetBy("email"), // validates unique
+        query.GetBy("org_id", "email") // later handle composite indexes
+        query.ListBy("org_id"), // allow either one param field name (default to .Eq)
+        query.ListBy(
+            filter.Range("age") // >= n <=
+            filter.Search("name") // WHERE name LIKE 'Bob'
+            filter.Search("surname").Optional() // set OR in sql
+            filter.Eq("score")
+        ),
+        query.ListBy("org_id").Count(), // SELECT COUNT(*) FROM
+        query.ListBy("org_id").OrderBy("created_at"), // adds also ASC/DESC 
     }
 }
 ```
 * Rename entlite.Service() to entlite.GRPC() . Later could think about .REST
 * Move default crud methods from entlite.GRPC() to Queries
 * Make annotations optional
+* Hande composite indexes (set it with `func (User) Indexes() []entlite.Index`)
 
 ## Folder structure
 ```
