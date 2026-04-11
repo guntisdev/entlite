@@ -108,9 +108,26 @@ const (
 )
 
 type Query struct {
-	Type  QueryType
-	Field string
+	Type    QueryType
+	Fields  []string
+	Filters []QueryFilter
+	Count   bool
+	OrderBy string
 }
+
+type QueryFilter struct {
+	Type     QueryFilterType
+	Field    string
+	Optional bool
+}
+
+type QueryFilterType string
+
+const (
+	QueryFilterRange  QueryFilterType = "range"
+	QueryFilterSearch QueryFilterType = "search"
+	QueryFilterEq     QueryFilterType = "eq"
+)
 
 type QueryType string
 
