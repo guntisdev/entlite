@@ -40,12 +40,12 @@ func (User) Fields() []entlite.Field {
 
 func (User) Queries() []entlite.Query {
 	return []entlite.Query{
-		// query.DefaultCRUD(),
+		query.DefaultCRUD(),
 		// query.Create(),
 		// query.Get(),
-		query.Update(),
-		query.Delete(),
-		query.List(),
+		// query.Update(),
+		// query.Delete(),
+		// query.List(),
 		query.GetBy("email"),
 		query.ListBy("age").Count(),
 		query.ListBy(
