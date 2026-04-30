@@ -46,7 +46,7 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 	return sb.String()
 }
 
-func generateUpdateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect sqlc.SQLDialect) string {
+func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect sqlc.SQLDialect) string {
 	var sb strings.Builder
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
