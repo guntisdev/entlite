@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
@@ -265,9 +264,10 @@ func needsCommonImports(entities []schema.Entity) bool {
 
 func needsEmptyImportForEntities(entities []schema.Entity) bool {
 	for _, entity := range entities {
-		methods := entity.GetMethods()
-		if slices.Contains(methods, schema.MethodDelete) {
-			return true
+		for _, query := range entity.Queries {
+			if query.Type == schema.QueryDelete {
+				return true
+			}
 		}
 	}
 
