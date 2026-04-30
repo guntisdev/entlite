@@ -45,13 +45,14 @@ type Entity struct {
 	Queries     []Query
 }
 
-func (e Entity) GetIdField() *Field {
+func (e Entity) GetIdField() Field {
 	for _, field := range e.Fields {
 		if field.IsID() {
-			return &field
+			return field
 		}
 	}
-	return nil
+
+	panic("No id field detected")
 }
 
 type Field struct {

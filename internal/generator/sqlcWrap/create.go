@@ -49,11 +49,8 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, arg %sParams) ", receiverType, funcDecl.Name.Name, funcDecl.Name.Name))
 
 	var firstReturnType string
-	idFieldPtr := entity.GetIdField()
-	if idFieldPtr != nil {
-		field := *idFieldPtr
-		firstReturnType = string(field.Type)
-	}
+	idField := entity.GetIdField()
+	firstReturnType = string(idField.Type)
 
 	// sqlc always generates (result, error)
 	if funcDecl.Type.Results != nil && len(funcDecl.Type.Results.List) == 2 {
@@ -111,8 +108,7 @@ func generateCreateMethod(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg
 	sb.WriteString("\t}\n")
 
 	// Handle return value conversion for SQLite ID (int64 -> int32)
-	idField := entity.GetIdField()
-	if (sqlDialect == sqlc.SQLite || sqlDialect == sqlc.MySQL) && idField != nil && idField.Type == schema.FieldTypeInt {
+	if (sqlDialect == sqlc.SQLite || sqlDialect == sqlc.MySQL) && idField.Type == schema.FieldTypeInt {
 		sb.WriteString(fmt.Sprintf("\tid, err := (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
 		sb.WriteString("\treturn IntConvert[int64, int32](id), err\n")
 	} else {
