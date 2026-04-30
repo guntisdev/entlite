@@ -118,15 +118,15 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 func generateServiceProto(entity schema.Entity) string {
 	var content strings.Builder
 
-	content.WriteString(generateServiceMessages(entity))
+	content.WriteString(generateResponseMessages(entity))
 	content.WriteString("\n\n")
 
 	serviceName := fmt.Sprintf("%sService", entity.Name)
 	content.WriteString(fmt.Sprintf("// %s provides CRUD opertions for %s entities\n", serviceName, entity.Name))
 	content.WriteString(fmt.Sprintf("service %s {\n", serviceName))
 
-	for _, method := range entity.GetMethods() {
-		content.WriteString(generateServiceMethod(entity.Name, method))
+	for _, query := range entity.Queries {
+		content.WriteString(generateRequests(entity.Name, query))
 	}
 
 	content.WriteString("}")
@@ -134,17 +134,17 @@ func generateServiceProto(entity schema.Entity) string {
 	return content.String()
 }
 
-func generateServiceMessages(entity schema.Entity) string {
+func generateResponseMessages(entity schema.Entity) string {
 	var content strings.Builder
 	var requiredStr = "[(buf.validate.field).required = true]"
 
-	for i, method := range entity.GetMethods() {
+	for i, query := range entity.Queries {
 		if i > 0 {
 			content.WriteString("\n")
 		}
 
-		switch method {
-		case schema.MethodCreate:
+		switch query.Type {
+		case schema.QueryCreate:
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
 				canWrite := (field.Permissions & permissions.ApiWrite) != 0
@@ -167,11 +167,11 @@ func generateServiceMessages(entity schema.Entity) string {
 				content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
 			}
 			content.WriteString("}")
-		case schema.MethodGet:
+		case schema.QueryGetBy:
 			content.WriteString(fmt.Sprintf("message Get%sRequest {\n", entity.Name))
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
-		case schema.MethodUpdate:
+		case schema.QueryUpdate:
 			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
 			for _, field := range entity.Fields {
 				canWrite := (field.Permissions & permissions.ApiWrite) != 0
@@ -196,11 +196,11 @@ func generateServiceMessages(entity schema.Entity) string {
 				content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
 			}
 			content.WriteString("}")
-		case schema.MethodDelete:
+		case schema.QueryDelete:
 			content.WriteString(fmt.Sprintf("message Delete%sRequest {\n", entity.Name))
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
-		case schema.MethodList:
+		case schema.QueryListBy:
 			content.WriteString(fmt.Sprintf("message List%sRequest {\n", entity.Name))
 			// TODO proly change int type depending on ID field type
 			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
@@ -228,17 +228,19 @@ func getIdFieldAsStr(fields []schema.Field) string {
 	return "int32 id = 1"
 }
 
-func generateServiceMethod(entityName string, method schema.Method) string {
-	switch method {
-	case schema.MethodCreate:
+func generateRequests(entityName string, query schema.Query) string {
+	switch query.Type {
+	case schema.QueryCreate:
 		return fmt.Sprintf("  rpc Create(Create%sRequest) returns (%s);\n", entityName, entityName)
-	case schema.MethodGet:
+	case schema.QueryGetBy:
+		// TODO extend naming besides ID from query Fields (and maybe filter, count, etc)
 		return fmt.Sprintf("  rpc Get(Get%sRequest) returns (%s);\n", entityName, entityName)
-	case schema.MethodUpdate:
+	case schema.QueryUpdate:
 		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entityName, entityName)
-	case schema.MethodDelete:
+	case schema.QueryDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entityName)
-	case schema.MethodList:
+	case schema.QueryListBy:
+		// TODO extend naming besides ID from query Fields (and maybe filter, count, etc)
 		return fmt.Sprintf("  rpc List(List%sRequest) returns (List%sResponse);\n", entityName, entityName)
 	default:
 		return ""
