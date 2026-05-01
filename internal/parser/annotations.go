@@ -46,21 +46,6 @@ func parseAnnotationCall(callExpr *ast.CallExpr) schema.Annotation {
 				annotation.Type = schema.AnnotationMessage
 			case "GRPC":
 				annotation.Type = schema.AnnotationGRPC
-
-				var methods []schema.Method
-				if len(callExpr.Args) > 0 {
-					// TODO deprecated, remove after Queries implemented
-					methods = parseServiceArguments(callExpr.Args)
-				} else {
-					methods = []schema.Method{
-						schema.MethodCreate,
-						schema.MethodGet,
-						schema.MethodUpdate,
-						schema.MethodDelete,
-						schema.MethodList,
-					}
-				}
-				annotation.Methods = methods
 			}
 		}
 	}

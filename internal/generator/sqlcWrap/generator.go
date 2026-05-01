@@ -396,35 +396,35 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 		if strings.HasPrefix(funcDecl.Name.Name, "Create") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Create")
 			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateCreateMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(generateCreateQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
 				return
 			}
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "Update") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Update")
 			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateUpdateMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(generateUpdateQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
 				return
 			}
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "Get") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Get")
 			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateGetMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(generateGetQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
 				return
 			}
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "List") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "List")
 			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateListMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(generateListQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
 				return
 			}
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "Delete") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Delete")
 			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateDeleteMethod(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(generateDeleteQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
 				return
 			}
 		}

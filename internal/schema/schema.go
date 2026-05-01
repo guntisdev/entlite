@@ -28,16 +28,6 @@ func (e Entity) HasService() bool {
 	return false
 }
 
-func (e Entity) GetMethods() []Method {
-	for _, ann := range e.Annotations {
-		if ann.Type == AnnotationGRPC && len(ann.Methods) > 0 {
-			return ann.Methods
-		}
-	}
-
-	return nil
-}
-
 type Entity struct {
 	Name        string
 	Fields      []Field
@@ -45,13 +35,14 @@ type Entity struct {
 	Queries     []Query
 }
 
-func (e Entity) GetIdField() *Field {
+func (e Entity) GetIdField() Field {
 	for _, field := range e.Fields {
 		if field.IsID() {
-			return &field
+			return field
 		}
 	}
-	return nil
+
+	panic("No id field detected")
 }
 
 type Field struct {
@@ -85,8 +76,7 @@ const (
 )
 
 type Annotation struct {
-	Type    AnnotationType
-	Methods []Method
+	Type AnnotationType
 }
 
 type AnnotationType string
@@ -94,17 +84,6 @@ type AnnotationType string
 const (
 	AnnotationMessage AnnotationType = "message"
 	AnnotationGRPC    AnnotationType = "grpc"
-	AnnotationMethods AnnotationType = "methods"
-)
-
-type Method string
-
-const (
-	MethodCreate Method = "create"
-	MethodGet    Method = "get"
-	MethodUpdate Method = "update"
-	MethodDelete Method = "delete"
-	MethodList   Method = "list"
 )
 
 type Query struct {
