@@ -106,7 +106,11 @@ func (g *Generator) generateQueries(entities []schema.Entity, dir string) error 
 	content.WriteString("-- This file contains SQLC-compatible queries definitions\n\n")
 
 	for _, entity := range entities {
-		content.WriteString(g.generateCRUDQueries(entity))
+		entityQueries := g.generateCRUDQueries(entity)
+		if entityQueries == "" {
+			continue
+		}
+		content.WriteString(entityQueries)
 		content.WriteString("\n")
 	}
 
@@ -124,97 +128,136 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	tableName := strings.ToLower(entity.Name)
 	idField := entity.GetIdField()
 
+	var hasCreate bool
+	var hasUpdate bool
+	var hasDelete bool
+	var getQueries []schema.Query
+	var listQueries []schema.Query
+
+	for _, query := range entity.Queries {
+		switch query.Type {
+		case schema.QueryCreate:
+			hasCreate = true
+		case schema.QueryUpdate:
+			hasUpdate = true
+		case schema.QueryDelete:
+			hasDelete = true
+		case schema.QueryGetBy:
+			getQueries = append(getQueries, query)
+		case schema.QueryListBy:
+			listQueries = append(listQueries, query)
+		}
+	}
+
 	content.WriteString(fmt.Sprintf("-- %s CRUD operations\n", entity.Name))
 
 	// CREATE
-	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf("\n-- name: Create%s :one\n", entity.Name))
-	} else {
-		content.WriteString(fmt.Sprintf("\n-- name: Create%s :execlastid\n", entity.Name))
-	}
-	content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
-
-	var insertFields []string
-	var insertPlaceholders []string
-
-	for _, field := range entity.Fields {
-		canWrite := (field.Permissions & permissions.DbWrite) != 0
-		if !canWrite {
-			continue
+	if hasCreate {
+		if g.supportsReturning() {
+			content.WriteString(fmt.Sprintf("\n-- name: Create%s :one\n", entity.Name))
+		} else {
+			content.WriteString(fmt.Sprintf("\n-- name: Create%s :execlastid\n", entity.Name))
 		}
-		if field.IsID() && field.DefaultFunc == nil {
-			continue
-		}
-		insertFields = append(insertFields, " "+field.Name)
-		parameterPlaceholder := g.getParameterPlaceholder(len(insertPlaceholders) + 1)
-		insertPlaceholders = append(insertPlaceholders, " "+parameterPlaceholder)
-	}
+		content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
 
-	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertFields, ",\n ")))
-	content.WriteString(") VALUES (\n")
-	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
-	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField.Name))
-	} else {
-		content.WriteString(");")
+		var insertFields []string
+		var insertPlaceholders []string
+
+		for _, field := range entity.Fields {
+			canWrite := (field.Permissions & permissions.DbWrite) != 0
+			if !canWrite {
+				continue
+			}
+			if field.IsID() && field.DefaultFunc == nil {
+				continue
+			}
+			insertFields = append(insertFields, " "+field.Name)
+			parameterPlaceholder := g.getParameterPlaceholder(len(insertPlaceholders) + 1)
+			insertPlaceholders = append(insertPlaceholders, " "+parameterPlaceholder)
+		}
+
+		content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertFields, ",\n ")))
+		content.WriteString(") VALUES (\n")
+		content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
+		if g.supportsReturning() {
+			content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField.Name))
+		} else {
+			content.WriteString(");")
+		}
 	}
 
 	// READ (get by id)
-	content.WriteString(fmt.Sprintf("\n-- name: Get%s :one\n", entity.Name))
-	// TODO implement !permissions.DbRead
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
+	for i := range getQueries {
+		queryName := fmt.Sprintf("Get%s", entity.Name)
+		if len(getQueries) > 1 {
+			queryName = fmt.Sprintf("Get%s%d", entity.Name, i+1)
+		}
+		content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
+		// TODO implement !permissions.DbRead
+		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
+	}
 
 	// LIST
-	content.WriteString(fmt.Sprintf("\n-- name: List%s :many\n", entity.Name))
-	// TODO implement !permissions.DbRead
-	content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDER BY %s;\n", g.quote(tableName), idField.Name))
+	for i := range listQueries {
+		queryName := fmt.Sprintf("List%s", entity.Name)
+		if len(listQueries) > 1 {
+			queryName = fmt.Sprintf("List%s%d", entity.Name, i+1)
+		}
+		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", queryName))
+		// TODO implement !permissions.DbRead
+		content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDER BY %s;\n", g.quote(tableName), idField.Name))
+	}
 
 	// UPDATE
-	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf("\n-- name: Update%s :one\n", entity.Name))
-	} else {
-		content.WriteString(fmt.Sprintf("\n-- name: Update%s :exec\n", entity.Name))
-	}
-	content.WriteString(fmt.Sprintf("UPDATE %s SET\n", g.quote(tableName)))
-
-	var updateFields []string
-	for _, field := range entity.Fields {
-		canWrite := (field.Permissions & permissions.DbWrite) != 0
-		if !canWrite {
-			continue
-		}
-		if field.IsID() || field.Immutable {
-			continue
-		}
-
-		// For non-readable fields (like passwords), use COALESCE with nullable parameter
-		canApiRead := (field.Permissions & permissions.ApiRead) != 0
-		canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
-		acceptOptional := false
-		if canApiWrite && (field.DefaultFunc != nil || field.DefaultValue != nil) {
-			acceptOptional = true
-		}
-		var fieldUpdate string
-		if !canApiRead || acceptOptional {
-			// This makes the field optional in updates - if NULL is passed, keep existing value
-			fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
+	if hasUpdate {
+		if g.supportsReturning() {
+			content.WriteString(fmt.Sprintf("\n-- name: Update%s :one\n", entity.Name))
 		} else {
-			fieldUpdate = fmt.Sprintf("  %s = sqlc.arg('%s')", field.Name, field.Name)
+			content.WriteString(fmt.Sprintf("\n-- name: Update%s :exec\n", entity.Name))
 		}
-		updateFields = append(updateFields, fieldUpdate)
-	}
+		content.WriteString(fmt.Sprintf("UPDATE %s SET\n", g.quote(tableName)))
 
-	content.WriteString(strings.Join(updateFields, ",\n"))
-	content.WriteString(fmt.Sprintf("\nWHERE %s = sqlc.arg('%s')", idField.Name, idField.Name))
-	if g.supportsReturning() {
-		content.WriteString("\nRETURNING *;\n")
-	} else {
-		content.WriteString(";\n")
+		var updateFields []string
+		for _, field := range entity.Fields {
+			canWrite := (field.Permissions & permissions.DbWrite) != 0
+			if !canWrite {
+				continue
+			}
+			if field.IsID() || field.Immutable {
+				continue
+			}
+
+			// For non-readable fields (like passwords), use COALESCE with nullable parameter
+			canApiRead := (field.Permissions & permissions.ApiRead) != 0
+			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			acceptOptional := false
+			if canApiWrite && (field.DefaultFunc != nil || field.DefaultValue != nil) {
+				acceptOptional = true
+			}
+			var fieldUpdate string
+			if !canApiRead || acceptOptional {
+				// This makes the field optional in updates - if NULL is passed, keep existing value
+				fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
+			} else {
+				fieldUpdate = fmt.Sprintf("  %s = sqlc.arg('%s')", field.Name, field.Name)
+			}
+			updateFields = append(updateFields, fieldUpdate)
+		}
+
+		content.WriteString(strings.Join(updateFields, ",\n"))
+		content.WriteString(fmt.Sprintf("\nWHERE %s = sqlc.arg('%s')", idField.Name, idField.Name))
+		if g.supportsReturning() {
+			content.WriteString("\nRETURNING *;\n")
+		} else {
+			content.WriteString(";\n")
+		}
 	}
 
 	// DELETE
-	content.WriteString(fmt.Sprintf("\n-- name: Delete%s :exec\n", entity.Name))
-	content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
+	if hasDelete {
+		content.WriteString(fmt.Sprintf("\n-- name: Delete%s :exec\n", entity.Name))
+		content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
+	}
 
 	return content.String()
 }
