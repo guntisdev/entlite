@@ -86,11 +86,11 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE ID = ?
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE email = ?
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmail, id)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -134,11 +134,16 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
 }
 
 const getUserByNameAge = `-- name: GetUserByNameAge :one
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE ID = ?
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE name = ? AND age = ?
 `
 
-func (q *Queries) GetUserByNameAge(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByNameAge, id)
+type GetUserByNameAgeParams struct {
+	Name string `json:"name"`
+	Age  *int64 `json:"age"`
+}
+
+func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgeParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByNameAge, arg.Name, arg.Age)
 	var i User
 	err := row.Scan(
 		&i.ID,

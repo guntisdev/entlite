@@ -34,10 +34,10 @@ INSERT INTO "user" (
 SELECT * FROM "user" WHERE ID = ?;
 
 -- name: GetUserByEmail :one
-SELECT * FROM "user" WHERE ID = ?;
+SELECT * FROM "user" WHERE email = ?;
 
 -- name: GetUserByNameAge :one
-SELECT * FROM "user" WHERE ID = ?;
+SELECT * FROM "user" WHERE name = ? AND age = ?;
 
 -- name: ListUser :many
 SELECT * FROM "user" ORDER BY ID;

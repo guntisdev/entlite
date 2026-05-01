@@ -184,8 +184,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		fieldsStr := util.FieldsToStr(query.Fields)
 		queryName := fmt.Sprintf("Get%sBy%s", entity.Name, fieldsStr)
 		content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
+		var whereParts []string
+		for i, fieldName := range query.Fields {
+			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i+1)))
+		}
 		// TODO implement !permissions.DbRead
-		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
+		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
 	}
 
 	// LIST

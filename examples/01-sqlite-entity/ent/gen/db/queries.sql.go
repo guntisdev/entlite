@@ -45,6 +45,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteUser(ctx, IntConvert[int32, int64](id))
 }
 
+type GetUserByNameAgeParams = internal.GetUserByNameAgeParams
 func (q *Queries) ListUser(ctx context.Context) ([]*User, error) {
 	dbResults, err := (*internal.Queries)(q).ListUser(ctx)
 	if err != nil {
