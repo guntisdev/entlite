@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
@@ -138,8 +137,8 @@ func toExportedName(name string) string {
 	return strings.Join(parts, "")
 }
 
-func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) string {
-	if sqlDialect == sqlc.SQLite {
+func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect) string {
+	if sqlDialect == schema.SQLite {
 		if field.Type == schema.FieldTypeBool {
 			return fmt.Sprintf("SQLiteBoolToInt(%s)", pbFieldRef)
 		}
@@ -152,7 +151,7 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) 
 		}
 	}
 
-	if sqlDialect == sqlc.MySQL && field.Optional {
+	if sqlDialect == schema.MySQL && field.Optional {
 		if field.Type == schema.FieldTypeByte {
 			// Special case: some generated refs may be dereferenced (e.g. *arg.ApiKey),
 			// but PtrBytesToNullString expects a pointer, so strip a leading '*'.
@@ -161,7 +160,7 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) 
 		}
 	}
 
-	if field.Optional && (sqlDialect == sqlc.PostgreSQL || sqlDialect == sqlc.MySQL) {
+	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
 		switch field.Type {
 		case schema.FieldTypeString:
 			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
@@ -180,8 +179,8 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect sqlc.SQLDialect) 
 }
 
 // goFromSQL converts from SQL types to Go types (inverse of sqlToGo)
-func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect) string {
-	if sqlDialect == sqlc.SQLite {
+func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect schema.SQLDialect) string {
+	if sqlDialect == schema.SQLite {
 		if field.Type == schema.FieldTypeBool {
 			return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
 		}
@@ -194,7 +193,7 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect sqlc.SQLDialect
 		}
 	}
 
-	if field.Optional && (sqlDialect == sqlc.PostgreSQL || sqlDialect == sqlc.MySQL) {
+	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
 		switch field.Type {
 		case schema.FieldTypeString:
 			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)

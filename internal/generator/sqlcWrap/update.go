@@ -5,7 +5,6 @@ import (
 	"go/ast"
 	"strings"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
@@ -46,7 +45,7 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 	return sb.String()
 }
 
-func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect sqlc.SQLDialect) string {
+func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect schema.SQLDialect) string {
 	var sb strings.Builder
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
@@ -111,7 +110,7 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 
 	sb.WriteString("\t}\n\n")
 
-	if sqlDialect == sqlc.MySQL {
+	if sqlDialect == schema.MySQL {
 		sb.WriteString(fmt.Sprintf("\terr := (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")

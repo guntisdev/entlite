@@ -7,22 +7,15 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
-type SQLDialect string
-
-const (
-	MySQL      SQLDialect = "mysql"
-	SQLite     SQLDialect = "sqlite"
-	PostgreSQL SQLDialect = "postgresql"
-)
-
 type Generator struct {
-	sqlDialect SQLDialect
+	sqlDialect schema.SQLDialect
 }
 
-func NewGenerator(sqlDialect SQLDialect) *Generator {
+func NewGenerator(sqlDialect schema.SQLDialect) *Generator {
 	return &Generator{
 		sqlDialect: sqlDialect,
 	}
@@ -186,12 +179,10 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		}
 	}
 
-	// READ (get by id)
-	for i := range getQueries {
-		queryName := fmt.Sprintf("Get%s", entity.Name)
-		if len(getQueries) > 1 {
-			queryName = fmt.Sprintf("Get%s%d", entity.Name, i+1)
-		}
+	// READ (get by)
+	for _, query := range getQueries {
+		fieldsStr := util.FieldsToStr(query.Fields)
+		queryName := fmt.Sprintf("Get%sBy%s", entity.Name, fieldsStr)
 		content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
 		// TODO implement !permissions.DbRead
 		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))

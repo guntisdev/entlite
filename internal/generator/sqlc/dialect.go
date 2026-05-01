@@ -8,9 +8,9 @@ import (
 
 func (g *Generator) getIdentifierQuote() string {
 	switch g.sqlDialect {
-	case MySQL:
+	case schema.MySQL:
 		return "`"
-	case PostgreSQL, SQLite:
+	case schema.PostgreSQL, schema.SQLite:
 		return "\""
 	}
 
@@ -28,7 +28,7 @@ func (g *Generator) getIdFieldSQL(field schema.Field) string {
 
 func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 	switch g.sqlDialect {
-	case PostgreSQL:
+	case schema.PostgreSQL:
 		switch fieldType {
 		case schema.FieldTypeInt:
 			return "SERIAL PRIMARY KEY"
@@ -39,7 +39,7 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 		default:
 			return "SERIAL PRIMARY KEY"
 		}
-	case SQLite:
+	case schema.SQLite:
 		switch fieldType {
 		case schema.FieldTypeInt:
 			return "INTEGER PRIMARY KEY AUTOINCREMENT"
@@ -50,7 +50,7 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 		default:
 			return "INTEGER PRIMARY KEY AUTOINCREMENT"
 		}
-	case MySQL:
+	case schema.MySQL:
 		switch fieldType {
 		case schema.FieldTypeInt:
 			return "INT AUTO_INCREMENT PRIMARY KEY"
@@ -68,11 +68,11 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
 
 func (g *Generator) getSQLType(fieldType schema.FieldType) string {
 	switch g.sqlDialect {
-	case PostgreSQL:
+	case schema.PostgreSQL:
 		return g.getPostgresSQLType(fieldType)
-	case SQLite:
+	case schema.SQLite:
 		return g.getSQLiteType(fieldType)
-	case MySQL:
+	case schema.MySQL:
 		return g.getMySQLType(fieldType)
 	}
 
@@ -158,9 +158,9 @@ func (g *Generator) formatDefaultValue(value any, fieldType schema.FieldType) st
 
 func (g *Generator) supportsReturning() bool {
 	switch g.sqlDialect {
-	case MySQL:
+	case schema.MySQL:
 		return false
-	case PostgreSQL, SQLite:
+	case schema.PostgreSQL, schema.SQLite:
 		return true
 	}
 
@@ -169,11 +169,11 @@ func (g *Generator) supportsReturning() bool {
 
 func (g *Generator) getParameterPlaceholder(index int) string {
 	switch g.sqlDialect {
-	case PostgreSQL:
+	case schema.PostgreSQL:
 		return fmt.Sprintf("$%d", index)
-	case SQLite:
+	case schema.SQLite:
 		return "?"
-	case MySQL:
+	case schema.MySQL:
 		return "?"
 	}
 

@@ -45,14 +45,6 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteUser(ctx, IntConvert[int32, int64](id))
 }
 
-func (q *Queries) GetUser(ctx context.Context, id int32) (*User, error) {
-	dbResult, err := (*internal.Queries)(q).GetUser(ctx, IntConvert[int32, int64](id))
-	if err != nil {
-		return nil, err
-	}
-	return UserFromSQL(&dbResult), nil
-}
-
 func (q *Queries) ListUser(ctx context.Context) ([]*User, error) {
 	dbResults, err := (*internal.Queries)(q).ListUser(ctx)
 	if err != nil {

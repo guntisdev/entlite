@@ -5,14 +5,14 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
+	"github.com/guntisdev/entlite/internal/schema"
 )
 
 func TestGetSqlcConfigFromYaml_Success(t *testing.T) {
 	tests := []struct {
 		name             string
 		yamlContent      string
-		expectedDialect  sqlc.SQLDialect
+		expectedDialect  schema.SQLDialect
 		expectedInputDir string
 	}{
 		{
@@ -27,7 +27,7 @@ sql:
         package: "internal"
         out: "gen/db/internal"
         emit_json_tags: true`,
-			expectedDialect:  sqlc.PostgreSQL,
+			expectedDialect:  schema.PostgreSQL,
 			expectedInputDir: "gen/db/internal",
 		},
 		{
@@ -42,7 +42,7 @@ sql:
         package: "internal"
         out: "gen/db/internal"
         emit_json_tags: true`,
-			expectedDialect:  sqlc.SQLite,
+			expectedDialect:  schema.SQLite,
 			expectedInputDir: "gen/db/internal",
 		},
 	}

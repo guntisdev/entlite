@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
@@ -167,7 +168,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}")
 		case schema.QueryGetBy:
-			fieldsStr := fieldsToStr(query.Fields)
+			fieldsStr := util.FieldsToStr(query.Fields)
 			messageName := fmt.Sprintf("Get%sBy%sRequest", entity.Name, fieldsStr)
 			content.WriteString(fmt.Sprintf("message %s {\n", messageName))
 
@@ -238,29 +239,12 @@ func getIdFieldAsStr(fields []schema.Field) string {
 	return "int32 id = 1"
 }
 
-func fieldsToStr(fields []string) string {
-	var builder strings.Builder
-	for _, field := range fields {
-		for _, part := range strings.Split(field, "_") {
-			if part == "" {
-				continue
-			}
-			builder.WriteString(strings.ToUpper(part[:1]))
-			if len(part) > 1 {
-				builder.WriteString(part[1:])
-			}
-		}
-	}
-
-	return builder.String()
-}
-
 func generateRequests(entity schema.Entity, query schema.Query) string {
 	switch query.Type {
 	case schema.QueryCreate:
 		return fmt.Sprintf("  rpc Create(Create%sRequest) returns (%s);\n", entity.Name, entity.Name)
 	case schema.QueryGetBy:
-		fieldsStr := fieldsToStr(query.Fields)
+		fieldsStr := util.FieldsToStr(query.Fields)
 		return fmt.Sprintf("  rpc GetBy%s(Get%sBy%sRequest) returns (%s);\n", fieldsStr, entity.Name, fieldsStr, entity.Name)
 	case schema.QueryUpdate:
 		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entity.Name, entity.Name)

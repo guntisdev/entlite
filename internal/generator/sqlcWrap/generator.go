@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	internalParser "github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
@@ -40,7 +39,7 @@ func detectFileType(filename string) FileType {
 	return FileTypeUnknown
 }
 
-func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect sqlc.SQLDialect) (string, error) {
+func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect schema.SQLDialect) (string, error) {
 	fileType := detectFileType(inputFilePath)
 
 	fset := token.NewFileSet()
@@ -118,7 +117,7 @@ type generationContext struct {
 	entityMap           map[string]schema.Entity
 	parsedEntities      []schema.Entity
 	entityImports       map[string]internalParser.ImportInfo
-	sqlDialect          sqlc.SQLDialect
+	sqlDialect          schema.SQLDialect
 	createParamsStructs map[string]*ast.StructType
 	updateParamsStructs map[string]*ast.StructType
 }
