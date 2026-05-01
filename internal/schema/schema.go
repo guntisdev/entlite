@@ -45,6 +45,16 @@ func (e Entity) GetIdField() Field {
 	panic("No id field detected")
 }
 
+func (e Entity) GetFieldByName(name string) (Field, bool) {
+	for _, field := range e.Fields {
+		if field.Name == name {
+			return field, true
+		}
+	}
+
+	return Field{}, false
+}
+
 type Field struct {
 	Name         string
 	Type         FieldType

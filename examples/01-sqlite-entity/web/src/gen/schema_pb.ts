@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiJAoOR2V0VXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASKLAgoRVXBkYXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCghwYXNzd29yZBgIIAEoCUgBiAEBEhIKBXNjb3JlGAkgASgBSAKIAQESGAoIaXNfYWRtaW4YBSABKAhCBrpIA8gBARIUCgdhcGlfa2V5GAsgASgMSAOIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBQgYKBF9hZ2VCCwoJX3Bhc3N3b3JkQggKBl9zY29yZUIKCghfYXBpX2tleSInChFEZWxldGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIjgKD0xpc3RVc2VyUmVxdWVzdBIVCgVsaW1pdBgBIAEoBUIGukgDyAEBEg4KBm9mZnNldBgCIAEoBSIwChBMaXN0VXNlclJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyMqECCgtVc2VyU2VydmljZRIzCgZDcmVhdGUSGi5lbnRsaXRlLkNyZWF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEi0KA0dldBIXLmVudGxpdGUuR2V0VXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISMwoGVXBkYXRlEhouZW50bGl0ZS5VcGRhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchI8CgZEZWxldGUSGi5lbnRsaXRlLkRlbGV0ZVVzZXJSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EjsKBExpc3QSGC5lbnRsaXRlLkxpc3RVc2VyUmVxdWVzdBoZLmVudGxpdGUuTGlzdFVzZXJSZXNwb25zZUIGWgQuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASI4Cg9MaXN0VXNlclJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUiMAoQTGlzdFVzZXJSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlciIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBATLmAgoLVXNlclNlcnZpY2USMwoGQ3JlYXRlEhouZW50bGl0ZS5DcmVhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchI1CgdHZXRCeUlEEhsuZW50bGl0ZS5HZXRVc2VyQnlJRFJlcXVlc3QaDS5lbnRsaXRlLlVzZXISMwoGVXBkYXRlEhouZW50bGl0ZS5VcGRhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchI8CgZEZWxldGUSGi5lbnRsaXRlLkRlbGV0ZVVzZXJSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EjsKBExpc3QSGC5lbnRsaXRlLkxpc3RVc2VyUmVxdWVzdBoZLmVudGxpdGUuTGlzdFVzZXJSZXNwb25zZRI7CgpHZXRCeUVtYWlsEh4uZW50bGl0ZS5HZXRVc2VyQnlFbWFpbFJlcXVlc3QaDS5lbnRsaXRlLlVzZXJCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -146,9 +146,9 @@ export const CreateUserRequestSchema: GenMessage<CreateUserRequest> = /*@__PURE_
   messageDesc(file_schema, 1);
 
 /**
- * @generated from message entlite.GetUserRequest
+ * @generated from message entlite.GetUserByIDRequest
  */
-export type GetUserRequest = Message<"entlite.GetUserRequest"> & {
+export type GetUserByIDRequest = Message<"entlite.GetUserByIDRequest"> & {
   /**
    * @generated from field: int32 ID = 1;
    */
@@ -156,10 +156,10 @@ export type GetUserRequest = Message<"entlite.GetUserRequest"> & {
 };
 
 /**
- * Describes the message entlite.GetUserRequest.
- * Use `create(GetUserRequestSchema)` to create a new message.
+ * Describes the message entlite.GetUserByIDRequest.
+ * Use `create(GetUserByIDRequestSchema)` to create a new message.
  */
-export const GetUserRequestSchema: GenMessage<GetUserRequest> = /*@__PURE__*/
+export const GetUserByIDRequestSchema: GenMessage<GetUserByIDRequest> = /*@__PURE__*/
   messageDesc(file_schema, 2);
 
 /**
@@ -278,6 +278,23 @@ export const ListUserResponseSchema: GenMessage<ListUserResponse> = /*@__PURE__*
   messageDesc(file_schema, 6);
 
 /**
+ * @generated from message entlite.GetUserByEmailRequest
+ */
+export type GetUserByEmailRequest = Message<"entlite.GetUserByEmailRequest"> & {
+  /**
+   * @generated from field: string email = 2;
+   */
+  email: string;
+};
+
+/**
+ * Describes the message entlite.GetUserByEmailRequest.
+ * Use `create(GetUserByEmailRequestSchema)` to create a new message.
+ */
+export const GetUserByEmailRequestSchema: GenMessage<GetUserByEmailRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 7);
+
+/**
  * UserService provides CRUD opertions for User entities
  *
  * @generated from service entlite.UserService
@@ -292,11 +309,11 @@ export const UserService: GenService<{
     output: typeof UserSchema;
   },
   /**
-   * @generated from rpc entlite.UserService.Get
+   * @generated from rpc entlite.UserService.GetByID
    */
-  get: {
+  getByID: {
     methodKind: "unary";
-    input: typeof GetUserRequestSchema;
+    input: typeof GetUserByIDRequestSchema;
     output: typeof UserSchema;
   },
   /**
@@ -322,6 +339,14 @@ export const UserService: GenService<{
     methodKind: "unary";
     input: typeof ListUserRequestSchema;
     output: typeof ListUserResponseSchema;
+  },
+  /**
+   * @generated from rpc entlite.UserService.GetByEmail
+   */
+  getByEmail: {
+    methodKind: "unary";
+    input: typeof GetUserByEmailRequestSchema;
+    output: typeof UserSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_schema, 0);
