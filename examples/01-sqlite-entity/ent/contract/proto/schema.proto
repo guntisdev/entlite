@@ -65,6 +65,10 @@ message ListUserResponse {
 message GetUserByEmailRequest {
   string email = 2 [(buf.validate.field).required = true];
 }
+message GetUserByNameAgeRequest {
+  string name = 3 [(buf.validate.field).required = true];
+  int32 age = 4 [(buf.validate.field).required = true];
+}
 
 // UserService provides CRUD opertions for User entities
 service UserService {
@@ -74,4 +78,5 @@ service UserService {
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
   rpc List(ListUserRequest) returns (ListUserResponse);
   rpc GetByEmail(GetUserByEmailRequest) returns (User);
+  rpc GetByNameAge(GetUserByNameAgeRequest) returns (User);
 }

@@ -45,6 +45,9 @@ const (
 	UserServiceListProcedure = "/entlite.UserService/List"
 	// UserServiceGetByEmailProcedure is the fully-qualified name of the UserService's GetByEmail RPC.
 	UserServiceGetByEmailProcedure = "/entlite.UserService/GetByEmail"
+	// UserServiceGetByNameAgeProcedure is the fully-qualified name of the UserService's GetByNameAge
+	// RPC.
+	UserServiceGetByNameAgeProcedure = "/entlite.UserService/GetByNameAge"
 )
 
 // UserServiceClient is a client for the entlite.UserService service.
@@ -55,6 +58,7 @@ type UserServiceClient interface {
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	List(context.Context, *connect.Request[ListUserRequest]) (*connect.Response[ListUserResponse], error)
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
+	GetByNameAge(context.Context, *connect.Request[GetUserByNameAgeRequest]) (*connect.Response[User], error)
 }
 
 // NewUserServiceClient constructs a client for the entlite.UserService service. By default, it uses
@@ -104,17 +108,24 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("GetByEmail")),
 			connect.WithClientOptions(opts...),
 		),
+		getByNameAge: connect.NewClient[GetUserByNameAgeRequest, User](
+			httpClient,
+			baseURL+UserServiceGetByNameAgeProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetByNameAge")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	create     *connect.Client[CreateUserRequest, User]
-	getByID    *connect.Client[GetUserByIDRequest, User]
-	update     *connect.Client[UpdateUserRequest, User]
-	delete     *connect.Client[DeleteUserRequest, emptypb.Empty]
-	list       *connect.Client[ListUserRequest, ListUserResponse]
-	getByEmail *connect.Client[GetUserByEmailRequest, User]
+	create       *connect.Client[CreateUserRequest, User]
+	getByID      *connect.Client[GetUserByIDRequest, User]
+	update       *connect.Client[UpdateUserRequest, User]
+	delete       *connect.Client[DeleteUserRequest, emptypb.Empty]
+	list         *connect.Client[ListUserRequest, ListUserResponse]
+	getByEmail   *connect.Client[GetUserByEmailRequest, User]
+	getByNameAge *connect.Client[GetUserByNameAgeRequest, User]
 }
 
 // Create calls entlite.UserService.Create.
@@ -147,6 +158,11 @@ func (c *userServiceClient) GetByEmail(ctx context.Context, req *connect.Request
 	return c.getByEmail.CallUnary(ctx, req)
 }
 
+// GetByNameAge calls entlite.UserService.GetByNameAge.
+func (c *userServiceClient) GetByNameAge(ctx context.Context, req *connect.Request[GetUserByNameAgeRequest]) (*connect.Response[User], error) {
+	return c.getByNameAge.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the entlite.UserService service.
 type UserServiceHandler interface {
 	Create(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error)
@@ -155,6 +171,7 @@ type UserServiceHandler interface {
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	List(context.Context, *connect.Request[ListUserRequest]) (*connect.Response[ListUserResponse], error)
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
+	GetByNameAge(context.Context, *connect.Request[GetUserByNameAgeRequest]) (*connect.Response[User], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -200,6 +217,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("GetByEmail")),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceGetByNameAgeHandler := connect.NewUnaryHandler(
+		UserServiceGetByNameAgeProcedure,
+		svc.GetByNameAge,
+		connect.WithSchema(userServiceMethods.ByName("GetByNameAge")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/entlite.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserServiceCreateProcedure:
@@ -214,6 +237,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceListHandler.ServeHTTP(w, r)
 		case UserServiceGetByEmailProcedure:
 			userServiceGetByEmailHandler.ServeHTTP(w, r)
+		case UserServiceGetByNameAgeProcedure:
+			userServiceGetByNameAgeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -245,4 +270,8 @@ func (UnimplementedUserServiceHandler) List(context.Context, *connect.Request[Li
 
 func (UnimplementedUserServiceHandler) GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.GetByEmail is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) GetByNameAge(context.Context, *connect.Request[GetUserByNameAgeRequest]) (*connect.Response[User], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.GetByNameAge is not implemented"))
 }

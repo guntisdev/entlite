@@ -46,6 +46,7 @@ func (User) Queries() []entlite.Query {
 		// query.Delete(),
 		// query.List(),
 		query.GetBy("email"),
+		query.GetBy("name", "age"),
 		// query.ListBy("age").Count(),
 		// query.ListBy(
 		// 	filter.Range("age"),
