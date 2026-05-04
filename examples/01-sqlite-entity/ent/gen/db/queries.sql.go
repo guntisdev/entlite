@@ -45,7 +45,31 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteUser(ctx, IntConvert[int32, int64](id))
 }
 
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	dbResult, err := (*internal.Queries)(q).GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	return UserFromSQL(&dbResult), nil
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
+	dbResult, err := (*internal.Queries)(q).GetUserByID(ctx, IntConvert[int32, int64](id))
+	if err != nil {
+		return nil, err
+	}
+	return UserFromSQL(&dbResult), nil
+}
+
 type GetUserByNameAgeParams = internal.GetUserByNameAgeParams
+func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgeParams) (*User, error) {
+	dbResult, err := (*internal.Queries)(q).GetUserByNameAge(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+	return UserFromSQL(&dbResult), nil
+}
+
 func (q *Queries) ListUser(ctx context.Context) ([]*User, error) {
 	dbResults, err := (*internal.Queries)(q).ListUser(ctx)
 	if err != nil {
