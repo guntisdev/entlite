@@ -5,7 +5,6 @@ import (
 	"go/ast"
 	"strings"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
@@ -42,7 +41,7 @@ func generateCreateStruct(structName string, structType *ast.StructType, entity 
 	return sb.String()
 }
 
-func generateCreateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect sqlc.SQLDialect) string {
+func generateCreateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect schema.SQLDialect) string {
 	var sb strings.Builder
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
@@ -108,7 +107,7 @@ func generateCreateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 	sb.WriteString("\t}\n")
 
 	// Handle return value conversion for SQLite ID (int64 -> int32)
-	if (sqlDialect == sqlc.SQLite || sqlDialect == sqlc.MySQL) && idField.Type == schema.FieldTypeInt {
+	if (sqlDialect == schema.SQLite || sqlDialect == schema.MySQL) && idField.Type == schema.FieldTypeInt {
 		sb.WriteString(fmt.Sprintf("\tid, err := (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
 		sb.WriteString("\treturn IntConvert[int64, int32](id), err\n")
 	} else {

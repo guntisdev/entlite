@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
@@ -125,7 +126,7 @@ func generateServiceProto(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("service %s {\n", serviceName))
 
 	for _, query := range entity.Queries {
-		content.WriteString(generateRequests(entity.Name, query))
+		content.WriteString(generateRequests(entity, query))
 	}
 
 	content.WriteString("}")
@@ -167,8 +168,19 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}")
 		case schema.QueryGetBy:
-			content.WriteString(fmt.Sprintf("message Get%sRequest {\n", entity.Name))
-			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
+			fieldsStr := util.FieldsToStr(query.Fields)
+			messageName := fmt.Sprintf("Get%sBy%sRequest", entity.Name, fieldsStr)
+			content.WriteString(fmt.Sprintf("message %s {\n", messageName))
+
+			for _, fieldName := range query.Fields {
+				field, found := entity.GetFieldByName(fieldName)
+				if !found {
+					continue
+				}
+
+				protoType := getProtoType(field.Type)
+				content.WriteString(fmt.Sprintf("  %s %s = %d %s;\n", protoType, field.Name, field.ProtoField, requiredStr))
+			}
 			content.WriteString("}")
 		case schema.QueryUpdate:
 			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
@@ -227,20 +239,20 @@ func getIdFieldAsStr(fields []schema.Field) string {
 	return "int32 id = 1"
 }
 
-func generateRequests(entityName string, query schema.Query) string {
+func generateRequests(entity schema.Entity, query schema.Query) string {
 	switch query.Type {
 	case schema.QueryCreate:
-		return fmt.Sprintf("  rpc Create(Create%sRequest) returns (%s);\n", entityName, entityName)
+		return fmt.Sprintf("  rpc Create(Create%sRequest) returns (%s);\n", entity.Name, entity.Name)
 	case schema.QueryGetBy:
-		// TODO extend naming besides ID from query Fields (and maybe filter, count, etc)
-		return fmt.Sprintf("  rpc Get(Get%sRequest) returns (%s);\n", entityName, entityName)
+		fieldsStr := util.FieldsToStr(query.Fields)
+		return fmt.Sprintf("  rpc GetBy%s(Get%sBy%sRequest) returns (%s);\n", fieldsStr, entity.Name, fieldsStr, entity.Name)
 	case schema.QueryUpdate:
-		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entityName, entityName)
+		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entity.Name, entity.Name)
 	case schema.QueryDelete:
-		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entityName)
+		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
 	case schema.QueryListBy:
 		// TODO extend naming besides ID from query Fields (and maybe filter, count, etc)
-		return fmt.Sprintf("  rpc List(List%sRequest) returns (List%sResponse);\n", entityName, entityName)
+		return fmt.Sprintf("  rpc List(List%sRequest) returns (List%sResponse);\n", entity.Name, entity.Name)
 	default:
 		return ""
 	}

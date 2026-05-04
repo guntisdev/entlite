@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
+	"github.com/guntisdev/entlite/internal/schema"
 )
 
 func newCommand(args []string) {
@@ -23,7 +23,7 @@ func newCommand(args []string) {
 		os.Exit(1)
 	}
 
-	validDialects := []sqlc.SQLDialect{sqlc.PostgreSQL, sqlc.SQLite, sqlc.MySQL}
+	validDialects := []schema.SQLDialect{schema.PostgreSQL, schema.SQLite, schema.MySQL}
 	isValid := false
 	for _, valid := range validDialects {
 		if string(valid) == *dialect {

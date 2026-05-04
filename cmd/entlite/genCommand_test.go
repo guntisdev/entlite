@@ -112,7 +112,7 @@ message CreateUserRequest {
   optional bytes api_key = 11;
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
-message GetUserRequest {
+message GetUserByIDRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
@@ -142,7 +142,7 @@ message ListUserResponse {
 // UserService provides CRUD opertions for User entities
 service UserService {
   rpc Create(CreateUserRequest) returns (User);
-  rpc Get(GetUserRequest) returns (User);
+  rpc GetByID(GetUserByIDRequest) returns (User);
   rpc Update(UpdateUserRequest) returns (User);
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
   rpc List(ListUserRequest) returns (ListUserResponse);
@@ -221,7 +221,7 @@ INSERT INTO "user" (
   $11
 ) RETURNING ID;
 
--- name: GetUser :one
+-- name: GetUserByID :one
 SELECT * FROM "user" WHERE ID = $1;
 
 -- name: ListUser :many

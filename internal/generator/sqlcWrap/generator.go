@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	internalParser "github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
@@ -40,7 +39,7 @@ func detectFileType(filename string) FileType {
 	return FileTypeUnknown
 }
 
-func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect sqlc.SQLDialect) (string, error) {
+func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect schema.SQLDialect) (string, error) {
 	fileType := detectFileType(inputFilePath)
 
 	fset := token.NewFileSet()
@@ -118,7 +117,7 @@ type generationContext struct {
 	entityMap           map[string]schema.Entity
 	parsedEntities      []schema.Entity
 	entityImports       map[string]internalParser.ImportInfo
-	sqlDialect          sqlc.SQLDialect
+	sqlDialect          schema.SQLDialect
 	createParamsStructs map[string]*ast.StructType
 	updateParamsStructs map[string]*ast.StructType
 }
@@ -408,8 +407,7 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 			}
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "Get") {
-			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Get")
-			if entity, ok := ctx.entityMap[entityName]; ok {
+			if entity, ok := ctx.findEntityForGetMethod(funcDecl.Name.Name); ok {
 				sb.WriteString(generateGetQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
 				return
 			}
@@ -429,6 +427,32 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 			}
 		}
 	}
+}
+
+// search for Get[entityname]By[paramnames]
+func (ctx *generationContext) findEntityForGetMethod(methodName string) (schema.Entity, bool) {
+	entitySuffix := strings.TrimPrefix(methodName, "Get")
+
+	bestMatchName := ""
+	for _, entity := range ctx.parsedEntities {
+		entityName := entity.Name
+		if !strings.HasPrefix(entitySuffix, entityName) {
+			continue
+		}
+
+		remainder := entitySuffix[len(entityName):]
+		if remainder == "" || strings.HasPrefix(remainder, "By") {
+			if len(entityName) > len(bestMatchName) {
+				bestMatchName = entityName
+			}
+		}
+	}
+
+	if bestMatchName != "" {
+		return ctx.entityMap[bestMatchName], true
+	}
+
+	return schema.Entity{}, false
 }
 
 func (ctx *generationContext) generateModelFileDeclarations() string {

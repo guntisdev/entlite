@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
+	"github.com/guntisdev/entlite/internal/schema"
 	"gopkg.in/yaml.v3"
 )
 
 type SqlcGenConfig struct {
 	InputDir string
-	Dialect  sqlc.SQLDialect
+	Dialect  schema.SQLDialect
 }
 
 func GetSqlcConfigFromYaml(sqlcYamlPath string) (*SqlcGenConfig, error) {
@@ -43,12 +43,12 @@ func GetSqlcConfigFromYaml(sqlcYamlPath string) (*SqlcGenConfig, error) {
 		return nil, fmt.Errorf("engine not specified in sqlc.yaml")
 	}
 
-	dialect := sqlc.SQLDialect(engine)
+	dialect := schema.SQLDialect(engine)
 	switch dialect {
-	case sqlc.PostgreSQL, sqlc.MySQL, sqlc.SQLite:
+	case schema.PostgreSQL, schema.MySQL, schema.SQLite:
 	default:
 		return nil, fmt.Errorf("unsupported SQL dialect '%s' in sqlc.yaml, must be one of: %s, %s, %s",
-			engine, sqlc.PostgreSQL, sqlc.MySQL, sqlc.SQLite)
+			engine, schema.PostgreSQL, schema.MySQL, schema.SQLite)
 	}
 
 	outputDir := config.SQL[0].Gen.Go.Out

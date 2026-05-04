@@ -5,11 +5,10 @@ import (
 	"go/ast"
 	"strings"
 
-	"github.com/guntisdev/entlite/internal/generator/sqlc"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func generateGetQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect sqlc.SQLDialect) string {
+func generateGetQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect schema.SQLDialect) string {
 	var sb strings.Builder
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
@@ -45,7 +44,7 @@ func generateGetQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg str
 			for _, name := range param.Names {
 				if strings.ToLower(name.Name) == "id" {
 					idField := entity.GetIdField()
-					if sqlDialect == sqlc.SQLite && idField.Type == schema.FieldTypeInt {
+					if sqlDialect == schema.SQLite && idField.Type == schema.FieldTypeInt {
 						// TODO use field converter
 						sb.WriteString(", IntConvert[int32, int64](id)")
 					} else {
