@@ -46,7 +46,7 @@ func (s *UserServer) Create(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create user: %w", err))
 	}
 
-	user, err := queries.GetUser(ctx, userID)
+	user, err := queries.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created user: %w", err))
 	}
@@ -54,20 +54,61 @@ func (s *UserServer) Create(
 	return connect.NewResponse(user.ToProto()), nil
 }
 
-func (s *UserServer) Get(
+func (s *UserServer) GetByID(
 	ctx context.Context,
-	req *connect.Request[pb.GetUserRequest],
+	req *connect.Request[pb.GetUserByIDRequest],
 ) (*connect.Response[pb.User], error) {
 	log.Printf("Get user: id=%d", req.Msg.ID)
 
 	queries := db.New(s.db)
 
-	user, err := queries.GetUser(ctx, req.Msg.ID)
+	user, err := queries.GetUserByID(ctx, req.Msg.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
 		}
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get user: %w", err))
+	}
+
+	return connect.NewResponse(user.ToProto()), nil
+}
+
+func (s *UserServer) GetByEmail(
+	ctx context.Context,
+	req *connect.Request[pb.GetUserByEmailRequest],
+) (*connect.Response[pb.User], error) {
+	log.Printf("Get user by email: email=%s", req.Msg.Email)
+
+	queries := db.New(s.db)
+
+	user, err := queries.GetUserByEmail(ctx, req.Msg.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get user by email: %w", err))
+	}
+
+	return connect.NewResponse(user.ToProto()), nil
+}
+
+func (s *UserServer) GetByNameAge(
+	ctx context.Context,
+	req *connect.Request[pb.GetUserByNameAgeRequest],
+) (*connect.Response[pb.User], error) {
+	log.Printf("Get user by name and age: name=%s, age=%d", req.Msg.Name, req.Msg.Age)
+
+	queries := db.New(s.db)
+
+	user, err := queries.GetUserByNameAge(ctx, db.GetUserByNameAgeParams{
+		Name: req.Msg.Name,
+		Age:  db.IntPtrConvert[int32, int64](&req.Msg.Age),
+	})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get user by name and age: %w", err))
 	}
 
 	return connect.NewResponse(user.ToProto()), nil
