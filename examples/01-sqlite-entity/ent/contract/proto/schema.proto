@@ -61,12 +61,13 @@ message GetUserByNameAgeRequest {
   string name = 3 [(buf.validate.field).required = true];
   int32 age = 4 [(buf.validate.field).required = true];
 }
-message ListUserRequest {
+message ListUserByAgeRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
   int32 offset = 2;
+  int32 age = 4 [(buf.validate.field).required = true];
 }
 
-message ListUserResponse {
+message ListUserByAgeResponse {
   repeated User users = 1;
 }
 
@@ -78,5 +79,5 @@ service UserService {
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
   rpc GetByEmail(GetUserByEmailRequest) returns (User);
   rpc GetByNameAge(GetUserByNameAgeRequest) returns (User);
-  rpc List(ListUserRequest) returns (ListUserResponse);
+  rpc ListByAge(ListUserByAgeRequest) returns (ListUserByAgeResponse);
 }
