@@ -162,12 +162,52 @@ func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgePara
 	return i, err
 }
 
-const listUser = `-- name: ListUser :many
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" ORDER BY ID
+const listUserByAge = `-- name: ListUserByAge :many
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE age = ?
 `
 
-func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUser)
+func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listUserByAge, age)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Name,
+			&i.Age,
+			&i.Password,
+			&i.Score,
+			&i.Uuid,
+			&i.IsAdmin,
+			&i.ApiKey,
+			&i.LastLoginMs,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUserByID = `-- name: ListUserByID :many
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE ID = ?
+`
+
+func (q *Queries) ListUserByID(ctx context.Context, id int64) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listUserByID, id)
 	if err != nil {
 		return nil, err
 	}

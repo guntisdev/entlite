@@ -91,6 +91,7 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			if err != nil {
 				return entity, fmt.Errorf("failed to parse queries: %w", err)
 			}
+			fmt.Printf("=> %v\n", queries)
 			entity.Queries = queries
 		}
 	}

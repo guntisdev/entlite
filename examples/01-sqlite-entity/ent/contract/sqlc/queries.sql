@@ -39,8 +39,11 @@ SELECT * FROM "user" WHERE email = ?;
 -- name: GetUserByNameAge :one
 SELECT * FROM "user" WHERE name = ? AND age = ?;
 
--- name: ListUser :many
-SELECT * FROM "user" ORDER BY ID;
+-- name: ListUserByID :many
+SELECT * FROM "user" WHERE ID = ?;
+
+-- name: ListUserByAge :many
+SELECT * FROM "user" WHERE age = ?;
 
 -- name: UpdateUser :one
 UPDATE "user" SET

@@ -193,14 +193,16 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	}
 
 	// LIST
-	for i := range listQueries {
-		queryName := fmt.Sprintf("List%s", entity.Name)
-		if len(listQueries) > 1 {
-			queryName = fmt.Sprintf("List%s%d", entity.Name, i+1)
-		}
+	for _, query := range listQueries {
+		fieldsStr := util.FieldsToStr(query.Fields)
+		queryName := fmt.Sprintf("List%sBy%s", entity.Name, fieldsStr)
 		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", queryName))
+		var whereParts []string
+		for i, fieldName := range query.Fields {
+			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i+1)))
+		}
 		// TODO implement !permissions.DbRead
-		content.WriteString(fmt.Sprintf("SELECT * FROM %s ORDER BY %s;\n", g.quote(tableName), idField.Name))
+		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
 	}
 
 	// UPDATE
