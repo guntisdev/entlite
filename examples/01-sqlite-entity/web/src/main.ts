@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
-import type { CreateUserRequest, ListUserRequest, UpdateUserRequest } from "./gen/schema_pb.js";
+import type { CreateUserRequest, ListUserByAgeRequest, UpdateUserRequest } from "./gen/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
@@ -41,7 +41,7 @@ function createUser() {
     });
 }
 
-function getUser() {
+function getUserByID() {
     const idInput = document.getElementById("getId") as HTMLInputElement;
     const id = parseInt(idInput.value);
     if (isNaN(id) || id <= 0) {
@@ -49,7 +49,7 @@ function getUser() {
         return;
     }
     log(`Getting user ${id}...`);
-    client.get({ ID: id })
+    client.getByID({ ID: id })
     .then((response) => {
         log("✓ User retrieved:", response);
     })
@@ -58,13 +58,14 @@ function getUser() {
     });
 }
 
-function listUsers() {
+function listUsersByAge() {
     log("Listing users...");
-    const request: StrictMessageInput<ListUserRequest> = {
+    const request: StrictMessageInput<ListUserByAgeRequest> = {
         limit: 20,
         offset: 0,
+        age: 30,
     };
-    client.list(request)
+    client.listByAge(request)
     .then((response) => {
         log(`✓ Users listed (${response.users.length} users):`);
         response.users.forEach((user, index) => {
@@ -123,8 +124,8 @@ function deleteUser() {
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOMContentLoaded", document.getElementById("createBtn"));
     document.getElementById("createBtn")!.addEventListener("click", createUser);
-    document.getElementById("getBtn")!.addEventListener("click", getUser);
-    document.getElementById("listBtn")!.addEventListener("click", listUsers);
+    document.getElementById("getBtn")!.addEventListener("click", getUserByID);
+    document.getElementById("listBtn")!.addEventListener("click", listUsersByAge);
     document.getElementById("updateBtn")!.addEventListener("click", updateUser);
     document.getElementById("deleteBtn")!.addEventListener("click", deleteUser);
     document.getElementById("clearBtn")!.addEventListener("click", () => {

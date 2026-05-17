@@ -162,12 +162,12 @@ func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgePara
 	return i, err
 }
 
-const listUser = `-- name: ListUser :many
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" ORDER BY ID
+const listUserByAge = `-- name: ListUserByAge :many
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE age = ?
 `
 
-func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUser)
+func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listUserByAge, age)
 	if err != nil {
 		return nil, err
 	}

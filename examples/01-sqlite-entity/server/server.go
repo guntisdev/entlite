@@ -159,15 +159,15 @@ func (s *UserServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *UserServer) List(
+func (s *UserServer) ListByAge(
 	ctx context.Context,
-	req *connect.Request[pb.ListUserRequest],
-) (*connect.Response[pb.ListUserResponse], error) {
-	log.Printf("List users: limit=%d, offset=%d", req.Msg.Limit, req.Msg.Offset)
+	req *connect.Request[pb.ListUserByAgeRequest],
+) (*connect.Response[pb.ListUserByAgeResponse], error) {
+	log.Printf("List users by age: age=%d", req.Msg.Age)
 
 	queries := db.New(s.db)
 
-	dbUsers, err := queries.ListUser(ctx)
+	dbUsers, err := queries.ListUserByAge(ctx, db.IntPtrConvert[int32, int64](&req.Msg.Age))
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
@@ -177,7 +177,7 @@ func (s *UserServer) List(
 		pbUsers[i] = dbUser.ToProto()
 	}
 
-	response := &pb.ListUserResponse{
+	response := &pb.ListUserByAgeResponse{
 		Users: pbUsers,
 	}
 

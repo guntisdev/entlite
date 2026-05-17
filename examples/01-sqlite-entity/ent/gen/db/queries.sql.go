@@ -70,8 +70,8 @@ func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgePara
 	return UserFromSQL(&dbResult), nil
 }
 
-func (q *Queries) ListUser(ctx context.Context) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListUser(ctx)
+func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListUserByAge(ctx, age)
 	if err != nil {
 		return nil, err
 	}

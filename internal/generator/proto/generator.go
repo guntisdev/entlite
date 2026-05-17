@@ -169,8 +169,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("}")
 		case schema.QueryGetBy:
 			fieldsStr := util.FieldsToStr(query.Fields)
-			messageName := fmt.Sprintf("Get%sBy%sRequest", entity.Name, fieldsStr)
-			content.WriteString(fmt.Sprintf("message %s {\n", messageName))
+			content.WriteString(fmt.Sprintf("message Get%sBy%sRequest {\n", entity.Name, fieldsStr))
 
 			for _, fieldName := range query.Fields {
 				field, found := entity.GetFieldByName(fieldName)
@@ -212,13 +211,24 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
 		case schema.QueryListBy:
-			content.WriteString(fmt.Sprintf("message List%sRequest {\n", entity.Name))
+			fieldsStr := util.FieldsToStr(query.Fields)
+
+			content.WriteString(fmt.Sprintf("message List%sBy%sRequest {\n", entity.Name, fieldsStr))
 			// TODO proly change int type depending on ID field type
 			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
 			content.WriteString("  int32 offset = 2;\n")
+			for _, fieldName := range query.Fields {
+				field, found := entity.GetFieldByName(fieldName)
+				if !found {
+					continue
+				}
+
+				protoType := getProtoType(field.Type)
+				content.WriteString(fmt.Sprintf("  %s %s = %d %s;\n", protoType, field.Name, field.ProtoField, requiredStr))
+			}
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message List%sResponse {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("message List%sBy%sResponse {\n", entity.Name, fieldsStr))
 			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
 			content.WriteString("}")
 		}
@@ -251,8 +261,8 @@ func generateRequests(entity schema.Entity, query schema.Query) string {
 	case schema.QueryDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
 	case schema.QueryListBy:
-		// TODO extend naming besides ID from query Fields (and maybe filter, count, etc)
-		return fmt.Sprintf("  rpc List(List%sRequest) returns (List%sResponse);\n", entity.Name, entity.Name)
+		fieldsStr := util.FieldsToStr(query.Fields)
+		return fmt.Sprintf("  rpc ListBy%s(List%sBy%sRequest) returns (List%sBy%sResponse);\n", fieldsStr, entity.Name, fieldsStr, entity.Name, fieldsStr)
 	default:
 		return ""
 	}

@@ -64,6 +64,7 @@ func (User) Fields() []entlite.Field {
 func (User) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.DefaultCRUD(),
+		query.ListBy("name", "age"),
 	}
 }`
 

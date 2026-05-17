@@ -413,8 +413,7 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 			}
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "List") {
-			entityName := strings.TrimPrefix(funcDecl.Name.Name, "List")
-			if entity, ok := ctx.entityMap[entityName]; ok {
+			if entity, ok := ctx.findEntityForListMethod(funcDecl.Name.Name); ok {
 				sb.WriteString(generateListQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
 				return
 			}
@@ -432,6 +431,32 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 // search for Get[entityname]By[paramnames]
 func (ctx *generationContext) findEntityForGetMethod(methodName string) (schema.Entity, bool) {
 	entitySuffix := strings.TrimPrefix(methodName, "Get")
+
+	bestMatchName := ""
+	for _, entity := range ctx.parsedEntities {
+		entityName := entity.Name
+		if !strings.HasPrefix(entitySuffix, entityName) {
+			continue
+		}
+
+		remainder := entitySuffix[len(entityName):]
+		if remainder == "" || strings.HasPrefix(remainder, "By") {
+			if len(entityName) > len(bestMatchName) {
+				bestMatchName = entityName
+			}
+		}
+	}
+
+	if bestMatchName != "" {
+		return ctx.entityMap[bestMatchName], true
+	}
+
+	return schema.Entity{}, false
+}
+
+// search for List[entityname]By[paramnames]
+func (ctx *generationContext) findEntityForListMethod(methodName string) (schema.Entity, bool) {
+	entitySuffix := strings.TrimPrefix(methodName, "List")
 
 	bestMatchName := ""
 	for _, entity := range ctx.parsedEntities {

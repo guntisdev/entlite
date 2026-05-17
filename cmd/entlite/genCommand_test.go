@@ -130,12 +130,14 @@ message UpdateUserRequest {
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
-message ListUserRequest {
+message ListUserByNameAgeRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
   int32 offset = 2;
+  string name = 3 [(buf.validate.field).required = true];
+  int32 age = 4 [(buf.validate.field).required = true];
 }
 
-message ListUserResponse {
+message ListUserByNameAgeResponse {
   repeated User users = 1;
 }
 
@@ -145,7 +147,7 @@ service UserService {
   rpc GetByID(GetUserByIDRequest) returns (User);
   rpc Update(UpdateUserRequest) returns (User);
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
-  rpc List(ListUserRequest) returns (ListUserResponse);
+  rpc ListByNameAge(ListUserByNameAgeRequest) returns (ListUserByNameAgeResponse);
 }`
 
 	if content, err := os.ReadFile(protoPath); err != nil {
@@ -224,8 +226,8 @@ INSERT INTO "user" (
 -- name: GetUserByID :one
 SELECT * FROM "user" WHERE ID = $1;
 
--- name: ListUser :many
-SELECT * FROM "user" ORDER BY ID;
+-- name: ListUserByNameAge :many
+SELECT * FROM "user" WHERE name = $1 AND age = $2;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
