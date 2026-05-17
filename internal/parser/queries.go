@@ -70,7 +70,6 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 				{Type: schema.QueryGetBy, Fields: []string{"ID"}},
 				{Type: schema.QueryUpdate, Fields: []string{"ID"}},
 				{Type: schema.QueryDelete, Fields: []string{"ID"}},
-				{Type: schema.QueryListBy, Fields: []string{"ID"}},
 			}, true, nil
 		case "Create":
 			return []schema.Query{{Type: schema.QueryCreate, Fields: []string{"ID"}}}, true, nil
@@ -80,8 +79,6 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return []schema.Query{{Type: schema.QueryUpdate, Fields: []string{"ID"}}}, true, nil
 		case "Delete":
 			return []schema.Query{{Type: schema.QueryDelete, Fields: []string{"ID"}}}, true, nil
-		case "List":
-			return []schema.Query{{Type: schema.QueryListBy, Fields: []string{"ID"}}}, true, nil
 		case "GetBy":
 			fields, err := parseStringArgs(callExpr.Args)
 			if err != nil {

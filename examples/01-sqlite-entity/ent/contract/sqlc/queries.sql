@@ -39,9 +39,6 @@ SELECT * FROM "user" WHERE email = ?;
 -- name: GetUserByNameAge :one
 SELECT * FROM "user" WHERE name = ? AND age = ?;
 
--- name: ListUserByID :many
-SELECT * FROM "user" WHERE ID = ?;
-
 -- name: ListUserByAge :many
 SELECT * FROM "user" WHERE age = ?;
 

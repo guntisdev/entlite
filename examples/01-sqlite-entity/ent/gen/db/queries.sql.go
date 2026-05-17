@@ -70,18 +70,6 @@ func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgePara
 	return UserFromSQL(&dbResult), nil
 }
 
-func (q *Queries) ListUser(ctx context.Context) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListUser(ctx)
-	if err != nil {
-		return nil, err
-	}
-	result := make([]*User, len(dbResults))
-	for i := range dbResults {
-		result[i] = UserFromSQL(&dbResults[i])
-	}
-	return result, nil
-}
-
 type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`

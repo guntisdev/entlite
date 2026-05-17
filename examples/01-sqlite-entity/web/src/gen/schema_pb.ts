@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASI4Cg9MaXN0VXNlclJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUiMAoQTGlzdFVzZXJSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlciIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASJEChdHZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBIUCgRuYW1lGAMgASgJQga6SAPIAQESEwoDYWdlGAQgASgFQga6SAPIAQEypwMKC1VzZXJTZXJ2aWNlEjMKBkNyZWF0ZRIaLmVudGxpdGUuQ3JlYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISNQoHR2V0QnlJRBIbLmVudGxpdGUuR2V0VXNlckJ5SURSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgRMaXN0EhguZW50bGl0ZS5MaXN0VXNlclJlcXVlc3QaGS5lbnRsaXRlLkxpc3RVc2VyUmVzcG9uc2USOwoKR2V0QnlFbWFpbBIeLmVudGxpdGUuR2V0VXNlckJ5RW1haWxSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEj8KDEdldEJ5TmFtZUFnZRIgLmVudGxpdGUuR2V0VXNlckJ5TmFtZUFnZVJlcXVlc3QaDS5lbnRsaXRlLlVzZXJCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASJEChdHZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBIUCgRuYW1lGAMgASgJQga6SAPIAQESEwoDYWdlGAQgASgFQga6SAPIAQEiOAoPTGlzdFVzZXJSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFIjAKEExpc3RVc2VyUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIypwMKC1VzZXJTZXJ2aWNlEjMKBkNyZWF0ZRIaLmVudGxpdGUuQ3JlYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISNQoHR2V0QnlJRBIbLmVudGxpdGUuR2V0VXNlckJ5SURSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgpHZXRCeUVtYWlsEh4uZW50bGl0ZS5HZXRVc2VyQnlFbWFpbFJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPwoMR2V0QnlOYW1lQWdlEiAuZW50bGl0ZS5HZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBoNLmVudGxpdGUuVXNlchI7CgRMaXN0EhguZW50bGl0ZS5MaXN0VXNlclJlcXVlc3QaGS5lbnRsaXRlLkxpc3RVc2VyUmVzcG9uc2VCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -239,45 +239,6 @@ export const DeleteUserRequestSchema: GenMessage<DeleteUserRequest> = /*@__PURE_
   messageDesc(file_schema, 4);
 
 /**
- * @generated from message entlite.ListUserRequest
- */
-export type ListUserRequest = Message<"entlite.ListUserRequest"> & {
-  /**
-   * @generated from field: int32 limit = 1;
-   */
-  limit: number;
-
-  /**
-   * @generated from field: int32 offset = 2;
-   */
-  offset: number;
-};
-
-/**
- * Describes the message entlite.ListUserRequest.
- * Use `create(ListUserRequestSchema)` to create a new message.
- */
-export const ListUserRequestSchema: GenMessage<ListUserRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 5);
-
-/**
- * @generated from message entlite.ListUserResponse
- */
-export type ListUserResponse = Message<"entlite.ListUserResponse"> & {
-  /**
-   * @generated from field: repeated entlite.User users = 1;
-   */
-  users: User[];
-};
-
-/**
- * Describes the message entlite.ListUserResponse.
- * Use `create(ListUserResponseSchema)` to create a new message.
- */
-export const ListUserResponseSchema: GenMessage<ListUserResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 6);
-
-/**
  * @generated from message entlite.GetUserByEmailRequest
  */
 export type GetUserByEmailRequest = Message<"entlite.GetUserByEmailRequest"> & {
@@ -292,7 +253,7 @@ export type GetUserByEmailRequest = Message<"entlite.GetUserByEmailRequest"> & {
  * Use `create(GetUserByEmailRequestSchema)` to create a new message.
  */
 export const GetUserByEmailRequestSchema: GenMessage<GetUserByEmailRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 7);
+  messageDesc(file_schema, 5);
 
 /**
  * @generated from message entlite.GetUserByNameAgeRequest
@@ -314,6 +275,45 @@ export type GetUserByNameAgeRequest = Message<"entlite.GetUserByNameAgeRequest">
  * Use `create(GetUserByNameAgeRequestSchema)` to create a new message.
  */
 export const GetUserByNameAgeRequestSchema: GenMessage<GetUserByNameAgeRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 6);
+
+/**
+ * @generated from message entlite.ListUserRequest
+ */
+export type ListUserRequest = Message<"entlite.ListUserRequest"> & {
+  /**
+   * @generated from field: int32 limit = 1;
+   */
+  limit: number;
+
+  /**
+   * @generated from field: int32 offset = 2;
+   */
+  offset: number;
+};
+
+/**
+ * Describes the message entlite.ListUserRequest.
+ * Use `create(ListUserRequestSchema)` to create a new message.
+ */
+export const ListUserRequestSchema: GenMessage<ListUserRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 7);
+
+/**
+ * @generated from message entlite.ListUserResponse
+ */
+export type ListUserResponse = Message<"entlite.ListUserResponse"> & {
+  /**
+   * @generated from field: repeated entlite.User users = 1;
+   */
+  users: User[];
+};
+
+/**
+ * Describes the message entlite.ListUserResponse.
+ * Use `create(ListUserResponseSchema)` to create a new message.
+ */
+export const ListUserResponseSchema: GenMessage<ListUserResponse> = /*@__PURE__*/
   messageDesc(file_schema, 8);
 
 /**
@@ -355,14 +355,6 @@ export const UserService: GenService<{
     output: typeof EmptySchema;
   },
   /**
-   * @generated from rpc entlite.UserService.List
-   */
-  list: {
-    methodKind: "unary";
-    input: typeof ListUserRequestSchema;
-    output: typeof ListUserResponseSchema;
-  },
-  /**
    * @generated from rpc entlite.UserService.GetByEmail
    */
   getByEmail: {
@@ -377,6 +369,14 @@ export const UserService: GenService<{
     methodKind: "unary";
     input: typeof GetUserByNameAgeRequestSchema;
     output: typeof UserSchema;
+  },
+  /**
+   * @generated from rpc entlite.UserService.List
+   */
+  list: {
+    methodKind: "unary";
+    input: typeof ListUserRequestSchema;
+    output: typeof ListUserResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_schema, 0);

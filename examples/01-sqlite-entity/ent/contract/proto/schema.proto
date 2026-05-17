@@ -54,14 +54,6 @@ message UpdateUserRequest {
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
-message ListUserRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
-}
-
-message ListUserResponse {
-  repeated User users = 1;
-}
 message GetUserByEmailRequest {
   string email = 2 [(buf.validate.field).required = true];
 }
@@ -84,7 +76,6 @@ service UserService {
   rpc GetByID(GetUserByIDRequest) returns (User);
   rpc Update(UpdateUserRequest) returns (User);
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
-  rpc List(ListUserRequest) returns (ListUserResponse);
   rpc GetByEmail(GetUserByEmailRequest) returns (User);
   rpc GetByNameAge(GetUserByNameAgeRequest) returns (User);
   rpc List(ListUserRequest) returns (ListUserResponse);
