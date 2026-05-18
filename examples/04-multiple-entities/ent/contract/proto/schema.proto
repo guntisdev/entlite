@@ -4,7 +4,6 @@ package entlite;
 
 option go_package = "./pb";
 
-import "google/protobuf/empty.proto";
 import "buf/validate/validate.proto";
 
 // Post represents as post entity
@@ -22,53 +21,17 @@ message User {
   string name = 3 [(buf.validate.field).required = true];
 }
 
-message GetPostRequest {
+message GetPostByIDRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
-}
-message ListPostRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
-}
-
-message ListPostResponse {
-  repeated Post posts = 1;
 }
 
 // PostService provides CRUD opertions for Post entities
 service PostService {
-  rpc Get(GetPostRequest) returns (Post);
-  rpc List(ListPostRequest) returns (ListPostResponse);
+  rpc GetByID(GetPostByIDRequest) returns (Post);
 }
 
-message CreateUserRequest {
-  string email = 2 [(buf.validate.field).required = true];
-  string name = 3 [(buf.validate.field).required = true];
-}
-message GetUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
-}
-message UpdateUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
-  string email = 2 [(buf.validate.field).required = true];
-  string name = 3 [(buf.validate.field).required = true];
-}
-message DeleteUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
-}
-message ListUserRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
-}
 
-message ListUserResponse {
-  repeated User users = 1;
-}
 
 // UserService provides CRUD opertions for User entities
 service UserService {
-  rpc Create(CreateUserRequest) returns (User);
-  rpc Get(GetUserRequest) returns (User);
-  rpc Update(UpdateUserRequest) returns (User);
-  rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
-  rpc List(ListUserRequest) returns (ListUserResponse);
 }

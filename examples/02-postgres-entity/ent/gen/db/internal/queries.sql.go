@@ -86,12 +86,12 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return err
 }
 
-const getUser = `-- name: GetUser :one
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE ID = $1
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE email = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, id)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -110,12 +110,65 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	return i, err
 }
 
-const listUser = `-- name: ListUser :many
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" ORDER BY ID
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE ID = $1
 `
 
-func (q *Queries) ListUser(ctx context.Context) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUser)
+func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Age,
+		&i.Password,
+		&i.Score,
+		&i.Uuid,
+		&i.IsAdmin,
+		&i.ApiKey,
+		&i.LastLoginMs,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserByNameAge = `-- name: GetUserByNameAge :one
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE name = $1 AND age = $2
+`
+
+type GetUserByNameAgeParams struct {
+	Name string        `json:"name"`
+	Age  sql.NullInt32 `json:"age"`
+}
+
+func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgeParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByNameAge, arg.Name, arg.Age)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Age,
+		&i.Password,
+		&i.Score,
+		&i.Uuid,
+		&i.IsAdmin,
+		&i.ApiKey,
+		&i.LastLoginMs,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const listUserByName = `-- name: ListUserByName :many
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE name = $1
+`
+
+func (q *Queries) ListUserByName(ctx context.Context, name string) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listUserByName, name)
 	if err != nil {
 		return nil, err
 	}

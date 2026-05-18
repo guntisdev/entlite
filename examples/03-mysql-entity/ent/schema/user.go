@@ -3,10 +3,11 @@ package schema
 import (
 	"time"
 
-	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/logic"
+	"github.com/guntisdev/entlite/examples/03-mysql-entity/ent/logic"
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
+	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
 type User struct {
@@ -33,5 +34,14 @@ func (User) Fields() []entlite.Field {
 		field.Int64("last_login_ms"),
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(6).Immutable(),
 		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(7),
+	}
+}
+
+func (User) Queries() []entlite.Query {
+	return []entlite.Query{
+		query.DefaultCRUD(),
+		query.GetBy("email"),
+		query.GetBy("name", "age"),
+		query.ListBy("name"),
 	}
 }
