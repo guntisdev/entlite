@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/logic"
+	"github.com/guntisdev/entlite/examples/03-mysql-entity/ent/logic"
 	"time"
 	internal "github.com/guntisdev/entlite/examples/03-mysql-entity/ent/gen/db/internal"
 )
@@ -45,16 +45,33 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteUser(ctx, id)
 }
 
-func (q *Queries) GetUser(ctx context.Context, id int32) (*User, error) {
-	dbResult, err := (*internal.Queries)(q).GetUser(ctx, id)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	dbResult, err := (*internal.Queries)(q).GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
 	return UserFromSQL(&dbResult), nil
 }
 
-func (q *Queries) ListUser(ctx context.Context) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListUser(ctx)
+func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
+	dbResult, err := (*internal.Queries)(q).GetUserByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return UserFromSQL(&dbResult), nil
+}
+
+type GetUserByNameAgeParams = internal.GetUserByNameAgeParams
+func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgeParams) (*User, error) {
+	dbResult, err := (*internal.Queries)(q).GetUserByNameAge(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+	return UserFromSQL(&dbResult), nil
+}
+
+func (q *Queries) ListUserByName(ctx context.Context, name string) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListUserByName(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +115,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 	if err != nil {
 		return nil, err
 	}
-	dbUser, err := (*internal.Queries)(q).GetUser(ctx, arg.ID)
+	dbUser, err := (*internal.Queries)(q).GetUserByID(ctx, arg.ID)
 	if err != nil {
 		return nil, err
 	}

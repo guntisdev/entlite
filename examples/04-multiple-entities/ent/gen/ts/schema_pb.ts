@@ -4,8 +4,6 @@
 
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
-import type { EmptySchema } from "@bufbuild/protobuf/wkt";
-import { file_google_protobuf_empty } from "@bufbuild/protobuf/wkt";
 import { file_buf_validate_validate } from "./buf/validate/validate_pb";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -13,7 +11,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiXQoEUG9zdBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBXRpdGxlGAIgASgJQga6SAPIAQESFwoHY29udGVudBgDIAEoCUIGukgDyAEBEhEKCXB1Ymxpc2hlZBgEIAEoCCJHCgRVc2VyEhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQEiJAoOR2V0UG9zdFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASI4Cg9MaXN0UG9zdFJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUiMAoQTGlzdFBvc3RSZXNwb25zZRIcCgVwb3N0cxgBIAMoCzINLmVudGxpdGUuUG9zdCJAChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBASIkCg5HZXRVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIlQKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQEiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASI4Cg9MaXN0VXNlclJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUiMAoQTGlzdFVzZXJSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlcjJ5CgtQb3N0U2VydmljZRItCgNHZXQSFy5lbnRsaXRlLkdldFBvc3RSZXF1ZXN0Gg0uZW50bGl0ZS5Qb3N0EjsKBExpc3QSGC5lbnRsaXRlLkxpc3RQb3N0UmVxdWVzdBoZLmVudGxpdGUuTGlzdFBvc3RSZXNwb25zZTKhAgoLVXNlclNlcnZpY2USMwoGQ3JlYXRlEhouZW50bGl0ZS5DcmVhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchItCgNHZXQSFy5lbnRsaXRlLkdldFVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgRMaXN0EhguZW50bGl0ZS5MaXN0VXNlclJlcXVlc3QaGS5lbnRsaXRlLkxpc3RVc2VyUmVzcG9uc2VCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiXQoEUG9zdBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBXRpdGxlGAIgASgJQga6SAPIAQESFwoHY29udGVudBgDIAEoCUIGukgDyAEBEhEKCXB1Ymxpc2hlZBgEIAEoCCJHCgRVc2VyEhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQEiKAoSR2V0UG9zdEJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEyRAoLUG9zdFNlcnZpY2USNQoHR2V0QnlJRBIbLmVudGxpdGUuR2V0UG9zdEJ5SURSZXF1ZXN0Gg0uZW50bGl0ZS5Qb3N0Mg0KC1VzZXJTZXJ2aWNlQgZaBC4vcGJiBnByb3RvMw", [file_buf_validate_validate]);
 
 /**
  * Post represents as post entity
@@ -79,9 +77,9 @@ export const UserSchema: GenMessage<User> = /*@__PURE__*/
   messageDesc(file_schema, 1);
 
 /**
- * @generated from message entlite.GetPostRequest
+ * @generated from message entlite.GetPostByIDRequest
  */
-export type GetPostRequest = Message<"entlite.GetPostRequest"> & {
+export type GetPostByIDRequest = Message<"entlite.GetPostByIDRequest"> & {
   /**
    * @generated from field: int32 ID = 1;
    */
@@ -89,172 +87,11 @@ export type GetPostRequest = Message<"entlite.GetPostRequest"> & {
 };
 
 /**
- * Describes the message entlite.GetPostRequest.
- * Use `create(GetPostRequestSchema)` to create a new message.
+ * Describes the message entlite.GetPostByIDRequest.
+ * Use `create(GetPostByIDRequestSchema)` to create a new message.
  */
-export const GetPostRequestSchema: GenMessage<GetPostRequest> = /*@__PURE__*/
+export const GetPostByIDRequestSchema: GenMessage<GetPostByIDRequest> = /*@__PURE__*/
   messageDesc(file_schema, 2);
-
-/**
- * @generated from message entlite.ListPostRequest
- */
-export type ListPostRequest = Message<"entlite.ListPostRequest"> & {
-  /**
-   * @generated from field: int32 limit = 1;
-   */
-  limit: number;
-
-  /**
-   * @generated from field: int32 offset = 2;
-   */
-  offset: number;
-};
-
-/**
- * Describes the message entlite.ListPostRequest.
- * Use `create(ListPostRequestSchema)` to create a new message.
- */
-export const ListPostRequestSchema: GenMessage<ListPostRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 3);
-
-/**
- * @generated from message entlite.ListPostResponse
- */
-export type ListPostResponse = Message<"entlite.ListPostResponse"> & {
-  /**
-   * @generated from field: repeated entlite.Post posts = 1;
-   */
-  posts: Post[];
-};
-
-/**
- * Describes the message entlite.ListPostResponse.
- * Use `create(ListPostResponseSchema)` to create a new message.
- */
-export const ListPostResponseSchema: GenMessage<ListPostResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 4);
-
-/**
- * @generated from message entlite.CreateUserRequest
- */
-export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
-  /**
-   * @generated from field: string email = 2;
-   */
-  email: string;
-
-  /**
-   * @generated from field: string name = 3;
-   */
-  name: string;
-};
-
-/**
- * Describes the message entlite.CreateUserRequest.
- * Use `create(CreateUserRequestSchema)` to create a new message.
- */
-export const CreateUserRequestSchema: GenMessage<CreateUserRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 5);
-
-/**
- * @generated from message entlite.GetUserRequest
- */
-export type GetUserRequest = Message<"entlite.GetUserRequest"> & {
-  /**
-   * @generated from field: int32 ID = 1;
-   */
-  ID: number;
-};
-
-/**
- * Describes the message entlite.GetUserRequest.
- * Use `create(GetUserRequestSchema)` to create a new message.
- */
-export const GetUserRequestSchema: GenMessage<GetUserRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 6);
-
-/**
- * @generated from message entlite.UpdateUserRequest
- */
-export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
-  /**
-   * @generated from field: int32 ID = 1;
-   */
-  ID: number;
-
-  /**
-   * @generated from field: string email = 2;
-   */
-  email: string;
-
-  /**
-   * @generated from field: string name = 3;
-   */
-  name: string;
-};
-
-/**
- * Describes the message entlite.UpdateUserRequest.
- * Use `create(UpdateUserRequestSchema)` to create a new message.
- */
-export const UpdateUserRequestSchema: GenMessage<UpdateUserRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 7);
-
-/**
- * @generated from message entlite.DeleteUserRequest
- */
-export type DeleteUserRequest = Message<"entlite.DeleteUserRequest"> & {
-  /**
-   * @generated from field: int32 ID = 1;
-   */
-  ID: number;
-};
-
-/**
- * Describes the message entlite.DeleteUserRequest.
- * Use `create(DeleteUserRequestSchema)` to create a new message.
- */
-export const DeleteUserRequestSchema: GenMessage<DeleteUserRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 8);
-
-/**
- * @generated from message entlite.ListUserRequest
- */
-export type ListUserRequest = Message<"entlite.ListUserRequest"> & {
-  /**
-   * @generated from field: int32 limit = 1;
-   */
-  limit: number;
-
-  /**
-   * @generated from field: int32 offset = 2;
-   */
-  offset: number;
-};
-
-/**
- * Describes the message entlite.ListUserRequest.
- * Use `create(ListUserRequestSchema)` to create a new message.
- */
-export const ListUserRequestSchema: GenMessage<ListUserRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 9);
-
-/**
- * @generated from message entlite.ListUserResponse
- */
-export type ListUserResponse = Message<"entlite.ListUserResponse"> & {
-  /**
-   * @generated from field: repeated entlite.User users = 1;
-   */
-  users: User[];
-};
-
-/**
- * Describes the message entlite.ListUserResponse.
- * Use `create(ListUserResponseSchema)` to create a new message.
- */
-export const ListUserResponseSchema: GenMessage<ListUserResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 10);
 
 /**
  * PostService provides CRUD opertions for Post entities
@@ -263,20 +100,12 @@ export const ListUserResponseSchema: GenMessage<ListUserResponse> = /*@__PURE__*
  */
 export const PostService: GenService<{
   /**
-   * @generated from rpc entlite.PostService.Get
+   * @generated from rpc entlite.PostService.GetByID
    */
-  get: {
+  getByID: {
     methodKind: "unary";
-    input: typeof GetPostRequestSchema;
+    input: typeof GetPostByIDRequestSchema;
     output: typeof PostSchema;
-  },
-  /**
-   * @generated from rpc entlite.PostService.List
-   */
-  list: {
-    methodKind: "unary";
-    input: typeof ListPostRequestSchema;
-    output: typeof ListPostResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_schema, 0);
@@ -287,46 +116,6 @@ export const PostService: GenService<{
  * @generated from service entlite.UserService
  */
 export const UserService: GenService<{
-  /**
-   * @generated from rpc entlite.UserService.Create
-   */
-  create: {
-    methodKind: "unary";
-    input: typeof CreateUserRequestSchema;
-    output: typeof UserSchema;
-  },
-  /**
-   * @generated from rpc entlite.UserService.Get
-   */
-  get: {
-    methodKind: "unary";
-    input: typeof GetUserRequestSchema;
-    output: typeof UserSchema;
-  },
-  /**
-   * @generated from rpc entlite.UserService.Update
-   */
-  update: {
-    methodKind: "unary";
-    input: typeof UpdateUserRequestSchema;
-    output: typeof UserSchema;
-  },
-  /**
-   * @generated from rpc entlite.UserService.Delete
-   */
-  delete: {
-    methodKind: "unary";
-    input: typeof DeleteUserRequestSchema;
-    output: typeof EmptySchema;
-  },
-  /**
-   * @generated from rpc entlite.UserService.List
-   */
-  list: {
-    methodKind: "unary";
-    input: typeof ListUserRequestSchema;
-    output: typeof ListUserResponseSchema;
-  },
 }> = /*@__PURE__*/
   serviceDesc(file_schema, 1);
 

@@ -36,7 +36,7 @@ message CreateUserRequest {
   optional bytes api_key = 11;
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
-message GetUserRequest {
+message GetUserByIDRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
@@ -54,20 +54,30 @@ message UpdateUserRequest {
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
-message ListUserRequest {
+message GetUserByEmailRequest {
+  string email = 2 [(buf.validate.field).required = true];
+}
+message GetUserByNameAgeRequest {
+  string name = 3 [(buf.validate.field).required = true];
+  int32 age = 4 [(buf.validate.field).required = true];
+}
+message ListUserByNameRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
   int32 offset = 2;
+  string name = 3 [(buf.validate.field).required = true];
 }
 
-message ListUserResponse {
+message ListUserByNameResponse {
   repeated User users = 1;
 }
 
 // UserService provides CRUD opertions for User entities
 service UserService {
   rpc Create(CreateUserRequest) returns (User);
-  rpc Get(GetUserRequest) returns (User);
+  rpc GetByID(GetUserByIDRequest) returns (User);
   rpc Update(UpdateUserRequest) returns (User);
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
-  rpc List(ListUserRequest) returns (ListUserResponse);
+  rpc GetByEmail(GetUserByEmailRequest) returns (User);
+  rpc GetByNameAge(GetUserByNameAgeRequest) returns (User);
+  rpc ListByName(ListUserByNameRequest) returns (ListUserByNameResponse);
 }

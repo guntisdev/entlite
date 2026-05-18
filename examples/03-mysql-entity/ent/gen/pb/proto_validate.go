@@ -2,7 +2,7 @@ package pb
 
 import (
 	"fmt"
-	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/logic"
+	"github.com/guntisdev/entlite/examples/03-mysql-entity/ent/logic"
 )
 
 func (r *CreateUserRequest) Validate() error {

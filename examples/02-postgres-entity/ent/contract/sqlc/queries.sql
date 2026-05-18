@@ -30,11 +30,17 @@ INSERT INTO "user" (
   $11
 ) RETURNING ID;
 
--- name: GetUser :one
+-- name: GetUserByID :one
 SELECT * FROM "user" WHERE ID = $1;
 
--- name: ListUser :many
-SELECT * FROM "user" ORDER BY ID;
+-- name: GetUserByEmail :one
+SELECT * FROM "user" WHERE email = $1;
+
+-- name: GetUserByNameAge :one
+SELECT * FROM "user" WHERE name = $1 AND age = $2;
+
+-- name: ListUserByName :many
+SELECT * FROM "user" WHERE name = $1;
 
 -- name: UpdateUser :one
 UPDATE "user" SET

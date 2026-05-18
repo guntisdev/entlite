@@ -115,7 +115,7 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")
 		sb.WriteString("\t}\n")
-		sb.WriteString(fmt.Sprintf("\tdb%s, err := (*%s.Queries)(q).Get%s(ctx, arg.ID)\n", entity.Name, inputPkg, entity.Name))
+		sb.WriteString(fmt.Sprintf("\tdb%s, err := (*%s.Queries)(q).Get%sByID(ctx, arg.ID)\n", entity.Name, inputPkg, entity.Name))
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")
 		sb.WriteString("\t}\n")
