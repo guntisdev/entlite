@@ -195,11 +195,43 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	// LIST
 	for _, query := range listQueries {
 		fieldsStr := util.FieldsToStr(query.Fields)
-		queryName := fmt.Sprintf("List%sBy%s", entity.Name, fieldsStr)
+		byStr := ""
+		if fieldsStr != "" {
+			byStr = fmt.Sprintf("By%s", fieldsStr)
+		}
+		filtersStr := util.FiltersToStr(query.Filters)
+		byFilter := ""
+		if filtersStr != "" {
+			byFilter = fmt.Sprintf("Filter%s", filtersStr)
+		}
+		queryName := fmt.Sprintf("List%s%s%s", entity.Name, byStr, byFilter)
 		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", queryName))
 		var whereParts []string
-		for i, fieldName := range query.Fields {
-			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i+1)))
+		var i = 0
+		for _, fieldName := range query.Fields {
+			i++
+			// TODO change to named parameters
+			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i)))
+		}
+		for _, filter := range query.Filters {
+			switch filter.Type {
+			case schema.QueryFilterEq:
+				i++
+				whereParts = append(whereParts, fmt.Sprintf("%s = %s", filter.Field, g.getParameterPlaceholder(i)))
+
+			case schema.QueryFilterSearch:
+				i++
+				whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", filter.Field, g.getParameterPlaceholder(i)))
+
+			case schema.QueryFilterRange:
+				i++
+				minPlaceholder := g.getParameterPlaceholder(i)
+				i++
+				maxPlaceholder := g.getParameterPlaceholder(i)
+
+				// TODO change to named parameters
+				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", filter.Field, minPlaceholder, maxPlaceholder))
+			}
 		}
 		// TODO implement !permissions.DbRead
 		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
