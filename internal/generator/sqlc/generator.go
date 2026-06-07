@@ -194,18 +194,8 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// LIST
 	for _, query := range listQueries {
-		fieldsStr := util.FieldsToStr(query.Fields)
-		byStr := ""
-		if fieldsStr != "" {
-			byStr = fmt.Sprintf("By%s", fieldsStr)
-		}
-		filtersStr := util.FiltersToStr(query.Filters)
-		byFilter := ""
-		if filtersStr != "" {
-			byFilter = fmt.Sprintf("Filter%s", filtersStr)
-		}
-		queryName := fmt.Sprintf("List%s%s%s", entity.Name, byStr, byFilter)
-		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", queryName))
+		methodName := util.GenListMethodName(query, entity.Name)
+		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", methodName))
 		var whereParts []string
 		var i = 0
 		for _, fieldName := range query.Fields {

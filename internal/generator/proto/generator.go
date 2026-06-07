@@ -211,9 +211,8 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
 		case schema.QueryListBy:
-			fieldsStr := util.FieldsToStr(query.Fields)
-
-			content.WriteString(fmt.Sprintf("message List%sBy%sRequest {\n", entity.Name, fieldsStr))
+			methodName := util.GenListMethodName(query, entity.Name)
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
 			// TODO proly change int type depending on ID field type
 			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
 			content.WriteString("  int32 offset = 2;\n")
@@ -228,7 +227,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message List%sBy%sResponse {\n", entity.Name, fieldsStr))
+			content.WriteString(fmt.Sprintf("message %sResponse {\n", methodName))
 			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
 			content.WriteString("}")
 		}
@@ -261,8 +260,9 @@ func generateRequests(entity schema.Entity, query schema.Query) string {
 	case schema.QueryDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
 	case schema.QueryListBy:
-		fieldsStr := util.FieldsToStr(query.Fields)
-		return fmt.Sprintf("  rpc ListBy%s(List%sBy%sRequest) returns (List%sBy%sResponse);\n", fieldsStr, entity.Name, fieldsStr, entity.Name, fieldsStr)
+		methodName := util.GenListMethodName(query, entity.Name)
+		rpcName := util.GenListRpcName(query, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, methodName, methodName)
 	default:
 		return ""
 	}
