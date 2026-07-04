@@ -17,6 +17,9 @@ type UserServer struct {
 	db *sql.DB
 }
 
+// enforces implementation of proto methods
+var _ pb.UserServiceHandler = (*UserServer)(nil)
+
 func NewUserServiceServer(db *sql.DB) *UserServer {
 	return &UserServer{
 		db: db,
