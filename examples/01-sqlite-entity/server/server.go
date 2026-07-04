@@ -159,6 +159,32 @@ func (s *UserServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
+func (s *UserServer) ListByAge(
+	ctx context.Context,
+	req *connect.Request[pb.ListUserByAgeRequest],
+) (*connect.Response[pb.ListUserByAgeResponse], error) {
+	log.Printf("List users by age: age=%d", req.Msg.GetAge())
+
+	queries := db.New(s.db)
+
+	age := req.Msg.GetAge()
+	dbUsers, err := queries.ListUserByAge(ctx, db.IntPtrConvert[int32, int64](&age))
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
+	}
+
+	pbUsers := make([]*pb.User, len(dbUsers))
+	for i, dbUser := range dbUsers {
+		pbUsers[i] = dbUser.ToProto()
+	}
+
+	response := &pb.ListUserByAgeResponse{
+		Users: pbUsers,
+	}
+
+	return connect.NewResponse(response), nil
+}
+
 func (s *UserServer) FilterByAgeNameIsAdmin(
 	ctx context.Context,
 	req *connect.Request[pb.ListUserFilterByAgeNameIsAdminRequest],
