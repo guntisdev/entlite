@@ -3,7 +3,6 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 
 ## TODO
 * Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
-* get export directory for proto validate from yaml file
 * Create /internal/naming/ to have in one place consistant naming
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
 * check each field if it added in further generation (for example Comment)
