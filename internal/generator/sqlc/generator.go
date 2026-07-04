@@ -194,12 +194,25 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// LIST
 	for _, query := range listQueries {
-		fieldsStr := util.FieldsToStr(query.Fields)
-		queryName := fmt.Sprintf("List%sBy%s", entity.Name, fieldsStr)
-		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", queryName))
+		methodName := util.GenListMethodName(query, entity.Name)
+		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", methodName))
 		var whereParts []string
-		for i, fieldName := range query.Fields {
-			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i+1)))
+		for _, fieldName := range query.Fields {
+			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.namedArg(fieldName)))
+		}
+		for _, filter := range query.Filters {
+			switch filter.Type {
+			case schema.QueryFilterEq:
+				whereParts = append(whereParts, fmt.Sprintf("%s = %s", filter.Field, g.namedArg(filter.Field)))
+
+			case schema.QueryFilterSearch:
+				whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", filter.Field, g.namedArg(filter.Field)))
+
+			case schema.QueryFilterRange:
+				minArg := g.namedArg("min_" + filter.Field)
+				maxArg := g.namedArg("max_" + filter.Field)
+				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", filter.Field, minArg, maxArg))
+			}
 		}
 		// TODO implement !permissions.DbRead
 		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
@@ -236,13 +249,13 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 				// This makes the field optional in updates - if NULL is passed, keep existing value
 				fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
 			} else {
-				fieldUpdate = fmt.Sprintf("  %s = sqlc.arg('%s')", field.Name, field.Name)
+				fieldUpdate = fmt.Sprintf("  %s = %s", field.Name, g.namedArg(field.Name))
 			}
 			updateFields = append(updateFields, fieldUpdate)
 		}
 
 		content.WriteString(strings.Join(updateFields, ",\n"))
-		content.WriteString(fmt.Sprintf("\nWHERE %s = sqlc.arg('%s')", idField.Name, idField.Name))
+		content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField.Name, g.namedArg(idField.Name)))
 		if g.supportsReturning() {
 			content.WriteString("\nRETURNING *;\n")
 		} else {

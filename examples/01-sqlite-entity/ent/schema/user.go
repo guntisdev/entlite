@@ -6,6 +6,7 @@ import (
 	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/logic"
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
+	"github.com/guntisdev/entlite/pkg/entlite/filter"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
@@ -49,10 +50,10 @@ func (User) Queries() []entlite.Query {
 		query.GetBy("name", "age"),
 		query.ListBy("age"),
 		// query.ListBy("age").Count(),
-		// query.ListBy(
-		// 	filter.Range("age"),
-		// 	filter.Search("name"),
-		// 	filter.Eq("is_admin").Optional(),
-		// ).OrderBy("created_at"),
+		query.ListBy(
+			filter.Range("age"),
+			filter.Search("name"),
+			filter.Eq("is_admin").Optional(),
+		).Count().OrderBy("created_at"),
 	}
 }

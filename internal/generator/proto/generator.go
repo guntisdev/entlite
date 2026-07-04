@@ -211,12 +211,13 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
 		case schema.QueryListBy:
-			fieldsStr := util.FieldsToStr(query.Fields)
-
-			content.WriteString(fmt.Sprintf("message List%sBy%sRequest {\n", entity.Name, fieldsStr))
+			methodName := util.GenListMethodName(query, entity.Name)
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
 			// TODO proly change int type depending on ID field type
 			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
 			content.WriteString("  int32 offset = 2;\n")
+
+			protoFieldNum := 3
 			for _, fieldName := range query.Fields {
 				field, found := entity.GetFieldByName(fieldName)
 				if !found {
@@ -224,11 +225,37 @@ func generateResponseMessages(entity schema.Entity) string {
 				}
 
 				protoType := getProtoType(field.Type)
-				content.WriteString(fmt.Sprintf("  %s %s = %d %s;\n", protoType, field.Name, field.ProtoField, requiredStr))
+				content.WriteString(fmt.Sprintf("  %s %s = %d %s;\n", protoType, field.Name, protoFieldNum, requiredStr))
+				protoFieldNum++
+			}
+			for _, filter := range query.Filters {
+				field, found := entity.GetFieldByName(filter.Field)
+				if !found {
+					continue
+				}
+
+				protoType := getProtoType(field.Type)
+
+				// Range filters expand to min_/max_ params, matching sqlc.
+				var names []string
+				if filter.Type == schema.QueryFilterRange {
+					names = []string{"min_" + filter.Field, "max_" + filter.Field}
+				} else {
+					names = []string{filter.Field}
+				}
+
+				for _, name := range names {
+					if filter.Optional {
+						content.WriteString(fmt.Sprintf("  optional %s %s = %d;\n", protoType, name, protoFieldNum))
+					} else {
+						content.WriteString(fmt.Sprintf("  %s %s = %d %s;\n", protoType, name, protoFieldNum, requiredStr))
+					}
+					protoFieldNum++
+				}
 			}
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message List%sBy%sResponse {\n", entity.Name, fieldsStr))
+			content.WriteString(fmt.Sprintf("message %sResponse {\n", methodName))
 			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
 			content.WriteString("}")
 		}
@@ -261,8 +288,9 @@ func generateRequests(entity schema.Entity, query schema.Query) string {
 	case schema.QueryDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
 	case schema.QueryListBy:
-		fieldsStr := util.FieldsToStr(query.Fields)
-		return fmt.Sprintf("  rpc ListBy%s(List%sBy%sRequest) returns (List%sBy%sResponse);\n", fieldsStr, entity.Name, fieldsStr, entity.Name, fieldsStr)
+		methodName := util.GenListMethodName(query, entity.Name)
+		rpcName := util.GenListRpcName(query, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, methodName, methodName)
 	default:
 		return ""
 	}

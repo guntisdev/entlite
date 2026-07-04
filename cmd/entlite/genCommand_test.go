@@ -227,20 +227,20 @@ INSERT INTO "user" (
 SELECT * FROM "user" WHERE ID = $1;
 
 -- name: ListUserByNameAge :many
-SELECT * FROM "user" WHERE name = $1 AND age = $2;
+SELECT * FROM "user" WHERE name = :name AND age = :age;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
-  email = sqlc.arg('email'),
-  name = sqlc.arg('name'),
-  age = sqlc.arg('age'),
+  email = :email,
+  name = :name,
+  age = :age,
   password = COALESCE(sqlc.narg('password'), password),
   score = COALESCE(sqlc.narg('score'), score),
-  is_admin = sqlc.arg('is_admin'),
+  is_admin = :is_admin,
   api_key = COALESCE(sqlc.narg('api_key'), api_key),
-  last_login_ms = sqlc.arg('last_login_ms'),
-  updated_at = sqlc.arg('updated_at')
-WHERE ID = sqlc.arg('ID')
+  last_login_ms = :last_login_ms,
+  updated_at = :updated_at
+WHERE ID = :ID
 RETURNING *;
 
 -- name: DeleteUser :exec

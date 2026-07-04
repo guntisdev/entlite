@@ -454,7 +454,7 @@ func (ctx *generationContext) findEntityForGetMethod(methodName string) (schema.
 	return schema.Entity{}, false
 }
 
-// search for List[entityname]By[paramnames]
+// search for List[entityname]By[paramnames] and List[entityname]FilterBy[filternames]
 func (ctx *generationContext) findEntityForListMethod(methodName string) (schema.Entity, bool) {
 	entitySuffix := strings.TrimPrefix(methodName, "List")
 
@@ -466,7 +466,7 @@ func (ctx *generationContext) findEntityForListMethod(methodName string) (schema
 		}
 
 		remainder := entitySuffix[len(entityName):]
-		if remainder == "" || strings.HasPrefix(remainder, "By") {
+		if remainder == "" || strings.HasPrefix(remainder, "By") || strings.HasPrefix(remainder, "FilterBy") {
 			if len(entityName) > len(bestMatchName) {
 				bestMatchName = entityName
 			}

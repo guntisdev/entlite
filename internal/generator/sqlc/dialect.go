@@ -167,6 +167,10 @@ func (g *Generator) supportsReturning() bool {
 	panic("unreachable: invalid SQL dialect")
 }
 
+func (g *Generator) namedArg(name string) string {
+	return fmt.Sprintf(":%s", name)
+}
+
 func (g *Generator) getParameterPlaceholder(index int) string {
 	switch g.sqlDialect {
 	case schema.PostgreSQL:

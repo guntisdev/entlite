@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASJEChdHZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBIUCgRuYW1lGAMgASgJQga6SAPIAQESEwoDYWdlGAQgASgFQga6SAPIAQEiUgoUTGlzdFVzZXJCeUFnZVJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSEwoDYWdlGAQgASgFQga6SAPIAQEiNQoVTGlzdFVzZXJCeUFnZVJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyMrYDCgtVc2VyU2VydmljZRIzCgZDcmVhdGUSGi5lbnRsaXRlLkNyZWF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjUKB0dldEJ5SUQSGy5lbnRsaXRlLkdldFVzZXJCeUlEUmVxdWVzdBoNLmVudGxpdGUuVXNlchIzCgZVcGRhdGUSGi5lbnRsaXRlLlVwZGF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjwKBkRlbGV0ZRIaLmVudGxpdGUuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSOwoKR2V0QnlFbWFpbBIeLmVudGxpdGUuR2V0VXNlckJ5RW1haWxSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEj8KDEdldEJ5TmFtZUFnZRIgLmVudGxpdGUuR2V0VXNlckJ5TmFtZUFnZVJlcXVlc3QaDS5lbnRsaXRlLlVzZXISSgoJTGlzdEJ5QWdlEh0uZW50bGl0ZS5MaXN0VXNlckJ5QWdlUmVxdWVzdBoeLmVudGxpdGUuTGlzdFVzZXJCeUFnZVJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASJEChdHZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBIUCgRuYW1lGAMgASgJQga6SAPIAQESEwoDYWdlGAQgASgFQga6SAPIAQEiUgoUTGlzdFVzZXJCeUFnZVJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSEwoDYWdlGAMgASgFQga6SAPIAQEiNQoVTGlzdFVzZXJCeUFnZVJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyIroBCiVMaXN0VXNlckZpbHRlckJ5QWdlTmFtZUlzQWRtaW5SZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhcKB21pbl9hZ2UYAyABKAVCBrpIA8gBARIXCgdtYXhfYWdlGAQgASgFQga6SAPIAQESFAoEbmFtZRgFIAEoCUIGukgDyAEBEhUKCGlzX2FkbWluGAYgASgISACIAQFCCwoJX2lzX2FkbWluIkYKJkxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lSXNBZG1pblJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyMrEECgtVc2VyU2VydmljZRIzCgZDcmVhdGUSGi5lbnRsaXRlLkNyZWF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjUKB0dldEJ5SUQSGy5lbnRsaXRlLkdldFVzZXJCeUlEUmVxdWVzdBoNLmVudGxpdGUuVXNlchIzCgZVcGRhdGUSGi5lbnRsaXRlLlVwZGF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjwKBkRlbGV0ZRIaLmVudGxpdGUuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSOwoKR2V0QnlFbWFpbBIeLmVudGxpdGUuR2V0VXNlckJ5RW1haWxSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEj8KDEdldEJ5TmFtZUFnZRIgLmVudGxpdGUuR2V0VXNlckJ5TmFtZUFnZVJlcXVlc3QaDS5lbnRsaXRlLlVzZXISSgoJTGlzdEJ5QWdlEh0uZW50bGl0ZS5MaXN0VXNlckJ5QWdlUmVxdWVzdBoeLmVudGxpdGUuTGlzdFVzZXJCeUFnZVJlc3BvbnNlEnkKFkZpbHRlckJ5QWdlTmFtZUlzQWRtaW4SLi5lbnRsaXRlLkxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lSXNBZG1pblJlcXVlc3QaLy5lbnRsaXRlLkxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lSXNBZG1pblJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -292,7 +292,7 @@ export type ListUserByAgeRequest = Message<"entlite.ListUserByAgeRequest"> & {
   offset: number;
 
   /**
-   * @generated from field: int32 age = 4;
+   * @generated from field: int32 age = 3;
    */
   age: number;
 };
@@ -320,6 +320,65 @@ export type ListUserByAgeResponse = Message<"entlite.ListUserByAgeResponse"> & {
  */
 export const ListUserByAgeResponseSchema: GenMessage<ListUserByAgeResponse> = /*@__PURE__*/
   messageDesc(file_schema, 8);
+
+/**
+ * @generated from message entlite.ListUserFilterByAgeNameIsAdminRequest
+ */
+export type ListUserFilterByAgeNameIsAdminRequest = Message<"entlite.ListUserFilterByAgeNameIsAdminRequest"> & {
+  /**
+   * @generated from field: int32 limit = 1;
+   */
+  limit: number;
+
+  /**
+   * @generated from field: int32 offset = 2;
+   */
+  offset: number;
+
+  /**
+   * @generated from field: int32 min_age = 3;
+   */
+  minAge: number;
+
+  /**
+   * @generated from field: int32 max_age = 4;
+   */
+  maxAge: number;
+
+  /**
+   * @generated from field: string name = 5;
+   */
+  name: string;
+
+  /**
+   * @generated from field: optional bool is_admin = 6;
+   */
+  isAdmin?: boolean;
+};
+
+/**
+ * Describes the message entlite.ListUserFilterByAgeNameIsAdminRequest.
+ * Use `create(ListUserFilterByAgeNameIsAdminRequestSchema)` to create a new message.
+ */
+export const ListUserFilterByAgeNameIsAdminRequestSchema: GenMessage<ListUserFilterByAgeNameIsAdminRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 9);
+
+/**
+ * @generated from message entlite.ListUserFilterByAgeNameIsAdminResponse
+ */
+export type ListUserFilterByAgeNameIsAdminResponse = Message<"entlite.ListUserFilterByAgeNameIsAdminResponse"> & {
+  /**
+   * @generated from field: repeated entlite.User users = 1;
+   */
+  users: User[];
+};
+
+/**
+ * Describes the message entlite.ListUserFilterByAgeNameIsAdminResponse.
+ * Use `create(ListUserFilterByAgeNameIsAdminResponseSchema)` to create a new message.
+ */
+export const ListUserFilterByAgeNameIsAdminResponseSchema: GenMessage<ListUserFilterByAgeNameIsAdminResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 10);
 
 /**
  * UserService provides CRUD opertions for User entities
@@ -382,6 +441,14 @@ export const UserService: GenService<{
     methodKind: "unary";
     input: typeof ListUserByAgeRequestSchema;
     output: typeof ListUserByAgeResponseSchema;
+  },
+  /**
+   * @generated from rpc entlite.UserService.FilterByAgeNameIsAdmin
+   */
+  filterByAgeNameIsAdmin: {
+    methodKind: "unary";
+    input: typeof ListUserFilterByAgeNameIsAdminRequestSchema;
+    output: typeof ListUserFilterByAgeNameIsAdminResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_schema, 0);

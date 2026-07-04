@@ -82,6 +82,19 @@ func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]*User, error
 	return result, nil
 }
 
+type ListUserFilterByAgeNameIsAdminParams = internal.ListUserFilterByAgeNameIsAdminParams
+func (q *Queries) ListUserFilterByAgeNameIsAdmin(ctx context.Context, arg ListUserFilterByAgeNameIsAdminParams) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeNameIsAdmin(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*User, len(dbResults))
+	for i := range dbResults {
+		result[i] = UserFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
 type UpdateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`

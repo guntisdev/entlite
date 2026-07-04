@@ -17,6 +17,9 @@ type UserServer struct {
 	db *sql.DB
 }
 
+// enforces implementation of proto methods
+var _ pb.UserServiceHandler = (*UserServer)(nil)
+
 func NewUserServiceServer(db *sql.DB) *UserServer {
 	return &UserServer{
 		db: db,
@@ -163,11 +166,12 @@ func (s *UserServer) ListByAge(
 	ctx context.Context,
 	req *connect.Request[pb.ListUserByAgeRequest],
 ) (*connect.Response[pb.ListUserByAgeResponse], error) {
-	log.Printf("List users by age: age=%d", req.Msg.Age)
+	log.Printf("List users by age: age=%d", req.Msg.GetAge())
 
 	queries := db.New(s.db)
 
-	dbUsers, err := queries.ListUserByAge(ctx, db.IntPtrConvert[int32, int64](&req.Msg.Age))
+	age := req.Msg.GetAge()
+	dbUsers, err := queries.ListUserByAge(ctx, db.IntPtrConvert[int32, int64](&age))
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
@@ -178,6 +182,40 @@ func (s *UserServer) ListByAge(
 	}
 
 	response := &pb.ListUserByAgeResponse{
+		Users: pbUsers,
+	}
+
+	return connect.NewResponse(response), nil
+}
+
+func (s *UserServer) FilterByAgeNameIsAdmin(
+	ctx context.Context,
+	req *connect.Request[pb.ListUserFilterByAgeNameIsAdminRequest],
+) (*connect.Response[pb.ListUserFilterByAgeNameIsAdminResponse], error) {
+	log.Printf("Filter users: min_age=%d, max_age=%d, name=%s, is_admin=%t",
+		req.Msg.GetMinAge(), req.Msg.GetMaxAge(), req.Msg.GetName(), req.Msg.GetIsAdmin())
+
+	queries := db.New(s.db)
+
+	minAge := req.Msg.GetMinAge()
+	maxAge := req.Msg.GetMaxAge()
+	isAdmin := req.Msg.GetIsAdmin()
+	dbUsers, err := queries.ListUserFilterByAgeNameIsAdmin(ctx, db.ListUserFilterByAgeNameIsAdminParams{
+		MinAge:  db.IntPtrConvert[int32, int64](&minAge),
+		MaxAge:  db.IntPtrConvert[int32, int64](&maxAge),
+		Name:    req.Msg.GetName(),
+		IsAdmin: db.SQLiteBoolToInt(isAdmin),
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
+	}
+
+	pbUsers := make([]*pb.User, len(dbUsers))
+	for i, dbUser := range dbUsers {
+		pbUsers[i] = dbUser.ToProto()
+	}
+
+	response := &pb.ListUserFilterByAgeNameIsAdminResponse{
 		Users: pbUsers,
 	}
 
