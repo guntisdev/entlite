@@ -64,6 +64,10 @@ message GetUserByNameAgeRequest {
 message ListUserFilterByAgeNameIsAdminRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
   int32 offset = 2;
+  int32 min_age = 3 [(buf.validate.field).required = true];
+  int32 max_age = 4 [(buf.validate.field).required = true];
+  string name = 5 [(buf.validate.field).required = true];
+  optional bool is_admin = 6;
 }
 
 message ListUserFilterByAgeNameIsAdminResponse {
