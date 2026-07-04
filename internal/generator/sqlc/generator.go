@@ -197,30 +197,21 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		methodName := util.GenListMethodName(query, entity.Name)
 		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", methodName))
 		var whereParts []string
-		var i = 0
 		for _, fieldName := range query.Fields {
-			i++
-			// TODO change to named parameters
-			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i)))
+			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.namedArg(fieldName)))
 		}
 		for _, filter := range query.Filters {
 			switch filter.Type {
 			case schema.QueryFilterEq:
-				i++
-				whereParts = append(whereParts, fmt.Sprintf("%s = %s", filter.Field, g.getParameterPlaceholder(i)))
+				whereParts = append(whereParts, fmt.Sprintf("%s = %s", filter.Field, g.namedArg(filter.Field)))
 
 			case schema.QueryFilterSearch:
-				i++
-				whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", filter.Field, g.getParameterPlaceholder(i)))
+				whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", filter.Field, g.namedArg(filter.Field)))
 
 			case schema.QueryFilterRange:
-				i++
-				minPlaceholder := g.getParameterPlaceholder(i)
-				i++
-				maxPlaceholder := g.getParameterPlaceholder(i)
-
-				// TODO change to named parameters
-				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", filter.Field, minPlaceholder, maxPlaceholder))
+				minArg := g.namedArg("min_" + filter.Field)
+				maxArg := g.namedArg("max_" + filter.Field)
+				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", filter.Field, minArg, maxArg))
 			}
 		}
 		// TODO implement !permissions.DbRead

@@ -40,7 +40,7 @@ SELECT * FROM "user" WHERE email = ?;
 SELECT * FROM "user" WHERE name = ? AND age = ?;
 
 -- name: ListUserFilterByAgeNameIsAdmin :many
-SELECT * FROM "user" WHERE age BETWEEN ? AND ? AND name LIKE ? AND is_admin = ?;
+SELECT * FROM "user" WHERE age BETWEEN :min_age AND :max_age AND name LIKE :name AND is_admin = :is_admin;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
