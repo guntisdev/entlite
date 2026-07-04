@@ -159,15 +159,24 @@ func (s *UserServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *UserServer) ListByAge(
+func (s *UserServer) FilterByAgeNameIsAdmin(
 	ctx context.Context,
-	req *connect.Request[pb.ListUserByAgeRequest],
-) (*connect.Response[pb.ListUserByAgeResponse], error) {
-	log.Printf("List users by age: age=%d", req.Msg.Age)
+	req *connect.Request[pb.ListUserFilterByAgeNameIsAdminRequest],
+) (*connect.Response[pb.ListUserFilterByAgeNameIsAdminResponse], error) {
+	log.Printf("Filter users: min_age=%d, max_age=%d, name=%s, is_admin=%t",
+		req.Msg.GetMinAge(), req.Msg.GetMaxAge(), req.Msg.GetName(), req.Msg.GetIsAdmin())
 
 	queries := db.New(s.db)
 
-	dbUsers, err := queries.ListUserByAge(ctx, db.IntPtrConvert[int32, int64](&req.Msg.Age))
+	minAge := req.Msg.GetMinAge()
+	maxAge := req.Msg.GetMaxAge()
+	isAdmin := req.Msg.GetIsAdmin()
+	dbUsers, err := queries.ListUserFilterByAgeNameIsAdmin(ctx, db.ListUserFilterByAgeNameIsAdminParams{
+		MinAge:  db.IntPtrConvert[int32, int64](&minAge),
+		MaxAge:  db.IntPtrConvert[int32, int64](&maxAge),
+		Name:    req.Msg.GetName(),
+		IsAdmin: db.SQLiteBoolToInt(isAdmin),
+	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
@@ -177,7 +186,7 @@ func (s *UserServer) ListByAge(
 		pbUsers[i] = dbUser.ToProto()
 	}
 
-	response := &pb.ListUserByAgeResponse{
+	response := &pb.ListUserFilterByAgeNameIsAdminResponse{
 		Users: pbUsers,
 	}
 
