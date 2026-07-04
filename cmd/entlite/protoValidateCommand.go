@@ -6,21 +6,24 @@ import (
 	"path"
 
 	protovalidate "github.com/guntisdev/entlite/internal/generator/protoValidate"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
-func protoValidate(args []string) {
-	if len(args) < 1 {
-		fmt.Fprintf(os.Stderr, "Error: need at least one argument for output directory\n")
-		os.Exit(1)
-	}
-
-	outputDir := args[0]
+func protoValidate() {
 	entityDir := "./schema"
 	parsedEntities, err := loadEntities(entityDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading entities: %v\n", err)
 		os.Exit(1)
 	}
+
+	bufConfig, err := util.GetBufConfigFromYaml("./buf.gen.yaml")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed reading buf.gen.yaml: %v\n", err)
+		os.Exit(1)
+	}
+
+	outputDir := bufConfig.ProtoTypesDir
 
 	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
 		fmt.Fprintf(os.Stderr, "Output directory does not exist, must be created by buf %v\n", err)
