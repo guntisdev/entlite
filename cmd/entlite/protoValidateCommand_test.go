@@ -43,7 +43,23 @@ func TestProtoValidateCommand(t *testing.T) {
 	}
 	defer os.Chdir(originalDir)
 
-	protoValidate([]string{pbDir})
+	bufGenYamlContent := `version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/go:v1.34.2
+    out: gen/pb
+    opt: paths=source_relative
+  - remote: buf.build/connectrpc/go
+    out: gen/pb
+    opt:
+      - paths=source_relative
+      - package_suffix=
+`
+	bufGenYamlPath := filepath.Join(tmpDir, "ent", "buf.gen.yaml")
+	if err := os.WriteFile(bufGenYamlPath, []byte(bufGenYamlContent), 0644); err != nil {
+		t.Fatalf("Failed to write buf.gen.yaml file: %v", err)
+	}
+
+	protoValidate()
 
 	validatePath := filepath.Join(pbDir, "proto_validate.go")
 	if _, err := os.Stat(validatePath); os.IsNotExist(err) {

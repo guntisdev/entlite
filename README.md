@@ -31,12 +31,11 @@ func (User) Queries() []entlite.Query {
     }
 }
 ```
-* Rename entlite.Service() to entlite.GRPC() . Later could think about .REST
 * Move default crud methods from entlite.GRPC() to Queries
 * Make annotations optional
 * Hande composite indexes (set it with `func (User) Indexes() []entlite.Index`)
-* Add bulk insert and deleteAll queries
 * Add .Indexes() for fields (to index in sql)
+* Add bulk insert and deleteAll queries
 * Figure out migration
 
 ## Folder structure
