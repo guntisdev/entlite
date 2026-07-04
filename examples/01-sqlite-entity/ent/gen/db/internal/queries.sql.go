@@ -162,12 +162,24 @@ func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgePara
 	return i, err
 }
 
-const listUserByAge = `-- name: ListUserByAge :many
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE age = ?
+const listUserFilterByAgeNameIsAdmin = `-- name: ListUserFilterByAgeNameIsAdmin :many
+SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE age BETWEEN ?1 AND ?2 AND name LIKE ?3 AND is_admin = ?4
 `
 
-func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUserByAge, age)
+type ListUserFilterByAgeNameIsAdminParams struct {
+	MinAge  *int64 `json:"min_age"`
+	MaxAge  *int64 `json:"max_age"`
+	Name    string `json:"name"`
+	IsAdmin int64  `json:"is_admin"`
+}
+
+func (q *Queries) ListUserFilterByAgeNameIsAdmin(ctx context.Context, arg ListUserFilterByAgeNameIsAdminParams) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listUserFilterByAgeNameIsAdmin,
+		arg.MinAge,
+		arg.MaxAge,
+		arg.Name,
+		arg.IsAdmin,
+	)
 	if err != nil {
 		return nil, err
 	}

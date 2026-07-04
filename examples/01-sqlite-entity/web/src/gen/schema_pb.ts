@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASJEChdHZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBIUCgRuYW1lGAMgASgJQga6SAPIAQESEwoDYWdlGAQgASgFQga6SAPIAQEiUgoUTGlzdFVzZXJCeUFnZVJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSEwoDYWdlGAQgASgFQga6SAPIAQEiNQoVTGlzdFVzZXJCeUFnZVJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyMrYDCgtVc2VyU2VydmljZRIzCgZDcmVhdGUSGi5lbnRsaXRlLkNyZWF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjUKB0dldEJ5SUQSGy5lbnRsaXRlLkdldFVzZXJCeUlEUmVxdWVzdBoNLmVudGxpdGUuVXNlchIzCgZVcGRhdGUSGi5lbnRsaXRlLlVwZGF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjwKBkRlbGV0ZRIaLmVudGxpdGUuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSOwoKR2V0QnlFbWFpbBIeLmVudGxpdGUuR2V0VXNlckJ5RW1haWxSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEj8KDEdldEJ5TmFtZUFnZRIgLmVudGxpdGUuR2V0VXNlckJ5TmFtZUFnZVJlcXVlc3QaDS5lbnRsaXRlLlVzZXISSgoJTGlzdEJ5QWdlEh0uZW50bGl0ZS5MaXN0VXNlckJ5QWdlUmVxdWVzdBoeLmVudGxpdGUuTGlzdFVzZXJCeUFnZVJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASJEChdHZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBIUCgRuYW1lGAMgASgJQga6SAPIAQESEwoDYWdlGAQgASgFQga6SAPIAQEiugEKJUxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lSXNBZG1pblJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSFwoHbWluX2FnZRgDIAEoBUIGukgDyAEBEhcKB21heF9hZ2UYBCABKAVCBrpIA8gBARIUCgRuYW1lGAUgASgJQga6SAPIAQESFQoIaXNfYWRtaW4YBiABKAhIAIgBAUILCglfaXNfYWRtaW4iRgomTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVJc0FkbWluUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIy5QMKC1VzZXJTZXJ2aWNlEjMKBkNyZWF0ZRIaLmVudGxpdGUuQ3JlYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISNQoHR2V0QnlJRBIbLmVudGxpdGUuR2V0VXNlckJ5SURSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgpHZXRCeUVtYWlsEh4uZW50bGl0ZS5HZXRVc2VyQnlFbWFpbFJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPwoMR2V0QnlOYW1lQWdlEiAuZW50bGl0ZS5HZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBoNLmVudGxpdGUuVXNlchJ5ChZGaWx0ZXJCeUFnZU5hbWVJc0FkbWluEi4uZW50bGl0ZS5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZUlzQWRtaW5SZXF1ZXN0Gi8uZW50bGl0ZS5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZUlzQWRtaW5SZXNwb25zZUIGWgQuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -278,9 +278,9 @@ export const GetUserByNameAgeRequestSchema: GenMessage<GetUserByNameAgeRequest> 
   messageDesc(file_schema, 6);
 
 /**
- * @generated from message entlite.ListUserByAgeRequest
+ * @generated from message entlite.ListUserFilterByAgeNameIsAdminRequest
  */
-export type ListUserByAgeRequest = Message<"entlite.ListUserByAgeRequest"> & {
+export type ListUserFilterByAgeNameIsAdminRequest = Message<"entlite.ListUserFilterByAgeNameIsAdminRequest"> & {
   /**
    * @generated from field: int32 limit = 1;
    */
@@ -292,22 +292,37 @@ export type ListUserByAgeRequest = Message<"entlite.ListUserByAgeRequest"> & {
   offset: number;
 
   /**
-   * @generated from field: int32 age = 4;
+   * @generated from field: int32 min_age = 3;
    */
-  age: number;
+  minAge: number;
+
+  /**
+   * @generated from field: int32 max_age = 4;
+   */
+  maxAge: number;
+
+  /**
+   * @generated from field: string name = 5;
+   */
+  name: string;
+
+  /**
+   * @generated from field: optional bool is_admin = 6;
+   */
+  isAdmin?: boolean;
 };
 
 /**
- * Describes the message entlite.ListUserByAgeRequest.
- * Use `create(ListUserByAgeRequestSchema)` to create a new message.
+ * Describes the message entlite.ListUserFilterByAgeNameIsAdminRequest.
+ * Use `create(ListUserFilterByAgeNameIsAdminRequestSchema)` to create a new message.
  */
-export const ListUserByAgeRequestSchema: GenMessage<ListUserByAgeRequest> = /*@__PURE__*/
+export const ListUserFilterByAgeNameIsAdminRequestSchema: GenMessage<ListUserFilterByAgeNameIsAdminRequest> = /*@__PURE__*/
   messageDesc(file_schema, 7);
 
 /**
- * @generated from message entlite.ListUserByAgeResponse
+ * @generated from message entlite.ListUserFilterByAgeNameIsAdminResponse
  */
-export type ListUserByAgeResponse = Message<"entlite.ListUserByAgeResponse"> & {
+export type ListUserFilterByAgeNameIsAdminResponse = Message<"entlite.ListUserFilterByAgeNameIsAdminResponse"> & {
   /**
    * @generated from field: repeated entlite.User users = 1;
    */
@@ -315,10 +330,10 @@ export type ListUserByAgeResponse = Message<"entlite.ListUserByAgeResponse"> & {
 };
 
 /**
- * Describes the message entlite.ListUserByAgeResponse.
- * Use `create(ListUserByAgeResponseSchema)` to create a new message.
+ * Describes the message entlite.ListUserFilterByAgeNameIsAdminResponse.
+ * Use `create(ListUserFilterByAgeNameIsAdminResponseSchema)` to create a new message.
  */
-export const ListUserByAgeResponseSchema: GenMessage<ListUserByAgeResponse> = /*@__PURE__*/
+export const ListUserFilterByAgeNameIsAdminResponseSchema: GenMessage<ListUserFilterByAgeNameIsAdminResponse> = /*@__PURE__*/
   messageDesc(file_schema, 8);
 
 /**
@@ -376,12 +391,12 @@ export const UserService: GenService<{
     output: typeof UserSchema;
   },
   /**
-   * @generated from rpc entlite.UserService.ListByAge
+   * @generated from rpc entlite.UserService.FilterByAgeNameIsAdmin
    */
-  listByAge: {
+  filterByAgeNameIsAdmin: {
     methodKind: "unary";
-    input: typeof ListUserByAgeRequestSchema;
-    output: typeof ListUserByAgeResponseSchema;
+    input: typeof ListUserFilterByAgeNameIsAdminRequestSchema;
+    output: typeof ListUserFilterByAgeNameIsAdminResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_schema, 0);
