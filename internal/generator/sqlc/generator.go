@@ -249,13 +249,13 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 				// This makes the field optional in updates - if NULL is passed, keep existing value
 				fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
 			} else {
-				fieldUpdate = fmt.Sprintf("  %s = sqlc.arg('%s')", field.Name, field.Name)
+				fieldUpdate = fmt.Sprintf("  %s = %s", field.Name, g.namedArg(field.Name))
 			}
 			updateFields = append(updateFields, fieldUpdate)
 		}
 
 		content.WriteString(strings.Join(updateFields, ",\n"))
-		content.WriteString(fmt.Sprintf("\nWHERE %s = sqlc.arg('%s')", idField.Name, idField.Name))
+		content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField.Name, g.namedArg(idField.Name)))
 		if g.supportsReturning() {
 			content.WriteString("\nRETURNING *;\n")
 		} else {
