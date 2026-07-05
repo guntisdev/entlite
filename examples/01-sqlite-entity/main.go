@@ -34,7 +34,10 @@ func main() {
 	mux := http.NewServeMux()
 	path, handler := pb.NewUserServiceHandler(
 		userService,
-		connect.WithInterceptors(validate.NewInterceptor()),
+		connect.WithInterceptors(
+			validate.NewInterceptor(),
+			server.NewValidateInterceptor(),
+		),
 	)
 	mux.Handle(path, handler)
 
