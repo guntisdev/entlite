@@ -36,7 +36,7 @@ func main() {
 		userService,
 		connect.WithInterceptors(
 			validate.NewInterceptor(),
-			server.NewValidateInterceptor(),
+			pb.NewValidateInterceptor(),
 		),
 	)
 	mux.Handle(path, handler)

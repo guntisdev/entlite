@@ -13,7 +13,6 @@ func GetUuidStr() string {
 }
 
 func StartsWithCapital(s string) bool {
-	fmt.Println("!!!!! validate StartsWithCapital")
 	if len(s) == 0 {
 		return false
 	}
