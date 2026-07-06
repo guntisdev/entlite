@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package entlite;
+
+option go_package = "./pb";
+
+import "google/protobuf/timestamp.proto";
+import "buf/validate/validate.proto";
+
+// Pulls in the DSL-generated Sensor message so the hand-written service below
+// can reuse it. buf compiles every .proto in contract/proto, and entlite never
+// overwrites this file, so it coexists with the generated schema.proto.
+import "schema.proto";
+
+// --- Aggregate statistics over a sensor's readings -------------------------
+
+message GetSensorReadingStatsRequest {
+  int32 sensor_id = 1 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp from_ts = 2 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp to_ts = 3 [(buf.validate.field).required = true];
+}
+
+message SensorReadingStats {
+  int64 reading_count = 1;
+  double avg_value = 2;
+  double min_value = 3;
+  double max_value = 4;
+}
+
+// --- Sensors joined with their latest reading ------------------------------
+
+message ListSensorsWithLatestReadingRequest {
+  int32 limit = 1 [(buf.validate.field).required = true];
+  int32 offset = 2;
+}
+
+message SensorWithLatestReading {
+  // Reuses the generated Sensor message (from schema.proto).
+  Sensor sensor = 1;
+  optional double latest_value = 2;
+  optional google.protobuf.Timestamp latest_recorded_at = 3;
+}
+
+message ListSensorsWithLatestReadingResponse {
+  repeated SensorWithLatestReading items = 1;
+}
+
+// --- Retention / maintenance ----------------------------------------------
+
+message PruneReadingsRequest {
+  google.protobuf.Timestamp cutoff = 1 [(buf.validate.field).required = true];
+}
+
+message PruneReadingsResponse {
+  int64 deleted = 1;
+}
+
+// SensorAnalyticsService is entirely hand-written. It sits next to the
+// DSL-generated SensorService / ReadingService in the same package and is
+// wired to the custom.sql queries in server code.
+service SensorAnalyticsService {
+  rpc GetReadingStats(GetSensorReadingStatsRequest) returns (SensorReadingStats);
+  rpc ListWithLatestReading(ListSensorsWithLatestReadingRequest) returns (ListSensorsWithLatestReadingResponse);
+  rpc PruneReadings(PruneReadingsRequest) returns (PruneReadingsResponse);
+}

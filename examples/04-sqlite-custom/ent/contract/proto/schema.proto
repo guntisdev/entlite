@@ -1,0 +1,165 @@
+syntax = "proto3";
+
+package entlite;
+
+option go_package = "./pb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "buf/validate/validate.proto";
+
+// Reading represents as reading entity
+message Reading {
+  int32 ID = 1 [(buf.validate.field).required = true];
+  // References sensor.ID
+  int32 sensor_id = 2 [(buf.validate.field).required = true];
+  double value = 3 [(buf.validate.field).required = true];
+  // Signal quality 0-100
+  optional int32 quality = 4;
+  // Marked as anomalous by ingestion
+  bool flagged = 5;
+  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp created_at = 7 [(buf.validate.field).required = true];
+}
+
+// Sensor represents as sensor entity
+message Sensor {
+  int32 ID = 1 [(buf.validate.field).required = true];
+  // External hardware identifier, e.g. TEMP-A1
+  string code = 2 [(buf.validate.field).required = true];
+  // Human friendly name
+  string label = 3 [(buf.validate.field).required = true];
+  // temperature | humidity | pressure | motion
+  string kind = 4 [(buf.validate.field).required = true];
+  // Measurement unit, e.g. celsius
+  string unit = 5 [(buf.validate.field).required = true];
+  optional string location = 6;
+  bool active = 7;
+  string firmware = 8 [(buf.validate.field).required = true];
+  // Sampling interval in milliseconds
+  int32 sample_rate_ms = 9 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp installed_at = 10 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp created_at = 11 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
+}
+
+message CreateReadingRequest {
+  // References sensor.ID
+  int32 sensor_id = 2 [(buf.validate.field).required = true];
+  double value = 3 [(buf.validate.field).required = true];
+  // Signal quality 0-100
+  optional int32 quality = 4;
+  // Marked as anomalous by ingestion
+  optional bool flagged = 5;
+  optional google.protobuf.Timestamp recorded_at = 6;
+}
+message GetReadingByIDRequest {
+  int32 ID = 1 [(buf.validate.field).required = true];
+}
+message UpdateReadingRequest {
+  int32 ID = 1 [(buf.validate.field).required = true];
+  // References sensor.ID
+  int32 sensor_id = 2 [(buf.validate.field).required = true];
+  double value = 3 [(buf.validate.field).required = true];
+  // Signal quality 0-100
+  optional int32 quality = 4;
+  // Marked as anomalous by ingestion
+  optional bool flagged = 5;
+  optional google.protobuf.Timestamp recorded_at = 6;
+}
+message DeleteReadingRequest {
+  int32 ID = 1 [(buf.validate.field).required = true];
+}
+message ListReadingBySensorIdRequest {
+  int32 limit = 1 [(buf.validate.field).required = true];
+  int32 offset = 2;
+  int32 sensor_id = 3 [(buf.validate.field).required = true];
+}
+
+message ListReadingBySensorIdResponse {
+  repeated Reading readings = 1;
+}
+message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
+  int32 limit = 1 [(buf.validate.field).required = true];
+  int32 offset = 2;
+  int32 sensor_id = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp min_recorded_at = 4 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp max_recorded_at = 5 [(buf.validate.field).required = true];
+  optional bool flagged = 6;
+}
+
+message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
+  repeated Reading readings = 1;
+}
+
+// ReadingService provides CRUD opertions for Reading entities
+service ReadingService {
+  rpc Create(CreateReadingRequest) returns (Reading);
+  rpc GetByID(GetReadingByIDRequest) returns (Reading);
+  rpc Update(UpdateReadingRequest) returns (Reading);
+  rpc Delete(DeleteReadingRequest) returns (google.protobuf.Empty);
+  rpc ListBySensorId(ListReadingBySensorIdRequest) returns (ListReadingBySensorIdResponse);
+  rpc FilterBySensorIdRecordedAtFlagged(ListReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListReadingFilterBySensorIdRecordedAtFlaggedResponse);
+}
+
+message CreateSensorRequest {
+  // External hardware identifier, e.g. TEMP-A1
+  string code = 2 [(buf.validate.field).required = true];
+  // Human friendly name
+  string label = 3 [(buf.validate.field).required = true];
+  // temperature | humidity | pressure | motion
+  string kind = 4 [(buf.validate.field).required = true];
+  // Measurement unit, e.g. celsius
+  string unit = 5 [(buf.validate.field).required = true];
+  optional string location = 6;
+  optional bool active = 7;
+  optional string firmware = 8;
+  // Sampling interval in milliseconds
+  optional int32 sample_rate_ms = 9;
+}
+message GetSensorByIDRequest {
+  int32 ID = 1 [(buf.validate.field).required = true];
+}
+message UpdateSensorRequest {
+  int32 ID = 1 [(buf.validate.field).required = true];
+  // External hardware identifier, e.g. TEMP-A1
+  string code = 2 [(buf.validate.field).required = true];
+  // Human friendly name
+  string label = 3 [(buf.validate.field).required = true];
+  // temperature | humidity | pressure | motion
+  string kind = 4 [(buf.validate.field).required = true];
+  // Measurement unit, e.g. celsius
+  string unit = 5 [(buf.validate.field).required = true];
+  optional string location = 6;
+  optional bool active = 7;
+  optional string firmware = 8;
+  // Sampling interval in milliseconds
+  optional int32 sample_rate_ms = 9;
+}
+message DeleteSensorRequest {
+  int32 ID = 1 [(buf.validate.field).required = true];
+}
+message GetSensorByCodeRequest {
+  string code = 2 [(buf.validate.field).required = true];
+}
+message ListSensorFilterByLabelKindActiveRequest {
+  int32 limit = 1 [(buf.validate.field).required = true];
+  int32 offset = 2;
+  string label = 3 [(buf.validate.field).required = true];
+  string kind = 4 [(buf.validate.field).required = true];
+  optional bool active = 5;
+}
+
+message ListSensorFilterByLabelKindActiveResponse {
+  repeated Sensor sensors = 1;
+}
+
+// SensorService provides CRUD opertions for Sensor entities
+service SensorService {
+  rpc Create(CreateSensorRequest) returns (Sensor);
+  rpc GetByID(GetSensorByIDRequest) returns (Sensor);
+  rpc Update(UpdateSensorRequest) returns (Sensor);
+  rpc Delete(DeleteSensorRequest) returns (google.protobuf.Empty);
+  rpc GetByCode(GetSensorByCodeRequest) returns (Sensor);
+  rpc FilterByLabelKindActive(ListSensorFilterByLabelKindActiveRequest) returns (ListSensorFilterByLabelKindActiveResponse);
+}
