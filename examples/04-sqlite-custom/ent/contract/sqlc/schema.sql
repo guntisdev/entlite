@@ -21,7 +21,7 @@ CREATE TABLE "sensor"(
   unit TEXT NOT NULL,
   location TEXT,
   active INTEGER DEFAULT true NOT NULL,
-  firmware TEXT DEFAULT 1.0.0 NOT NULL,
+  firmware TEXT DEFAULT '1.0.0' NOT NULL,
   sample_rate_ms INTEGER DEFAULT 1000 NOT NULL,
   installed_at DATETIME NOT NULL,
   created_at DATETIME NOT NULL,

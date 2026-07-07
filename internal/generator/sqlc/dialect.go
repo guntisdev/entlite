@@ -2,6 +2,7 @@ package sqlc
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
 )
@@ -151,6 +152,10 @@ func (g *Generator) formatDefaultValue(value any, fieldType schema.FieldType) st
 			}
 			return "false"
 		}
+	case schema.FieldTypeString:
+		// String literals must be single-quoted; escape embedded quotes.
+		s := fmt.Sprintf("%v", value)
+		return "'" + strings.ReplaceAll(s, "'", "''") + "'"
 	}
 
 	return fmt.Sprintf("%v", value)
