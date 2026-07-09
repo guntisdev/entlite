@@ -115,7 +115,7 @@ func (m *Reading) ToProto() *pb.Reading {
 
 	return &pb.Reading{
 		ID: m.ID,
-		SensorID: m.SensorID,
+		SensorId: m.SensorID,
 		Value: m.Value,
 		Quality: m.Quality,
 		Flagged: m.Flagged,

@@ -99,8 +99,7 @@ func snakeToCamelCase(s string) string {
 	return result
 }
 
-// commonInitialisms matches sqlc's initialism handling so that segments like
-// "id" become "ID" instead of "Id" (e.g. sensor_id -> SensorID).
+// commonInitialisms matches sqlc's initialism handling. ( sensor_id -> SensorID)
 var commonInitialisms = map[string]string{
 	"ACL":   "ACL",
 	"API":   "API",
@@ -141,6 +140,49 @@ var commonInitialisms = map[string]string{
 	"XSRF":  "XSRF",
 	"XSS":   "XSS",
 }
+
+// toProtoFieldName matches protoc-gen-go's Go struct field naming, which does
+// NOT apply Go initialisms (e.g. sensor_id -> SensorId, not SensorID).
+func toProtoFieldName(field schema.Field) string {
+	return protoGoCamelCase(field.Name)
+}
+
+// protoGoCamelCase is a copy of google.golang.org/protobuf/internal/strs.GoCamelCase,
+func protoGoCamelCase(s string) string {
+	var b []byte
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch {
+		case c == '.' && i+1 < len(s) && isASCIILower(s[i+1]):
+			// Skip over '.' in ".{{lowercase}}".
+		case c == '.':
+			b = append(b, '_') // convert '.' to '_'
+		case c == '_' && (i == 0 || s[i-1] == '.'):
+			// Convert initial '_' to ensure we start with a capital letter.
+			b = append(b, 'X') // convert '_' to 'X'
+		case c == '_' && i+1 < len(s) && isASCIILower(s[i+1]):
+			// Skip over '_' in "_{{lowercase}}".
+		case isASCIIDigit(c):
+			b = append(b, c)
+		default:
+			// Assume we have a letter now - if not, it's a bogus identifier.
+			// The next word is a sequence of characters that must start upper case.
+			if isASCIILower(c) {
+				c -= 'a' - 'A' // convert lowercase to uppercase
+			}
+			b = append(b, c)
+
+			// Accept lower case sequence that follows.
+			for ; i+1 < len(s) && isASCIILower(s[i+1]); i++ {
+				b = append(b, s[i+1])
+			}
+		}
+	}
+	return string(b)
+}
+
+func isASCIILower(c byte) bool { return 'a' <= c && c <= 'z' }
+func isASCIIDigit(c byte) bool { return '0' <= c && c <= '9' }
 
 func hasValidateField(entity schema.Entity) bool {
 	for _, field := range entity.Fields {

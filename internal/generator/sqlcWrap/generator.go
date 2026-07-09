@@ -585,16 +585,17 @@ func (ctx *generationContext) generateProtoConverter(entity schema.Entity) strin
 			continue
 		}
 
-		fieldName := toDBFieldName(field)
+		protoName := toProtoFieldName(field)
+		modelName := toDBFieldName(field)
 
 		if field.Type == schema.FieldTypeTime {
 			if field.Optional {
-				sb.WriteString(fmt.Sprintf("\t\t%s: func() *timestamppb.Timestamp { if m.%s != nil { return timestamppb.New(*m.%s) }; return nil }(),\n", fieldName, fieldName, fieldName))
+				sb.WriteString(fmt.Sprintf("\t\t%s: func() *timestamppb.Timestamp { if m.%s != nil { return timestamppb.New(*m.%s) }; return nil }(),\n", protoName, modelName, modelName))
 			} else {
-				sb.WriteString(fmt.Sprintf("\t\t%s: timestamppb.New(m.%s),\n", fieldName, fieldName))
+				sb.WriteString(fmt.Sprintf("\t\t%s: timestamppb.New(m.%s),\n", protoName, modelName))
 			}
 		} else {
-			sb.WriteString(fmt.Sprintf("\t\t%s: m.%s,\n", fieldName, fieldName))
+			sb.WriteString(fmt.Sprintf("\t\t%s: m.%s,\n", protoName, modelName))
 		}
 	}
 
