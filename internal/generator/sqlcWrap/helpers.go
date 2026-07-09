@@ -90,55 +90,14 @@ func snakeToCamelCase(s string) string {
 		if len(part) == 0 {
 			continue
 		}
-		if upper, ok := commonInitialisms[strings.ToUpper(part)]; ok {
-			result += upper
+		// sqlc converts to capital ID
+		if strings.ToLower(part) == "id" {
+			result += "ID"
 			continue
 		}
 		result += strings.ToUpper(part[:1]) + part[1:]
 	}
 	return result
-}
-
-// commonInitialisms matches sqlc's initialism handling. ( sensor_id -> SensorID)
-var commonInitialisms = map[string]string{
-	"ACL":   "ACL",
-	"API":   "API",
-	"ASCII": "ASCII",
-	"CPU":   "CPU",
-	"CSS":   "CSS",
-	"DNS":   "DNS",
-	"EOF":   "EOF",
-	"GUID":  "GUID",
-	"HTML":  "HTML",
-	"HTTP":  "HTTP",
-	"HTTPS": "HTTPS",
-	"ID":    "ID",
-	"IP":    "IP",
-	"JSON":  "JSON",
-	"LHS":   "LHS",
-	"QPS":   "QPS",
-	"RAM":   "RAM",
-	"RHS":   "RHS",
-	"RPC":   "RPC",
-	"SLA":   "SLA",
-	"SMTP":  "SMTP",
-	"SQL":   "SQL",
-	"SSH":   "SSH",
-	"TCP":   "TCP",
-	"TLS":   "TLS",
-	"TTL":   "TTL",
-	"UDP":   "UDP",
-	"UI":    "UI",
-	"UID":   "UID",
-	"UUID":  "UUID",
-	"URI":   "URI",
-	"URL":   "URL",
-	"UTF8":  "UTF8",
-	"VM":    "VM",
-	"XML":   "XML",
-	"XMPP":  "XMPP",
-	"XSRF":  "XSRF",
-	"XSS":   "XSS",
 }
 
 // toProtoFieldName matches protoc-gen-go's Go struct field naming, which does
