@@ -152,7 +152,7 @@ func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (*
 		SensorID: IntConvert[int32, int64](arg.SensorID),
 		Value: arg.Value,
 		Quality: IntConvert[int32, int64](arg.Quality),
-		Flagged: SQLiteBoolToInt(arg.Flagged),
+		Flagged: SQLiteBoolPtrToInt64Ptr(arg.Flagged),
 		RecordedAt: arg.RecordedAt,
 	}
 
@@ -186,7 +186,7 @@ func (q *Queries) UpdateSensor(ctx context.Context, arg UpdateSensorParams) (*Se
 		Kind: arg.Kind,
 		Unit: arg.Unit,
 		Location: arg.Location,
-		Active: SQLiteBoolToInt(arg.Active),
+		Active: SQLiteBoolPtrToInt64Ptr(arg.Active),
 		Firmware: arg.Firmware,
 		SampleRateMs: IntPtrConvert[int32, int64](arg.SampleRateMs),
 		UpdatedAt: time.Now(),

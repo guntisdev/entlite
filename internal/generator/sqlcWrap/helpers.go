@@ -224,6 +224,9 @@ func toExportedName(name string) string {
 func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect) string {
 	if sqlDialect == schema.SQLite {
 		if field.Type == schema.FieldTypeBool {
+			if field.Optional {
+				return fmt.Sprintf("SQLiteBoolPtrToInt64Ptr(%s)", pbFieldRef)
+			}
 			return fmt.Sprintf("SQLiteBoolToInt(%s)", pbFieldRef)
 		}
 		if field.Type == schema.FieldTypeInt {
@@ -266,6 +269,9 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect
 func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect schema.SQLDialect) string {
 	if sqlDialect == schema.SQLite {
 		if field.Type == schema.FieldTypeBool {
+			if field.Optional {
+				return fmt.Sprintf("SQLiteInt64PtrToBoolPtr(%s)", dbFieldRef)
+			}
 			return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
 		}
 		if field.Type == schema.FieldTypeInt {
