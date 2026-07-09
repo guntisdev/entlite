@@ -180,6 +180,59 @@ func toExportedName(name string) string {
 	return snakeToCamelCase(name)
 }
 
+// qualifyType renders a type expression, prefixing package-local exported
+// identifiers (types declared in the sqlc-generated package, e.g.
+// GetSensorReadingStatsRow) with pkg so they resolve from the wrapper package.
+// Already-qualified selectors (time.Time, sql.NullString) and builtins are left
+// as-is.
+func qualifyType(expr ast.Expr, pkg string) string {
+	switch t := expr.(type) {
+	case *ast.Ident:
+		if ast.IsExported(t.Name) {
+			return pkg + "." + t.Name
+		}
+		return t.Name
+	case *ast.StarExpr:
+		return "*" + qualifyType(t.X, pkg)
+	case *ast.ArrayType:
+		return "[]" + qualifyType(t.Elt, pkg)
+	case *ast.Ellipsis:
+		return "..." + qualifyType(t.Elt, pkg)
+	case *ast.MapType:
+		return "map[" + qualifyType(t.Key, pkg) + "]" + qualifyType(t.Value, pkg)
+	case *ast.SelectorExpr:
+		return formatType(t)
+	default:
+		return formatType(expr)
+	}
+}
+
+// usesPackage reports whether body references the package selector name (as
+// "name."), matching only at an identifier boundary so "time" does not match
+// inside "runtime.".
+func usesPackage(body, name string) bool {
+	sel := name + "."
+	from := 0
+	for {
+		i := strings.Index(body[from:], sel)
+		if i < 0 {
+			return false
+		}
+		pos := from + i
+		if pos == 0 || !isIdentByte(body[pos-1]) {
+			return true
+		}
+		from = pos + len(sel)
+	}
+}
+
+func isIdentByte(c byte) bool {
+	return c == '_' ||
+		(c >= 'a' && c <= 'z') ||
+		(c >= 'A' && c <= 'Z') ||
+		(c >= '0' && c <= '9')
+}
+
 func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect) string {
 	if sqlDialect == schema.SQLite {
 		if field.Type == schema.FieldTypeBool {

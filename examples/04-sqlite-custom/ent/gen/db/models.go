@@ -1,9 +1,9 @@
 package db
 
 import (
-	"time"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	pb "github.com/guntisdev/entlite/examples/04-sqlite-custom/ent/gen/pb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 	internal "github.com/guntisdev/entlite/examples/04-sqlite-custom/ent/gen/db/internal"
 )
 
