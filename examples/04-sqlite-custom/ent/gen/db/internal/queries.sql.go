@@ -33,7 +33,7 @@ INSERT INTO "reading" (
 type CreateReadingParams struct {
 	SensorID   int64     `json:"sensor_id"`
 	Value      float64   `json:"value"`
-	Quality    *int64    `json:"quality"`
+	Quality    int64     `json:"quality"`
 	Flagged    int64     `json:"flagged"`
 	RecordedAt time.Time `json:"recorded_at"`
 	CreatedAt  time.Time `json:"created_at"`
@@ -339,7 +339,7 @@ RETURNING id, sensor_id, value, quality, flagged, recorded_at, created_at
 type UpdateReadingParams struct {
 	SensorID   int64      `json:"sensor_id"`
 	Value      float64    `json:"value"`
-	Quality    *int64     `json:"quality"`
+	Quality    int64      `json:"quality"`
 	Flagged    *int64     `json:"flagged"`
 	RecordedAt *time.Time `json:"recorded_at"`
 	ID         int64      `json:"ID"`

@@ -15,7 +15,7 @@ message Reading {
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100
-  optional int32 quality = 4;
+  int32 quality = 4 [(buf.validate.field).required = true];
   // Marked as anomalous by ingestion
   bool flagged = 5;
   google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
@@ -48,7 +48,7 @@ message CreateReadingRequest {
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100
-  optional int32 quality = 4;
+  int32 quality = 4 [(buf.validate.field).required = true];
   // Marked as anomalous by ingestion
   optional bool flagged = 5;
   optional google.protobuf.Timestamp recorded_at = 6;
@@ -62,7 +62,7 @@ message UpdateReadingRequest {
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100
-  optional int32 quality = 4;
+  int32 quality = 4 [(buf.validate.field).required = true];
   // Marked as anomalous by ingestion
   optional bool flagged = 5;
   optional google.protobuf.Timestamp recorded_at = 6;

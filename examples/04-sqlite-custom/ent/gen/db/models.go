@@ -12,7 +12,7 @@ type Reading struct {
 	ID int32 `json:"ID"`
 	SensorId int32 `json:"sensor_id"`
 	Value float64 `json:"value"`
-	Quality *int32 `json:"quality"`
+	Quality int32 `json:"quality"`
 	Flagged bool `json:"flagged"`
 	RecordedAt time.Time `json:"recorded_at"`
 	CreatedAt time.Time `json:"created_at"`
@@ -42,7 +42,7 @@ func (m *Reading) ReadingToSQL() *internal.Reading {
 		ID: IntConvert[int32, int64](m.ID),
 		SensorId: IntConvert[int32, int64](m.SensorId),
 		Value: m.Value,
-		Quality: IntPtrConvert[int32, int64](m.Quality),
+		Quality: IntConvert[int32, int64](m.Quality),
 		Flagged: SQLiteBoolToInt(m.Flagged),
 		RecordedAt: m.RecordedAt,
 		CreatedAt: m.CreatedAt,
@@ -58,7 +58,7 @@ func ReadingFromSQL(db *internal.Reading) *Reading {
 		ID: IntConvert[int64, int32](db.ID),
 		SensorId: IntConvert[int64, int32](db.SensorId),
 		Value: db.Value,
-		Quality: IntPtrConvert[int64, int32](db.Quality),
+		Quality: IntConvert[int64, int32](db.Quality),
 		Flagged: SQLiteIntToBool(db.Flagged),
 		RecordedAt: db.RecordedAt,
 		CreatedAt: db.CreatedAt,

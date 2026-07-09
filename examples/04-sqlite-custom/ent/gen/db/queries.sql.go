@@ -10,7 +10,7 @@ import (
 
 type CreateReadingParams struct {
 	Value float64 `json:"value"`
-	Quality *int32 `json:"quality"`
+	Quality int32 `json:"quality"`
 	Flagged *bool `json:"flagged"`
 	RecordedAt *time.Time `json:"recorded_at"`
 }
@@ -22,7 +22,7 @@ func (q *Queries) CreateReading(ctx context.Context, arg CreateReadingParams) (i
 	internalArg := internal.CreateReadingParams{
 		SensorId: IntConvert[int32, int64](arg.SensorId),
 		Value: arg.Value,
-		Quality: IntPtrConvert[int32, int64](arg.Quality),
+		Quality: IntConvert[int32, int64](arg.Quality),
 		Flagged: OptionalWithFallback(SQLiteBoolToInt(arg.Flagged), false),
 		RecordedAt: OptionalWithFallback(arg.RecordedAt, time.Now()),
 		CreatedAt: time.Now(),
@@ -135,7 +135,7 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 
 type UpdateReadingParams struct {
 	Value float64 `json:"value"`
-	Quality *int32 `json:"quality"`
+	Quality int32 `json:"quality"`
 	Flagged *bool `json:"flagged"`
 	RecordedAt *time.Time `json:"recorded_at"`
 	ID int32 `json:"ID"`
@@ -149,7 +149,7 @@ func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (*
 		ID: IntConvert[int32, int64](arg.ID),
 		SensorId: IntConvert[int32, int64](arg.SensorId),
 		Value: arg.Value,
-		Quality: IntPtrConvert[int32, int64](arg.Quality),
+		Quality: IntConvert[int32, int64](arg.Quality),
 		Flagged: SQLiteBoolToInt(arg.Flagged),
 		RecordedAt: arg.RecordedAt,
 	}

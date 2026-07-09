@@ -12,7 +12,7 @@ type Reading struct {
 	ID         int64     `json:"id"`
 	SensorID   int64     `json:"sensor_id"`
 	Value      float64   `json:"value"`
-	Quality    *int64    `json:"quality"`
+	Quality    int64     `json:"quality"`
 	Flagged    int64     `json:"flagged"`
 	RecordedAt time.Time `json:"recorded_at"`
 	CreatedAt  time.Time `json:"created_at"`

@@ -27,7 +27,7 @@ func (Reading) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.Int("sensor_id").ProtoField(2).Comment("References sensor.ID"),
 		field.Float("value"),
-		field.Int("quality").Optional().Validate(logic.IsPercentage).Comment("Signal quality 0-100"),
+		field.Int("quality").Validate(logic.IsPercentage).Comment("Signal quality 0-100"),
 		field.Bool("flagged").Default(false).Comment("Marked as anomalous by ingestion"),
 		field.Time("recorded_at").DefaultFunc(time.Now),
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),

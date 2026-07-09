@@ -6,7 +6,7 @@ CREATE TABLE "reading"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   sensor_id INTEGER NOT NULL,
   value REAL NOT NULL,
-  quality INTEGER,
+  quality INTEGER NOT NULL,
   flagged INTEGER DEFAULT false NOT NULL,
   recorded_at DATETIME NOT NULL,
   created_at DATETIME NOT NULL
