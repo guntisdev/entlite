@@ -9,6 +9,7 @@ import (
 )
 
 type CreateReadingParams struct {
+	SensorID int32 `json:"sensor_id"`
 	Value float64 `json:"value"`
 	Quality int32 `json:"quality"`
 	Flagged *bool `json:"flagged"`
@@ -20,7 +21,7 @@ func (q *Queries) CreateReading(ctx context.Context, arg CreateReadingParams) (i
 		return 0, fmt.Errorf("Failed create: incorrect value for 'Reading' in field 'quality', validated by 'logic.IsPercentage'")
 	}
 	internalArg := internal.CreateReadingParams{
-		SensorId: IntConvert[int32, int64](arg.SensorId),
+		SensorID: IntConvert[int32, int64](arg.SensorID),
 		Value: arg.Value,
 		Quality: IntConvert[int32, int64](arg.Quality),
 		Flagged: OptionalWithFallback(SQLiteBoolToInt(arg.Flagged), false),
@@ -134,6 +135,7 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 }
 
 type UpdateReadingParams struct {
+	SensorID int32 `json:"sensor_id"`
 	Value float64 `json:"value"`
 	Quality int32 `json:"quality"`
 	Flagged *bool `json:"flagged"`
@@ -147,7 +149,7 @@ func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (*
 	}
 	internalArg := internal.UpdateReadingParams{
 		ID: IntConvert[int32, int64](arg.ID),
-		SensorId: IntConvert[int32, int64](arg.SensorId),
+		SensorID: IntConvert[int32, int64](arg.SensorID),
 		Value: arg.Value,
 		Quality: IntConvert[int32, int64](arg.Quality),
 		Flagged: SQLiteBoolToInt(arg.Flagged),

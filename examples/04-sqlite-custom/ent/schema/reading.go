@@ -41,7 +41,7 @@ func (Reading) Queries() []entlite.Query {
 		query.ListBy(
 			filter.Eq("sensor_id"),
 			filter.Range("recorded_at"),
-			filter.Eq("flagged").Optional(),
+			filter.Eq("flagged"),
 		).Count().OrderBy("recorded_at"),
 	}
 }

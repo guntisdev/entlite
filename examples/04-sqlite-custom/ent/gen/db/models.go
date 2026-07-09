@@ -10,7 +10,7 @@ import (
 
 type Reading struct {
 	ID int32 `json:"ID"`
-	SensorId int32 `json:"sensor_id"`
+	SensorID int32 `json:"sensor_id"`
 	Value float64 `json:"value"`
 	Quality int32 `json:"quality"`
 	Flagged bool `json:"flagged"`
@@ -40,7 +40,7 @@ func (m *Reading) ReadingToSQL() *internal.Reading {
 
 	return &internal.Reading{
 		ID: IntConvert[int32, int64](m.ID),
-		SensorId: IntConvert[int32, int64](m.SensorId),
+		SensorID: IntConvert[int32, int64](m.SensorID),
 		Value: m.Value,
 		Quality: IntConvert[int32, int64](m.Quality),
 		Flagged: SQLiteBoolToInt(m.Flagged),
@@ -56,7 +56,7 @@ func ReadingFromSQL(db *internal.Reading) *Reading {
 
 	return &Reading{
 		ID: IntConvert[int64, int32](db.ID),
-		SensorId: IntConvert[int64, int32](db.SensorId),
+		SensorID: IntConvert[int64, int32](db.SensorID),
 		Value: db.Value,
 		Quality: IntConvert[int64, int32](db.Quality),
 		Flagged: SQLiteIntToBool(db.Flagged),
@@ -115,7 +115,7 @@ func (m *Reading) ToProto() *pb.Reading {
 
 	return &pb.Reading{
 		ID: m.ID,
-		SensorId: m.SensorId,
+		SensorID: m.SensorID,
 		Value: m.Value,
 		Quality: m.Quality,
 		Flagged: m.Flagged,

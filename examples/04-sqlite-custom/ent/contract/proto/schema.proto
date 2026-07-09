@@ -85,7 +85,7 @@ message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
   int32 sensor_id = 3 [(buf.validate.field).required = true];
   google.protobuf.Timestamp min_recorded_at = 4 [(buf.validate.field).required = true];
   google.protobuf.Timestamp max_recorded_at = 5 [(buf.validate.field).required = true];
-  optional bool flagged = 6;
+  bool flagged = 6 [(buf.validate.field).required = true];
 }
 
 message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {

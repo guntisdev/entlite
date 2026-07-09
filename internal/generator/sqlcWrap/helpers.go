@@ -87,11 +87,59 @@ func snakeToCamelCase(s string) string {
 	parts := strings.Split(s, "_")
 	result := ""
 	for _, part := range parts {
-		if len(part) > 0 {
-			result += strings.ToUpper(part[:1]) + part[1:]
+		if len(part) == 0 {
+			continue
 		}
+		if upper, ok := commonInitialisms[strings.ToUpper(part)]; ok {
+			result += upper
+			continue
+		}
+		result += strings.ToUpper(part[:1]) + part[1:]
 	}
 	return result
+}
+
+// commonInitialisms matches sqlc's initialism handling so that segments like
+// "id" become "ID" instead of "Id" (e.g. sensor_id -> SensorID).
+var commonInitialisms = map[string]string{
+	"ACL":   "ACL",
+	"API":   "API",
+	"ASCII": "ASCII",
+	"CPU":   "CPU",
+	"CSS":   "CSS",
+	"DNS":   "DNS",
+	"EOF":   "EOF",
+	"GUID":  "GUID",
+	"HTML":  "HTML",
+	"HTTP":  "HTTP",
+	"HTTPS": "HTTPS",
+	"ID":    "ID",
+	"IP":    "IP",
+	"JSON":  "JSON",
+	"LHS":   "LHS",
+	"QPS":   "QPS",
+	"RAM":   "RAM",
+	"RHS":   "RHS",
+	"RPC":   "RPC",
+	"SLA":   "SLA",
+	"SMTP":  "SMTP",
+	"SQL":   "SQL",
+	"SSH":   "SSH",
+	"TCP":   "TCP",
+	"TLS":   "TLS",
+	"TTL":   "TTL",
+	"UDP":   "UDP",
+	"UI":    "UI",
+	"UID":   "UID",
+	"UUID":  "UUID",
+	"URI":   "URI",
+	"URL":   "URL",
+	"UTF8":  "UTF8",
+	"VM":    "VM",
+	"XML":   "XML",
+	"XMPP":  "XMPP",
+	"XSRF":  "XSRF",
+	"XSS":   "XSS",
 }
 
 func hasValidateField(entity schema.Entity) bool {
@@ -128,13 +176,7 @@ func formatType(expr ast.Expr) string {
 }
 
 func toExportedName(name string) string {
-	parts := strings.Split(name, "_")
-	for i := range parts {
-		if len(parts[i]) > 0 {
-			parts[i] = strings.ToUpper(parts[i][:1]) + parts[i][1:]
-		}
-	}
-	return strings.Join(parts, "")
+	return snakeToCamelCase(name)
 }
 
 func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect) string {
