@@ -188,6 +188,10 @@ func toExportedName(name string) string {
 func qualifyType(expr ast.Expr, pkg string) string {
 	switch t := expr.(type) {
 	case *ast.Ident:
+		// Queries is re-declared locally as the wrapped type, so keep it local.
+		if t.Name == "Queries" {
+			return "Queries"
+		}
 		if ast.IsExported(t.Name) {
 			return pkg + "." + t.Name
 		}

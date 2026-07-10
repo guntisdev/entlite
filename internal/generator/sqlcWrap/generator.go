@@ -496,9 +496,20 @@ func (ctx *generationContext) generateForwarder(funcDecl *ast.FuncDecl) string {
 		resultStr = " (" + strings.Join(results, ", ") + ")"
 	}
 
+	call := fmt.Sprintf("(*%s.Queries)(q).%s(%s)", pkg, funcDecl.Name.Name, strings.Join(args, ", "))
+	// A method returning the underlying *Queries (e.g. WithTx) must hand back the
+	// wrapped type, not the internal one, or the wrapper is lost mid-chain.
+	if len(results) == 1 && results[0] == "*Queries" {
+		call = fmt.Sprintf("(*Queries)(%s)", call)
+	}
+
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("func (q *Queries) %s(%s)%s {\n", funcDecl.Name.Name, strings.Join(params, ", "), resultStr))
-	sb.WriteString(fmt.Sprintf("\treturn (*%s.Queries)(q).%s(%s)\n", pkg, funcDecl.Name.Name, strings.Join(args, ", ")))
+	if len(results) == 0 {
+		sb.WriteString(fmt.Sprintf("\t%s\n", call))
+	} else {
+		sb.WriteString(fmt.Sprintf("\treturn %s\n", call))
+	}
 	sb.WriteString("}\n\n")
 	return sb.String()
 }
