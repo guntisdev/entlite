@@ -84,8 +84,10 @@ func generateCreateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 			funcName := field.DefaultFunc().(string)
 			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
 			if canApiWrite {
-				convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
-				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s()),\n", exportedName, convertField, funcName))
+				// Resolve the optional arg against the fallback first, then apply
+				// any dialect conversion around the resulting non-pointer value.
+				fallbackRef := fmt.Sprintf("OptionalWithFallback(arg.%s, %s())", exportedName, funcName)
+				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, sqlToGo(field, fallbackRef, sqlDialect)))
 			} else {
 				sb.WriteString(fmt.Sprintf("\t\t%s: %s(),\n", exportedName, funcName))
 			}
@@ -93,8 +95,10 @@ func generateCreateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 			valueLiteral := formatDefaultValue(defValField)
 			canApiWrite := (defValField.Permissions & permissions.ApiWrite) != 0
 			if canApiWrite {
-				convertField := sqlToGo(defValField, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
-				sb.WriteString(fmt.Sprintf("\t\t%s: OptionalWithFallback(%s, %s),\n", exportedName, convertField, valueLiteral))
+				// Resolve the optional arg against the fallback first, then apply
+				// any dialect conversion around the resulting non-pointer value.
+				fallbackRef := fmt.Sprintf("OptionalWithFallback(arg.%s, %s)", exportedName, valueLiteral)
+				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, sqlToGo(defValField, fallbackRef, sqlDialect)))
 			} else {
 				sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, valueLiteral))
 			}

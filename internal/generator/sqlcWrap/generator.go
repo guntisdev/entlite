@@ -86,21 +86,26 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 
 	ctx.collectDeclarations()
 
+	// Generate the body first so imports can be derived from what is actually
+	// referenced, rather than guessed up front (which left unused imports for
+	// files that emit only passthrough forwarders, e.g. custom.sql.go).
+	var body string
+	switch fileType {
+	case FileTypeQuery:
+		body = ctx.generateQueryFileDeclarations()
+	case FileTypeModel:
+		body = ctx.generateModelFileDeclarations()
+	case FileTypeDB:
+		body = ctx.generateDBFileDeclarations()
+	default:
+		body = ctx.generateGenericDeclarations()
+	}
+
 	var sb strings.Builder
 	packageName := filepath.Base(filepath.Dir(absInputDir))
 	sb.WriteString(fmt.Sprintf("package %s\n\n", packageName))
-	sb.WriteString(ctx.generateImports())
-
-	switch fileType {
-	case FileTypeQuery:
-		sb.WriteString(ctx.generateQueryFileDeclarations())
-	case FileTypeModel:
-		sb.WriteString(ctx.generateModelFileDeclarations())
-	case FileTypeDB:
-		sb.WriteString(ctx.generateDBFileDeclarations())
-	default:
-		sb.WriteString(ctx.generateGenericDeclarations())
-	}
+	sb.WriteString(ctx.generateImports(body))
+	sb.WriteString(body)
 
 	return sb.String(), nil
 }
@@ -142,76 +147,83 @@ func (ctx *generationContext) collectDeclarations() {
 	}
 }
 
-func (ctx *generationContext) generateImports() string {
+// generateImports emits only the imports actually referenced by body. Candidates
+// come from the sqlc-generated source file's own imports (so passthrough
+// forwarders can name any type the source used), the schema/entity imports
+// (validation and default-func helpers), and the proto packages used by model
+// converters. The internal package is always imported.
+func (ctx *generationContext) generateImports(body string) string {
+	type importSpec struct {
+		name  string // selector used in code, e.g. "time", "sql", "logic"
+		alias string // explicit alias to emit; "" when the default name suffices
+		path  string
+	}
+
+	seen := make(map[string]bool)
+	var specs []importSpec
+	add := func(name, alias, path string) {
+		if path == "" || seen[path] {
+			return
+		}
+		seen[path] = true
+		specs = append(specs, importSpec{name: name, alias: alias, path: path})
+	}
+
+	aliasFor := func(name, path string) string {
+		if name != filepath.Base(path) {
+			return name
+		}
+		return ""
+	}
+
+	// Imports carried over from the sqlc-generated source file.
+	for _, imp := range ctx.node.Imports {
+		path := strings.Trim(imp.Path.Value, `"`)
+		name := filepath.Base(path)
+		if imp.Name != nil {
+			name = imp.Name.Name
+		}
+		add(name, aliasFor(name, path), path)
+	}
+
+	// Imports needed by DSL-based wrappers (validation funcs, default funcs, etc.).
+	keys := make([]string, 0, len(ctx.entityImports))
+	for key := range ctx.entityImports {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		info := ctx.entityImports[key]
+		add(info.Name, aliasFor(info.Name, info.Path), info.Path)
+	}
+
+	// Proto packages used by model converters.
+	add("timestamppb", "", "google.golang.org/protobuf/types/known/timestamppb")
+	if ctx.pbImportPath != "" {
+		add("pb", "pb", ctx.pbImportPath)
+	}
+	// context/fmt are used by generated wrappers even if the source file omits them.
+	add("context", "", "context")
+	add("fmt", "", "fmt")
+
+	used := make([]importSpec, 0, len(specs))
+	for _, s := range specs {
+		if usesPackage(body, s.name) {
+			used = append(used, s)
+		}
+	}
+	sort.Slice(used, func(i, j int) bool { return used[i].path < used[j].path })
+
 	var sb strings.Builder
 	sb.WriteString("import (\n")
-
-	needsContext := false
-	needsFmt := false
-
-	// Query files always need context import (all methods have ctx context.Context parameter)
-	if ctx.fileType == FileTypeQuery {
-		needsContext = true
-	}
-
-	for structName := range ctx.createParamsStructs {
-		entityName := strings.TrimSuffix(strings.TrimPrefix(structName, "Create"), "Params")
-		if entity, ok := ctx.entityMap[entityName]; ok {
-			if hasDefaultFuncFields(entity) {
-				needsContext = true
-			}
+	for _, s := range used {
+		if s.alias != "" {
+			sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", s.alias, s.path))
+		} else {
+			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", s.path))
 		}
 	}
-
-	if ctx.fileType == FileTypeQuery {
-		for _, entity := range ctx.parsedEntities {
-			if hasValidateField(entity) {
-				needsFmt = true
-			}
-		}
-	}
-
-	if needsContext {
-		sb.WriteString("\t\"context\"\n")
-	}
-	if needsFmt {
-		sb.WriteString("\t\"fmt\"\n")
-	}
-
-	switch ctx.fileType {
-	case FileTypeQuery:
-		keys := make([]string, 0, len(ctx.entityImports))
-		for key := range ctx.entityImports {
-			keys = append(keys, key)
-		}
-		sort.Strings(keys)
-		for _, key := range keys {
-			importInfo := ctx.entityImports[key]
-			sb.WriteString(fmt.Sprintf("\t\"%s\"\n", importInfo.Path))
-		}
-
-	case FileTypeModel:
-		hasTimeField := false
-		for _, entity := range ctx.parsedEntities {
-			for _, field := range entity.Fields {
-				if field.Type == schema.FieldTypeTime {
-					hasTimeField = true
-					break
-				}
-			}
-			if hasTimeField {
-				break
-			}
-		}
-		if hasTimeField {
-			sb.WriteString("\t\"time\"\n")
-			sb.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
-		}
-		if ctx.pbImportPath != "" {
-			sb.WriteString(fmt.Sprintf("\tpb \"%s\"\n", ctx.pbImportPath))
-		}
-	}
-
+	// The internal package is always referenced by wrappers/forwarders.
 	sb.WriteString(fmt.Sprintf("\t%s \"%s\"\n", ctx.inputPackageName, ctx.importPath))
 	sb.WriteString(")\n\n")
 
@@ -425,7 +437,81 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 				return
 			}
 		}
+
+		// Baseline: any exported method that isn't a recognized DSL query (custom
+		// hand-written queries, or a DSL query whose entity lookup failed) is
+		// re-exposed as a thin passthrough so the wrapped Queries type keeps the
+		// full API surface of the underlying sqlc Queries.
+		if funcDecl.Name.IsExported() {
+			sb.WriteString(ctx.generateForwarder(funcDecl))
+		}
 	}
+}
+
+// generateForwarder emits a thin method that forwards to the underlying sqlc
+// Queries verbatim, qualifying any package-local types with the internal package.
+func (ctx *generationContext) generateForwarder(funcDecl *ast.FuncDecl) string {
+	pkg := ctx.inputPackageName
+
+	var params []string
+	var args []string
+	unnamed := 0
+	if funcDecl.Type.Params != nil {
+		for _, p := range funcDecl.Type.Params.List {
+			typ := qualifyType(p.Type, pkg)
+			if len(p.Names) == 0 {
+				name := fmt.Sprintf("a%d", unnamed)
+				unnamed++
+				params = append(params, name+" "+typ)
+				args = append(args, name)
+				continue
+			}
+			for _, n := range p.Names {
+				params = append(params, n.Name+" "+typ)
+				args = append(args, n.Name)
+			}
+		}
+	}
+
+	var results []string
+	if funcDecl.Type.Results != nil {
+		for _, r := range funcDecl.Type.Results.List {
+			typ := qualifyType(r.Type, pkg)
+			count := 1
+			if len(r.Names) > 0 {
+				count = len(r.Names)
+			}
+			for i := 0; i < count; i++ {
+				results = append(results, typ)
+			}
+		}
+	}
+
+	resultStr := ""
+	switch len(results) {
+	case 0:
+	case 1:
+		resultStr = " " + results[0]
+	default:
+		resultStr = " (" + strings.Join(results, ", ") + ")"
+	}
+
+	call := fmt.Sprintf("(*%s.Queries)(q).%s(%s)", pkg, funcDecl.Name.Name, strings.Join(args, ", "))
+	// A method returning the underlying *Queries (e.g. WithTx) must hand back the
+	// wrapped type, not the internal one, or the wrapper is lost mid-chain.
+	if len(results) == 1 && results[0] == "*Queries" {
+		call = fmt.Sprintf("(*Queries)(%s)", call)
+	}
+
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("func (q *Queries) %s(%s)%s {\n", funcDecl.Name.Name, strings.Join(params, ", "), resultStr))
+	if len(results) == 0 {
+		sb.WriteString(fmt.Sprintf("\t%s\n", call))
+	} else {
+		sb.WriteString(fmt.Sprintf("\treturn %s\n", call))
+	}
+	sb.WriteString("}\n\n")
+	return sb.String()
 }
 
 // search for Get[entityname]By[paramnames]
@@ -585,16 +671,17 @@ func (ctx *generationContext) generateProtoConverter(entity schema.Entity) strin
 			continue
 		}
 
-		fieldName := toDBFieldName(field)
+		protoName := toProtoFieldName(field)
+		modelName := toDBFieldName(field)
 
 		if field.Type == schema.FieldTypeTime {
 			if field.Optional {
-				sb.WriteString(fmt.Sprintf("\t\t%s: func() *timestamppb.Timestamp { if m.%s != nil { return timestamppb.New(*m.%s) }; return nil }(),\n", fieldName, fieldName, fieldName))
+				sb.WriteString(fmt.Sprintf("\t\t%s: func() *timestamppb.Timestamp { if m.%s != nil { return timestamppb.New(*m.%s) }; return nil }(),\n", protoName, modelName, modelName))
 			} else {
-				sb.WriteString(fmt.Sprintf("\t\t%s: timestamppb.New(m.%s),\n", fieldName, fieldName))
+				sb.WriteString(fmt.Sprintf("\t\t%s: timestamppb.New(m.%s),\n", protoName, modelName))
 			}
 		} else {
-			sb.WriteString(fmt.Sprintf("\t\t%s: m.%s,\n", fieldName, fieldName))
+			sb.WriteString(fmt.Sprintf("\t\t%s: m.%s,\n", protoName, modelName))
 		}
 	}
 

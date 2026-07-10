@@ -205,6 +205,7 @@ sql:
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/ent/logic"
 	"time"
@@ -214,6 +215,10 @@ import (
 type DBTX = internal.DBTX
 func New(db DBTX) *Queries { return (*Queries)(internal.New(db)) }
 type Queries internal.Queries
+func (q *Queries) WithTx(tx *sql.Tx) *Queries {
+	return (*Queries)((*internal.Queries)(q).WithTx(tx))
+}
+
 type CreateUserParams struct {
 	Email string
 	Name string

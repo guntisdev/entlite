@@ -87,12 +87,61 @@ func snakeToCamelCase(s string) string {
 	parts := strings.Split(s, "_")
 	result := ""
 	for _, part := range parts {
-		if len(part) > 0 {
-			result += strings.ToUpper(part[:1]) + part[1:]
+		if len(part) == 0 {
+			continue
 		}
+		// sqlc converts to capital ID
+		if strings.ToLower(part) == "id" {
+			result += "ID"
+			continue
+		}
+		result += strings.ToUpper(part[:1]) + part[1:]
 	}
 	return result
 }
+
+// toProtoFieldName matches protoc-gen-go's Go struct field naming, which does
+// NOT apply Go initialisms (e.g. sensor_id -> SensorId, not SensorID).
+func toProtoFieldName(field schema.Field) string {
+	return protoGoCamelCase(field.Name)
+}
+
+// protoGoCamelCase is a copy of google.golang.org/protobuf/internal/strs.GoCamelCase,
+func protoGoCamelCase(s string) string {
+	var b []byte
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch {
+		case c == '.' && i+1 < len(s) && isASCIILower(s[i+1]):
+			// Skip over '.' in ".{{lowercase}}".
+		case c == '.':
+			b = append(b, '_') // convert '.' to '_'
+		case c == '_' && (i == 0 || s[i-1] == '.'):
+			// Convert initial '_' to ensure we start with a capital letter.
+			b = append(b, 'X') // convert '_' to 'X'
+		case c == '_' && i+1 < len(s) && isASCIILower(s[i+1]):
+			// Skip over '_' in "_{{lowercase}}".
+		case isASCIIDigit(c):
+			b = append(b, c)
+		default:
+			// Assume we have a letter now - if not, it's a bogus identifier.
+			// The next word is a sequence of characters that must start upper case.
+			if isASCIILower(c) {
+				c -= 'a' - 'A' // convert lowercase to uppercase
+			}
+			b = append(b, c)
+
+			// Accept lower case sequence that follows.
+			for ; i+1 < len(s) && isASCIILower(s[i+1]); i++ {
+				b = append(b, s[i+1])
+			}
+		}
+	}
+	return string(b)
+}
+
+func isASCIILower(c byte) bool { return 'a' <= c && c <= 'z' }
+func isASCIIDigit(c byte) bool { return '0' <= c && c <= '9' }
 
 func hasValidateField(entity schema.Entity) bool {
 	for _, field := range entity.Fields {
@@ -128,18 +177,72 @@ func formatType(expr ast.Expr) string {
 }
 
 func toExportedName(name string) string {
-	parts := strings.Split(name, "_")
-	for i := range parts {
-		if len(parts[i]) > 0 {
-			parts[i] = strings.ToUpper(parts[i][:1]) + parts[i][1:]
+	return snakeToCamelCase(name)
+}
+
+// qualifyType renders a type expression, prefixing package-local exported
+// identifiers (types declared in the sqlc-generated package, e.g.
+// GetSensorReadingStatsRow) with pkg so they resolve from the wrapper package.
+// Already-qualified selectors (time.Time, sql.NullString) and builtins are left
+// as-is.
+func qualifyType(expr ast.Expr, pkg string) string {
+	switch t := expr.(type) {
+	case *ast.Ident:
+		// Queries is re-declared locally as the wrapped type, so keep it local.
+		if t.Name == "Queries" {
+			return "Queries"
 		}
+		if ast.IsExported(t.Name) {
+			return pkg + "." + t.Name
+		}
+		return t.Name
+	case *ast.StarExpr:
+		return "*" + qualifyType(t.X, pkg)
+	case *ast.ArrayType:
+		return "[]" + qualifyType(t.Elt, pkg)
+	case *ast.Ellipsis:
+		return "..." + qualifyType(t.Elt, pkg)
+	case *ast.MapType:
+		return "map[" + qualifyType(t.Key, pkg) + "]" + qualifyType(t.Value, pkg)
+	case *ast.SelectorExpr:
+		return formatType(t)
+	default:
+		return formatType(expr)
 	}
-	return strings.Join(parts, "")
+}
+
+// usesPackage reports whether body references the package selector name (as
+// "name."), matching only at an identifier boundary so "time" does not match
+// inside "runtime.".
+func usesPackage(body, name string) bool {
+	sel := name + "."
+	from := 0
+	for {
+		i := strings.Index(body[from:], sel)
+		if i < 0 {
+			return false
+		}
+		pos := from + i
+		if pos == 0 || !isIdentByte(body[pos-1]) {
+			return true
+		}
+		from = pos + len(sel)
+	}
+}
+
+func isIdentByte(c byte) bool {
+	return c == '_' ||
+		(c >= 'a' && c <= 'z') ||
+		(c >= 'A' && c <= 'Z') ||
+		(c >= '0' && c <= '9')
 }
 
 func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect) string {
 	if sqlDialect == schema.SQLite {
 		if field.Type == schema.FieldTypeBool {
+			if field.Optional {
+				return fmt.Sprintf("SQLiteBoolPtrToInt64Ptr(%s)", pbFieldRef)
+			}
 			return fmt.Sprintf("SQLiteBoolToInt(%s)", pbFieldRef)
 		}
 		if field.Type == schema.FieldTypeInt {
@@ -182,6 +285,9 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect
 func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect schema.SQLDialect) string {
 	if sqlDialect == schema.SQLite {
 		if field.Type == schema.FieldTypeBool {
+			if field.Optional {
+				return fmt.Sprintf("SQLiteInt64PtrToBoolPtr(%s)", dbFieldRef)
+			}
 			return fmt.Sprintf("SQLiteIntToBool(%s)", dbFieldRef)
 		}
 		if field.Type == schema.FieldTypeInt {
