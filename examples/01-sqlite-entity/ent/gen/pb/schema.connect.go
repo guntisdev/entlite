@@ -43,14 +43,12 @@ const (
 	UserServiceDeleteProcedure = "/entlite.UserService/Delete"
 	// UserServiceGetByEmailProcedure is the fully-qualified name of the UserService's GetByEmail RPC.
 	UserServiceGetByEmailProcedure = "/entlite.UserService/GetByEmail"
-	// UserServiceGetByNameAgeProcedure is the fully-qualified name of the UserService's GetByNameAge
-	// RPC.
-	UserServiceGetByNameAgeProcedure = "/entlite.UserService/GetByNameAge"
-	// UserServiceListByAgeProcedure is the fully-qualified name of the UserService's ListByAge RPC.
-	UserServiceListByAgeProcedure = "/entlite.UserService/ListByAge"
-	// UserServiceFilterByAgeNameIsAdminProcedure is the fully-qualified name of the UserService's
-	// FilterByAgeNameIsAdmin RPC.
-	UserServiceFilterByAgeNameIsAdminProcedure = "/entlite.UserService/FilterByAgeNameIsAdmin"
+	// UserServiceListByIsActiveProcedure is the fully-qualified name of the UserService's
+	// ListByIsActive RPC.
+	UserServiceListByIsActiveProcedure = "/entlite.UserService/ListByIsActive"
+	// UserServiceFilterByAgeNameProcedure is the fully-qualified name of the UserService's
+	// FilterByAgeName RPC.
+	UserServiceFilterByAgeNameProcedure = "/entlite.UserService/FilterByAgeName"
 )
 
 // UserServiceClient is a client for the entlite.UserService service.
@@ -60,9 +58,8 @@ type UserServiceClient interface {
 	Update(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
-	GetByNameAge(context.Context, *connect.Request[GetUserByNameAgeRequest]) (*connect.Response[User], error)
-	ListByAge(context.Context, *connect.Request[ListUserByAgeRequest]) (*connect.Response[ListUserByAgeResponse], error)
-	FilterByAgeNameIsAdmin(context.Context, *connect.Request[ListUserFilterByAgeNameIsAdminRequest]) (*connect.Response[ListUserFilterByAgeNameIsAdminResponse], error)
+	ListByIsActive(context.Context, *connect.Request[ListUserByIsActiveRequest]) (*connect.Response[ListUserByIsActiveResponse], error)
+	FilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error)
 }
 
 // NewUserServiceClient constructs a client for the entlite.UserService service. By default, it uses
@@ -106,22 +103,16 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("GetByEmail")),
 			connect.WithClientOptions(opts...),
 		),
-		getByNameAge: connect.NewClient[GetUserByNameAgeRequest, User](
+		listByIsActive: connect.NewClient[ListUserByIsActiveRequest, ListUserByIsActiveResponse](
 			httpClient,
-			baseURL+UserServiceGetByNameAgeProcedure,
-			connect.WithSchema(userServiceMethods.ByName("GetByNameAge")),
+			baseURL+UserServiceListByIsActiveProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ListByIsActive")),
 			connect.WithClientOptions(opts...),
 		),
-		listByAge: connect.NewClient[ListUserByAgeRequest, ListUserByAgeResponse](
+		filterByAgeName: connect.NewClient[ListUserFilterByAgeNameRequest, ListUserFilterByAgeNameResponse](
 			httpClient,
-			baseURL+UserServiceListByAgeProcedure,
-			connect.WithSchema(userServiceMethods.ByName("ListByAge")),
-			connect.WithClientOptions(opts...),
-		),
-		filterByAgeNameIsAdmin: connect.NewClient[ListUserFilterByAgeNameIsAdminRequest, ListUserFilterByAgeNameIsAdminResponse](
-			httpClient,
-			baseURL+UserServiceFilterByAgeNameIsAdminProcedure,
-			connect.WithSchema(userServiceMethods.ByName("FilterByAgeNameIsAdmin")),
+			baseURL+UserServiceFilterByAgeNameProcedure,
+			connect.WithSchema(userServiceMethods.ByName("FilterByAgeName")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -129,14 +120,13 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	create                 *connect.Client[CreateUserRequest, User]
-	getByID                *connect.Client[GetUserByIDRequest, User]
-	update                 *connect.Client[UpdateUserRequest, User]
-	delete                 *connect.Client[DeleteUserRequest, emptypb.Empty]
-	getByEmail             *connect.Client[GetUserByEmailRequest, User]
-	getByNameAge           *connect.Client[GetUserByNameAgeRequest, User]
-	listByAge              *connect.Client[ListUserByAgeRequest, ListUserByAgeResponse]
-	filterByAgeNameIsAdmin *connect.Client[ListUserFilterByAgeNameIsAdminRequest, ListUserFilterByAgeNameIsAdminResponse]
+	create          *connect.Client[CreateUserRequest, User]
+	getByID         *connect.Client[GetUserByIDRequest, User]
+	update          *connect.Client[UpdateUserRequest, User]
+	delete          *connect.Client[DeleteUserRequest, emptypb.Empty]
+	getByEmail      *connect.Client[GetUserByEmailRequest, User]
+	listByIsActive  *connect.Client[ListUserByIsActiveRequest, ListUserByIsActiveResponse]
+	filterByAgeName *connect.Client[ListUserFilterByAgeNameRequest, ListUserFilterByAgeNameResponse]
 }
 
 // Create calls entlite.UserService.Create.
@@ -164,19 +154,14 @@ func (c *userServiceClient) GetByEmail(ctx context.Context, req *connect.Request
 	return c.getByEmail.CallUnary(ctx, req)
 }
 
-// GetByNameAge calls entlite.UserService.GetByNameAge.
-func (c *userServiceClient) GetByNameAge(ctx context.Context, req *connect.Request[GetUserByNameAgeRequest]) (*connect.Response[User], error) {
-	return c.getByNameAge.CallUnary(ctx, req)
+// ListByIsActive calls entlite.UserService.ListByIsActive.
+func (c *userServiceClient) ListByIsActive(ctx context.Context, req *connect.Request[ListUserByIsActiveRequest]) (*connect.Response[ListUserByIsActiveResponse], error) {
+	return c.listByIsActive.CallUnary(ctx, req)
 }
 
-// ListByAge calls entlite.UserService.ListByAge.
-func (c *userServiceClient) ListByAge(ctx context.Context, req *connect.Request[ListUserByAgeRequest]) (*connect.Response[ListUserByAgeResponse], error) {
-	return c.listByAge.CallUnary(ctx, req)
-}
-
-// FilterByAgeNameIsAdmin calls entlite.UserService.FilterByAgeNameIsAdmin.
-func (c *userServiceClient) FilterByAgeNameIsAdmin(ctx context.Context, req *connect.Request[ListUserFilterByAgeNameIsAdminRequest]) (*connect.Response[ListUserFilterByAgeNameIsAdminResponse], error) {
-	return c.filterByAgeNameIsAdmin.CallUnary(ctx, req)
+// FilterByAgeName calls entlite.UserService.FilterByAgeName.
+func (c *userServiceClient) FilterByAgeName(ctx context.Context, req *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error) {
+	return c.filterByAgeName.CallUnary(ctx, req)
 }
 
 // UserServiceHandler is an implementation of the entlite.UserService service.
@@ -186,9 +171,8 @@ type UserServiceHandler interface {
 	Update(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
-	GetByNameAge(context.Context, *connect.Request[GetUserByNameAgeRequest]) (*connect.Response[User], error)
-	ListByAge(context.Context, *connect.Request[ListUserByAgeRequest]) (*connect.Response[ListUserByAgeResponse], error)
-	FilterByAgeNameIsAdmin(context.Context, *connect.Request[ListUserFilterByAgeNameIsAdminRequest]) (*connect.Response[ListUserFilterByAgeNameIsAdminResponse], error)
+	ListByIsActive(context.Context, *connect.Request[ListUserByIsActiveRequest]) (*connect.Response[ListUserByIsActiveResponse], error)
+	FilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -228,22 +212,16 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("GetByEmail")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceGetByNameAgeHandler := connect.NewUnaryHandler(
-		UserServiceGetByNameAgeProcedure,
-		svc.GetByNameAge,
-		connect.WithSchema(userServiceMethods.ByName("GetByNameAge")),
+	userServiceListByIsActiveHandler := connect.NewUnaryHandler(
+		UserServiceListByIsActiveProcedure,
+		svc.ListByIsActive,
+		connect.WithSchema(userServiceMethods.ByName("ListByIsActive")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceListByAgeHandler := connect.NewUnaryHandler(
-		UserServiceListByAgeProcedure,
-		svc.ListByAge,
-		connect.WithSchema(userServiceMethods.ByName("ListByAge")),
-		connect.WithHandlerOptions(opts...),
-	)
-	userServiceFilterByAgeNameIsAdminHandler := connect.NewUnaryHandler(
-		UserServiceFilterByAgeNameIsAdminProcedure,
-		svc.FilterByAgeNameIsAdmin,
-		connect.WithSchema(userServiceMethods.ByName("FilterByAgeNameIsAdmin")),
+	userServiceFilterByAgeNameHandler := connect.NewUnaryHandler(
+		UserServiceFilterByAgeNameProcedure,
+		svc.FilterByAgeName,
+		connect.WithSchema(userServiceMethods.ByName("FilterByAgeName")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/entlite.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -258,12 +236,10 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceDeleteHandler.ServeHTTP(w, r)
 		case UserServiceGetByEmailProcedure:
 			userServiceGetByEmailHandler.ServeHTTP(w, r)
-		case UserServiceGetByNameAgeProcedure:
-			userServiceGetByNameAgeHandler.ServeHTTP(w, r)
-		case UserServiceListByAgeProcedure:
-			userServiceListByAgeHandler.ServeHTTP(w, r)
-		case UserServiceFilterByAgeNameIsAdminProcedure:
-			userServiceFilterByAgeNameIsAdminHandler.ServeHTTP(w, r)
+		case UserServiceListByIsActiveProcedure:
+			userServiceListByIsActiveHandler.ServeHTTP(w, r)
+		case UserServiceFilterByAgeNameProcedure:
+			userServiceFilterByAgeNameHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -293,14 +269,10 @@ func (UnimplementedUserServiceHandler) GetByEmail(context.Context, *connect.Requ
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.GetByEmail is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) GetByNameAge(context.Context, *connect.Request[GetUserByNameAgeRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.GetByNameAge is not implemented"))
+func (UnimplementedUserServiceHandler) ListByIsActive(context.Context, *connect.Request[ListUserByIsActiveRequest]) (*connect.Response[ListUserByIsActiveResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.ListByIsActive is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) ListByAge(context.Context, *connect.Request[ListUserByAgeRequest]) (*connect.Response[ListUserByAgeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.ListByAge is not implemented"))
-}
-
-func (UnimplementedUserServiceHandler) FilterByAgeNameIsAdmin(context.Context, *connect.Request[ListUserFilterByAgeNameIsAdminRequest]) (*connect.Response[ListUserFilterByAgeNameIsAdminResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.FilterByAgeNameIsAdmin is not implemented"))
+func (UnimplementedUserServiceHandler) FilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.FilterByAgeName is not implemented"))
 }

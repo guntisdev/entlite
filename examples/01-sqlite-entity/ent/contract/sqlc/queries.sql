@@ -9,15 +9,13 @@ INSERT INTO "user" (
   name,
   age,
   password,
-  score,
-  uuid,
-  is_admin,
   api_key,
-  last_login_ms,
+  is_active,
+  login_count,
+  rating,
   created_at,
   updated_at
 ) VALUES (
-  ?,
   ?,
   ?,
   ?,
@@ -36,14 +34,11 @@ SELECT * FROM "user" WHERE ID = ?;
 -- name: GetUserByEmail :one
 SELECT * FROM "user" WHERE email = ?;
 
--- name: GetUserByNameAge :one
-SELECT * FROM "user" WHERE name = ? AND age = ?;
+-- name: ListUserByIsActive :many
+SELECT * FROM "user" WHERE is_active = :is_active;
 
--- name: ListUserByAge :many
-SELECT * FROM "user" WHERE age = :age;
-
--- name: ListUserFilterByAgeNameIsAdmin :many
-SELECT * FROM "user" WHERE age BETWEEN :min_age AND :max_age AND name LIKE :name AND is_admin = :is_admin;
+-- name: ListUserFilterByAgeName :many
+SELECT * FROM "user" WHERE age BETWEEN :min_age AND :max_age AND name LIKE :name;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
@@ -51,10 +46,9 @@ UPDATE "user" SET
   name = :name,
   age = :age,
   password = COALESCE(sqlc.narg('password'), password),
-  score = COALESCE(sqlc.narg('score'), score),
-  is_admin = :is_admin,
-  api_key = COALESCE(sqlc.narg('api_key'), api_key),
-  last_login_ms = :last_login_ms,
+  is_active = COALESCE(sqlc.narg('is_active'), is_active),
+  login_count = COALESCE(sqlc.narg('login_count'), login_count),
+  rating = COALESCE(sqlc.narg('rating'), rating),
   updated_at = :updated_at
 WHERE ID = :ID
 RETURNING *;

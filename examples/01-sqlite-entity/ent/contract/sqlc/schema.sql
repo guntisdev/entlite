@@ -8,11 +8,10 @@ CREATE TABLE "user"(
   name TEXT NOT NULL,
   age INTEGER,
   password TEXT NOT NULL,
-  score REAL DEFAULT 4.2 NOT NULL,
-  uuid TEXT NOT NULL,
-  is_admin INTEGER NOT NULL,
   api_key BLOB NOT NULL,
-  last_login_ms INTEGER NOT NULL,
+  is_active INTEGER DEFAULT true NOT NULL,
+  login_count INTEGER DEFAULT 0 NOT NULL,
+  rating REAL DEFAULT 0 NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
 );

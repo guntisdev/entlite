@@ -35,15 +35,14 @@ func (s *UserServer) Create(
 	queries := db.New(s.db)
 
 	userID, err := queries.CreateUser(ctx, db.CreateUserParams{
-		Email:       req.Msg.Email,
-		Name:        req.Msg.Name,
-		Age:         req.Msg.Age,
-		Password:    req.Msg.Password,
-		Score:       req.Msg.Score,
-		Uuid:        req.Msg.Uuid,
-		IsAdmin:     req.Msg.IsAdmin,
-		ApiKey:      &req.Msg.ApiKey,
-		LastLoginMs: req.Msg.LastLoginMs,
+		Email:      req.Msg.Email,
+		Name:       req.Msg.Name,
+		Age:        req.Msg.Age,
+		Password:   req.Msg.Password,
+		ApiKey:     &req.Msg.ApiKey,
+		IsActive:   req.Msg.IsActive,
+		LoginCount: req.Msg.LoginCount,
+		Rating:     req.Msg.Rating,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create user: %w", err))
@@ -95,28 +94,6 @@ func (s *UserServer) GetByEmail(
 	return connect.NewResponse(user.ToProto()), nil
 }
 
-func (s *UserServer) GetByNameAge(
-	ctx context.Context,
-	req *connect.Request[pb.GetUserByNameAgeRequest],
-) (*connect.Response[pb.User], error) {
-	log.Printf("Get user by name and age: name=%s, age=%d", req.Msg.Name, req.Msg.Age)
-
-	queries := db.New(s.db)
-
-	user, err := queries.GetUserByNameAge(ctx, db.GetUserByNameAgeParams{
-		Name: req.Msg.Name,
-		Age:  db.IntPtrConvert[int32, int64](&req.Msg.Age),
-	})
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
-		}
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get user by name and age: %w", err))
-	}
-
-	return connect.NewResponse(user.ToProto()), nil
-}
-
 func (s *UserServer) Update(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateUserRequest],
@@ -126,15 +103,14 @@ func (s *UserServer) Update(
 	queries := db.New(s.db)
 
 	dbUser, err := queries.UpdateUser(ctx, db.UpdateUserParams{
-		ID:          req.Msg.ID,
-		Email:       req.Msg.Email,
-		Name:        req.Msg.Name,
-		Age:         req.Msg.Age,
-		Password:    req.Msg.Password,
-		Score:       req.Msg.Score,
-		IsAdmin:     req.Msg.IsAdmin,
-		ApiKey:      &req.Msg.ApiKey,
-		LastLoginMs: req.Msg.LastLoginMs,
+		ID:         req.Msg.ID,
+		Email:      req.Msg.Email,
+		Name:       req.Msg.Name,
+		Age:        req.Msg.Age,
+		Password:   req.Msg.Password,
+		IsActive:   req.Msg.IsActive,
+		LoginCount: req.Msg.LoginCount,
+		Rating:     req.Msg.Rating,
 	})
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -162,16 +138,15 @@ func (s *UserServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *UserServer) ListByAge(
+func (s *UserServer) ListByIsActive(
 	ctx context.Context,
-	req *connect.Request[pb.ListUserByAgeRequest],
-) (*connect.Response[pb.ListUserByAgeResponse], error) {
-	log.Printf("List users by age: age=%d", req.Msg.GetAge())
+	req *connect.Request[pb.ListUserByIsActiveRequest],
+) (*connect.Response[pb.ListUserByIsActiveResponse], error) {
+	log.Printf("List users by is_active: is_active=%t", req.Msg.GetIsActive())
 
 	queries := db.New(s.db)
 
-	age := req.Msg.GetAge()
-	dbUsers, err := queries.ListUserByAge(ctx, db.IntPtrConvert[int32, int64](&age))
+	dbUsers, err := queries.ListUserByIsActive(ctx, db.SQLiteBoolToInt(req.Msg.GetIsActive()))
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
@@ -181,30 +156,28 @@ func (s *UserServer) ListByAge(
 		pbUsers[i] = dbUser.ToProto()
 	}
 
-	response := &pb.ListUserByAgeResponse{
+	response := &pb.ListUserByIsActiveResponse{
 		Users: pbUsers,
 	}
 
 	return connect.NewResponse(response), nil
 }
 
-func (s *UserServer) FilterByAgeNameIsAdmin(
+func (s *UserServer) FilterByAgeName(
 	ctx context.Context,
-	req *connect.Request[pb.ListUserFilterByAgeNameIsAdminRequest],
-) (*connect.Response[pb.ListUserFilterByAgeNameIsAdminResponse], error) {
-	log.Printf("Filter users: min_age=%d, max_age=%d, name=%s, is_admin=%t",
-		req.Msg.GetMinAge(), req.Msg.GetMaxAge(), req.Msg.GetName(), req.Msg.GetIsAdmin())
+	req *connect.Request[pb.ListUserFilterByAgeNameRequest],
+) (*connect.Response[pb.ListUserFilterByAgeNameResponse], error) {
+	log.Printf("Filter users: min_age=%d, max_age=%d, name=%s",
+		req.Msg.GetMinAge(), req.Msg.GetMaxAge(), req.Msg.GetName())
 
 	queries := db.New(s.db)
 
 	minAge := req.Msg.GetMinAge()
 	maxAge := req.Msg.GetMaxAge()
-	isAdmin := req.Msg.GetIsAdmin()
-	dbUsers, err := queries.ListUserFilterByAgeNameIsAdmin(ctx, db.ListUserFilterByAgeNameIsAdminParams{
-		MinAge:  db.IntPtrConvert[int32, int64](&minAge),
-		MaxAge:  db.IntPtrConvert[int32, int64](&maxAge),
-		Name:    req.Msg.GetName(),
-		IsAdmin: db.SQLiteBoolToInt(isAdmin),
+	dbUsers, err := queries.ListUserFilterByAgeName(ctx, db.ListUserFilterByAgeNameParams{
+		MinAge: db.IntPtrConvert[int32, int64](&minAge),
+		MaxAge: db.IntPtrConvert[int32, int64](&maxAge),
+		Name:   req.Msg.GetName(),
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
@@ -215,7 +188,7 @@ func (s *UserServer) FilterByAgeNameIsAdmin(
 		pbUsers[i] = dbUser.ToProto()
 	}
 
-	response := &pb.ListUserFilterByAgeNameIsAdminResponse{
+	response := &pb.ListUserFilterByAgeNameResponse{
 		Users: pbUsers,
 	}
 

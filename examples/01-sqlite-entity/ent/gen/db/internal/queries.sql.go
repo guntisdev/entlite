@@ -18,15 +18,13 @@ INSERT INTO "user" (
   name,
   age,
   password,
-  score,
-  uuid,
-  is_admin,
   api_key,
-  last_login_ms,
+  is_active,
+  login_count,
+  rating,
   created_at,
   updated_at
 ) VALUES (
-  ?,
   ?,
   ?,
   ?,
@@ -41,17 +39,16 @@ INSERT INTO "user" (
 `
 
 type CreateUserParams struct {
-	Email       string    `json:"email"`
-	Name        string    `json:"name"`
-	Age         *int64    `json:"age"`
-	Password    string    `json:"password"`
-	Score       float64   `json:"score"`
-	Uuid        string    `json:"uuid"`
-	IsAdmin     int64     `json:"is_admin"`
-	ApiKey      []byte    `json:"api_key"`
-	LastLoginMs int64     `json:"last_login_ms"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Email      string    `json:"email"`
+	Name       string    `json:"name"`
+	Age        *int64    `json:"age"`
+	Password   string    `json:"password"`
+	ApiKey     []byte    `json:"api_key"`
+	IsActive   int64     `json:"is_active"`
+	LoginCount int64     `json:"login_count"`
+	Rating     float64   `json:"rating"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 // Generate queries.sql
@@ -63,11 +60,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.Name,
 		arg.Age,
 		arg.Password,
-		arg.Score,
-		arg.Uuid,
-		arg.IsAdmin,
 		arg.ApiKey,
-		arg.LastLoginMs,
+		arg.IsActive,
+		arg.LoginCount,
+		arg.Rating,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -86,7 +82,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE email = ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE email = ?
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -98,11 +94,10 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Name,
 		&i.Age,
 		&i.Password,
-		&i.Score,
-		&i.Uuid,
-		&i.IsAdmin,
 		&i.ApiKey,
-		&i.LastLoginMs,
+		&i.IsActive,
+		&i.LoginCount,
+		&i.Rating,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -110,7 +105,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE ID = ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE ID = ?
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
@@ -122,52 +117,22 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
 		&i.Name,
 		&i.Age,
 		&i.Password,
-		&i.Score,
-		&i.Uuid,
-		&i.IsAdmin,
 		&i.ApiKey,
-		&i.LastLoginMs,
+		&i.IsActive,
+		&i.LoginCount,
+		&i.Rating,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const getUserByNameAge = `-- name: GetUserByNameAge :one
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE name = ? AND age = ?
+const listUserByIsActive = `-- name: ListUserByIsActive :many
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE is_active = ?1
 `
 
-type GetUserByNameAgeParams struct {
-	Name string `json:"name"`
-	Age  *int64 `json:"age"`
-}
-
-func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgeParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByNameAge, arg.Name, arg.Age)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Name,
-		&i.Age,
-		&i.Password,
-		&i.Score,
-		&i.Uuid,
-		&i.IsAdmin,
-		&i.ApiKey,
-		&i.LastLoginMs,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const listUserByAge = `-- name: ListUserByAge :many
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE age = ?1
-`
-
-func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUserByAge, age)
+func (q *Queries) ListUserByIsActive(ctx context.Context, isActive int64) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listUserByIsActive, isActive)
 	if err != nil {
 		return nil, err
 	}
@@ -181,11 +146,10 @@ func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]User, error)
 			&i.Name,
 			&i.Age,
 			&i.Password,
-			&i.Score,
-			&i.Uuid,
-			&i.IsAdmin,
 			&i.ApiKey,
-			&i.LastLoginMs,
+			&i.IsActive,
+			&i.LoginCount,
+			&i.Rating,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -202,24 +166,18 @@ func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]User, error)
 	return items, nil
 }
 
-const listUserFilterByAgeNameIsAdmin = `-- name: ListUserFilterByAgeNameIsAdmin :many
-SELECT id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at FROM "user" WHERE age BETWEEN ?1 AND ?2 AND name LIKE ?3 AND is_admin = ?4
+const listUserFilterByAgeName = `-- name: ListUserFilterByAgeName :many
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE age BETWEEN ?1 AND ?2 AND name LIKE ?3
 `
 
-type ListUserFilterByAgeNameIsAdminParams struct {
-	MinAge  *int64 `json:"min_age"`
-	MaxAge  *int64 `json:"max_age"`
-	Name    string `json:"name"`
-	IsAdmin int64  `json:"is_admin"`
+type ListUserFilterByAgeNameParams struct {
+	MinAge *int64 `json:"min_age"`
+	MaxAge *int64 `json:"max_age"`
+	Name   string `json:"name"`
 }
 
-func (q *Queries) ListUserFilterByAgeNameIsAdmin(ctx context.Context, arg ListUserFilterByAgeNameIsAdminParams) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUserFilterByAgeNameIsAdmin,
-		arg.MinAge,
-		arg.MaxAge,
-		arg.Name,
-		arg.IsAdmin,
-	)
+func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listUserFilterByAgeName, arg.MinAge, arg.MaxAge, arg.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -233,11 +191,10 @@ func (q *Queries) ListUserFilterByAgeNameIsAdmin(ctx context.Context, arg ListUs
 			&i.Name,
 			&i.Age,
 			&i.Password,
-			&i.Score,
-			&i.Uuid,
-			&i.IsAdmin,
 			&i.ApiKey,
-			&i.LastLoginMs,
+			&i.IsActive,
+			&i.LoginCount,
+			&i.Rating,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -260,26 +217,24 @@ UPDATE "user" SET
   name = ?2,
   age = ?3,
   password = COALESCE(?4, password),
-  score = COALESCE(?5, score),
-  is_admin = ?6,
-  api_key = COALESCE(?7, api_key),
-  last_login_ms = ?8,
-  updated_at = ?9
-WHERE ID = ?10
-RETURNING id, email, name, age, password, score, uuid, is_admin, api_key, last_login_ms, created_at, updated_at
+  is_active = COALESCE(?5, is_active),
+  login_count = COALESCE(?6, login_count),
+  rating = COALESCE(?7, rating),
+  updated_at = ?8
+WHERE ID = ?9
+RETURNING id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	Email       string    `json:"email"`
-	Name        string    `json:"name"`
-	Age         *int64    `json:"age"`
-	Password    *string   `json:"password"`
-	Score       *float64  `json:"score"`
-	IsAdmin     int64     `json:"is_admin"`
-	ApiKey      []byte    `json:"api_key"`
-	LastLoginMs int64     `json:"last_login_ms"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	ID          int64     `json:"ID"`
+	Email      string    `json:"email"`
+	Name       string    `json:"name"`
+	Age        *int64    `json:"age"`
+	Password   *string   `json:"password"`
+	IsActive   *int64    `json:"is_active"`
+	LoginCount *int64    `json:"login_count"`
+	Rating     *float64  `json:"rating"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	ID         int64     `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -288,10 +243,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Name,
 		arg.Age,
 		arg.Password,
-		arg.Score,
-		arg.IsAdmin,
-		arg.ApiKey,
-		arg.LastLoginMs,
+		arg.IsActive,
+		arg.LoginCount,
+		arg.Rating,
 		arg.UpdatedAt,
 		arg.ID,
 	)
@@ -302,11 +256,10 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Name,
 		&i.Age,
 		&i.Password,
-		&i.Score,
-		&i.Uuid,
-		&i.IsAdmin,
 		&i.ApiKey,
-		&i.LastLoginMs,
+		&i.IsActive,
+		&i.LoginCount,
+		&i.Rating,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
