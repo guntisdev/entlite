@@ -24,36 +24,28 @@ func (User) Annotations() []entlite.Annotation {
 
 func (User) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.String("email").Unique().ProtoField(2),
-		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
+		field.String("email").Unique(),
+		field.String("name").Comment("Full name, e.g. \"Jane Doe\"").Validate(logic.StartsWithCapital),
 		field.Int("age").Optional(),
 		field.String("password").Permissions(permissions.WriteOnly),
-		field.Float("score").Default(4.2),
-		field.String("uuid").Immutable().DefaultFunc(logic.GetUuidStr),
-		field.Bool("is_admin").ProtoField(5),
-		field.Byte("api_key").DefaultFunc(logic.GenerateAPIKey),
-		field.Int64("last_login_ms"),
-		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(6).Immutable(),
-		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).ProtoField(7),
+		field.Byte("api_key").Immutable().DefaultFunc(logic.GenerateAPIKey),
+		field.Bool("is_active").Default(true),
+		field.Int64("login_count").Default(0),
+		field.Float("rating").Default(0),
+		field.Time("created_at").DefaultFunc(time.Now).Immutable().Permissions(permissions.ReadOnly),
+		field.Time("updated_at").DefaultFunc(time.Now).Permissions(permissions.ReadOnly),
 	}
 }
 
 func (User) Queries() []entlite.Query {
 	return []entlite.Query{
+		// DefaultCRUD expands to Create / GetByID / Update / Delete / List.
 		query.DefaultCRUD(),
-		// query.Create(),
-		// query.Get(),
-		// query.Update(),
-		// query.Delete(),
-		// query.List(),
 		query.GetBy("email"),
-		query.GetBy("name", "age"),
-		query.ListBy("age"),
-		// query.ListBy("age").Count(),
+		query.ListBy("is_active"),
 		query.ListBy(
-			filter.Range("age"),
-			filter.Search("name"),
-			filter.Eq("is_admin").Optional(),
-		).Count().OrderBy("created_at"),
+			filter.Range("age"),   // age BETWEEN :min_age AND :max_age
+			filter.Search("name"), // name LIKE :name
+		).OrderBy("created_at").Count(),
 	}
 }

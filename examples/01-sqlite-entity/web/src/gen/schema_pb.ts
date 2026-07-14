@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASJEChdHZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBIUCgRuYW1lGAMgASgJQga6SAPIAQESEwoDYWdlGAQgASgFQga6SAPIAQEiUgoUTGlzdFVzZXJCeUFnZVJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSEwoDYWdlGAMgASgFQga6SAPIAQEiNQoVTGlzdFVzZXJCeUFnZVJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyIroBCiVMaXN0VXNlckZpbHRlckJ5QWdlTmFtZUlzQWRtaW5SZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhcKB21pbl9hZ2UYAyABKAVCBrpIA8gBARIXCgdtYXhfYWdlGAQgASgFQga6SAPIAQESFAoEbmFtZRgFIAEoCUIGukgDyAEBEhUKCGlzX2FkbWluGAYgASgISACIAQFCCwoJX2lzX2FkbWluIkYKJkxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lSXNBZG1pblJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyMrEECgtVc2VyU2VydmljZRIzCgZDcmVhdGUSGi5lbnRsaXRlLkNyZWF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjUKB0dldEJ5SUQSGy5lbnRsaXRlLkdldFVzZXJCeUlEUmVxdWVzdBoNLmVudGxpdGUuVXNlchIzCgZVcGRhdGUSGi5lbnRsaXRlLlVwZGF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjwKBkRlbGV0ZRIaLmVudGxpdGUuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSOwoKR2V0QnlFbWFpbBIeLmVudGxpdGUuR2V0VXNlckJ5RW1haWxSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEj8KDEdldEJ5TmFtZUFnZRIgLmVudGxpdGUuR2V0VXNlckJ5TmFtZUFnZVJlcXVlc3QaDS5lbnRsaXRlLlVzZXISSgoJTGlzdEJ5QWdlEh0uZW50bGl0ZS5MaXN0VXNlckJ5QWdlUmVxdWVzdBoeLmVudGxpdGUuTGlzdFVzZXJCeUFnZVJlc3BvbnNlEnkKFkZpbHRlckJ5QWdlTmFtZUlzQWRtaW4SLi5lbnRsaXRlLkxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lSXNBZG1pblJlcXVlc3QaLy5lbnRsaXRlLkxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lSXNBZG1pblJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUisgIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIXCgdhcGlfa2V5GAYgASgMQga6SAPIAQESEQoJaXNfYWN0aXZlGAcgASgIEhsKC2xvZ2luX2NvdW50GAggASgDQga6SAPIAQESFgoGcmF0aW5nGAkgASgBQga6SAPIAQESNgoKY3JlYXRlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UihgIKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAUgASgJQga6SAPIAQESFAoHYXBpX2tleRgGIAEoDEgBiAEBEhYKCWlzX2FjdGl2ZRgHIAEoCEgCiAEBEhgKC2xvZ2luX2NvdW50GAggASgDSAOIAQESEwoGcmF0aW5nGAkgASgBSASIAQFCBgoEX2FnZUIKCghfYXBpX2tleUIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nIigKEkdldFVzZXJCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIoICChFVcGRhdGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhUKCHBhc3N3b3JkGAUgASgJSAGIAQESFgoJaXNfYWN0aXZlGAcgASgISAKIAQESGAoLbG9naW5fY291bnQYCCABKANIA4gBARITCgZyYXRpbmcYCSABKAFIBIgBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiLgoVR2V0VXNlckJ5RW1haWxSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQEiXQoZTGlzdFVzZXJCeUlzQWN0aXZlUmVxdWVzdBIVCgVsaW1pdBgBIAEoBUIGukgDyAEBEg4KBm9mZnNldBgCIAEoBRIZCglpc19hY3RpdmUYAyABKAhCBrpIA8gBASI6ChpMaXN0VXNlckJ5SXNBY3RpdmVSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlciKPAQoeTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhcKB21pbl9hZ2UYAyABKAVCBrpIA8gBARIXCgdtYXhfYWdlGAQgASgFQga6SAPIAQESFAoEbmFtZRgFIAEoCUIGukgDyAEBIj8KH0xpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIy6gMKC1VzZXJTZXJ2aWNlEjMKBkNyZWF0ZRIaLmVudGxpdGUuQ3JlYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISNQoHR2V0QnlJRBIbLmVudGxpdGUuR2V0VXNlckJ5SURSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgpHZXRCeUVtYWlsEh4uZW50bGl0ZS5HZXRVc2VyQnlFbWFpbFJlcXVlc3QaDS5lbnRsaXRlLlVzZXISWQoOTGlzdEJ5SXNBY3RpdmUSIi5lbnRsaXRlLkxpc3RVc2VyQnlJc0FjdGl2ZVJlcXVlc3QaIy5lbnRsaXRlLkxpc3RVc2VyQnlJc0FjdGl2ZVJlc3BvbnNlEmQKD0ZpbHRlckJ5QWdlTmFtZRInLmVudGxpdGUuTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXF1ZXN0GiguZW50bGl0ZS5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZVJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -32,7 +32,7 @@ export type User = Message<"entlite.User"> & {
   email: string;
 
   /**
-   * First name and surname
+   * Full name, e.g. \"Jane Doe\
    *
    * @generated from field: string name = 3;
    */
@@ -44,37 +44,32 @@ export type User = Message<"entlite.User"> & {
   age?: number;
 
   /**
-   * @generated from field: double score = 9;
-   */
-  score: number;
-
-  /**
-   * @generated from field: string uuid = 10;
-   */
-  uuid: string;
-
-  /**
-   * @generated from field: bool is_admin = 5;
-   */
-  isAdmin: boolean;
-
-  /**
-   * @generated from field: bytes api_key = 11;
+   * @generated from field: bytes api_key = 6;
    */
   apiKey: Uint8Array;
 
   /**
-   * @generated from field: int64 last_login_ms = 12;
+   * @generated from field: bool is_active = 7;
    */
-  lastLoginMs: bigint;
+  isActive: boolean;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 6;
+   * @generated from field: int64 login_count = 8;
+   */
+  loginCount: bigint;
+
+  /**
+   * @generated from field: double rating = 9;
+   */
+  rating: number;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 10;
    */
   createdAt?: Timestamp;
 
   /**
-   * @generated from field: google.protobuf.Timestamp updated_at = 7;
+   * @generated from field: google.protobuf.Timestamp updated_at = 11;
    */
   updatedAt?: Timestamp;
 };
@@ -96,7 +91,7 @@ export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
   email: string;
 
   /**
-   * First name and surname
+   * Full name, e.g. \"Jane Doe\
    *
    * @generated from field: string name = 3;
    */
@@ -108,34 +103,29 @@ export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
   age?: number;
 
   /**
-   * @generated from field: string password = 8;
+   * @generated from field: string password = 5;
    */
   password: string;
 
   /**
-   * @generated from field: optional double score = 9;
-   */
-  score?: number;
-
-  /**
-   * @generated from field: optional string uuid = 10;
-   */
-  uuid?: string;
-
-  /**
-   * @generated from field: bool is_admin = 5;
-   */
-  isAdmin: boolean;
-
-  /**
-   * @generated from field: optional bytes api_key = 11;
+   * @generated from field: optional bytes api_key = 6;
    */
   apiKey?: Uint8Array;
 
   /**
-   * @generated from field: int64 last_login_ms = 12;
+   * @generated from field: optional bool is_active = 7;
    */
-  lastLoginMs: bigint;
+  isActive?: boolean;
+
+  /**
+   * @generated from field: optional int64 login_count = 8;
+   */
+  loginCount?: bigint;
+
+  /**
+   * @generated from field: optional double rating = 9;
+   */
+  rating?: number;
 };
 
 /**
@@ -177,7 +167,7 @@ export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
   email: string;
 
   /**
-   * First name and surname
+   * Full name, e.g. \"Jane Doe\
    *
    * @generated from field: string name = 3;
    */
@@ -189,29 +179,24 @@ export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
   age?: number;
 
   /**
-   * @generated from field: optional string password = 8;
+   * @generated from field: optional string password = 5;
    */
   password?: string;
 
   /**
-   * @generated from field: optional double score = 9;
+   * @generated from field: optional bool is_active = 7;
    */
-  score?: number;
+  isActive?: boolean;
 
   /**
-   * @generated from field: bool is_admin = 5;
+   * @generated from field: optional int64 login_count = 8;
    */
-  isAdmin: boolean;
+  loginCount?: bigint;
 
   /**
-   * @generated from field: optional bytes api_key = 11;
+   * @generated from field: optional double rating = 9;
    */
-  apiKey?: Uint8Array;
-
-  /**
-   * @generated from field: int64 last_login_ms = 12;
-   */
-  lastLoginMs: bigint;
+  rating?: number;
 };
 
 /**
@@ -256,31 +241,9 @@ export const GetUserByEmailRequestSchema: GenMessage<GetUserByEmailRequest> = /*
   messageDesc(file_schema, 5);
 
 /**
- * @generated from message entlite.GetUserByNameAgeRequest
+ * @generated from message entlite.ListUserByIsActiveRequest
  */
-export type GetUserByNameAgeRequest = Message<"entlite.GetUserByNameAgeRequest"> & {
-  /**
-   * @generated from field: string name = 3;
-   */
-  name: string;
-
-  /**
-   * @generated from field: int32 age = 4;
-   */
-  age: number;
-};
-
-/**
- * Describes the message entlite.GetUserByNameAgeRequest.
- * Use `create(GetUserByNameAgeRequestSchema)` to create a new message.
- */
-export const GetUserByNameAgeRequestSchema: GenMessage<GetUserByNameAgeRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 6);
-
-/**
- * @generated from message entlite.ListUserByAgeRequest
- */
-export type ListUserByAgeRequest = Message<"entlite.ListUserByAgeRequest"> & {
+export type ListUserByIsActiveRequest = Message<"entlite.ListUserByIsActiveRequest"> & {
   /**
    * @generated from field: int32 limit = 1;
    */
@@ -292,22 +255,22 @@ export type ListUserByAgeRequest = Message<"entlite.ListUserByAgeRequest"> & {
   offset: number;
 
   /**
-   * @generated from field: int32 age = 3;
+   * @generated from field: bool is_active = 3;
    */
-  age: number;
+  isActive: boolean;
 };
 
 /**
- * Describes the message entlite.ListUserByAgeRequest.
- * Use `create(ListUserByAgeRequestSchema)` to create a new message.
+ * Describes the message entlite.ListUserByIsActiveRequest.
+ * Use `create(ListUserByIsActiveRequestSchema)` to create a new message.
  */
-export const ListUserByAgeRequestSchema: GenMessage<ListUserByAgeRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 7);
+export const ListUserByIsActiveRequestSchema: GenMessage<ListUserByIsActiveRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 6);
 
 /**
- * @generated from message entlite.ListUserByAgeResponse
+ * @generated from message entlite.ListUserByIsActiveResponse
  */
-export type ListUserByAgeResponse = Message<"entlite.ListUserByAgeResponse"> & {
+export type ListUserByIsActiveResponse = Message<"entlite.ListUserByIsActiveResponse"> & {
   /**
    * @generated from field: repeated entlite.User users = 1;
    */
@@ -315,16 +278,16 @@ export type ListUserByAgeResponse = Message<"entlite.ListUserByAgeResponse"> & {
 };
 
 /**
- * Describes the message entlite.ListUserByAgeResponse.
- * Use `create(ListUserByAgeResponseSchema)` to create a new message.
+ * Describes the message entlite.ListUserByIsActiveResponse.
+ * Use `create(ListUserByIsActiveResponseSchema)` to create a new message.
  */
-export const ListUserByAgeResponseSchema: GenMessage<ListUserByAgeResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 8);
+export const ListUserByIsActiveResponseSchema: GenMessage<ListUserByIsActiveResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 7);
 
 /**
- * @generated from message entlite.ListUserFilterByAgeNameIsAdminRequest
+ * @generated from message entlite.ListUserFilterByAgeNameRequest
  */
-export type ListUserFilterByAgeNameIsAdminRequest = Message<"entlite.ListUserFilterByAgeNameIsAdminRequest"> & {
+export type ListUserFilterByAgeNameRequest = Message<"entlite.ListUserFilterByAgeNameRequest"> & {
   /**
    * @generated from field: int32 limit = 1;
    */
@@ -349,24 +312,19 @@ export type ListUserFilterByAgeNameIsAdminRequest = Message<"entlite.ListUserFil
    * @generated from field: string name = 5;
    */
   name: string;
-
-  /**
-   * @generated from field: optional bool is_admin = 6;
-   */
-  isAdmin?: boolean;
 };
 
 /**
- * Describes the message entlite.ListUserFilterByAgeNameIsAdminRequest.
- * Use `create(ListUserFilterByAgeNameIsAdminRequestSchema)` to create a new message.
+ * Describes the message entlite.ListUserFilterByAgeNameRequest.
+ * Use `create(ListUserFilterByAgeNameRequestSchema)` to create a new message.
  */
-export const ListUserFilterByAgeNameIsAdminRequestSchema: GenMessage<ListUserFilterByAgeNameIsAdminRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 9);
+export const ListUserFilterByAgeNameRequestSchema: GenMessage<ListUserFilterByAgeNameRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 8);
 
 /**
- * @generated from message entlite.ListUserFilterByAgeNameIsAdminResponse
+ * @generated from message entlite.ListUserFilterByAgeNameResponse
  */
-export type ListUserFilterByAgeNameIsAdminResponse = Message<"entlite.ListUserFilterByAgeNameIsAdminResponse"> & {
+export type ListUserFilterByAgeNameResponse = Message<"entlite.ListUserFilterByAgeNameResponse"> & {
   /**
    * @generated from field: repeated entlite.User users = 1;
    */
@@ -374,11 +332,11 @@ export type ListUserFilterByAgeNameIsAdminResponse = Message<"entlite.ListUserFi
 };
 
 /**
- * Describes the message entlite.ListUserFilterByAgeNameIsAdminResponse.
- * Use `create(ListUserFilterByAgeNameIsAdminResponseSchema)` to create a new message.
+ * Describes the message entlite.ListUserFilterByAgeNameResponse.
+ * Use `create(ListUserFilterByAgeNameResponseSchema)` to create a new message.
  */
-export const ListUserFilterByAgeNameIsAdminResponseSchema: GenMessage<ListUserFilterByAgeNameIsAdminResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 10);
+export const ListUserFilterByAgeNameResponseSchema: GenMessage<ListUserFilterByAgeNameResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 9);
 
 /**
  * UserService provides CRUD opertions for User entities
@@ -427,28 +385,20 @@ export const UserService: GenService<{
     output: typeof UserSchema;
   },
   /**
-   * @generated from rpc entlite.UserService.GetByNameAge
+   * @generated from rpc entlite.UserService.ListByIsActive
    */
-  getByNameAge: {
+  listByIsActive: {
     methodKind: "unary";
-    input: typeof GetUserByNameAgeRequestSchema;
-    output: typeof UserSchema;
+    input: typeof ListUserByIsActiveRequestSchema;
+    output: typeof ListUserByIsActiveResponseSchema;
   },
   /**
-   * @generated from rpc entlite.UserService.ListByAge
+   * @generated from rpc entlite.UserService.FilterByAgeName
    */
-  listByAge: {
+  filterByAgeName: {
     methodKind: "unary";
-    input: typeof ListUserByAgeRequestSchema;
-    output: typeof ListUserByAgeResponseSchema;
-  },
-  /**
-   * @generated from rpc entlite.UserService.FilterByAgeNameIsAdmin
-   */
-  filterByAgeNameIsAdmin: {
-    methodKind: "unary";
-    input: typeof ListUserFilterByAgeNameIsAdminRequestSchema;
-    output: typeof ListUserFilterByAgeNameIsAdminResponseSchema;
+    input: typeof ListUserFilterByAgeNameRequestSchema;
+    output: typeof ListUserFilterByAgeNameResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_schema, 0);

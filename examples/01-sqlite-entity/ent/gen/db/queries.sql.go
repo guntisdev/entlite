@@ -13,11 +13,10 @@ type CreateUserParams struct {
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
 	Password string `json:"password"`
-	Score *float64 `json:"score"`
-	Uuid *string `json:"uuid"`
-	IsAdmin bool `json:"is_admin"`
 	ApiKey *[]byte `json:"api_key"`
-	LastLoginMs int64 `json:"last_login_ms"`
+	IsActive *bool `json:"is_active"`
+	LoginCount *int64 `json:"login_count"`
+	Rating *float64 `json:"rating"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
@@ -29,11 +28,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		Name: arg.Name,
 		Age: IntPtrConvert[int32, int64](arg.Age),
 		Password: arg.Password,
-		Score: OptionalWithFallback(arg.Score, 4.2),
-		Uuid: OptionalWithFallback(arg.Uuid, logic.GetUuidStr()),
-		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
 		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
-		LastLoginMs: arg.LastLoginMs,
+		IsActive: SQLiteBoolToInt(OptionalWithFallback(arg.IsActive, true)),
+		LoginCount: OptionalWithFallback(arg.LoginCount, 0),
+		Rating: OptionalWithFallback(arg.Rating, 0),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -61,17 +59,8 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
 	return UserFromSQL(&dbResult), nil
 }
 
-type GetUserByNameAgeParams = internal.GetUserByNameAgeParams
-func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgeParams) (*User, error) {
-	dbResult, err := (*internal.Queries)(q).GetUserByNameAge(ctx, arg)
-	if err != nil {
-		return nil, err
-	}
-	return UserFromSQL(&dbResult), nil
-}
-
-func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListUserByAge(ctx, age)
+func (q *Queries) ListUserByIsActive(ctx context.Context, isActive int64) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListUserByIsActive(ctx, isActive)
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +71,9 @@ func (q *Queries) ListUserByAge(ctx context.Context, age *int64) ([]*User, error
 	return result, nil
 }
 
-type ListUserFilterByAgeNameIsAdminParams = internal.ListUserFilterByAgeNameIsAdminParams
-func (q *Queries) ListUserFilterByAgeNameIsAdmin(ctx context.Context, arg ListUserFilterByAgeNameIsAdminParams) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeNameIsAdmin(ctx, arg)
+type ListUserFilterByAgeNameParams = internal.ListUserFilterByAgeNameParams
+func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeName(ctx, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -100,10 +89,9 @@ type UpdateUserParams struct {
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
 	Password *string `json:"password"`
-	Score *float64 `json:"score"`
-	IsAdmin bool `json:"is_admin"`
-	ApiKey *[]byte `json:"api_key"`
-	LastLoginMs int64 `json:"last_login_ms"`
+	IsActive *bool `json:"is_active"`
+	LoginCount *int64 `json:"login_count"`
+	Rating *float64 `json:"rating"`
 	ID int32 `json:"ID"`
 }
 
@@ -117,10 +105,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Name: arg.Name,
 		Age: IntPtrConvert[int32, int64](arg.Age),
 		Password: arg.Password,
-		Score: arg.Score,
-		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
-		ApiKey: *arg.ApiKey,
-		LastLoginMs: arg.LastLoginMs,
+		IsActive: SQLiteBoolPtrToInt64Ptr(arg.IsActive),
+		LoginCount: arg.LoginCount,
+		Rating: arg.Rating,
 		UpdatedAt: time.Now(),
 	}
 

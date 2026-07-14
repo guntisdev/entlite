@@ -1,9 +1,9 @@
 package db
 
 import (
-	"time"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	pb "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/pb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 	internal "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/db/internal"
 )
 
@@ -14,11 +14,10 @@ type User struct {
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
 	Password string `json:"password"`
-	Score float64 `json:"score"`
-	Uuid string `json:"uuid"`
-	IsAdmin bool `json:"is_admin"`
 	ApiKey []byte `json:"api_key"`
-	LastLoginMs int64 `json:"last_login_ms"`
+	IsActive bool `json:"is_active"`
+	LoginCount int64 `json:"login_count"`
+	Rating float64 `json:"rating"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -34,11 +33,10 @@ func (m *User) UserToSQL() *internal.User {
 		Name: m.Name,
 		Age: IntPtrConvert[int32, int64](m.Age),
 		Password: m.Password,
-		Score: m.Score,
-		Uuid: m.Uuid,
-		IsAdmin: SQLiteBoolToInt(m.IsAdmin),
 		ApiKey: m.ApiKey,
-		LastLoginMs: m.LastLoginMs,
+		IsActive: SQLiteBoolToInt(m.IsActive),
+		LoginCount: m.LoginCount,
+		Rating: m.Rating,
 		CreatedAt: m.CreatedAt,
 		UpdatedAt: m.UpdatedAt,
 	}
@@ -55,11 +53,10 @@ func UserFromSQL(db *internal.User) *User {
 		Name: db.Name,
 		Age: IntPtrConvert[int64, int32](db.Age),
 		Password: db.Password,
-		Score: db.Score,
-		Uuid: db.Uuid,
-		IsAdmin: SQLiteIntToBool(db.IsAdmin),
 		ApiKey: db.ApiKey,
-		LastLoginMs: db.LastLoginMs,
+		IsActive: SQLiteIntToBool(db.IsActive),
+		LoginCount: db.LoginCount,
+		Rating: db.Rating,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 	}
@@ -76,11 +73,10 @@ func (m *User) ToProto() *pb.User {
 		Email: m.Email,
 		Name: m.Name,
 		Age: m.Age,
-		Score: m.Score,
-		Uuid: m.Uuid,
-		IsAdmin: m.IsAdmin,
 		ApiKey: m.ApiKey,
-		LastLoginMs: m.LastLoginMs,
+		IsActive: m.IsActive,
+		LoginCount: m.LoginCount,
+		Rating: m.Rating,
 		CreatedAt: timestamppb.New(m.CreatedAt),
 		UpdatedAt: timestamppb.New(m.UpdatedAt),
 	}
