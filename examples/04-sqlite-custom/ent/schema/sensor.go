@@ -25,7 +25,7 @@ func (Sensor) Annotations() []entlite.Annotation {
 
 func (Sensor) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.String("code").Unique().ProtoField(2).Comment("External hardware identifier, e.g. TEMP-A1"),
+		field.String("code").Unique().Comment("External hardware identifier, e.g. TEMP-A1"),
 		field.String("label").Comment("Human friendly name"),
 		field.String("kind").Validate(logic.IsKnownSensorKind).Comment("temperature | humidity | pressure | motion"),
 		field.String("unit").Comment("Measurement unit, e.g. celsius"),
@@ -33,7 +33,7 @@ func (Sensor) Fields() []entlite.Field {
 		field.Bool("active").Default(true),
 		field.String("firmware").Default("1.0.0"),
 		field.Int("sample_rate_ms").Default(1000).Comment("Sampling interval in milliseconds"),
-		field.Time("installed_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),
+		field.Time("installed_at").Immutable().Comment("When the device was physically installed (client-supplied)"),
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),
 		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now),
 	}

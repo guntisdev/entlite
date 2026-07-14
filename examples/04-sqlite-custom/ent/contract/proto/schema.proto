@@ -18,6 +18,7 @@ message Reading {
   int32 quality = 4 [(buf.validate.field).required = true];
   // Marked as anomalous by ingestion
   bool flagged = 5;
+  // Device measurement time (client-supplied)
   google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 7 [(buf.validate.field).required = true];
 }
@@ -38,6 +39,7 @@ message Sensor {
   string firmware = 8 [(buf.validate.field).required = true];
   // Sampling interval in milliseconds
   int32 sample_rate_ms = 9 [(buf.validate.field).required = true];
+  // When the device was physically installed (client-supplied)
   google.protobuf.Timestamp installed_at = 10 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 11 [(buf.validate.field).required = true];
   google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
@@ -51,7 +53,8 @@ message CreateReadingRequest {
   int32 quality = 4 [(buf.validate.field).required = true];
   // Marked as anomalous by ingestion
   optional bool flagged = 5;
-  optional google.protobuf.Timestamp recorded_at = 6;
+  // Device measurement time (client-supplied)
+  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
 }
 message GetReadingByIDRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
@@ -65,7 +68,8 @@ message UpdateReadingRequest {
   int32 quality = 4 [(buf.validate.field).required = true];
   // Marked as anomalous by ingestion
   optional bool flagged = 5;
-  optional google.protobuf.Timestamp recorded_at = 6;
+  // Device measurement time (client-supplied)
+  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
 }
 message DeleteReadingRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
@@ -116,6 +120,8 @@ message CreateSensorRequest {
   optional string firmware = 8;
   // Sampling interval in milliseconds
   optional int32 sample_rate_ms = 9;
+  // When the device was physically installed (client-supplied)
+  google.protobuf.Timestamp installed_at = 10 [(buf.validate.field).required = true];
 }
 message GetSensorByIDRequest {
   int32 ID = 1 [(buf.validate.field).required = true];

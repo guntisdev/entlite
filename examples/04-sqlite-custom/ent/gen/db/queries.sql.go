@@ -13,7 +13,7 @@ type CreateReadingParams struct {
 	Value float64 `json:"value"`
 	Quality int32 `json:"quality"`
 	Flagged *bool `json:"flagged"`
-	RecordedAt *time.Time `json:"recorded_at"`
+	RecordedAt time.Time `json:"recorded_at"`
 }
 
 func (q *Queries) CreateReading(ctx context.Context, arg CreateReadingParams) (int32, error) {
@@ -25,7 +25,7 @@ func (q *Queries) CreateReading(ctx context.Context, arg CreateReadingParams) (i
 		Value: arg.Value,
 		Quality: IntConvert[int32, int64](arg.Quality),
 		Flagged: SQLiteBoolToInt(OptionalWithFallback(arg.Flagged, false)),
-		RecordedAt: OptionalWithFallback(arg.RecordedAt, time.Now()),
+		RecordedAt: arg.RecordedAt,
 		CreatedAt: time.Now(),
 	}
 	id, err := (*internal.Queries)(q).CreateReading(ctx, internalArg)
@@ -41,6 +41,7 @@ type CreateSensorParams struct {
 	Active *bool `json:"active"`
 	Firmware *string `json:"firmware"`
 	SampleRateMs *int32 `json:"sample_rate_ms"`
+	InstalledAt time.Time `json:"installed_at"`
 }
 
 func (q *Queries) CreateSensor(ctx context.Context, arg CreateSensorParams) (int32, error) {
@@ -56,7 +57,7 @@ func (q *Queries) CreateSensor(ctx context.Context, arg CreateSensorParams) (int
 		Active: SQLiteBoolToInt(OptionalWithFallback(arg.Active, true)),
 		Firmware: OptionalWithFallback(arg.Firmware, "1.0.0"),
 		SampleRateMs: IntConvert[int32, int64](OptionalWithFallback(arg.SampleRateMs, 1000)),
-		InstalledAt: time.Now(),
+		InstalledAt: arg.InstalledAt,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -139,7 +140,7 @@ type UpdateReadingParams struct {
 	Value float64 `json:"value"`
 	Quality int32 `json:"quality"`
 	Flagged *bool `json:"flagged"`
-	RecordedAt *time.Time `json:"recorded_at"`
+	RecordedAt time.Time `json:"recorded_at"`
 	ID int32 `json:"ID"`
 }
 
