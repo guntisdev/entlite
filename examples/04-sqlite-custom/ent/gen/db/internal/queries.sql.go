@@ -331,18 +331,18 @@ UPDATE "reading" SET
   value = ?2,
   quality = ?3,
   flagged = COALESCE(?4, flagged),
-  recorded_at = COALESCE(?5, recorded_at)
+  recorded_at = ?5
 WHERE ID = ?6
 RETURNING id, sensor_id, value, quality, flagged, recorded_at, created_at
 `
 
 type UpdateReadingParams struct {
-	SensorID   int64      `json:"sensor_id"`
-	Value      float64    `json:"value"`
-	Quality    int64      `json:"quality"`
-	Flagged    *int64     `json:"flagged"`
-	RecordedAt *time.Time `json:"recorded_at"`
-	ID         int64      `json:"ID"`
+	SensorID   int64     `json:"sensor_id"`
+	Value      float64   `json:"value"`
+	Quality    int64     `json:"quality"`
+	Flagged    *int64    `json:"flagged"`
+	RecordedAt time.Time `json:"recorded_at"`
+	ID         int64     `json:"ID"`
 }
 
 func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (Reading, error) {

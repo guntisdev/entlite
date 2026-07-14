@@ -25,11 +25,11 @@ func (Reading) Annotations() []entlite.Annotation {
 
 func (Reading) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.Int("sensor_id").ProtoField(2).Comment("References sensor.ID"),
+		field.Int("sensor_id").Comment("References sensor.ID"),
 		field.Float("value"),
 		field.Int("quality").Validate(logic.IsPercentage).Comment("Signal quality 0-100"),
 		field.Bool("flagged").Default(false).Comment("Marked as anomalous by ingestion"),
-		field.Time("recorded_at").DefaultFunc(time.Now),
+		field.Time("recorded_at").Comment("Device measurement time (client-supplied)"),
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),
 	}
 }

@@ -35,7 +35,7 @@ UPDATE "reading" SET
   value = :value,
   quality = :quality,
   flagged = COALESCE(sqlc.narg('flagged'), flagged),
-  recorded_at = COALESCE(sqlc.narg('recorded_at'), recorded_at)
+  recorded_at = :recorded_at
 WHERE ID = :ID
 RETURNING *;
 
