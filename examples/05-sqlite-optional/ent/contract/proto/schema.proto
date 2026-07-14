@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package entlite;
+
+option go_package = "./pb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "buf/validate/validate.proto";
+
+// Article represents as article entity
+message Article {
+  string id = 1 [(buf.validate.field).required = true];
+  // Human/URL identifier, e.g. hello-world
+  string slug = 2 [(buf.validate.field).required = true];
+  string title = 3 [(buf.validate.field).required = true];
+  string author = 4 [(buf.validate.field).required = true];
+  optional string subtitle = 5;
+  optional int32 reading_minutes = 6;
+  optional int64 last_viewed_ms = 7;
+  optional double rating = 8;
+  optional bytes cover_image = 9;
+  optional google.protobuf.Timestamp published_at = 10;
+  bool is_featured = 11;
+  google.protobuf.Timestamp created_at = 12 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp updated_at = 13 [(buf.validate.field).required = true];
+}
+
+message CreateArticleRequest {
+  // Human/URL identifier, e.g. hello-world
+  string slug = 2 [(buf.validate.field).required = true];
+  string title = 3 [(buf.validate.field).required = true];
+  string author = 4 [(buf.validate.field).required = true];
+  optional string subtitle = 5;
+  optional int32 reading_minutes = 6;
+  optional int64 last_viewed_ms = 7;
+  optional double rating = 8;
+  optional bytes cover_image = 9;
+  optional google.protobuf.Timestamp published_at = 10;
+  optional bool is_featured = 11;
+}
+message GetArticleByIDRequest {
+}
+message UpdateArticleRequest {
+  optional string id = 1;
+  // Human/URL identifier, e.g. hello-world
+  string slug = 2 [(buf.validate.field).required = true];
+  string title = 3 [(buf.validate.field).required = true];
+  string author = 4 [(buf.validate.field).required = true];
+  optional string subtitle = 5;
+  optional int32 reading_minutes = 6;
+  optional int64 last_viewed_ms = 7;
+  optional double rating = 8;
+  optional bytes cover_image = 9;
+  optional google.protobuf.Timestamp published_at = 10;
+  optional bool is_featured = 11;
+}
+message DeleteArticleRequest {
+  string id = 1 [(buf.validate.field).required = true];
+}
+message GetArticleBySlugRequest {
+  string slug = 2 [(buf.validate.field).required = true];
+}
+message ListArticleByAuthorRequest {
+  int32 limit = 1 [(buf.validate.field).required = true];
+  int32 offset = 2;
+  string author = 3 [(buf.validate.field).required = true];
+}
+
+message ListArticleByAuthorResponse {
+  repeated Article articles = 1;
+}
+message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
+  int32 limit = 1 [(buf.validate.field).required = true];
+  int32 offset = 2;
+  string author = 3 [(buf.validate.field).required = true];
+  optional bool is_featured = 4;
+  optional google.protobuf.Timestamp min_published_at = 5;
+  optional google.protobuf.Timestamp max_published_at = 6;
+  optional string title = 7;
+}
+
+message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse {
+  repeated Article articles = 1;
+}
+
+// ArticleService provides CRUD opertions for Article entities
+service ArticleService {
+  rpc Create(CreateArticleRequest) returns (Article);
+  rpc GetByID(GetArticleByIDRequest) returns (Article);
+  rpc Update(UpdateArticleRequest) returns (Article);
+  rpc Delete(DeleteArticleRequest) returns (google.protobuf.Empty);
+  rpc GetBySlug(GetArticleBySlugRequest) returns (Article);
+  rpc ListByAuthor(ListArticleByAuthorRequest) returns (ListArticleByAuthorResponse);
+  rpc FilterByAuthorIsFeaturedPublishedAtTitle(ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest) returns (ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse);
+}
