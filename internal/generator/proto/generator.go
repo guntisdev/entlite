@@ -210,7 +210,17 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message Delete%sRequest {\n", entity.Name))
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
-		case schema.QueryListBy, schema.QueryListAll:
+		case schema.QueryListAll:
+			methodName := util.GenListMethodName(query, entity.Name)
+			// ListAll takes no request params — no filters, and no
+			// limit/offset (it deliberately returns the full result set).
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
+			content.WriteString("}\n\n")
+
+			content.WriteString(fmt.Sprintf("message %sResponse {\n", methodName))
+			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString("}")
+		case schema.QueryListBy:
 			methodName := util.GenListMethodName(query, entity.Name)
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
 			// TODO proly change int type depending on ID field type

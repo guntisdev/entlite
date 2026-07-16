@@ -59,6 +59,10 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
 	return UserFromSQL(&dbResult), nil
 }
 
+func (q *Queries) ListAllUser(ctx context.Context) ([]internal.User, error) {
+	return (*internal.Queries)(q).ListAllUser(ctx)
+}
+
 func (q *Queries) ListUserByIsActive(ctx context.Context, isActive int64) ([]*User, error) {
 	dbResults, err := (*internal.Queries)(q).ListUserByIsActive(ctx, isActive)
 	if err != nil {

@@ -54,6 +54,12 @@ message DeleteUserRequest {
 message GetUserByEmailRequest {
   string email = 2 [(buf.validate.field).required = true];
 }
+message ListAllUserRequest {
+}
+
+message ListAllUserResponse {
+  repeated User users = 1;
+}
 message ListUserByIsActiveRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
   int32 offset = 2;
@@ -82,6 +88,7 @@ service UserService {
   rpc Update(UpdateUserRequest) returns (User);
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
   rpc GetByEmail(GetUserByEmailRequest) returns (User);
+  rpc ListAll(ListAllUserRequest) returns (ListAllUserResponse);
   rpc ListByIsActive(ListUserByIsActiveRequest) returns (ListUserByIsActiveResponse);
   rpc FilterByAgeName(ListUserFilterByAgeNameRequest) returns (ListUserFilterByAgeNameResponse);
 }

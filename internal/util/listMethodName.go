@@ -7,6 +7,10 @@ import (
 )
 
 func GenListMethodName(query schema.Query, entityName string) string {
+	if query.Type == schema.QueryListAll {
+		return fmt.Sprintf("ListAll%s", entityName)
+	}
+
 	fieldsStr := FieldsToStr(query.Fields)
 	byStr := ""
 	if fieldsStr != "" {
@@ -23,6 +27,10 @@ func GenListMethodName(query schema.Query, entityName string) string {
 }
 
 func GenListRpcName(query schema.Query, entityName string) string {
+	if query.Type == schema.QueryListAll {
+		return "ListAll"
+	}
+
 	fieldsStr := FieldsToStr(query.Fields)
 	if fieldsStr != "" {
 		return fmt.Sprintf("ListBy%s", fieldsStr)

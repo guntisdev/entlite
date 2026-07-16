@@ -127,6 +127,45 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
 	return i, err
 }
 
+const listAllUser = `-- name: ListAllUser :many
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user"
+`
+
+func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listAllUser)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Name,
+			&i.Age,
+			&i.Password,
+			&i.ApiKey,
+			&i.IsActive,
+			&i.LoginCount,
+			&i.Rating,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listUserByIsActive = `-- name: ListUserByIsActive :many
 SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE is_active = ?1
 `
