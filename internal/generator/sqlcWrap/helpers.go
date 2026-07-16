@@ -263,6 +263,13 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect
 		}
 	}
 
+	// SQLite/Postgres store bytes as []byte, which is already nilable, but the
+	// wrapper keeps optional bytes as *[]byte for cross-dialect consistency.
+	if field.Optional && field.Type == schema.FieldTypeByte &&
+		(sqlDialect == schema.SQLite || sqlDialect == schema.PostgreSQL) {
+		return fmt.Sprintf("PtrToNullBytes(%s)", pbFieldRef)
+	}
+
 	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
 		switch field.Type {
 		case schema.FieldTypeString:
@@ -297,6 +304,12 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect schema.SQLDiale
 				return fmt.Sprintf("IntConvert[%s, %s](%s)", "int64", "int32", dbFieldRef)
 			}
 		}
+	}
+
+	// SQLite/Postgres return bytes as []byte; convert back to the wrapper's *[]byte.
+	if field.Optional && field.Type == schema.FieldTypeByte &&
+		(sqlDialect == schema.SQLite || sqlDialect == schema.PostgreSQL) {
+		return fmt.Sprintf("NullBytesToPtr(%s)", dbFieldRef)
 	}
 
 	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {

@@ -277,7 +277,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Password: arg.Password,
 		Score: arg.Score,
 		IsAdmin: SQLiteBoolToInt(arg.IsAdmin),
-		ApiKey: *arg.ApiKey,
+		ApiKey: PtrToNullBytes(arg.ApiKey),
 		LastLoginMs: arg.LastLoginMs,
 		UpdatedAt: time.Now(),
 	}

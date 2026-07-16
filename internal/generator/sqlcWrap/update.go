@@ -82,7 +82,9 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 			field.Optional = true
 		}
 		pointerStr := ""
-		if field.Type == schema.FieldTypeByte {
+		// Only MySQL's PtrBytesToNullString consumes a pointer ref (it strips the
+		// leading '*' back off); SQLite/Postgres take the *[]byte arg as-is.
+		if field.Type == schema.FieldTypeByte && sqlDialect == schema.MySQL {
 			pointerStr = "*"
 		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
