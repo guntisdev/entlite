@@ -34,6 +34,9 @@ SELECT * FROM "user" WHERE ID = ?;
 -- name: GetUserByEmail :one
 SELECT * FROM "user" WHERE email = ?;
 
+-- name: ListAllUser :many
+SELECT * FROM "user";
+
 -- name: ListUserByIsActive :many
 SELECT * FROM "user" WHERE is_active = :is_active;
 

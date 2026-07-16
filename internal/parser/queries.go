@@ -91,6 +91,11 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 				return nil, true, err
 			}
 			return []schema.Query{{Type: schema.QueryListBy, Fields: fields, Filters: filters}}, true, nil
+		case "ListAll":
+			if len(callExpr.Args) != 0 {
+				return nil, true, fmt.Errorf("ListAll does not accept arguments")
+			}
+			return []schema.Query{{Type: schema.QueryListAll}}, true, nil
 		default:
 			return nil, false, nil
 		}

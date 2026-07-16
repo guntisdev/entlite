@@ -42,6 +42,7 @@ func (User) Queries() []entlite.Query {
 		// DefaultCRUD expands to Create / GetByID / Update / Delete / List.
 		query.DefaultCRUD(),
 		query.GetBy("email"),
+		query.ListAll(),
 		query.ListBy("is_active"),
 		query.ListBy(
 			filter.Range("age"),   // age BETWEEN :min_age AND :max_age

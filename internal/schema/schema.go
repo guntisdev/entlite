@@ -121,9 +121,10 @@ const (
 type QueryType string
 
 const (
-	QueryCreate QueryType = "create"
-	QueryUpdate QueryType = "update"
-	QueryDelete QueryType = "delete"
-	QueryGetBy  QueryType = "get_by"
-	QueryListBy QueryType = "list_by"
+	QueryCreate  QueryType = "create"
+	QueryUpdate  QueryType = "update"
+	QueryDelete  QueryType = "delete"
+	QueryGetBy   QueryType = "get_by"
+	QueryListBy  QueryType = "list_by"
+	QueryListAll QueryType = "list_all"
 )

@@ -137,7 +137,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			hasDelete = true
 		case schema.QueryGetBy:
 			getQueries = append(getQueries, query)
-		case schema.QueryListBy:
+		case schema.QueryListBy, schema.QueryListAll:
 			listQueries = append(listQueries, query)
 		}
 	}
@@ -215,7 +215,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			}
 		}
 		// TODO implement !permissions.DbRead
-		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
+		if len(whereParts) == 0 {
+			// ListAll: no filters, no WHERE clause.
+			content.WriteString(fmt.Sprintf("SELECT * FROM %s;\n", g.quote(tableName)))
+		} else {
+			content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
+		}
 	}
 
 	// UPDATE

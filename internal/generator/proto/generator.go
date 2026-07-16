@@ -210,6 +210,16 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message Delete%sRequest {\n", entity.Name))
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
+		case schema.QueryListAll:
+			methodName := util.GenListMethodName(query, entity.Name)
+			// ListAll takes no request params — no filters, and no
+			// limit/offset (it deliberately returns the full result set).
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
+			content.WriteString("}\n\n")
+
+			content.WriteString(fmt.Sprintf("message %sResponse {\n", methodName))
+			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString("}")
 		case schema.QueryListBy:
 			methodName := util.GenListMethodName(query, entity.Name)
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
@@ -287,7 +297,7 @@ func generateRequests(entity schema.Entity, query schema.Query) string {
 		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entity.Name, entity.Name)
 	case schema.QueryDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
-	case schema.QueryListBy:
+	case schema.QueryListBy, schema.QueryListAll:
 		methodName := util.GenListMethodName(query, entity.Name)
 		rpcName := util.GenListRpcName(query, entity.Name)
 		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, methodName, methodName)

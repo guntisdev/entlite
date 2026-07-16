@@ -138,6 +138,31 @@ func (s *UserServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
+func (s *UserServer) ListAll(
+	ctx context.Context,
+	req *connect.Request[pb.ListAllUserRequest],
+) (*connect.Response[pb.ListAllUserResponse], error) {
+	log.Printf("List all users")
+
+	queries := db.New(s.db)
+
+	dbUsers, err := queries.ListAllUser(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
+	}
+
+	pbUsers := make([]*pb.User, len(dbUsers))
+	for i, dbUser := range dbUsers {
+		pbUsers[i] = dbUser.ToProto()
+	}
+
+	response := &pb.ListAllUserResponse{
+		Users: pbUsers,
+	}
+
+	return connect.NewResponse(response), nil
+}
+
 func (s *UserServer) ListByIsActive(
 	ctx context.Context,
 	req *connect.Request[pb.ListUserByIsActiveRequest],
