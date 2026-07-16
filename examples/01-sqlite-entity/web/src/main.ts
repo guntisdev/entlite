@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
-import type { CreateUserRequest, ListUserByAgeRequest, UpdateUserRequest } from "./gen/schema_pb.js";
+import type { CreateUserRequest, ListAllUserRequest, UpdateUserRequest } from "./gen/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
@@ -58,14 +58,10 @@ function getUserByID() {
     });
 }
 
-function listUsersByAge() {
-    log("Listing users...");
-    const request: StrictMessageInput<ListUserByAgeRequest> = {
-        limit: 20,
-        offset: 0,
-        age: 30,
-    };
-    client.listByAge(request)
+function listAllUsers() {
+    log("Listing all users...");
+    const request: StrictMessageInput<ListAllUserRequest> = {};
+    client.listAll(request)
     .then((response) => {
         log(`✓ Users listed (${response.users.length} users):`);
         response.users.forEach((user, index) => {
@@ -125,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("DOMContentLoaded", document.getElementById("createBtn"));
     document.getElementById("createBtn")!.addEventListener("click", createUser);
     document.getElementById("getBtn")!.addEventListener("click", getUserByID);
-    document.getElementById("listBtn")!.addEventListener("click", listUsersByAge);
+    document.getElementById("listBtn")!.addEventListener("click", listAllUsers);
     document.getElementById("updateBtn")!.addEventListener("click", updateUser);
     document.getElementById("deleteBtn")!.addEventListener("click", deleteUser);
     document.getElementById("clearBtn")!.addEventListener("click", () => {
