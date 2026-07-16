@@ -680,6 +680,9 @@ func (ctx *generationContext) generateProtoConverter(entity schema.Entity) strin
 			} else {
 				sb.WriteString(fmt.Sprintf("\t\t%s: timestamppb.New(m.%s),\n", protoName, modelName))
 			}
+		} else if field.Type == schema.FieldTypeByte && field.Optional {
+			// proto uses []byte for optional bytes; unwrap the wrapper's *[]byte.
+			sb.WriteString(fmt.Sprintf("\t\t%s: PtrToNullBytes(m.%s),\n", protoName, modelName))
 		} else {
 			sb.WriteString(fmt.Sprintf("\t\t%s: m.%s,\n", protoName, modelName))
 		}
