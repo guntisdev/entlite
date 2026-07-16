@@ -210,7 +210,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message Delete%sRequest {\n", entity.Name))
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
-		case schema.QueryListBy:
+		case schema.QueryListBy, schema.QueryListAll:
 			methodName := util.GenListMethodName(query, entity.Name)
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
 			// TODO proly change int type depending on ID field type
@@ -287,7 +287,7 @@ func generateRequests(entity schema.Entity, query schema.Query) string {
 		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entity.Name, entity.Name)
 	case schema.QueryDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
-	case schema.QueryListBy:
+	case schema.QueryListBy, schema.QueryListAll:
 		methodName := util.GenListMethodName(query, entity.Name)
 		rpcName := util.GenListRpcName(query, entity.Name)
 		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, methodName, methodName)

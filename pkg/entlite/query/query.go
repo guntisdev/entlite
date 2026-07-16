@@ -10,7 +10,7 @@ const (
 	TypeGet         Type = "get"
 	TypeUpdate      Type = "update"
 	TypeDelete      Type = "delete"
-	TypeList        Type = "list"
+	TypeListAll     Type = "list_all"
 	TypeGetBy       Type = "get_by"
 	TypeListBy      Type = "list_by"
 )
@@ -74,8 +74,8 @@ func Delete() QueryBuilder {
 	return Query{typeName: TypeDelete}
 }
 
-func List() QueryBuilder {
-	return Query{typeName: TypeList}
+func ListAll() QueryBuilder {
+	return Query{typeName: TypeListAll}
 }
 
 // ListBy creates a query to list records with filters
