@@ -10,6 +10,7 @@ const (
 	TypeGet         Type = "get"
 	TypeUpdate      Type = "update"
 	TypeDelete      Type = "delete"
+	TypeDeleteAll   Type = "delete_all"
 	TypeListAll     Type = "list_all"
 	TypeGetBy       Type = "get_by"
 	TypeListBy      Type = "list_by"
@@ -72,6 +73,10 @@ func Update() QueryBuilder {
 
 func Delete() QueryBuilder {
 	return Query{typeName: TypeDelete}
+}
+
+func DeleteAll() QueryBuilder {
+	return Query{typeName: TypeDeleteAll}
 }
 
 func ListAll() QueryBuilder {

@@ -79,6 +79,11 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return []schema.Query{{Type: schema.QueryUpdate, Fields: []string{"ID"}}}, true, nil
 		case "Delete":
 			return []schema.Query{{Type: schema.QueryDelete, Fields: []string{"ID"}}}, true, nil
+		case "DeleteAll":
+			if len(callExpr.Args) != 0 {
+				return nil, true, fmt.Errorf("DeleteAll does not accept arguments")
+			}
+			return []schema.Query{{Type: schema.QueryDeleteAll}}, true, nil
 		case "GetBy":
 			fields, err := parseStringArgs(callExpr.Args)
 			if err != nil {
