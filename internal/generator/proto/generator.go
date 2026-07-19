@@ -11,7 +11,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
-// TODO use protovalidate-go combined with an interceptor (to call .Validate() for each message)
 func Generate(entities []schema.Entity, dir string) error {
 	var messageEntities []schema.Entity
 	for _, entity := range entities {
@@ -211,13 +210,10 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
 		case schema.QueryDeleteAll:
-			// DeleteAll takes no request params — it deletes the full table.
 			content.WriteString(fmt.Sprintf("message DeleteAll%sRequest {\n", entity.Name))
 			content.WriteString("}")
 		case schema.QueryListAll:
 			methodName := util.GenListMethodName(query, entity.Name)
-			// ListAll takes no request params — no filters, and no
-			// limit/offset (it deliberately returns the full result set).
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
 			content.WriteString("}\n\n")
 

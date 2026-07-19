@@ -39,6 +39,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 	return IntConvert[int64, int32](id), err
 }
 
+func (q *Queries) DeleteAllUser(ctx context.Context) error {
+	return (*internal.Queries)(q).DeleteAllUser(ctx)
+}
+
 func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteUser(ctx, IntConvert[int32, int64](id))
 }

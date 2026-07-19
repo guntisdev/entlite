@@ -59,3 +59,6 @@ RETURNING *;
 -- name: DeleteUser :exec
 DELETE FROM "user" WHERE ID = ?;
 
+-- name: DeleteAllUser :exec
+DELETE FROM "user";
+

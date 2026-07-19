@@ -124,6 +124,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var hasCreate bool
 	var hasUpdate bool
 	var hasDelete bool
+	var hasDeleteAll bool
 	var getQueries []schema.Query
 	var listQueries []schema.Query
 
@@ -135,6 +136,8 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			hasUpdate = true
 		case schema.QueryDelete:
 			hasDelete = true
+		case schema.QueryDeleteAll:
+			hasDeleteAll = true
 		case schema.QueryGetBy:
 			getQueries = append(getQueries, query)
 		case schema.QueryListBy, schema.QueryListAll:
@@ -272,6 +275,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	if hasDelete {
 		content.WriteString(fmt.Sprintf("\n-- name: Delete%s :exec\n", entity.Name))
 		content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
+	}
+
+	// DELETE ALL
+	if hasDeleteAll {
+		content.WriteString(fmt.Sprintf("\n-- name: DeleteAll%s :exec\n", entity.Name))
+		content.WriteString(fmt.Sprintf("DELETE FROM %s;\n", g.quote(tableName)))
 	}
 
 	return content.String()
