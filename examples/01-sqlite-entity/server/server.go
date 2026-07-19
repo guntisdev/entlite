@@ -138,6 +138,22 @@ func (s *UserServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
+func (s *UserServer) DeleteAll(
+	ctx context.Context,
+	req *connect.Request[pb.DeleteAllUserRequest],
+) (*connect.Response[emptypb.Empty], error) {
+	log.Printf("Delete all users")
+
+	queries := db.New(s.db)
+
+	err := queries.DeleteAllUser(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete all users: %w", err))
+	}
+
+	return connect.NewResponse(&emptypb.Empty{}), nil
+}
+
 func (s *UserServer) ListAll(
 	ctx context.Context,
 	req *connect.Request[pb.ListAllUserRequest],
