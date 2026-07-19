@@ -2,13 +2,10 @@
 Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
 ## TODO
-* Use `protovalidate-go` to intercept in `grpc.NewServer()` to call custom Validate() functions in proto exports
 * Create /internal/naming/ to have in one place consistant naming
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
 * check each field if it added in further generation (for example Comment)
 * Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
-* Edge case with all types optional
-* Edge case with custom sqlc schema/queries and custom proto file
 * Split get/list/delete sqlc wraps in separate files
 * Add Queries:
 ```bash
@@ -30,11 +27,11 @@ func (User) Queries() []entlite.Query {
     }
 }
 ```
-* Move default crud methods from entlite.GRPC() to Queries
 * Make annotations optional
 * Hande composite indexes (set it with `func (User) Indexes() []entlite.Index`)
 * Add .Indexes() for fields (to index in sql)
-* Add bulk insert and deleteAll queries
+* Add bulk insert query
+* Add deleteAll queries
 * Figure out migration
 
 ## Folder structure
@@ -42,7 +39,7 @@ func (User) Queries() []entlite.Query {
 └── ent/
     ├── schema/             # DSL entities
     ├── contract/
-    │   ├── proto/          # generated from DSL: schema.prot. Custom proto could be added here
+    │   ├── proto/          # generated from DSL: schema.proto. Custom proto could be added here
     │   └── sqlc/           # generated from DSL: schema.sql, queries.sql. Custom sql could be added here
     ├── gen/
     │   ├── db/             # small wrapper for type convertions - nullptr etc
