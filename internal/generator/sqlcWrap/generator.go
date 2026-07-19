@@ -430,6 +430,13 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 				return
 			}
 		}
+		if strings.HasPrefix(funcDecl.Name.Name, "DeleteAll") {
+			entityName := strings.TrimPrefix(funcDecl.Name.Name, "DeleteAll")
+			if entity, ok := ctx.entityMap[entityName]; ok {
+				sb.WriteString(generateDeleteAllQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				return
+			}
+		}
 		if strings.HasPrefix(funcDecl.Name.Name, "Delete") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Delete")
 			if entity, ok := ctx.entityMap[entityName]; ok {

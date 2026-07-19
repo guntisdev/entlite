@@ -11,7 +11,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
-// TODO use protovalidate-go combined with an interceptor (to call .Validate() for each message)
 func Generate(entities []schema.Entity, dir string) error {
 	var messageEntities []schema.Entity
 	for _, entity := range entities {
@@ -210,10 +209,11 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message Delete%sRequest {\n", entity.Name))
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
+		case schema.QueryDeleteAll:
+			content.WriteString(fmt.Sprintf("message DeleteAll%sRequest {\n", entity.Name))
+			content.WriteString("}")
 		case schema.QueryListAll:
 			methodName := util.GenListMethodName(query, entity.Name)
-			// ListAll takes no request params — no filters, and no
-			// limit/offset (it deliberately returns the full result set).
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
 			content.WriteString("}\n\n")
 
@@ -297,6 +297,8 @@ func generateRequests(entity schema.Entity, query schema.Query) string {
 		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entity.Name, entity.Name)
 	case schema.QueryDelete:
 		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
+	case schema.QueryDeleteAll:
+		return fmt.Sprintf("  rpc DeleteAll(DeleteAll%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
 	case schema.QueryListBy, schema.QueryListAll:
 		methodName := util.GenListMethodName(query, entity.Name)
 		rpcName := util.GenListRpcName(query, entity.Name)
@@ -325,7 +327,7 @@ func needsCommonImports(entities []schema.Entity) bool {
 func needsEmptyImportForEntities(entities []schema.Entity) bool {
 	for _, entity := range entities {
 		for _, query := range entity.Queries {
-			if query.Type == schema.QueryDelete {
+			if query.Type == schema.QueryDelete || query.Type == schema.QueryDeleteAll {
 				return true
 			}
 		}

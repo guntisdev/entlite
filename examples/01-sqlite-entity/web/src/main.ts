@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
-import type { CreateUserRequest, ListAllUserRequest, UpdateUserRequest } from "./gen/schema_pb.js";
+import type { CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "./gen/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
@@ -117,6 +117,18 @@ function deleteUser() {
     });
 }
 
+function deleteAllUsers() {
+    log("Deleting all users...");
+    const request: StrictMessageInput<DeleteAllUserRequest> = {};
+    client.deleteAll(request)
+    .then((response) => {
+        log("✓ All users deleted:", response);
+    })
+    .catch((error) => {
+        log("✗ Error deleting all users:", error);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOMContentLoaded", document.getElementById("createBtn"));
     document.getElementById("createBtn")!.addEventListener("click", createUser);
@@ -124,6 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("listBtn")!.addEventListener("click", listAllUsers);
     document.getElementById("updateBtn")!.addEventListener("click", updateUser);
     document.getElementById("deleteBtn")!.addEventListener("click", deleteUser);
+    document.getElementById("deleteAllBtn")!.addEventListener("click", deleteAllUsers);
     document.getElementById("clearBtn")!.addEventListener("click", () => {
         document.getElementById("output")!.innerHTML = "";
     });

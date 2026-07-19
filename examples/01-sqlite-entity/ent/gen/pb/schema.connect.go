@@ -45,6 +45,8 @@ const (
 	UserServiceGetByEmailProcedure = "/entlite.UserService/GetByEmail"
 	// UserServiceListAllProcedure is the fully-qualified name of the UserService's ListAll RPC.
 	UserServiceListAllProcedure = "/entlite.UserService/ListAll"
+	// UserServiceDeleteAllProcedure is the fully-qualified name of the UserService's DeleteAll RPC.
+	UserServiceDeleteAllProcedure = "/entlite.UserService/DeleteAll"
 	// UserServiceListByIsActiveProcedure is the fully-qualified name of the UserService's
 	// ListByIsActive RPC.
 	UserServiceListByIsActiveProcedure = "/entlite.UserService/ListByIsActive"
@@ -61,6 +63,7 @@ type UserServiceClient interface {
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
 	ListAll(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error)
+	DeleteAll(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error)
 	ListByIsActive(context.Context, *connect.Request[ListUserByIsActiveRequest]) (*connect.Response[ListUserByIsActiveResponse], error)
 	FilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error)
 }
@@ -112,6 +115,12 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("ListAll")),
 			connect.WithClientOptions(opts...),
 		),
+		deleteAll: connect.NewClient[DeleteAllUserRequest, emptypb.Empty](
+			httpClient,
+			baseURL+UserServiceDeleteAllProcedure,
+			connect.WithSchema(userServiceMethods.ByName("DeleteAll")),
+			connect.WithClientOptions(opts...),
+		),
 		listByIsActive: connect.NewClient[ListUserByIsActiveRequest, ListUserByIsActiveResponse](
 			httpClient,
 			baseURL+UserServiceListByIsActiveProcedure,
@@ -135,6 +144,7 @@ type userServiceClient struct {
 	delete          *connect.Client[DeleteUserRequest, emptypb.Empty]
 	getByEmail      *connect.Client[GetUserByEmailRequest, User]
 	listAll         *connect.Client[ListAllUserRequest, ListAllUserResponse]
+	deleteAll       *connect.Client[DeleteAllUserRequest, emptypb.Empty]
 	listByIsActive  *connect.Client[ListUserByIsActiveRequest, ListUserByIsActiveResponse]
 	filterByAgeName *connect.Client[ListUserFilterByAgeNameRequest, ListUserFilterByAgeNameResponse]
 }
@@ -169,6 +179,11 @@ func (c *userServiceClient) ListAll(ctx context.Context, req *connect.Request[Li
 	return c.listAll.CallUnary(ctx, req)
 }
 
+// DeleteAll calls entlite.UserService.DeleteAll.
+func (c *userServiceClient) DeleteAll(ctx context.Context, req *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteAll.CallUnary(ctx, req)
+}
+
 // ListByIsActive calls entlite.UserService.ListByIsActive.
 func (c *userServiceClient) ListByIsActive(ctx context.Context, req *connect.Request[ListUserByIsActiveRequest]) (*connect.Response[ListUserByIsActiveResponse], error) {
 	return c.listByIsActive.CallUnary(ctx, req)
@@ -187,6 +202,7 @@ type UserServiceHandler interface {
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
 	ListAll(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error)
+	DeleteAll(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error)
 	ListByIsActive(context.Context, *connect.Request[ListUserByIsActiveRequest]) (*connect.Response[ListUserByIsActiveResponse], error)
 	FilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error)
 }
@@ -234,6 +250,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("ListAll")),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceDeleteAllHandler := connect.NewUnaryHandler(
+		UserServiceDeleteAllProcedure,
+		svc.DeleteAll,
+		connect.WithSchema(userServiceMethods.ByName("DeleteAll")),
+		connect.WithHandlerOptions(opts...),
+	)
 	userServiceListByIsActiveHandler := connect.NewUnaryHandler(
 		UserServiceListByIsActiveProcedure,
 		svc.ListByIsActive,
@@ -260,6 +282,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceGetByEmailHandler.ServeHTTP(w, r)
 		case UserServiceListAllProcedure:
 			userServiceListAllHandler.ServeHTTP(w, r)
+		case UserServiceDeleteAllProcedure:
+			userServiceDeleteAllHandler.ServeHTTP(w, r)
 		case UserServiceListByIsActiveProcedure:
 			userServiceListByIsActiveHandler.ServeHTTP(w, r)
 		case UserServiceFilterByAgeNameProcedure:
@@ -295,6 +319,10 @@ func (UnimplementedUserServiceHandler) GetByEmail(context.Context, *connect.Requ
 
 func (UnimplementedUserServiceHandler) ListAll(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.ListAll is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) DeleteAll(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.DeleteAll is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListByIsActive(context.Context, *connect.Request[ListUserByIsActiveRequest]) (*connect.Response[ListUserByIsActiveResponse], error) {

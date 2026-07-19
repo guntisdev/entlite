@@ -56,3 +56,14 @@ func generateDeleteQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 
 	return sb.String()
 }
+
+func generateDeleteAllQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect schema.SQLDialect) string {
+	var sb strings.Builder
+
+	receiverType := formatType(funcDecl.Recv.List[0].Type)
+	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context) error {\n", receiverType, funcDecl.Name.Name))
+	sb.WriteString(fmt.Sprintf("\treturn (*%s.Queries)(q).%s(ctx)\n", inputPkg, funcDecl.Name.Name))
+	sb.WriteString("}\n\n")
+
+	return sb.String()
+}
