@@ -54,7 +54,7 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 	sb.WriteString(fmt.Sprintf("(*%s, error)", entity.Name))
 
 	sb.WriteString(" {\n")
-	sb.WriteString(addValidationChecks(entity, "update", "nil"))
+	sb.WriteString(addValidationChecks(entity, "update", "nil", "arg", "\t"))
 	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
 
 	defaultFuncFields := make(map[string]schema.Field)

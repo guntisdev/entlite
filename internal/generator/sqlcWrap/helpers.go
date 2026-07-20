@@ -44,7 +44,7 @@ func getFieldByName(entity schema.Entity, name string) *schema.Field {
 	return nil
 }
 
-func addValidationChecks(entity schema.Entity, sqlQuery string, returnType string) string {
+func addValidationChecks(entity schema.Entity, sqlQuery string, returnType, argVar, indent string) string {
 	var sb strings.Builder
 
 	var zeroValue string
@@ -68,9 +68,9 @@ func addValidationChecks(entity schema.Entity, sqlQuery string, returnType strin
 
 		validateName := field.Validate().(string)
 		fieldName := toDBFieldName(field)
-		sb.WriteString(fmt.Sprintf("\tif !%s(arg.%s) {\n", validateName, fieldName))
-		sb.WriteString(fmt.Sprintf("\t\treturn %s, fmt.Errorf(\"Failed %s: incorrect value for '%s' in field '%s', validated by '%s'\")\n", zeroValue, sqlQuery, entity.Name, field.Name, validateName))
-		sb.WriteString("\t}\n")
+		sb.WriteString(fmt.Sprintf("%sif !%s(%s.%s) {\n", indent, validateName, argVar, fieldName))
+		sb.WriteString(fmt.Sprintf("%s\treturn %s, fmt.Errorf(\"Failed %s: incorrect value for '%s' in field '%s', validated by '%s'\")\n", indent, zeroValue, sqlQuery, entity.Name, field.Name, validateName))
+		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}
 	return sb.String()
 }

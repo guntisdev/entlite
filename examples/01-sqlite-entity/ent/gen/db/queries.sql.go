@@ -8,6 +8,44 @@ import (
 	internal "github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/db/internal"
 )
 
+type CreateBulkUserParams struct {
+	Email string `json:"email"`
+	Name string `json:"name"`
+	Age *int32 `json:"age"`
+	Password string `json:"password"`
+	ApiKey *[]byte `json:"api_key"`
+	IsActive *bool `json:"is_active"`
+	LoginCount *int64 `json:"login_count"`
+	Rating *float64 `json:"rating"`
+}
+
+func (q *Queries) CreateBulkUser(ctx context.Context, args []CreateBulkUserParams) ([]int32, error) {
+	results := make([]int32, 0, len(args))
+	for _, item := range args {
+		if !logic.StartsWithCapital(item.Name) {
+			return nil, fmt.Errorf("Failed create_bulk: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
+		}
+		internalArg := internal.CreateBulkUserParams{
+			Email: item.Email,
+			Name: item.Name,
+			Age: IntPtrConvert[int32, int64](item.Age),
+			Password: item.Password,
+			ApiKey: OptionalWithFallback(item.ApiKey, logic.GenerateAPIKey()),
+			IsActive: SQLiteBoolToInt(OptionalWithFallback(item.IsActive, true)),
+			LoginCount: OptionalWithFallback(item.LoginCount, 0),
+			Rating: OptionalWithFallback(item.Rating, 0),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+		id, err := (*internal.Queries)(q).CreateBulkUser(ctx, internalArg)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, IntConvert[int64, int32](id))
+	}
+	return results, nil
+}
+
 type CreateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`

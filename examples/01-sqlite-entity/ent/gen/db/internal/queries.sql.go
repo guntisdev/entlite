@@ -10,6 +10,63 @@ import (
 	"time"
 )
 
+const createBulkUser = `-- name: CreateBulkUser :one
+INSERT INTO "user" (
+  email,
+  name,
+  age,
+  password,
+  api_key,
+  is_active,
+  login_count,
+  rating,
+  created_at,
+  updated_at
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?
+) RETURNING ID
+`
+
+type CreateBulkUserParams struct {
+	Email      string    `json:"email"`
+	Name       string    `json:"name"`
+	Age        *int64    `json:"age"`
+	Password   string    `json:"password"`
+	ApiKey     []byte    `json:"api_key"`
+	IsActive   int64     `json:"is_active"`
+	LoginCount int64     `json:"login_count"`
+	Rating     float64   `json:"rating"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+func (q *Queries) CreateBulkUser(ctx context.Context, arg CreateBulkUserParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, createBulkUser,
+		arg.Email,
+		arg.Name,
+		arg.Age,
+		arg.Password,
+		arg.ApiKey,
+		arg.IsActive,
+		arg.LoginCount,
+		arg.Rating,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const createUser = `-- name: CreateUser :one
 
 

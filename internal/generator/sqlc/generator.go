@@ -122,6 +122,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	idField := entity.GetIdField()
 
 	var hasCreate bool
+	var hasCreateBulk bool
 	var hasUpdate bool
 	var hasDelete bool
 	var hasDeleteAll bool
@@ -132,6 +133,8 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		switch query.Type {
 		case schema.QueryCreate:
 			hasCreate = true
+		case schema.QueryCreateBulk:
+			hasCreateBulk = true
 		case schema.QueryUpdate:
 			hasUpdate = true
 		case schema.QueryDelete:
@@ -149,37 +152,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// CREATE
 	if hasCreate {
-		if g.supportsReturning() {
-			content.WriteString(fmt.Sprintf("\n-- name: Create%s :one\n", entity.Name))
-		} else {
-			content.WriteString(fmt.Sprintf("\n-- name: Create%s :execlastid\n", entity.Name))
-		}
-		content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
+		g.writeInsertQuery(&content, entity, fmt.Sprintf("Create%s", entity.Name))
+	}
 
-		var insertFields []string
-		var insertPlaceholders []string
-
-		for _, field := range entity.Fields {
-			canWrite := (field.Permissions & permissions.DbWrite) != 0
-			if !canWrite {
-				continue
-			}
-			if field.IsID() && field.DefaultFunc == nil {
-				continue
-			}
-			insertFields = append(insertFields, " "+field.Name)
-			parameterPlaceholder := g.getParameterPlaceholder(len(insertPlaceholders) + 1)
-			insertPlaceholders = append(insertPlaceholders, " "+parameterPlaceholder)
-		}
-
-		content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertFields, ",\n ")))
-		content.WriteString(") VALUES (\n")
-		content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
-		if g.supportsReturning() {
-			content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField.Name))
-		} else {
-			content.WriteString(");")
-		}
+	// CREATE BULK - a single-row insert; the sqlcWrap layer wraps it in a loop.
+	if hasCreateBulk {
+		g.writeInsertQuery(&content, entity, fmt.Sprintf("CreateBulk%s", entity.Name))
 	}
 
 	// READ (get by)
@@ -284,6 +262,43 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	}
 
 	return content.String()
+}
+
+func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Entity, queryName string) {
+	tableName := strings.ToLower(entity.Name)
+	idField := entity.GetIdField()
+
+	if g.supportsReturning() {
+		content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
+	} else {
+		content.WriteString(fmt.Sprintf("\n-- name: %s :execlastid\n", queryName))
+	}
+	content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
+
+	var insertFields []string
+	var insertPlaceholders []string
+
+	for _, field := range entity.Fields {
+		canWrite := (field.Permissions & permissions.DbWrite) != 0
+		if !canWrite {
+			continue
+		}
+		if field.IsID() && field.DefaultFunc == nil {
+			continue
+		}
+		insertFields = append(insertFields, " "+field.Name)
+		parameterPlaceholder := g.getParameterPlaceholder(len(insertPlaceholders) + 1)
+		insertPlaceholders = append(insertPlaceholders, " "+parameterPlaceholder)
+	}
+
+	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertFields, ",\n ")))
+	content.WriteString(") VALUES (\n")
+	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
+	if g.supportsReturning() {
+		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField.Name))
+	} else {
+		content.WriteString(");")
+	}
 }
 
 func writeFile(filePath, content string) error {
