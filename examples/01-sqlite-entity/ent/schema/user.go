@@ -41,6 +41,7 @@ func (User) Queries() []entlite.Query {
 	return []entlite.Query{
 		// DefaultCRUD expands to Create / GetByID / Update / Delete / List.
 		query.DefaultCRUD(),
+		query.CreateBulk(),
 		query.GetBy("email"),
 		query.ListAll(),
 		query.DeleteAll(),

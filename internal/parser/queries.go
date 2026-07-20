@@ -73,6 +73,11 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			}, true, nil
 		case "Create":
 			return []schema.Query{{Type: schema.QueryCreate, Fields: []string{"ID"}}}, true, nil
+		case "CreateBulk":
+			if len(callExpr.Args) != 0 {
+				return nil, true, fmt.Errorf("CreateBulk does not accept arguments")
+			}
+			return []schema.Query{{Type: schema.QueryCreateBulk}}, true, nil
 		case "Get":
 			return []schema.Query{{Type: schema.QueryGetBy, Fields: []string{"ID"}}}, true, nil
 		case "Update":
