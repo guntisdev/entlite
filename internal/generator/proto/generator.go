@@ -145,26 +145,19 @@ func generateResponseMessages(entity schema.Entity) string {
 		switch query.Type {
 		case schema.QueryCreate:
 			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
-			for _, field := range entity.Fields {
-				canWrite := (field.Permissions & permissions.ApiWrite) != 0
-				if field.IsID() || !canWrite {
-					continue
-				}
-				if field.Comment != "" {
-					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
-				}
-				protoType := getProtoType(field.Type)
-				var optional string
-				var required string
-				if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
-					optional = "optional "
-				} else if field.Type == schema.FieldTypeBool {
-					required = ""
-				} else {
-					required = fmt.Sprintf(" %s", requiredStr)
-				}
-				content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
-			}
+			writeCreateFields(&content, entity)
+			content.WriteString("}")
+		case schema.QueryCreateBulk:
+			content.WriteString(fmt.Sprintf("message CreateBulk%sItem {\n", entity.Name))
+			writeCreateFields(&content, entity)
+			content.WriteString("}\n\n")
+
+			content.WriteString(fmt.Sprintf("message CreateBulk%sRequest {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("  repeated CreateBulk%sItem items = 1 %s;\n", entity.Name, requiredStr))
+			content.WriteString("}\n\n")
+
+			content.WriteString(fmt.Sprintf("message CreateBulk%sResponse {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
 			content.WriteString("}")
 		case schema.QueryGetBy:
 			fieldsStr := util.FieldsToStr(query.Fields)
@@ -275,6 +268,30 @@ func generateResponseMessages(entity schema.Entity) string {
 	return content.String()
 }
 
+func writeCreateFields(content *strings.Builder, entity schema.Entity) {
+	var requiredStr = "[(buf.validate.field).required = true]"
+	for _, field := range entity.Fields {
+		canWrite := (field.Permissions & permissions.ApiWrite) != 0
+		if field.IsID() || !canWrite {
+			continue
+		}
+		if field.Comment != "" {
+			content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
+		}
+		protoType := getProtoType(field.Type)
+		var optional string
+		var required string
+		if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
+			optional = "optional "
+		} else if field.Type == schema.FieldTypeBool {
+			required = ""
+		} else {
+			required = fmt.Sprintf(" %s", requiredStr)
+		}
+		content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
+	}
+}
+
 func getIdFieldAsStr(fields []schema.Field) string {
 	for _, field := range fields {
 		if field.IsID() {
@@ -290,6 +307,8 @@ func generateRequests(entity schema.Entity, query schema.Query) string {
 	switch query.Type {
 	case schema.QueryCreate:
 		return fmt.Sprintf("  rpc Create(Create%sRequest) returns (%s);\n", entity.Name, entity.Name)
+	case schema.QueryCreateBulk:
+		return fmt.Sprintf("  rpc CreateBulk(CreateBulk%sRequest) returns (CreateBulk%sResponse);\n", entity.Name, entity.Name)
 	case schema.QueryGetBy:
 		fieldsStr := util.FieldsToStr(query.Fields)
 		return fmt.Sprintf("  rpc GetBy%s(Get%sBy%sRequest) returns (%s);\n", fieldsStr, entity.Name, fieldsStr, entity.Name)

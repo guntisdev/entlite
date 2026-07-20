@@ -28,6 +28,31 @@ INSERT INTO "user" (
   ?
 ) RETURNING ID;
 
+-- name: CreateBulkUser :one
+INSERT INTO "user" (
+  email,
+  name,
+  age,
+  password,
+  api_key,
+  is_active,
+  login_count,
+  rating,
+  created_at,
+  updated_at
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?
+) RETURNING ID;
+
 -- name: GetUserByID :one
 SELECT * FROM "user" WHERE ID = ?;
 

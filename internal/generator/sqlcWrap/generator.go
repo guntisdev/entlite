@@ -355,6 +355,14 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 				continue
 			}
 
+			if strings.HasPrefix(s.Name.Name, "CreateBulk") && strings.HasSuffix(s.Name.Name, "Params") {
+				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "CreateBulk"), "Params")
+				if entity, ok := ctx.entityMap[entityName]; ok {
+					sb.WriteString(generateCreateStruct(s.Name.Name, ctx.createParamsStructs[s.Name.Name], entity))
+					continue
+				}
+			}
+
 			if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, "Params") {
 				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
 				if entity, ok := ctx.entityMap[entityName]; ok {
@@ -404,6 +412,13 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 
 	if funcDecl.Recv != nil {
 		// CRUD method overrides
+		if strings.HasPrefix(funcDecl.Name.Name, "CreateBulk") {
+			entityName := strings.TrimPrefix(funcDecl.Name.Name, "CreateBulk")
+			if entity, ok := ctx.entityMap[entityName]; ok {
+				sb.WriteString(generateCreateBulkQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				return
+			}
+		}
 		if strings.HasPrefix(funcDecl.Name.Name, "Create") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Create")
 			if entity, ok := ctx.entityMap[entityName]; ok {

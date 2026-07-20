@@ -7,6 +7,7 @@ type Type string
 const (
 	TypeDefaultCRUD Type = "default_crud"
 	TypeCreate      Type = "create"
+	TypeCreateBulk  Type = "create_bulk"
 	TypeGet         Type = "get"
 	TypeUpdate      Type = "update"
 	TypeDelete      Type = "delete"
@@ -61,6 +62,10 @@ func DefaultCRUD() QueryBuilder {
 
 func Create() QueryBuilder {
 	return Query{typeName: TypeCreate}
+}
+
+func CreateBulk() QueryBuilder {
+	return Query{typeName: TypeCreateBulk}
 }
 
 func Get() QueryBuilder {

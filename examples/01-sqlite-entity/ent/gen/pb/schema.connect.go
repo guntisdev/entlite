@@ -41,6 +41,8 @@ const (
 	UserServiceUpdateProcedure = "/entlite.UserService/Update"
 	// UserServiceDeleteProcedure is the fully-qualified name of the UserService's Delete RPC.
 	UserServiceDeleteProcedure = "/entlite.UserService/Delete"
+	// UserServiceCreateBulkProcedure is the fully-qualified name of the UserService's CreateBulk RPC.
+	UserServiceCreateBulkProcedure = "/entlite.UserService/CreateBulk"
 	// UserServiceGetByEmailProcedure is the fully-qualified name of the UserService's GetByEmail RPC.
 	UserServiceGetByEmailProcedure = "/entlite.UserService/GetByEmail"
 	// UserServiceListAllProcedure is the fully-qualified name of the UserService's ListAll RPC.
@@ -61,6 +63,7 @@ type UserServiceClient interface {
 	GetByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error)
 	Update(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
+	CreateBulk(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error)
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
 	ListAll(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error)
 	DeleteAll(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error)
@@ -103,6 +106,12 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("Delete")),
 			connect.WithClientOptions(opts...),
 		),
+		createBulk: connect.NewClient[CreateBulkUserRequest, CreateBulkUserResponse](
+			httpClient,
+			baseURL+UserServiceCreateBulkProcedure,
+			connect.WithSchema(userServiceMethods.ByName("CreateBulk")),
+			connect.WithClientOptions(opts...),
+		),
 		getByEmail: connect.NewClient[GetUserByEmailRequest, User](
 			httpClient,
 			baseURL+UserServiceGetByEmailProcedure,
@@ -142,6 +151,7 @@ type userServiceClient struct {
 	getByID         *connect.Client[GetUserByIDRequest, User]
 	update          *connect.Client[UpdateUserRequest, User]
 	delete          *connect.Client[DeleteUserRequest, emptypb.Empty]
+	createBulk      *connect.Client[CreateBulkUserRequest, CreateBulkUserResponse]
 	getByEmail      *connect.Client[GetUserByEmailRequest, User]
 	listAll         *connect.Client[ListAllUserRequest, ListAllUserResponse]
 	deleteAll       *connect.Client[DeleteAllUserRequest, emptypb.Empty]
@@ -167,6 +177,11 @@ func (c *userServiceClient) Update(ctx context.Context, req *connect.Request[Upd
 // Delete calls entlite.UserService.Delete.
 func (c *userServiceClient) Delete(ctx context.Context, req *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.delete.CallUnary(ctx, req)
+}
+
+// CreateBulk calls entlite.UserService.CreateBulk.
+func (c *userServiceClient) CreateBulk(ctx context.Context, req *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error) {
+	return c.createBulk.CallUnary(ctx, req)
 }
 
 // GetByEmail calls entlite.UserService.GetByEmail.
@@ -200,6 +215,7 @@ type UserServiceHandler interface {
 	GetByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error)
 	Update(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
+	CreateBulk(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error)
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
 	ListAll(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error)
 	DeleteAll(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error)
@@ -236,6 +252,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		UserServiceDeleteProcedure,
 		svc.Delete,
 		connect.WithSchema(userServiceMethods.ByName("Delete")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceCreateBulkHandler := connect.NewUnaryHandler(
+		UserServiceCreateBulkProcedure,
+		svc.CreateBulk,
+		connect.WithSchema(userServiceMethods.ByName("CreateBulk")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceGetByEmailHandler := connect.NewUnaryHandler(
@@ -278,6 +300,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceUpdateHandler.ServeHTTP(w, r)
 		case UserServiceDeleteProcedure:
 			userServiceDeleteHandler.ServeHTTP(w, r)
+		case UserServiceCreateBulkProcedure:
+			userServiceCreateBulkHandler.ServeHTTP(w, r)
 		case UserServiceGetByEmailProcedure:
 			userServiceGetByEmailHandler.ServeHTTP(w, r)
 		case UserServiceListAllProcedure:
@@ -311,6 +335,10 @@ func (UnimplementedUserServiceHandler) Update(context.Context, *connect.Request[
 
 func (UnimplementedUserServiceHandler) Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.Delete is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) CreateBulk(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.CreateBulk is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error) {

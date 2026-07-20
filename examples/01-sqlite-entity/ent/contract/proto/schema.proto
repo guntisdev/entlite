@@ -51,6 +51,25 @@ message UpdateUserRequest {
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
+message CreateBulkUserItem {
+  string email = 2 [(buf.validate.field).required = true];
+  // Full name, e.g. \"Jane Doe\
+  string name = 3 [(buf.validate.field).required = true];
+  optional int32 age = 4;
+  string password = 5 [(buf.validate.field).required = true];
+  optional bytes api_key = 6;
+  optional bool is_active = 7;
+  optional int64 login_count = 8;
+  optional double rating = 9;
+}
+
+message CreateBulkUserRequest {
+  repeated CreateBulkUserItem items = 1 [(buf.validate.field).required = true];
+}
+
+message CreateBulkUserResponse {
+  repeated User users = 1;
+}
 message GetUserByEmailRequest {
   string email = 2 [(buf.validate.field).required = true];
 }
@@ -89,6 +108,7 @@ service UserService {
   rpc GetByID(GetUserByIDRequest) returns (User);
   rpc Update(UpdateUserRequest) returns (User);
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
+  rpc CreateBulk(CreateBulkUserRequest) returns (CreateBulkUserResponse);
   rpc GetByEmail(GetUserByEmailRequest) returns (User);
   rpc ListAll(ListAllUserRequest) returns (ListAllUserResponse);
   rpc DeleteAll(DeleteAllUserRequest) returns (google.protobuf.Empty);
