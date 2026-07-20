@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUisgIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIXCgdhcGlfa2V5GAYgASgMQga6SAPIAQESEQoJaXNfYWN0aXZlGAcgASgIEhsKC2xvZ2luX2NvdW50GAggASgDQga6SAPIAQESFgoGcmF0aW5nGAkgASgBQga6SAPIAQESNgoKY3JlYXRlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UihgIKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAUgASgJQga6SAPIAQESFAoHYXBpX2tleRgGIAEoDEgBiAEBEhYKCWlzX2FjdGl2ZRgHIAEoCEgCiAEBEhgKC2xvZ2luX2NvdW50GAggASgDSAOIAQESEwoGcmF0aW5nGAkgASgBSASIAQFCBgoEX2FnZUIKCghfYXBpX2tleUIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nIigKEkdldFVzZXJCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIoICChFVcGRhdGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhUKCHBhc3N3b3JkGAUgASgJSAGIAQESFgoJaXNfYWN0aXZlGAcgASgISAKIAQESGAoLbG9naW5fY291bnQYCCABKANIA4gBARITCgZyYXRpbmcYCSABKAFIBIgBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiLgoVR2V0VXNlckJ5RW1haWxSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQEiFAoSTGlzdEFsbFVzZXJSZXF1ZXN0IjMKE0xpc3RBbGxVc2VyUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIiFgoURGVsZXRlQWxsVXNlclJlcXVlc3QiXQoZTGlzdFVzZXJCeUlzQWN0aXZlUmVxdWVzdBIVCgVsaW1pdBgBIAEoBUIGukgDyAEBEg4KBm9mZnNldBgCIAEoBRIZCglpc19hY3RpdmUYAyABKAhCBrpIA8gBASI6ChpMaXN0VXNlckJ5SXNBY3RpdmVSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlciKPAQoeTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhcKB21pbl9hZ2UYAyABKAVCBrpIA8gBARIXCgdtYXhfYWdlGAQgASgFQga6SAPIAQESFAoEbmFtZRgFIAEoCUIGukgDyAEBIj8KH0xpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIy9AQKC1VzZXJTZXJ2aWNlEjMKBkNyZWF0ZRIaLmVudGxpdGUuQ3JlYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISNQoHR2V0QnlJRBIbLmVudGxpdGUuR2V0VXNlckJ5SURSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRI7CgpHZXRCeUVtYWlsEh4uZW50bGl0ZS5HZXRVc2VyQnlFbWFpbFJlcXVlc3QaDS5lbnRsaXRlLlVzZXISRAoHTGlzdEFsbBIbLmVudGxpdGUuTGlzdEFsbFVzZXJSZXF1ZXN0GhwuZW50bGl0ZS5MaXN0QWxsVXNlclJlc3BvbnNlEkIKCURlbGV0ZUFsbBIdLmVudGxpdGUuRGVsZXRlQWxsVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSWQoOTGlzdEJ5SXNBY3RpdmUSIi5lbnRsaXRlLkxpc3RVc2VyQnlJc0FjdGl2ZVJlcXVlc3QaIy5lbnRsaXRlLkxpc3RVc2VyQnlJc0FjdGl2ZVJlc3BvbnNlEmQKD0ZpbHRlckJ5QWdlTmFtZRInLmVudGxpdGUuTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXF1ZXN0GiguZW50bGl0ZS5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZVJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUisgIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIXCgdhcGlfa2V5GAYgASgMQga6SAPIAQESEQoJaXNfYWN0aXZlGAcgASgIEhsKC2xvZ2luX2NvdW50GAggASgDQga6SAPIAQESFgoGcmF0aW5nGAkgASgBQga6SAPIAQESNgoKY3JlYXRlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UihgIKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAUgASgJQga6SAPIAQESFAoHYXBpX2tleRgGIAEoDEgBiAEBEhYKCWlzX2FjdGl2ZRgHIAEoCEgCiAEBEhgKC2xvZ2luX2NvdW50GAggASgDSAOIAQESEwoGcmF0aW5nGAkgASgBSASIAQFCBgoEX2FnZUIKCghfYXBpX2tleUIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nIigKEkdldFVzZXJCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIoICChFVcGRhdGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhUKCHBhc3N3b3JkGAUgASgJSAGIAQESFgoJaXNfYWN0aXZlGAcgASgISAKIAQESGAoLbG9naW5fY291bnQYCCABKANIA4gBARITCgZyYXRpbmcYCSABKAFIBIgBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEihwIKEkNyZWF0ZUJ1bGtVc2VySXRlbRIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgFIAEoCUIGukgDyAEBEhQKB2FwaV9rZXkYBiABKAxIAYgBARIWCglpc19hY3RpdmUYByABKAhIAogBARIYCgtsb2dpbl9jb3VudBgIIAEoA0gDiAEBEhMKBnJhdGluZxgJIAEoAUgEiAEBQgYKBF9hZ2VCCgoIX2FwaV9rZXlCDAoKX2lzX2FjdGl2ZUIOCgxfbG9naW5fY291bnRCCQoHX3JhdGluZyJLChVDcmVhdGVCdWxrVXNlclJlcXVlc3QSMgoFaXRlbXMYASADKAsyGy5lbnRsaXRlLkNyZWF0ZUJ1bGtVc2VySXRlbUIGukgDyAEBIjYKFkNyZWF0ZUJ1bGtVc2VyUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIiLgoVR2V0VXNlckJ5RW1haWxSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQEiFAoSTGlzdEFsbFVzZXJSZXF1ZXN0IjMKE0xpc3RBbGxVc2VyUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIiFgoURGVsZXRlQWxsVXNlclJlcXVlc3QiXQoZTGlzdFVzZXJCeUlzQWN0aXZlUmVxdWVzdBIVCgVsaW1pdBgBIAEoBUIGukgDyAEBEg4KBm9mZnNldBgCIAEoBRIZCglpc19hY3RpdmUYAyABKAhCBrpIA8gBASI6ChpMaXN0VXNlckJ5SXNBY3RpdmVSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlciKPAQoeTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhcKB21pbl9hZ2UYAyABKAVCBrpIA8gBARIXCgdtYXhfYWdlGAQgASgFQga6SAPIAQESFAoEbmFtZRgFIAEoCUIGukgDyAEBIj8KH0xpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIywwUKC1VzZXJTZXJ2aWNlEjMKBkNyZWF0ZRIaLmVudGxpdGUuQ3JlYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISNQoHR2V0QnlJRBIbLmVudGxpdGUuR2V0VXNlckJ5SURSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjMKBlVwZGF0ZRIaLmVudGxpdGUuVXBkYXRlVXNlclJlcXVlc3QaDS5lbnRsaXRlLlVzZXISPAoGRGVsZXRlEhouZW50bGl0ZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRJNCgpDcmVhdGVCdWxrEh4uZW50bGl0ZS5DcmVhdGVCdWxrVXNlclJlcXVlc3QaHy5lbnRsaXRlLkNyZWF0ZUJ1bGtVc2VyUmVzcG9uc2USOwoKR2V0QnlFbWFpbBIeLmVudGxpdGUuR2V0VXNlckJ5RW1haWxSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEkQKB0xpc3RBbGwSGy5lbnRsaXRlLkxpc3RBbGxVc2VyUmVxdWVzdBocLmVudGxpdGUuTGlzdEFsbFVzZXJSZXNwb25zZRJCCglEZWxldGVBbGwSHS5lbnRsaXRlLkRlbGV0ZUFsbFVzZXJSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5ElkKDkxpc3RCeUlzQWN0aXZlEiIuZW50bGl0ZS5MaXN0VXNlckJ5SXNBY3RpdmVSZXF1ZXN0GiMuZW50bGl0ZS5MaXN0VXNlckJ5SXNBY3RpdmVSZXNwb25zZRJkCg9GaWx0ZXJCeUFnZU5hbWUSJy5lbnRsaXRlLkxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lUmVxdWVzdBooLmVudGxpdGUuTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXNwb25zZUIGWgQuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -224,6 +224,94 @@ export const DeleteUserRequestSchema: GenMessage<DeleteUserRequest> = /*@__PURE_
   messageDesc(file_schema, 4);
 
 /**
+ * @generated from message entlite.CreateBulkUserItem
+ */
+export type CreateBulkUserItem = Message<"entlite.CreateBulkUserItem"> & {
+  /**
+   * @generated from field: string email = 2;
+   */
+  email: string;
+
+  /**
+   * Full name, e.g. \"Jane Doe\
+   *
+   * @generated from field: string name = 3;
+   */
+  name: string;
+
+  /**
+   * @generated from field: optional int32 age = 4;
+   */
+  age?: number;
+
+  /**
+   * @generated from field: string password = 5;
+   */
+  password: string;
+
+  /**
+   * @generated from field: optional bytes api_key = 6;
+   */
+  apiKey?: Uint8Array;
+
+  /**
+   * @generated from field: optional bool is_active = 7;
+   */
+  isActive?: boolean;
+
+  /**
+   * @generated from field: optional int64 login_count = 8;
+   */
+  loginCount?: bigint;
+
+  /**
+   * @generated from field: optional double rating = 9;
+   */
+  rating?: number;
+};
+
+/**
+ * Describes the message entlite.CreateBulkUserItem.
+ * Use `create(CreateBulkUserItemSchema)` to create a new message.
+ */
+export const CreateBulkUserItemSchema: GenMessage<CreateBulkUserItem> = /*@__PURE__*/
+  messageDesc(file_schema, 5);
+
+/**
+ * @generated from message entlite.CreateBulkUserRequest
+ */
+export type CreateBulkUserRequest = Message<"entlite.CreateBulkUserRequest"> & {
+  /**
+   * @generated from field: repeated entlite.CreateBulkUserItem items = 1;
+   */
+  items: CreateBulkUserItem[];
+};
+
+/**
+ * Describes the message entlite.CreateBulkUserRequest.
+ * Use `create(CreateBulkUserRequestSchema)` to create a new message.
+ */
+export const CreateBulkUserRequestSchema: GenMessage<CreateBulkUserRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 6);
+
+/**
+ * @generated from message entlite.CreateBulkUserResponse
+ */
+export type CreateBulkUserResponse = Message<"entlite.CreateBulkUserResponse"> & {
+  /**
+   * @generated from field: repeated entlite.User users = 1;
+   */
+  users: User[];
+};
+
+/**
+ * Describes the message entlite.CreateBulkUserResponse.
+ * Use `create(CreateBulkUserResponseSchema)` to create a new message.
+ */
+export const CreateBulkUserResponseSchema: GenMessage<CreateBulkUserResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 7);
+
+/**
  * @generated from message entlite.GetUserByEmailRequest
  */
 export type GetUserByEmailRequest = Message<"entlite.GetUserByEmailRequest"> & {
@@ -238,7 +326,7 @@ export type GetUserByEmailRequest = Message<"entlite.GetUserByEmailRequest"> & {
  * Use `create(GetUserByEmailRequestSchema)` to create a new message.
  */
 export const GetUserByEmailRequestSchema: GenMessage<GetUserByEmailRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 5);
+  messageDesc(file_schema, 8);
 
 /**
  * @generated from message entlite.ListAllUserRequest
@@ -251,7 +339,7 @@ export type ListAllUserRequest = Message<"entlite.ListAllUserRequest"> & {
  * Use `create(ListAllUserRequestSchema)` to create a new message.
  */
 export const ListAllUserRequestSchema: GenMessage<ListAllUserRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 6);
+  messageDesc(file_schema, 9);
 
 /**
  * @generated from message entlite.ListAllUserResponse
@@ -268,7 +356,7 @@ export type ListAllUserResponse = Message<"entlite.ListAllUserResponse"> & {
  * Use `create(ListAllUserResponseSchema)` to create a new message.
  */
 export const ListAllUserResponseSchema: GenMessage<ListAllUserResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 7);
+  messageDesc(file_schema, 10);
 
 /**
  * @generated from message entlite.DeleteAllUserRequest
@@ -281,7 +369,7 @@ export type DeleteAllUserRequest = Message<"entlite.DeleteAllUserRequest"> & {
  * Use `create(DeleteAllUserRequestSchema)` to create a new message.
  */
 export const DeleteAllUserRequestSchema: GenMessage<DeleteAllUserRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 8);
+  messageDesc(file_schema, 11);
 
 /**
  * @generated from message entlite.ListUserByIsActiveRequest
@@ -308,7 +396,7 @@ export type ListUserByIsActiveRequest = Message<"entlite.ListUserByIsActiveReque
  * Use `create(ListUserByIsActiveRequestSchema)` to create a new message.
  */
 export const ListUserByIsActiveRequestSchema: GenMessage<ListUserByIsActiveRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 9);
+  messageDesc(file_schema, 12);
 
 /**
  * @generated from message entlite.ListUserByIsActiveResponse
@@ -325,7 +413,7 @@ export type ListUserByIsActiveResponse = Message<"entlite.ListUserByIsActiveResp
  * Use `create(ListUserByIsActiveResponseSchema)` to create a new message.
  */
 export const ListUserByIsActiveResponseSchema: GenMessage<ListUserByIsActiveResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 10);
+  messageDesc(file_schema, 13);
 
 /**
  * @generated from message entlite.ListUserFilterByAgeNameRequest
@@ -362,7 +450,7 @@ export type ListUserFilterByAgeNameRequest = Message<"entlite.ListUserFilterByAg
  * Use `create(ListUserFilterByAgeNameRequestSchema)` to create a new message.
  */
 export const ListUserFilterByAgeNameRequestSchema: GenMessage<ListUserFilterByAgeNameRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 11);
+  messageDesc(file_schema, 14);
 
 /**
  * @generated from message entlite.ListUserFilterByAgeNameResponse
@@ -379,7 +467,7 @@ export type ListUserFilterByAgeNameResponse = Message<"entlite.ListUserFilterByA
  * Use `create(ListUserFilterByAgeNameResponseSchema)` to create a new message.
  */
 export const ListUserFilterByAgeNameResponseSchema: GenMessage<ListUserFilterByAgeNameResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 12);
+  messageDesc(file_schema, 15);
 
 /**
  * UserService provides CRUD opertions for User entities
@@ -418,6 +506,14 @@ export const UserService: GenService<{
     methodKind: "unary";
     input: typeof DeleteUserRequestSchema;
     output: typeof EmptySchema;
+  },
+  /**
+   * @generated from rpc entlite.UserService.CreateBulk
+   */
+  createBulk: {
+    methodKind: "unary";
+    input: typeof CreateBulkUserRequestSchema;
+    output: typeof CreateBulkUserResponseSchema;
   },
   /**
    * @generated from rpc entlite.UserService.GetByEmail
