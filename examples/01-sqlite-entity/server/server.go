@@ -56,6 +56,45 @@ func (s *UserServer) Create(
 	return connect.NewResponse(user.ToProto()), nil
 }
 
+func (s *UserServer) CreateBulk(
+	ctx context.Context,
+	req *connect.Request[pb.CreateBulkUserRequest],
+) (*connect.Response[pb.CreateBulkUserResponse], error) {
+	log.Printf("Create bulk users: %d items", len(req.Msg.Items))
+
+	queries := db.New(s.db)
+
+	params := make([]db.CreateBulkUserParams, 0, len(req.Msg.Items))
+	for _, item := range req.Msg.Items {
+		params = append(params, db.CreateBulkUserParams{
+			Email:      item.Email,
+			Name:       item.Name,
+			Age:        item.Age,
+			Password:   item.Password,
+			ApiKey:     &item.ApiKey,
+			IsActive:   item.IsActive,
+			LoginCount: item.LoginCount,
+			Rating:     item.Rating,
+		})
+	}
+
+	userIDs, err := queries.CreateBulkUser(ctx, params)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create users: %w", err))
+	}
+
+	users := make([]*pb.User, 0, len(userIDs))
+	for _, userID := range userIDs {
+		user, err := queries.GetUserByID(ctx, userID)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created user: %w", err))
+		}
+		users = append(users, user.ToProto())
+	}
+
+	return connect.NewResponse(&pb.CreateBulkUserResponse{Users: users}), nil
+}
+
 func (s *UserServer) GetByID(
 	ctx context.Context,
 	req *connect.Request[pb.GetUserByIDRequest],

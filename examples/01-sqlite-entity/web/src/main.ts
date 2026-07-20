@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "./gen/schema_pb.js";
-import type { CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "./gen/schema_pb.js";
+import type { CreateBulkUserItem, CreateBulkUserRequest, CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "./gen/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
@@ -38,6 +38,29 @@ function createUser() {
     })
     .catch((error) => {
         log("✗ Error creating user:", error);
+    });
+}
+
+function createBulkUsers() {
+    const count = 3;
+    log(`Creating ${count} users in bulk...`);
+    const items: StrictMessageInput<CreateBulkUserItem>[] = Array.from({ length: count }, () => {
+        const fullName = randomFullName();
+        const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
+        return {
+            email: email,
+            name: fullName,
+            age: Math.ceil(Math.random() * 100),
+            password: createHash(12),
+        };
+    });
+    const request: StrictMessageInput<CreateBulkUserRequest> = { items };
+    client.createBulk(request)
+    .then((response) => {
+        log(`✓ ${response.users.length} users created in bulk:`, response);
+    })
+    .catch((error) => {
+        log("✗ Error creating users in bulk:", error);
     });
 }
 
@@ -132,6 +155,7 @@ function deleteAllUsers() {
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOMContentLoaded", document.getElementById("createBtn"));
     document.getElementById("createBtn")!.addEventListener("click", createUser);
+    document.getElementById("createBulkBtn")!.addEventListener("click", createBulkUsers);
     document.getElementById("getBtn")!.addEventListener("click", getUserByID);
     document.getElementById("listBtn")!.addEventListener("click", listAllUsers);
     document.getElementById("updateBtn")!.addEventListener("click", updateUser);
