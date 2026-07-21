@@ -28,10 +28,31 @@ func (User) Queries() []entlite.Query {
 }
 ```
 * Make annotations optional
-* Hande composite indexes (set it with `func (User) Indexes() []entlite.Index`)
+* Add new field type JSON
+* Add Name() option for Queries - for shorter or custom naming
 * Add .Indexes() for fields (to index in sql)
-* Add bulk insert query
-* Add deleteAll queries
+```bash
+func (User) Indexes() []entlite.Index {
+	return []entlite.Index{
+		// 1. Primary Key (Compound)
+		index.Primary("country", "timestamp", "env"),
+
+		// 2. Simple Single/Multi-Column Index
+		index.Fields("env", "is_active"),
+
+		// 3. Composite Index with Sort Ordering (ASC / DESC)
+		index.Fields("country", "env").
+			Desc("created_at"), // Sorting timestamp DESC for fast time-series queries
+
+		// 4. Multi-Column Unique Constraint
+		index.Fields("tenant_id", "email").Unique(),
+
+		// 5. Named Index (Useful to avoid DB auto-generated name conflicts)
+		index.Fields("login_count", "rating").
+			Name("idx_users_stats"),
+	}
+}
+```
 * Figure out migration
 
 ## Folder structure
