@@ -14,6 +14,10 @@ type Query interface {
 	Query()
 }
 
+type Index interface {
+	Index()
+}
+
 type MessageAnnotation struct{}
 
 func (MessageAnnotation) Annotation() {}
