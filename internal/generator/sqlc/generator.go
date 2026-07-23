@@ -88,10 +88,8 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 		// TODO write logic for DefaultFunc, Comment etc
 	}
 
-	// Compound primary key(s) declared via index.Primary(...).
-	// TODO: an explicit index.Primary should override the auto-generated id
-	// primary key at the parsing stage. Until then this generates verbatim from
-	// the internal schema, which may emit more than one PRIMARY KEY.
+	// Compound primary key declared via index.Primary(...). When present the
+	// parser clears the id field's primary flag, so this becomes the table's only PRIMARY KEY.
 	for _, idx := range entity.Indexes {
 		if idx.Type != schema.IndexPrimary {
 			continue

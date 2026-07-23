@@ -23,11 +23,17 @@ func (g *Generator) quote(str string) string {
 }
 
 func (g *Generator) getIdFieldSQL(field schema.Field) string {
-	idType := g.getIdFieldType(field.Type)
+	idType := g.getIdFieldType(field.Type, field.Primary)
 	return fmt.Sprintf("  %s %s", field.Name, idType)
 }
 
-func (g *Generator) getIdFieldType(fieldType schema.FieldType) string {
+func (g *Generator) getIdFieldType(fieldType schema.FieldType, primary bool) string {
+	// When an explicit index.Primary overrides the id field, it is no longer the
+	// primary key, so emit a plain column type without the auto-increment & PRIMARY KEY clause.
+	if !primary {
+		return g.getSQLType(fieldType)
+	}
+
 	switch g.sqlDialect {
 	case schema.PostgreSQL:
 		switch fieldType {

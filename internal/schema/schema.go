@@ -59,6 +59,7 @@ func (e Entity) GetFieldByName(name string) (Field, bool) {
 type Field struct {
 	Name         string
 	Type         FieldType
+	Primary      bool
 	Unique       bool
 	DefaultValue any
 	DefaultFunc  func() any
