@@ -88,8 +88,77 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 		// TODO write logic for DefaultFunc, Comment etc
 	}
 
+	// Compound primary key(s) declared via index.Primary(...).
+	// TODO: an explicit index.Primary should override the auto-generated id
+	// primary key at the parsing stage. Until then this generates verbatim from
+	// the internal schema, which may emit more than one PRIMARY KEY.
+	for _, idx := range entity.Indexes {
+		if idx.Type != schema.IndexPrimary {
+			continue
+		}
+		content.WriteString(",\n")
+		content.WriteString(fmt.Sprintf("  PRIMARY KEY (%s)", strings.Join(g.indexColumns(idx), ", ")))
+	}
+
 	content.WriteString("\n);\n")
+
+	content.WriteString(g.generateIndexSQL(entity))
+
 	return content.String()
+}
+
+// generateIndexSQL emits CREATE INDEX statements for secondary indexes declared
+// via index.Fields(...). Primary keys are handled inline in the CREATE TABLE.
+func (g *Generator) generateIndexSQL(entity schema.Entity) string {
+	var content strings.Builder
+
+	tableName := strings.ToLower(entity.Name)
+
+	for _, idx := range entity.Indexes {
+		if idx.Type != schema.IndexRegular {
+			continue
+		}
+
+		name := idx.Name
+		if name == "" {
+			name = g.defaultIndexName(tableName, idx)
+		}
+
+		unique := ""
+		if idx.Unique {
+			unique = "UNIQUE "
+		}
+
+		content.WriteString(fmt.Sprintf("CREATE %sINDEX %s ON %s (%s);\n",
+			unique,
+			g.quote(name),
+			g.quote(tableName),
+			strings.Join(g.indexColumns(idx), ", "),
+		))
+	}
+
+	return content.String()
+}
+
+// indexColumns renders each indexed column, appending DESC for descending
+// columns (ASC is the SQL default and left implicit).
+func (g *Generator) indexColumns(idx schema.Index) []string {
+	cols := make([]string, len(idx.Columns))
+	for i, c := range idx.Columns {
+		if c.Desc {
+			cols[i] = c.Name + " DESC"
+		} else {
+			cols[i] = c.Name
+		}
+	}
+	return cols
+}
+
+// defaultIndexName builds index name from the table and its
+// column names, e.g. idx_user_env_is_active.
+func (g *Generator) defaultIndexName(tableName string, idx schema.Index) string {
+	parts := append([]string{"idx", tableName}, idx.FieldNames()...)
+	return strings.Join(parts, "_")
 }
 
 func (g *Generator) generateQueries(entities []schema.Entity, dir string) error {

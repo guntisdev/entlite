@@ -13,6 +13,11 @@ CREATE TABLE "user"(
   login_count INTEGER DEFAULT 0 NOT NULL,
   rating REAL DEFAULT 0 NOT NULL,
   created_at DATETIME NOT NULL,
-  updated_at DATETIME NOT NULL
+  updated_at DATETIME NOT NULL,
+  PRIMARY KEY (country, timestamp, env)
 );
+CREATE INDEX "idx_user_env_is_active" ON "user" (env, is_active);
+CREATE INDEX "idx_user_country_env_created_at" ON "user" (country, env, created_at DESC);
+CREATE UNIQUE INDEX "idx_user_tenant_id_email" ON "user" (tenant_id, email);
+CREATE INDEX "idx_users_stats" ON "user" (login_count, rating);
 
