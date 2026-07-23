@@ -93,11 +93,44 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			}
 			entity.Queries = queries
 		}
+
+		// Parse Indexes
+		if funcDecl.Name.Name == "Indexes" {
+			indexes, err := parseIndexesMethod(funcDecl)
+			if err != nil {
+				return entity, fmt.Errorf("failed to parse indexes: %w", err)
+			}
+			entity.Indexes = indexes
+		}
 	}
+
+	// An explicit index.Primary overrides the auto-assigned primary key on the
+	// id field: the compound key declared in Indexes() becomes the table's only
+	// PRIMARY KEY.
+	applyPrimaryIndexOverride(&entity)
 
 	if err := validateQueryFields(entity); err != nil {
 		return entity, err
 	}
 
 	return entity, nil
+}
+
+func applyPrimaryIndexOverride(entity *schema.Entity) {
+	hasPrimaryIndex := false
+	for _, idx := range entity.Indexes {
+		if idx.Type == schema.IndexPrimary {
+			hasPrimaryIndex = true
+			break
+		}
+	}
+	if !hasPrimaryIndex {
+		return
+	}
+
+	for i := range entity.Fields {
+		if entity.Fields[i].IsID() {
+			entity.Fields[i].Primary = false
+		}
+	}
 }

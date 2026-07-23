@@ -7,6 +7,7 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/filter"
+	"github.com/guntisdev/entlite/pkg/entlite/index"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
@@ -50,5 +51,22 @@ func (User) Queries() []entlite.Query {
 			filter.Range("age"),   // age BETWEEN :min_age AND :max_age
 			filter.Search("name"), // name LIKE :name
 		).OrderBy("created_at").Count(),
+	}
+}
+
+func (User) Indexes() []entlite.Index {
+	return []entlite.Index{
+		// 1. Primary Key (Compound)
+		// index.Primary("country", "timestamp", "env"),
+		// 2. Simple Single/Multi-Column Index
+		index.Fields("env", "is_active"),
+		// 3. Composite Index with Sort Ordering (ASC / DESC)
+		index.Fields("country", "env").
+			Desc("created_at"), // Sorting timestamp DESC for fast time-series queries
+		// 4. Multi-Column Unique Constraint
+		index.Fields("tenant_id", "email").Unique(),
+		// 5. Named Index (Useful to avoid DB auto-generated name conflicts)
+		index.Fields("login_count", "rating").
+			Name("idx_users_stats"),
 	}
 }

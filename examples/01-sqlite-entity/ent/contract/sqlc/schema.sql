@@ -15,4 +15,8 @@ CREATE TABLE "user"(
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
 );
+CREATE INDEX "idx_user_env_is_active" ON "user" (env, is_active);
+CREATE INDEX "idx_user_country_env_created_at" ON "user" (country, env, created_at DESC);
+CREATE UNIQUE INDEX "idx_user_tenant_id_email" ON "user" (tenant_id, email);
+CREATE INDEX "idx_users_stats" ON "user" (login_count, rating);
 
