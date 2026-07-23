@@ -57,7 +57,7 @@ func (User) Queries() []entlite.Query {
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
 		// 1. Primary Key (Compound)
-		index.Primary("country", "timestamp", "env"),
+		// index.Primary("country", "timestamp", "env"),
 		// 2. Simple Single/Multi-Column Index
 		index.Fields("env", "is_active"),
 		// 3. Composite Index with Sort Ordering (ASC / DESC)

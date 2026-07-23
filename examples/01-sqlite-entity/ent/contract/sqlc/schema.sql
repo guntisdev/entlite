@@ -13,8 +13,7 @@ CREATE TABLE "user"(
   login_count INTEGER DEFAULT 0 NOT NULL,
   rating REAL DEFAULT 0 NOT NULL,
   created_at DATETIME NOT NULL,
-  updated_at DATETIME NOT NULL,
-  PRIMARY KEY (country, timestamp, env)
+  updated_at DATETIME NOT NULL
 );
 CREATE INDEX "idx_user_env_is_active" ON "user" (env, is_active);
 CREATE INDEX "idx_user_country_env_created_at" ON "user" (country, env, created_at DESC);
