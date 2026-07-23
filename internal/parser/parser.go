@@ -93,6 +93,15 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			}
 			entity.Queries = queries
 		}
+
+		// Parse Indexes
+		if funcDecl.Name.Name == "Indexes" {
+			indexes, err := parseIndexesMethod(funcDecl)
+			if err != nil {
+				return entity, fmt.Errorf("failed to parse indexes: %w", err)
+			}
+			entity.Indexes = indexes
+		}
 	}
 
 	if err := validateQueryFields(entity); err != nil {

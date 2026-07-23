@@ -33,6 +33,7 @@ type Entity struct {
 	Fields      []Field
 	Annotations []Annotation
 	Queries     []Query
+	Indexes     []Index
 }
 
 func (e Entity) GetIdField() Field {
@@ -116,6 +117,33 @@ const (
 	QueryFilterRange  QueryFilterType = "range"
 	QueryFilterSearch QueryFilterType = "search"
 	QueryFilterEq     QueryFilterType = "eq"
+)
+
+type Index struct {
+	Type    IndexType
+	Columns []IndexColumn
+	Unique  bool
+	Name    string
+}
+
+func (i Index) FieldNames() []string {
+	names := make([]string, len(i.Columns))
+	for idx, c := range i.Columns {
+		names[idx] = c.Name
+	}
+	return names
+}
+
+type IndexColumn struct {
+	Name string
+	Desc bool // false = ASC (default), true = DESC
+}
+
+type IndexType string
+
+const (
+	IndexPrimary IndexType = "primary"
+	IndexRegular IndexType = "index"
 )
 
 type QueryType string
