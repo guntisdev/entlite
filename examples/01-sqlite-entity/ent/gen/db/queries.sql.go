@@ -101,8 +101,8 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
 	return UserFromSQL(&dbResult), nil
 }
 
-func (q *Queries) ListAllUser(ctx context.Context) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListAllUser(ctx)
+func (q *Queries) ListActive(ctx context.Context, isActive int64) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListActive(ctx, isActive)
 	if err != nil {
 		return nil, err
 	}
@@ -113,8 +113,8 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]*User, error) {
 	return result, nil
 }
 
-func (q *Queries) ListUserByIsActive(ctx context.Context, isActive int64) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListUserByIsActive(ctx, isActive)
+func (q *Queries) ListAllUser(ctx context.Context) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListAllUser(ctx)
 	if err != nil {
 		return nil, err
 	}

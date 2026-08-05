@@ -21,10 +21,18 @@ type QueryBuilder interface {
 	Query()
 }
 
+type QueryOperations interface {
+	QueryBuilder
+	// Name overrides the auto-generated query/method name
+	Name(name string) QueryOperations
+}
+
 type ListByOperations interface {
-	Query()
+	QueryBuilder
 	Count() ListByOperations
 	OrderBy(field string) ListByOperations
+	// Name overrides the auto-generated query/method name
+	Name(name string) ListByOperations
 }
 
 type Query struct {
@@ -33,58 +41,78 @@ type Query struct {
 	filters  []filter.Filter // For ListBy: list of filters
 	count    bool            // For ListBy: whether to count
 	orderBy  string          // For ListBy: order by field
+	name     string          // Custom query name
 }
 
 // marker method for sealed interface
 func (Query) Query() {}
 
+func (q Query) Name(name string) QueryOperations {
+	q.name = name
+	return q
+}
+
+type listByQuery struct {
+	base Query
+}
+
+// marker method for sealed interface
+func (listByQuery) Query() {}
+
+// Name overrides the auto-generated query/method name
+func (q listByQuery) Name(name string) ListByOperations {
+	q.base.name = name
+	return q
+}
+
 // Count adds a COUNT operation to the ListBy query
-func (q Query) Count() ListByOperations {
-	q.count = true
+func (q listByQuery) Count() ListByOperations {
+	q.base.count = true
 	return q
 }
 
 // OrderBy adds ordering to the ListBy query
-func (q Query) OrderBy(field string) ListByOperations {
-	q.orderBy = field
+func (q listByQuery) OrderBy(field string) ListByOperations {
+	q.base.orderBy = field
 	return q
 }
 
 // GetBy creates a query to get a record by one or more fields
 // Example: GetBy("id") or GetBy("org_id", "email")
-func GetBy(fields ...string) QueryBuilder {
+func GetBy(fields ...string) QueryOperations {
 	return Query{typeName: TypeGetBy, fields: fields}
 }
 
+// DefaultCRUD expands to several queries, so it cannot be named
 func DefaultCRUD() QueryBuilder {
 	return Query{typeName: TypeDefaultCRUD}
 }
 
-func Create() QueryBuilder {
+func Create() QueryOperations {
 	return Query{typeName: TypeCreate}
 }
 
-func CreateBulk() QueryBuilder {
+func CreateBulk() QueryOperations {
 	return Query{typeName: TypeCreateBulk}
 }
 
-func Get() QueryBuilder {
+func Get() QueryOperations {
 	return Query{typeName: TypeGet}
 }
 
-func Update() QueryBuilder {
+func Update() QueryOperations {
 	return Query{typeName: TypeUpdate}
 }
 
-func Delete() QueryBuilder {
+func Delete() QueryOperations {
 	return Query{typeName: TypeDelete}
 }
 
-func DeleteAll() QueryBuilder {
+func DeleteAll() QueryOperations {
 	return Query{typeName: TypeDeleteAll}
 }
 
-func ListAll() QueryBuilder {
+func ListAll() QueryOperations {
 	return Query{typeName: TypeListAll}
 }
 
@@ -104,7 +132,7 @@ func ListBy(args ...interface{}) ListByOperations {
 		}
 	}
 
-	return q
+	return listByQuery{base: q}
 }
 
 func (q Query) GetType() Type {
@@ -125,4 +153,9 @@ func (q Query) HasCount() bool {
 
 func (q Query) GetOrderBy() string {
 	return q.orderBy
+}
+
+// GetName returns the custom query name, or "" when auto-generated.
+func (q Query) GetName() string {
+	return q.name
 }

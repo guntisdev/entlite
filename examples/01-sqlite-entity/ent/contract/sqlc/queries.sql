@@ -62,7 +62,7 @@ SELECT * FROM "user" WHERE email = ?;
 -- name: ListAllUser :many
 SELECT * FROM "user";
 
--- name: ListUserByIsActive :many
+-- name: ListActive :many
 SELECT * FROM "user" WHERE is_active = :is_active;
 
 -- name: ListUserFilterByAgeName :many

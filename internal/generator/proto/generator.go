@@ -142,26 +142,27 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("\n")
 		}
 
+		messageName := util.GenQueryName(query, entity.Name)
+
 		switch query.Type {
 		case schema.QueryCreate:
-			content.WriteString(fmt.Sprintf("message Create%sRequest {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			writeCreateFields(&content, entity)
 			content.WriteString("}")
 		case schema.QueryCreateBulk:
-			content.WriteString(fmt.Sprintf("message CreateBulk%sItem {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("message %sItem {\n", messageName))
 			writeCreateFields(&content, entity)
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message CreateBulk%sRequest {\n", entity.Name))
-			content.WriteString(fmt.Sprintf("  repeated CreateBulk%sItem items = 1 %s;\n", entity.Name, requiredStr))
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
+			content.WriteString(fmt.Sprintf("  repeated %sItem items = 1 %s;\n", messageName, requiredStr))
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message CreateBulk%sResponse {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
 			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
 			content.WriteString("}")
 		case schema.QueryGetBy:
-			fieldsStr := util.FieldsToStr(query.Fields)
-			content.WriteString(fmt.Sprintf("message Get%sBy%sRequest {\n", entity.Name, fieldsStr))
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 
 			for _, fieldName := range query.Fields {
 				field, found := entity.GetFieldByName(fieldName)
@@ -174,7 +175,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}")
 		case schema.QueryUpdate:
-			content.WriteString(fmt.Sprintf("message Update%sRequest {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			for _, field := range entity.Fields {
 				canWrite := (field.Permissions & permissions.ApiWrite) != 0
 				if !field.IsID() {
@@ -199,23 +200,21 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}")
 		case schema.QueryDelete:
-			content.WriteString(fmt.Sprintf("message Delete%sRequest {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
 		case schema.QueryDeleteAll:
-			content.WriteString(fmt.Sprintf("message DeleteAll%sRequest {\n", entity.Name))
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			content.WriteString("}")
 		case schema.QueryListAll:
-			methodName := util.GenListMethodName(query, entity.Name)
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message %sResponse {\n", methodName))
+			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
 			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
 			content.WriteString("}")
 		case schema.QueryListBy:
-			methodName := util.GenListMethodName(query, entity.Name)
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", methodName))
+			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			// TODO proly change int type depending on ID field type
 			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
 			content.WriteString("  int32 offset = 2;\n")
@@ -258,7 +257,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message %sResponse {\n", methodName))
+			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
 			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
 			content.WriteString("}")
 		}
@@ -304,24 +303,22 @@ func getIdFieldAsStr(fields []schema.Field) string {
 }
 
 func generateRequests(entity schema.Entity, query schema.Query) string {
+	rpcName := util.GenQueryRpcName(query, entity.Name)
+	messageName := util.GenQueryName(query, entity.Name)
+
 	switch query.Type {
 	case schema.QueryCreate:
-		return fmt.Sprintf("  rpc Create(Create%sRequest) returns (%s);\n", entity.Name, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
 	case schema.QueryCreateBulk:
-		return fmt.Sprintf("  rpc CreateBulk(CreateBulk%sRequest) returns (CreateBulk%sResponse);\n", entity.Name, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, messageName, messageName)
 	case schema.QueryGetBy:
-		fieldsStr := util.FieldsToStr(query.Fields)
-		return fmt.Sprintf("  rpc GetBy%s(Get%sBy%sRequest) returns (%s);\n", fieldsStr, entity.Name, fieldsStr, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
 	case schema.QueryUpdate:
-		return fmt.Sprintf("  rpc Update(Update%sRequest) returns (%s);\n", entity.Name, entity.Name)
-	case schema.QueryDelete:
-		return fmt.Sprintf("  rpc Delete(Delete%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
-	case schema.QueryDeleteAll:
-		return fmt.Sprintf("  rpc DeleteAll(DeleteAll%sRequest) returns (google.protobuf.Empty);\n", entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
+	case schema.QueryDelete, schema.QueryDeleteAll:
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (google.protobuf.Empty);\n", rpcName, messageName)
 	case schema.QueryListBy, schema.QueryListAll:
-		methodName := util.GenListMethodName(query, entity.Name)
-		rpcName := util.GenListRpcName(query, entity.Name)
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, methodName, methodName)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, messageName, messageName)
 	default:
 		return ""
 	}

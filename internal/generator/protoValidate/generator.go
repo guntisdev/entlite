@@ -6,6 +6,7 @@ import (
 
 	"github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
 func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (string, error) {
@@ -36,8 +37,8 @@ func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (s
 		if !hasValidateField(entity) {
 			continue
 		}
-		content.WriteString(generateCreateRequest(entity))
-		content.WriteString(generateUpdateRequest(entity))
+		content.WriteString(generateValidateMethod(entity, schema.QueryCreate))
+		content.WriteString(generateValidateMethod(entity, schema.QueryUpdate))
 	}
 
 	content.WriteString(interceptorSource)
@@ -103,27 +104,12 @@ func (c *validatingHandlerConn) Receive(msg any) error {
 }
 `
 
-func generateCreateRequest(entity schema.Entity) string {
+// generateValidateMethod writes Validate() for the request message of the
+// entity's create or update query, honoring a custom query Name().
+func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) string {
 	var content strings.Builder
-	content.WriteString(fmt.Sprintf("func (r *Create%sRequest) Validate() error {\n", entity.Name))
-	for _, field := range entity.Fields {
-		if field.Validate == nil {
-			continue
-		}
-
-		fieldName := toProtoFieldName(field)
-		content.WriteString(fmt.Sprintf("\tif !%s(r.%s) {\n", field.Validate().(string), fieldName))
-		content.WriteString(fmt.Sprintf("\t\treturn fmt.Errorf(\"Validation failed for field name: %s\")\n", fieldName))
-		content.WriteString("\t}\n")
-	}
-	content.WriteString("\treturn nil\n")
-	content.WriteString("}\n\n")
-	return content.String()
-}
-
-func generateUpdateRequest(entity schema.Entity) string {
-	var content strings.Builder
-	content.WriteString(fmt.Sprintf("func (r *Update%sRequest) Validate() error {\n", entity.Name))
+	messageName := util.GenEntityQueryName(entity, queryType)
+	content.WriteString(fmt.Sprintf("func (r *%sRequest) Validate() error {\n", messageName))
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue

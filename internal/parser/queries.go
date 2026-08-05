@@ -125,7 +125,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	}
 
 	query := queries[0]
-	if query.Type != schema.QueryListBy {
+	if query.Type != schema.QueryListBy && selExpr.Sel.Name != "Name" {
 		return nil, true, fmt.Errorf("%s is only supported for ListBy queries", selExpr.Sel.Name)
 	}
 
@@ -144,6 +144,18 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return nil, true, fmt.Errorf("OrderBy expects exactly one string field: %w", err)
 		}
 		query.OrderBy = orderField
+	case "Name":
+		if len(callExpr.Args) != 1 {
+			return nil, true, fmt.Errorf("Name expects exactly one string argument")
+		}
+		name, err := parseSingleStringArg(callExpr.Args[0])
+		if err != nil {
+			return nil, true, fmt.Errorf("Name expects exactly one string argument: %w", err)
+		}
+		if !token.IsIdentifier(name) {
+			return nil, true, fmt.Errorf("Name %q is not a valid identifier", name)
+		}
+		query.Name = name
 	default:
 		return nil, false, nil
 	}
