@@ -75,9 +75,7 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 			if !canRead {
 				continue
 			}
-			if field.Comment != "" {
-				content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
-			}
+			writeFieldComment(&content, field.Comment)
 			protoType := getProtoType(field.Type)
 			var optional string
 			var required string
@@ -183,9 +181,7 @@ func generateResponseMessages(entity schema.Entity) string {
 						continue
 					}
 				}
-				if field.Comment != "" {
-					content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
-				}
+				writeFieldComment(&content, field.Comment)
 				protoType := getProtoType(field.Type)
 				var optional string
 				var required string
@@ -267,6 +263,15 @@ func generateResponseMessages(entity schema.Entity) string {
 	return content.String()
 }
 
+func writeFieldComment(content *strings.Builder, comment string) {
+	if comment == "" {
+		return
+	}
+	for line := range strings.SplitSeq(comment, "\n") {
+		fmt.Fprintf(content, "  // %s\n", strings.TrimRight(line, "\r"))
+	}
+}
+
 func writeCreateFields(content *strings.Builder, entity schema.Entity) {
 	var requiredStr = "[(buf.validate.field).required = true]"
 	for _, field := range entity.Fields {
@@ -274,9 +279,7 @@ func writeCreateFields(content *strings.Builder, entity schema.Entity) {
 		if field.IsID() || !canWrite {
 			continue
 		}
-		if field.Comment != "" {
-			content.WriteString(fmt.Sprintf("  // %s\n", field.Comment))
-		}
+		writeFieldComment(content, field.Comment)
 		protoType := getProtoType(field.Type)
 		var optional string
 		var required string

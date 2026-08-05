@@ -52,6 +52,15 @@ func (g *Generator) generateSchema(entities []schema.Entity, dir string) error {
 	return nil
 }
 
+func writeColumnComment(content *strings.Builder, comment string) {
+	if comment == "" {
+		return
+	}
+	for line := range strings.SplitSeq(comment, "\n") {
+		fmt.Fprintf(content, "  -- %s\n", strings.TrimRight(line, "\r"))
+	}
+}
+
 func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	var content strings.Builder
 
@@ -63,11 +72,13 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 
 	for _, field := range entity.Fields {
 		if field.IsID() {
+			writeColumnComment(&content, idField.Comment)
 			content.WriteString(g.getIdFieldSQL(idField))
 			continue
 		}
 
 		content.WriteString(",\n")
+		writeColumnComment(&content, field.Comment)
 		sqlType := g.getSQLType(field.Type)
 
 		content.WriteString(fmt.Sprintf("  %s %s", field.Name, sqlType))
@@ -85,7 +96,7 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 			content.WriteString(" NOT NULL")
 		}
 
-		// TODO write logic for DefaultFunc, Comment etc
+		// TODO write logic for DefaultFunc etc
 	}
 
 	// Compound primary key declared via index.Primary(...). When present the

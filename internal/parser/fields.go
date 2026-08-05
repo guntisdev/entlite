@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"strconv"
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
@@ -61,49 +62,49 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 					field.Type = schema.FieldTypeString
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Name = strings.Trim(lit.Value, "\"")
+							field.Name = unquote(lit.Value)
 						}
 					}
 				case "Int":
 					field.Type = schema.FieldTypeInt
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Name = strings.Trim(lit.Value, "\"")
+							field.Name = unquote(lit.Value)
 						}
 					}
 				case "Int64":
 					field.Type = schema.FieldTypeInt64
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Name = strings.Trim(lit.Value, "\"")
+							field.Name = unquote(lit.Value)
 						}
 					}
 				case "Float":
 					field.Type = schema.FieldTypeFloat
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Name = strings.Trim(lit.Value, "\"")
+							field.Name = unquote(lit.Value)
 						}
 					}
 				case "Bool":
 					field.Type = schema.FieldTypeBool
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Name = strings.Trim(lit.Value, "\"")
+							field.Name = unquote(lit.Value)
 						}
 					}
 				case "Time":
 					field.Type = schema.FieldTypeTime
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Name = strings.Trim(lit.Value, "\"")
+							field.Name = unquote(lit.Value)
 						}
 					}
 				case "Byte":
 					field.Type = schema.FieldTypeByte
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Name = strings.Trim(lit.Value, "\"")
+							field.Name = unquote(lit.Value)
 						}
 					}
 				case "ProtoField":
@@ -117,7 +118,7 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 				case "Comment":
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Comment = strings.Trim(lit.Value, "\"")
+							field.Comment = unquote(lit.Value)
 						}
 					}
 				case "Permissions":
@@ -171,12 +172,19 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 	return field, nil
 }
 
+func unquote(raw string) string {
+	if val, err := strconv.Unquote(raw); err == nil {
+		return val
+	}
+	return strings.Trim(raw, "\"")
+}
+
 func parseDefaultValue(expr ast.Expr) any {
 	switch e := expr.(type) {
 	case *ast.BasicLit:
 		switch e.Kind {
 		case token.STRING:
-			return strings.Trim(e.Value, "\"")
+			return unquote(e.Value)
 		case token.INT:
 			var val int
 			fmt.Sscanf(e.Value, "%d", &val)

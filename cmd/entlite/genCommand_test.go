@@ -88,7 +88,7 @@ import "buf/validate/validate.proto";
 message User {
   int32 ID = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
-  // First name and surname
+  // First name and surname, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
   double score = 9 [(buf.validate.field).required = true];
@@ -102,7 +102,7 @@ message User {
 
 message CreateUserRequest {
   string email = 2 [(buf.validate.field).required = true];
-  // First name and surname
+  // First name and surname, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
   string password = 8 [(buf.validate.field).required = true];
@@ -118,7 +118,7 @@ message GetUserByIDRequest {
 message UpdateUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
-  // First name and surname
+  // First name and surname, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
   optional int32 age = 4;
   optional string password = 8;
@@ -168,6 +168,7 @@ service UserService {
 CREATE TABLE "user"(
   ID SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
+  -- First name and surname, e.g. "Jane Doe"
   name TEXT NOT NULL,
   age INT,
   password TEXT NOT NULL,
