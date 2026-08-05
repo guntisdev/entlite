@@ -31,7 +31,7 @@ type User struct {
 
 	ID    int32  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	// Full name, e.g. \"Jane Doe\
+	// Full name, e.g. "Jane Doe"
 	Name       string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Age        *int32                 `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
 	ApiKey     []byte                 `protobuf:"bytes,6,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
@@ -150,7 +150,7 @@ type CreateUserRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	// Full name, e.g. \"Jane Doe\
+	// Full name, e.g. "Jane Doe"
 	Name       string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Age        *int32   `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
 	Password   string   `protobuf:"bytes,5,opt,name=password,proto3" json:"password,omitempty"`
@@ -302,7 +302,7 @@ type UpdateUserRequest struct {
 
 	ID    int32  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	// Full name, e.g. \"Jane Doe\
+	// Full name, e.g. "Jane Doe"
 	Name       string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Age        *int32   `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
 	Password   *string  `protobuf:"bytes,5,opt,name=password,proto3,oneof" json:"password,omitempty"`
@@ -452,7 +452,7 @@ type CreateBulkUserItem struct {
 	unknownFields protoimpl.UnknownFields
 
 	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	// Full name, e.g. \"Jane Doe\
+	// Full name, e.g. "Jane Doe"
 	Name       string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	Age        *int32   `protobuf:"varint,4,opt,name=age,proto3,oneof" json:"age,omitempty"`
 	Password   string   `protobuf:"bytes,5,opt,name=password,proto3" json:"password,omitempty"`

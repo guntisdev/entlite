@@ -5,6 +5,7 @@
 CREATE TABLE "user"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL,
+  -- Full name, e.g. "Jane Doe"
   name TEXT NOT NULL,
   age INTEGER,
   password TEXT NOT NULL,

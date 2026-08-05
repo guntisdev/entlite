@@ -32,7 +32,7 @@ export type User = Message<"entlite.User"> & {
   email: string;
 
   /**
-   * Full name, e.g. \"Jane Doe\
+   * Full name, e.g. "Jane Doe"
    *
    * @generated from field: string name = 3;
    */
@@ -91,7 +91,7 @@ export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
   email: string;
 
   /**
-   * Full name, e.g. \"Jane Doe\
+   * Full name, e.g. "Jane Doe"
    *
    * @generated from field: string name = 3;
    */
@@ -167,7 +167,7 @@ export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
   email: string;
 
   /**
-   * Full name, e.g. \"Jane Doe\
+   * Full name, e.g. "Jane Doe"
    *
    * @generated from field: string name = 3;
    */
@@ -233,7 +233,7 @@ export type CreateBulkUserItem = Message<"entlite.CreateBulkUserItem"> & {
   email: string;
 
   /**
-   * Full name, e.g. \"Jane Doe\
+   * Full name, e.g. "Jane Doe"
    *
    * @generated from field: string name = 3;
    */
