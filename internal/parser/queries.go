@@ -125,7 +125,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	}
 
 	query := queries[0]
-	if query.Type != schema.QueryListBy {
+	if query.Type != schema.QueryListBy && selExpr.Sel.Name != "Name" {
 		return nil, true, fmt.Errorf("%s is only supported for ListBy queries", selExpr.Sel.Name)
 	}
 
