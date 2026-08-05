@@ -56,8 +56,8 @@ func writeColumnComment(content *strings.Builder, comment string) {
 	if comment == "" {
 		return
 	}
-	for _, line := range strings.Split(comment, "\n") {
-		content.WriteString(fmt.Sprintf("  -- %s\n", strings.TrimRight(line, "\r")))
+	for line := range strings.SplitSeq(comment, "\n") {
+		fmt.Fprintf(content, "  -- %s\n", strings.TrimRight(line, "\r"))
 	}
 }
 
