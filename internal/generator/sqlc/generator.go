@@ -188,26 +188,26 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	tableName := strings.ToLower(entity.Name)
 	idField := entity.GetIdField()
 
-	var hasCreate bool
-	var hasCreateBulk bool
-	var hasUpdate bool
-	var hasDelete bool
-	var hasDeleteAll bool
+	var createQuery *schema.Query
+	var createBulkQuery *schema.Query
+	var updateQuery *schema.Query
+	var deleteQuery *schema.Query
+	var deleteAllQuery *schema.Query
 	var getQueries []schema.Query
 	var listQueries []schema.Query
 
 	for _, query := range entity.Queries {
 		switch query.Type {
 		case schema.QueryCreate:
-			hasCreate = true
+			createQuery = &query
 		case schema.QueryCreateBulk:
-			hasCreateBulk = true
+			createBulkQuery = &query
 		case schema.QueryUpdate:
-			hasUpdate = true
+			updateQuery = &query
 		case schema.QueryDelete:
-			hasDelete = true
+			deleteQuery = &query
 		case schema.QueryDeleteAll:
-			hasDeleteAll = true
+			deleteAllQuery = &query
 		case schema.QueryGetBy:
 			getQueries = append(getQueries, query)
 		case schema.QueryListBy, schema.QueryListAll:
@@ -218,19 +218,18 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("-- %s CRUD operations\n", entity.Name))
 
 	// CREATE
-	if hasCreate {
-		g.writeInsertQuery(&content, entity, fmt.Sprintf("Create%s", entity.Name))
+	if createQuery != nil {
+		g.writeInsertQuery(&content, entity, util.GenQueryName(*createQuery, entity.Name))
 	}
 
 	// CREATE BULK - a single-row insert; the sqlcWrap layer wraps it in a loop.
-	if hasCreateBulk {
-		g.writeInsertQuery(&content, entity, fmt.Sprintf("CreateBulk%s", entity.Name))
+	if createBulkQuery != nil {
+		g.writeInsertQuery(&content, entity, util.GenQueryName(*createBulkQuery, entity.Name))
 	}
 
 	// READ (get by)
 	for _, query := range getQueries {
-		fieldsStr := util.FieldsToStr(query.Fields)
-		queryName := fmt.Sprintf("Get%sBy%s", entity.Name, fieldsStr)
+		queryName := util.GenQueryName(query, entity.Name)
 		content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
 		var whereParts []string
 		for i, fieldName := range query.Fields {
@@ -242,8 +241,8 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// LIST
 	for _, query := range listQueries {
-		methodName := util.GenListMethodName(query, entity.Name)
-		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", methodName))
+		queryName := util.GenQueryName(query, entity.Name)
+		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", queryName))
 		var whereParts []string
 		for _, fieldName := range query.Fields {
 			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.namedArg(fieldName)))
@@ -272,11 +271,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	}
 
 	// UPDATE
-	if hasUpdate {
+	if updateQuery != nil {
+		queryName := util.GenQueryName(*updateQuery, entity.Name)
 		if g.supportsReturning() {
-			content.WriteString(fmt.Sprintf("\n-- name: Update%s :one\n", entity.Name))
+			content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
 		} else {
-			content.WriteString(fmt.Sprintf("\n-- name: Update%s :exec\n", entity.Name))
+			content.WriteString(fmt.Sprintf("\n-- name: %s :exec\n", queryName))
 		}
 		content.WriteString(fmt.Sprintf("UPDATE %s SET\n", g.quote(tableName)))
 
@@ -317,14 +317,14 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	}
 
 	// DELETE
-	if hasDelete {
-		content.WriteString(fmt.Sprintf("\n-- name: Delete%s :exec\n", entity.Name))
+	if deleteQuery != nil {
+		content.WriteString(fmt.Sprintf("\n-- name: %s :exec\n", util.GenQueryName(*deleteQuery, entity.Name)))
 		content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
 	}
 
 	// DELETE ALL
-	if hasDeleteAll {
-		content.WriteString(fmt.Sprintf("\n-- name: DeleteAll%s :exec\n", entity.Name))
+	if deleteAllQuery != nil {
+		content.WriteString(fmt.Sprintf("\n-- name: %s :exec\n", util.GenQueryName(*deleteAllQuery, entity.Name)))
 		content.WriteString(fmt.Sprintf("DELETE FROM %s;\n", g.quote(tableName)))
 	}
 

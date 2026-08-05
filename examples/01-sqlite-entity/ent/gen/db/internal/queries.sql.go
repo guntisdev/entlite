@@ -193,12 +193,12 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
 	return i, err
 }
 
-const listAllUser = `-- name: ListAllUser :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user"
+const listActive = `-- name: ListActive :many
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE is_active = ?1
 `
 
-func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listAllUser)
+func (q *Queries) ListActive(ctx context.Context, isActive int64) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listActive, isActive)
 	if err != nil {
 		return nil, err
 	}
@@ -232,12 +232,12 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
-const listUserByIsActive = `-- name: ListUserByIsActive :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE is_active = ?1
+const listAllUser = `-- name: ListAllUser :many
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user"
 `
 
-func (q *Queries) ListUserByIsActive(ctx context.Context, isActive int64) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUserByIsActive, isActive)
+func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listAllUser)
 	if err != nil {
 		return nil, err
 	}

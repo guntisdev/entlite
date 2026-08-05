@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
@@ -117,7 +118,7 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")
 		sb.WriteString("\t}\n")
-		sb.WriteString(fmt.Sprintf("\tdb%s, err := (*%s.Queries)(q).Get%sByID(ctx, arg.ID)\n", entity.Name, inputPkg, entity.Name))
+		sb.WriteString(fmt.Sprintf("\tdb%s, err := (*%s.Queries)(q).%s(ctx, arg.ID)\n", entity.Name, inputPkg, util.GenEntityGetByIdName(entity)))
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")
 		sb.WriteString("\t}\n")

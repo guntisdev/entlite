@@ -68,6 +68,17 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 		entityMap[entity.Name] = entity
 	}
 
+	dslQueries := make(map[string]dslQuery)
+	for _, entity := range parsedEntities {
+		for _, query := range entity.Queries {
+			name := util.GenQueryName(query, entity.Name)
+			if name == "" {
+				continue
+			}
+			dslQueries[name] = dslQuery{entity: entity, query: query}
+		}
+	}
+
 	ctx := &generationContext{
 		fileType:            fileType,
 		inputFilePath:       inputFilePath,
@@ -77,6 +88,7 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 		pbImportPath:        pbImportPath,
 		node:                node,
 		entityMap:           entityMap,
+		dslQueries:          dslQueries,
 		parsedEntities:      parsedEntities,
 		entityImports:       entityImports,
 		sqlDialect:          sqlDialect,
@@ -110,6 +122,13 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 	return sb.String(), nil
 }
 
+// dslQuery ties a generated sqlc query name back to the schema query it came
+// from, so wrappers keep working when a query carries a custom Name().
+type dslQuery struct {
+	entity schema.Entity
+	query  schema.Query
+}
+
 // generationContext holds all the context needed for generating wrapped code
 type generationContext struct {
 	fileType            FileType
@@ -120,6 +139,7 @@ type generationContext struct {
 	pbImportPath        string
 	node                *ast.File
 	entityMap           map[string]schema.Entity
+	dslQueries          map[string]dslQuery
 	parsedEntities      []schema.Entity
 	entityImports       map[string]internalParser.ImportInfo
 	sqlDialect          schema.SQLDialect
@@ -134,6 +154,15 @@ func (ctx *generationContext) collectDeclarations() {
 			for _, spec := range d.Specs {
 				if typeSpec, ok := spec.(*ast.TypeSpec); ok {
 					if structType, ok := typeSpec.Type.(*ast.StructType); ok {
+						if target, ok := ctx.paramsQuery(typeSpec.Name.Name); ok {
+							switch target.query.Type {
+							case schema.QueryCreate, schema.QueryCreateBulk:
+								ctx.createParamsStructs[typeSpec.Name.Name] = structType
+							case schema.QueryUpdate:
+								ctx.updateParamsStructs[typeSpec.Name.Name] = structType
+							}
+							continue
+						}
 						if strings.HasPrefix(typeSpec.Name.Name, "Create") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
 							ctx.createParamsStructs[typeSpec.Name.Name] = structType
 						}
@@ -145,6 +174,18 @@ func (ctx *generationContext) collectDeclarations() {
 			}
 		}
 	}
+}
+
+// paramsQuery resolves a sqlc "<QueryName>Params" struct back to its DSL query.
+func (ctx *generationContext) paramsQuery(structName string) (dslQuery, bool) {
+	queryName, ok := strings.CutSuffix(structName, "Params")
+	if !ok {
+		return dslQuery{}, false
+	}
+
+	target, ok := ctx.dslQueries[queryName]
+
+	return target, ok
 }
 
 // generateImports emits only the imports actually referenced by body. Candidates
@@ -355,6 +396,17 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 				continue
 			}
 
+			if target, ok := ctx.paramsQuery(s.Name.Name); ok {
+				switch target.query.Type {
+				case schema.QueryCreate, schema.QueryCreateBulk:
+					sb.WriteString(generateCreateStruct(s.Name.Name, ctx.createParamsStructs[s.Name.Name], target.entity))
+					continue
+				case schema.QueryUpdate:
+					sb.WriteString(generateUpdateStruct(s.Name.Name, ctx.updateParamsStructs[s.Name.Name], target.entity))
+					continue
+				}
+			}
+
 			if strings.HasPrefix(s.Name.Name, "CreateBulk") && strings.HasSuffix(s.Name.Name, "Params") {
 				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "CreateBulk"), "Params")
 				if entity, ok := ctx.entityMap[entityName]; ok {
@@ -411,6 +463,15 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 	}
 
 	if funcDecl.Recv != nil {
+		// DSL queries are matched by their generated name, which honors a custom
+		// Name() from the schema.
+		if target, ok := ctx.dslQueries[funcDecl.Name.Name]; ok {
+			if wrapped := ctx.generateDslQuery(funcDecl, target); wrapped != "" {
+				sb.WriteString(wrapped)
+				return
+			}
+		}
+
 		// CRUD method overrides
 		if strings.HasPrefix(funcDecl.Name.Name, "CreateBulk") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "CreateBulk")
@@ -467,6 +528,29 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 		if funcDecl.Name.IsExported() {
 			sb.WriteString(ctx.generateForwarder(funcDecl))
 		}
+	}
+}
+
+// generateDslQuery wraps a sqlc method that came from a DSL query, returning ""
+// when the query type has no dedicated wrapper.
+func (ctx *generationContext) generateDslQuery(funcDecl *ast.FuncDecl, target dslQuery) string {
+	switch target.query.Type {
+	case schema.QueryCreate:
+		return generateCreateQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+	case schema.QueryCreateBulk:
+		return generateCreateBulkQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+	case schema.QueryUpdate:
+		return generateUpdateQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+	case schema.QueryGetBy:
+		return generateGetQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+	case schema.QueryListBy, schema.QueryListAll:
+		return generateListQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+	case schema.QueryDelete:
+		return generateDeleteQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+	case schema.QueryDeleteAll:
+		return generateDeleteAllQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+	default:
+		return ""
 	}
 }
 

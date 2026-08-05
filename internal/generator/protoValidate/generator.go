@@ -108,7 +108,7 @@ func (c *validatingHandlerConn) Receive(msg any) error {
 // entity's create or update query, honoring a custom query Name().
 func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) string {
 	var content strings.Builder
-	messageName := util.GenEntityQueryMessageName(entity, queryType)
+	messageName := util.GenEntityQueryName(entity, queryType)
 	content.WriteString(fmt.Sprintf("func (r *%sRequest) Validate() error {\n", messageName))
 	for _, field := range entity.Fields {
 		if field.Validate == nil {

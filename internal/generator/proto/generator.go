@@ -142,7 +142,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("\n")
 		}
 
-		messageName := util.GenQueryMessageName(query, entity.Name)
+		messageName := util.GenQueryName(query, entity.Name)
 
 		switch query.Type {
 		case schema.QueryCreate:
@@ -304,7 +304,7 @@ func getIdFieldAsStr(fields []schema.Field) string {
 
 func generateRequests(entity schema.Entity, query schema.Query) string {
 	rpcName := util.GenQueryRpcName(query, entity.Name)
-	messageName := util.GenQueryMessageName(query, entity.Name)
+	messageName := util.GenQueryName(query, entity.Name)
 
 	switch query.Type {
 	case schema.QueryCreate:
