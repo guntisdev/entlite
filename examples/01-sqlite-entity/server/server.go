@@ -218,15 +218,15 @@ func (s *UserServer) ListAll(
 	return connect.NewResponse(response), nil
 }
 
-func (s *UserServer) ListByIsActive(
+func (s *UserServer) ListActive(
 	ctx context.Context,
-	req *connect.Request[pb.ListUserByIsActiveRequest],
-) (*connect.Response[pb.ListUserByIsActiveResponse], error) {
+	req *connect.Request[pb.ListActiveRequest],
+) (*connect.Response[pb.ListActiveResponse], error) {
 	log.Printf("List users by is_active: is_active=%t", req.Msg.GetIsActive())
 
 	queries := db.New(s.db)
 
-	dbUsers, err := queries.ListUserByIsActive(ctx, db.SQLiteBoolToInt(req.Msg.GetIsActive()))
+	dbUsers, err := queries.ListActive(ctx, db.SQLiteBoolToInt(req.Msg.GetIsActive()))
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
@@ -236,7 +236,7 @@ func (s *UserServer) ListByIsActive(
 		pbUsers[i] = dbUser.ToProto()
 	}
 
-	response := &pb.ListUserByIsActiveResponse{
+	response := &pb.ListActiveResponse{
 		Users: pbUsers,
 	}
 
