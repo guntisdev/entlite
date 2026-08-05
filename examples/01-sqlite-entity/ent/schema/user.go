@@ -46,7 +46,7 @@ func (User) Queries() []entlite.Query {
 		query.GetBy("email"),
 		query.ListAll(),
 		query.DeleteAll(),
-		query.ListBy("is_active"),
+		query.ListBy("is_active").Name("ListActive"),
 		query.ListBy(
 			filter.Range("age"),   // age BETWEEN :min_age AND :max_age
 			filter.Search("name"), // name LIKE :name

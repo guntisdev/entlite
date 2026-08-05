@@ -25,6 +25,8 @@ type ListByOperations interface {
 	Query()
 	Count() ListByOperations
 	OrderBy(field string) ListByOperations
+	// Name overrides the auto-generated query/method name
+	Name(name string) ListByOperations
 }
 
 type Query struct {
@@ -33,10 +35,16 @@ type Query struct {
 	filters  []filter.Filter // For ListBy: list of filters
 	count    bool            // For ListBy: whether to count
 	orderBy  string          // For ListBy: order by field
+	name     string          // For ListBy: custom query name
 }
 
 // marker method for sealed interface
 func (Query) Query() {}
+
+func (q Query) Name(name string) ListByOperations {
+	q.name = name
+	return q
+}
 
 // Count adds a COUNT operation to the ListBy query
 func (q Query) Count() ListByOperations {
@@ -125,4 +133,9 @@ func (q Query) HasCount() bool {
 
 func (q Query) GetOrderBy() string {
 	return q.orderBy
+}
+
+// GetName returns the custom query name, or "" when auto-generated.
+func (q Query) GetName() string {
+	return q.name
 }
