@@ -48,7 +48,7 @@ func (User) Annotations() []entlite.Annotation {
 func (User) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("email").Unique().ProtoField(2),
-		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname"),
+		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname, e.g. \"Jane Doe\""),
 		field.Int("age").Optional(),
 		field.String("password").Permissions(permissions.WriteOnly),
 		field.Float("score").Default(4.2),
