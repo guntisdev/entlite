@@ -104,6 +104,7 @@ type Query struct {
 	Filters []QueryFilter
 	Count   bool
 	OrderBy string
+	Name    string // custom query name; empty means auto-generated
 }
 
 type QueryFilter struct {
