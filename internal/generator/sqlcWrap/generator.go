@@ -94,13 +94,11 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 		sqlDialect:          sqlDialect,
 		createParamsStructs: make(map[string]*ast.StructType),
 		updateParamsStructs: make(map[string]*ast.StructType),
+		filterParamsStructs: make(map[string]*ast.StructType),
 	}
 
 	ctx.collectDeclarations()
 
-	// Generate the body first so imports can be derived from what is actually
-	// referenced, rather than guessed up front (which left unused imports for
-	// files that emit only passthrough forwarders, e.g. custom.sql.go).
 	var body string
 	switch fileType {
 	case FileTypeQuery:
@@ -145,6 +143,23 @@ type generationContext struct {
 	sqlDialect          schema.SQLDialect
 	createParamsStructs map[string]*ast.StructType
 	updateParamsStructs map[string]*ast.StructType
+	filterParamsStructs map[string]*ast.StructType
+}
+
+func (ctx *generationContext) filterParamsEntity(structName string) (schema.Entity, bool) {
+	methodName, ok := strings.CutSuffix(structName, "Params")
+	if !ok {
+		return schema.Entity{}, false
+	}
+
+	if strings.HasPrefix(methodName, "List") {
+		return ctx.findEntityForListMethod(methodName)
+	}
+	if strings.HasPrefix(methodName, "Get") {
+		return ctx.findEntityForGetMethod(methodName)
+	}
+
+	return schema.Entity{}, false
 }
 
 func (ctx *generationContext) collectDeclarations() {
@@ -168,6 +183,9 @@ func (ctx *generationContext) collectDeclarations() {
 						}
 						if strings.HasPrefix(typeSpec.Name.Name, "Update") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
 							ctx.updateParamsStructs[typeSpec.Name.Name] = structType
+						}
+						if _, ok := ctx.filterParamsEntity(typeSpec.Name.Name); ok {
+							ctx.filterParamsStructs[typeSpec.Name.Name] = structType
 						}
 					}
 				}
@@ -427,6 +445,13 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Update"), "Params")
 				if entity, ok := ctx.entityMap[entityName]; ok {
 					sb.WriteString(generateUpdateStruct(s.Name.Name, ctx.updateParamsStructs[s.Name.Name], entity))
+					continue
+				}
+			}
+
+			if structType, ok := ctx.filterParamsStructs[s.Name.Name]; ok {
+				if entity, ok := ctx.filterParamsEntity(s.Name.Name); ok {
+					sb.WriteString(generateFilterParamsStruct(s.Name.Name, structType, entity))
 					continue
 				}
 			}

@@ -44,6 +44,120 @@ func getFieldByName(entity schema.Entity, name string) *schema.Field {
 	return nil
 }
 
+// converts query sql types to go type
+func filterParamField(entity schema.Entity, paramName string) (schema.Field, bool) {
+	lookup := func(name string) (schema.Field, bool) {
+		for _, field := range entity.Fields {
+			if strings.EqualFold(toDBFieldName(field), name) {
+				return field, true
+			}
+		}
+		return schema.Field{}, false
+	}
+
+	if field, ok := lookup(paramName); ok {
+		return field, true
+	}
+
+	for _, prefix := range []string{"Min", "Max"} {
+		if len(paramName) > len(prefix) && strings.EqualFold(paramName[:len(prefix)], prefix) {
+			if field, ok := lookup(paramName[len(prefix):]); ok {
+				return field, true
+			}
+		}
+	}
+
+	return schema.Field{}, false
+}
+
+// restates sqlc "<Query>Params" struct in wrapper's own types, keeping sqlc's field names and json tags.
+func generateFilterParamsStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("type %s struct {\n", structName))
+
+	for _, astField := range structType.Fields.List {
+		if len(astField.Names) == 0 {
+			continue
+		}
+		fieldName := astField.Names[0].Name
+
+		goType := formatType(astField.Type)
+		if field, ok := filterParamField(entity, fieldName); ok {
+			goType = fieldToGoType(field)
+		}
+
+		sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, goType))
+		if astField.Tag != nil {
+			sb.WriteString(fmt.Sprintf(" %s", astField.Tag.Value))
+		}
+		sb.WriteString("\n")
+	}
+
+	sb.WriteString("}\n\n")
+	return sb.String()
+}
+
+// builds internal params literal handed to sqlc, converting each field back to its dialect type.
+func generateFilterParamsArg(structName string, structType *ast.StructType, entity schema.Entity, inputPkg, argVar string, sqlDialect schema.SQLDialect) string {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%s{\n", inputPkg, structName))
+
+	for _, astField := range structType.Fields.List {
+		if len(astField.Names) == 0 {
+			continue
+		}
+		fieldName := astField.Names[0].Name
+
+		valueRef := fmt.Sprintf("%s.%s", argVar, fieldName)
+		if field, ok := filterParamField(entity, fieldName); ok {
+			valueRef = sqlToGo(field, valueRef, sqlDialect)
+		}
+
+		sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", fieldName, valueRef))
+	}
+
+	sb.WriteString("\t}\n")
+	return sb.String()
+}
+
+// renders a get/list wrapper's signature params, the arguments
+// forwarded to the sqlc method, and any statements needed before the call.
+func (ctx *generationContext) wrapFilterParams(funcDecl *ast.FuncDecl, entity schema.Entity) (params, args, prelude string) {
+	if funcDecl.Type.Params == nil {
+		return "", "", ""
+	}
+
+	var paramsSb, argsSb, preludeSb strings.Builder
+
+	// Index 0 is ctx, which callers emit themselves.
+	for i := 1; i < len(funcDecl.Type.Params.List); i++ {
+		param := funcDecl.Type.Params.List[i]
+		typeName := formatType(param.Type)
+
+		for _, name := range param.Names {
+			// A params struct the wrapper restates: take ours, convert to sqlc's.
+			if structType, ok := ctx.filterParamsStructs[typeName]; ok {
+				paramsSb.WriteString(fmt.Sprintf(", %s %s", name.Name, typeName))
+				preludeSb.WriteString(generateFilterParamsArg(typeName, structType, entity, ctx.inputPackageName, name.Name, ctx.sqlDialect))
+				argsSb.WriteString(", internalArg")
+				continue
+			}
+
+			// A lone filter arrives as a bare scalar rather than a struct.
+			if field, ok := filterParamField(entity, name.Name); ok {
+				paramsSb.WriteString(fmt.Sprintf(", %s %s", name.Name, fieldToGoType(field)))
+				argsSb.WriteString(fmt.Sprintf(", %s", sqlToGo(field, name.Name, ctx.sqlDialect)))
+				continue
+			}
+
+			paramsSb.WriteString(fmt.Sprintf(", %s %s", name.Name, typeName))
+			argsSb.WriteString(fmt.Sprintf(", %s", name.Name))
+		}
+	}
+
+	return paramsSb.String(), argsSb.String(), preludeSb.String()
+}
+
 func addValidationChecks(entity schema.Entity, sqlQuery string, returnType, argVar, indent string) string {
 	var sb strings.Builder
 
