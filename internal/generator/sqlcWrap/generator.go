@@ -725,6 +725,10 @@ func (ctx *generationContext) generateEntityModel(entity schema.Entity) string {
 	sb.WriteString(fmt.Sprintf("type %s struct {\n", entity.Name))
 
 	for _, field := range entity.Fields {
+		if field.IsVirtual() {
+			continue
+		}
+
 		fieldName := toDBFieldName(field)
 		goType := fieldToGoType(field)
 		sb.WriteString(fmt.Sprintf("\t%s %s `json:\"%s\"`\n", fieldName, goType, field.Name))
@@ -783,6 +787,9 @@ func (ctx *generationContext) generateProtoConverter(entity schema.Entity) strin
 	for _, field := range entity.Fields {
 		canRead := (field.Permissions & permissions.ApiRead) != 0
 		if !canRead {
+			continue
+		}
+		if field.IsVirtual() {
 			continue
 		}
 
