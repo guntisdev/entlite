@@ -179,7 +179,7 @@ func (g *Generator) supportsReturning() bool {
 }
 
 func (g *Generator) namedArg(name string) string {
-	return fmt.Sprintf(":%s", name)
+	return fmt.Sprintf("@%s", name)
 }
 
 func (g *Generator) getParameterPlaceholder(index int) string {

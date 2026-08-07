@@ -3,21 +3,58 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/guntisdev/entlite/examples/02-postgres-entity/ent/logic"
+	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/logic"
 	"time"
 	internal "github.com/guntisdev/entlite/examples/02-postgres-entity/ent/gen/db/internal"
 )
+
+type CreateBulkUserParams struct {
+	Email string `json:"email"`
+	Name string `json:"name"`
+	Age *int32 `json:"age"`
+	Password string `json:"password"`
+	ApiKey *[]byte `json:"api_key"`
+	IsActive *bool `json:"is_active"`
+	LoginCount *int64 `json:"login_count"`
+	Rating *float64 `json:"rating"`
+}
+
+func (q *Queries) CreateBulkUser(ctx context.Context, args []CreateBulkUserParams) ([]int32, error) {
+	results := make([]int32, 0, len(args))
+	for _, item := range args {
+		if !logic.StartsWithCapital(item.Name) {
+			return nil, fmt.Errorf("Failed create_bulk: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
+		}
+		internalArg := internal.CreateBulkUserParams{
+			Email: item.Email,
+			Name: item.Name,
+			Age: PtrToNullInt32(item.Age),
+			Password: item.Password,
+			ApiKey: OptionalWithFallback(item.ApiKey, logic.GenerateAPIKey()),
+			IsActive: OptionalWithFallback(item.IsActive, true),
+			LoginCount: OptionalWithFallback(item.LoginCount, 0),
+			Rating: OptionalWithFallback(item.Rating, 0),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+		id, err := (*internal.Queries)(q).CreateBulkUser(ctx, internalArg)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, id)
+	}
+	return results, nil
+}
 
 type CreateUserParams struct {
 	Email string `json:"email"`
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
 	Password string `json:"password"`
-	Score *float64 `json:"score"`
-	Uuid *string `json:"uuid"`
-	IsAdmin bool `json:"is_admin"`
 	ApiKey *[]byte `json:"api_key"`
-	LastLoginMs int64 `json:"last_login_ms"`
+	IsActive *bool `json:"is_active"`
+	LoginCount *int64 `json:"login_count"`
+	Rating *float64 `json:"rating"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
@@ -29,15 +66,18 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		Name: arg.Name,
 		Age: PtrToNullInt32(arg.Age),
 		Password: arg.Password,
-		Score: OptionalWithFallback(arg.Score, 4.2),
-		Uuid: OptionalWithFallback(arg.Uuid, logic.GetUuidStr()),
-		IsAdmin: arg.IsAdmin,
 		ApiKey: OptionalWithFallback(arg.ApiKey, logic.GenerateAPIKey()),
-		LastLoginMs: arg.LastLoginMs,
+		IsActive: OptionalWithFallback(arg.IsActive, true),
+		LoginCount: OptionalWithFallback(arg.LoginCount, 0),
+		Rating: OptionalWithFallback(arg.Rating, 0),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 	return (*internal.Queries)(q).CreateUser(ctx, internalArg)
+}
+
+func (q *Queries) DeleteAllUser(ctx context.Context) error {
+	return (*internal.Queries)(q).DeleteAllUser(ctx)
 }
 
 func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
@@ -60,17 +100,33 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
 	return UserFromSQL(&dbResult), nil
 }
 
-type GetUserByNameAgeParams = internal.GetUserByNameAgeParams
-func (q *Queries) GetUserByNameAge(ctx context.Context, arg GetUserByNameAgeParams) (*User, error) {
-	dbResult, err := (*internal.Queries)(q).GetUserByNameAge(ctx, arg)
+func (q *Queries) ListActive(ctx context.Context, isActive bool) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListActive(ctx, isActive)
 	if err != nil {
 		return nil, err
 	}
-	return UserFromSQL(&dbResult), nil
+	result := make([]*User, len(dbResults))
+	for i := range dbResults {
+		result[i] = UserFromSQL(&dbResults[i])
+	}
+	return result, nil
 }
 
-func (q *Queries) ListUserByName(ctx context.Context, name string) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListUserByName(ctx, name)
+func (q *Queries) ListAllUser(ctx context.Context) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListAllUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*User, len(dbResults))
+	for i := range dbResults {
+		result[i] = UserFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
+type ListUserFilterByAgeNameParams = internal.ListUserFilterByAgeNameParams
+func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]*User, error) {
+	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeName(ctx, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -86,11 +142,10 @@ type UpdateUserParams struct {
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
 	Password *string `json:"password"`
-	Score *float64 `json:"score"`
-	IsAdmin bool `json:"is_admin"`
-	ApiKey *[]byte `json:"api_key"`
-	LastLoginMs int64 `json:"last_login_ms"`
-	ID int32 `json:"ID"`
+	IsActive *bool `json:"is_active"`
+	LoginCount *int64 `json:"login_count"`
+	Rating *float64 `json:"rating"`
+	ID int32 `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
@@ -103,10 +158,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		Name: arg.Name,
 		Age: PtrToNullInt32(arg.Age),
 		Password: PtrToNullString(arg.Password),
-		Score: PtrToNullFloat64(arg.Score),
-		IsAdmin: arg.IsAdmin,
-		ApiKey: *arg.ApiKey,
-		LastLoginMs: arg.LastLoginMs,
+		IsActive: PtrToNullBool(arg.IsActive),
+		LoginCount: PtrToNullInt64(arg.LoginCount),
+		Rating: PtrToNullFloat64(arg.Rating),
 		UpdatedAt: time.Now(),
 	}
 
