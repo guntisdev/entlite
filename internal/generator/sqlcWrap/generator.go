@@ -742,6 +742,10 @@ func (ctx *generationContext) generateModelConverters(entity schema.Entity) stri
 	sb.WriteString(fmt.Sprintf("\treturn &%s.%s{\n", ctx.inputPackageName, entity.Name))
 
 	for _, field := range entity.Fields {
+		if field.IsVirtual() {
+			continue
+		}
+
 		fieldName := toDBFieldName(field)
 		convertedValue := sqlToGo(field, "m."+fieldName, ctx.sqlDialect)
 		sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", fieldName, convertedValue))
@@ -754,6 +758,10 @@ func (ctx *generationContext) generateModelConverters(entity schema.Entity) stri
 	sb.WriteString(fmt.Sprintf("\treturn &%s{\n", entity.Name))
 
 	for _, field := range entity.Fields {
+		if field.IsVirtual() {
+			continue
+		}
+
 		fieldName := toDBFieldName(field)
 		convertedValue := goFromSQL(field, "db."+fieldName, ctx.sqlDialect)
 		sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", fieldName, convertedValue))

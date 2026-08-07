@@ -71,6 +71,10 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	idField := entity.GetIdField()
 
 	for _, field := range entity.Fields {
+		if field.IsVirtual() {
+			continue
+		}
+
 		if field.IsID() {
 			writeColumnComment(&content, idField.Comment)
 			content.WriteString(g.getIdFieldSQL(idField))

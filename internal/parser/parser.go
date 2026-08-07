@@ -113,7 +113,29 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 		return entity, err
 	}
 
+	if err := validateVirtualFields(entity); err != nil {
+		return entity, err
+	}
+
 	return entity, nil
+}
+
+func validateVirtualFields(entity schema.Entity) error {
+	for _, field := range entity.Fields {
+		if field.IsID() && field.IsVirtual() {
+			return fmt.Errorf("entity %q id field cannot be virtual", entity.Name)
+		}
+	}
+
+	for _, idx := range entity.Indexes {
+		for _, column := range idx.Columns {
+			if entityFieldIsVirtual(entity, column.Name) {
+				return fmt.Errorf("entity %q index references virtual field %q, which has no database column", entity.Name, column.Name)
+			}
+		}
+	}
+
+	return nil
 }
 
 func applyPrimaryIndexOverride(entity *schema.Entity) {
