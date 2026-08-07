@@ -117,6 +117,10 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 		return entity, err
 	}
 
+	if err := validateIndexFields(entity); err != nil {
+		return entity, err
+	}
+
 	return entity, nil
 }
 
@@ -127,8 +131,15 @@ func validateVirtualFields(entity schema.Entity) error {
 		}
 	}
 
+	return nil
+}
+
+func validateIndexFields(entity schema.Entity) error {
 	for _, idx := range entity.Indexes {
 		for _, column := range idx.Columns {
+			if !entityHasField(entity, column.Name) {
+				return fmt.Errorf("entity %q index references nonexisting field %q", entity.Name, column.Name)
+			}
 			if entityFieldIsVirtual(entity, column.Name) {
 				return fmt.Errorf("entity %q index references virtual field %q, which has no database column", entity.Name, column.Name)
 			}
