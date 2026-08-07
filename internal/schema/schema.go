@@ -75,6 +75,11 @@ func (f Field) IsID() bool {
 	return strings.ToLower(f.Name) == "id"
 }
 
+// IsVirtual reports a field that live only in proto and not in sqlc
+func (f Field) IsVirtual() bool {
+	return f.Permissions&(permissions.DbRead|permissions.DbWrite) == 0
+}
+
 type FieldType string
 
 const (

@@ -93,6 +93,9 @@ func writeCreateParamsFields(sb *strings.Builder, entity schema.Entity, argVar, 
 
 	for _, field := range entity.Fields {
 		exportedName := toExportedName(field.Name)
+		if field.IsVirtual() {
+			continue
+		}
 		if field.IsID() && field.DefaultFunc == nil && field.DefaultValue == nil {
 			continue
 		}

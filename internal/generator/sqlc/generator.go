@@ -71,6 +71,10 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	idField := entity.GetIdField()
 
 	for _, field := range entity.Fields {
+		if field.IsVirtual() {
+			continue
+		}
+
 		if field.IsID() {
 			writeColumnComment(&content, idField.Comment)
 			content.WriteString(g.getIdFieldSQL(idField))
@@ -246,7 +250,6 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		for i, fieldName := range query.Fields {
 			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i+1)))
 		}
-		// TODO implement !permissions.DbRead
 		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
 	}
 
@@ -272,7 +275,6 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", filter.Field, minArg, maxArg))
 			}
 		}
-		// TODO implement !permissions.DbRead
 		if len(whereParts) == 0 {
 			// ListAll: no filters, no WHERE clause.
 			content.WriteString(fmt.Sprintf("SELECT * FROM %s;\n", g.quote(tableName)))

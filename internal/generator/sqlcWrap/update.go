@@ -71,6 +71,9 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 
 	for _, field := range entity.Fields {
 		exportedName := toExportedName(field.Name)
+		if field.IsVirtual() {
+			continue
+		}
 		// Skip immutable fields (except ID which is needed for WHERE clause)
 		if field.Immutable && !field.IsID() {
 			continue

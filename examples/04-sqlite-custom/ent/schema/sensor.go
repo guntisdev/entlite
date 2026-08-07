@@ -36,6 +36,10 @@ func (Sensor) Fields() []entlite.Field {
 		field.Time("installed_at").Immutable().Comment("When the device was physically installed (client-supplied)"),
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),
 		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now),
+
+		// Virtual: proto only, no column and no place in any generated SQL
+		field.Float("latest_value").Permissions(permissions.Virtual).Optional().
+			Comment("Most recent reading value, joined in at the API layer - not stored"),
 	}
 }
 

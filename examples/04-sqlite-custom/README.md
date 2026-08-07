@@ -8,7 +8,9 @@ and still have it compile into typed Go/TS alongside the generated code.
 Defined in [`ent/schema`](ent/schema):
 
 - **Sensor** — a physical device in the field (`code`, `label`, `kind`, `unit`,
-  `active`, `firmware`, `sample_rate_ms`, timestamps).
+  `active`, `firmware`, `sample_rate_ms`, timestamps), plus `latest_value` with
+  `permissions.Virtual`: a proto-only field with no column, filled at the API
+  layer from the custom `ListSensorsWithLatestReading` query below.
 - **Reading** — a measurement emitted by a sensor (`sensor_id`, `value`,
   `quality`, `flagged`, `recorded_at`).
 

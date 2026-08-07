@@ -65,6 +65,9 @@ func addValidationChecks(entity schema.Entity, sqlQuery string, returnType, argV
 		if field.Validate == nil {
 			continue
 		}
+		if field.IsVirtual() {
+			continue
+		}
 
 		validateName := field.Validate().(string)
 		fieldName := toDBFieldName(field)

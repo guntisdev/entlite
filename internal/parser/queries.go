@@ -290,6 +290,9 @@ func validateQueryFields(entity schema.Entity) error {
 				if !entityHasField(entity, fieldName) {
 					return fmt.Errorf("entity %q query %q references nonexisting field %q", entity.Name, query.Type, fieldName)
 				}
+				if entityFieldIsVirtual(entity, fieldName) {
+					return fmt.Errorf("entity %q query %q references virtual field %q, which has no database column", entity.Name, query.Type, fieldName)
+				}
 			}
 		case schema.QueryListBy:
 			if len(query.Fields) > 0 && len(query.Filters) > 0 {
@@ -304,16 +307,26 @@ func validateQueryFields(entity schema.Entity) error {
 				if !entityHasField(entity, fieldName) {
 					return fmt.Errorf("entity %q query %q references nonexisting field %q", entity.Name, query.Type, fieldName)
 				}
+				if entityFieldIsVirtual(entity, fieldName) {
+					return fmt.Errorf("entity %q query %q references virtual field %q, which has no database column", entity.Name, query.Type, fieldName)
+				}
 			}
 
 			for _, queryFilter := range query.Filters {
 				if !entityHasField(entity, queryFilter.Field) {
 					return fmt.Errorf("entity %q query %q filter references nonexisting field %q", entity.Name, query.Type, queryFilter.Field)
 				}
+				if entityFieldIsVirtual(entity, queryFilter.Field) {
+					return fmt.Errorf("entity %q query %q filter references virtual field %q, which has no database column", entity.Name, query.Type, queryFilter.Field)
+				}
 			}
 
 			if query.OrderBy != "" && !entityHasField(entity, query.OrderBy) {
 				return fmt.Errorf("entity %q query %q order_by references nonexisting field %q", entity.Name, query.Type, query.OrderBy)
+			}
+
+			if query.OrderBy != "" && entityFieldIsVirtual(entity, query.OrderBy) {
+				return fmt.Errorf("entity %q query %q order_by references virtual field %q, which has no database column", entity.Name, query.Type, query.OrderBy)
 			}
 		}
 	}
@@ -325,6 +338,16 @@ func entityHasField(entity schema.Entity, fieldName string) bool {
 	for _, field := range entity.Fields {
 		if strings.EqualFold(field.Name, fieldName) {
 			return true
+		}
+	}
+
+	return false
+}
+
+func entityFieldIsVirtual(entity schema.Entity, fieldName string) bool {
+	for _, field := range entity.Fields {
+		if strings.EqualFold(field.Name, fieldName) {
+			return field.IsVirtual()
 		}
 	}
 

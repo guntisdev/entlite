@@ -43,6 +43,8 @@ message Sensor {
   google.protobuf.Timestamp installed_at = 10 [(buf.validate.field).required = true];
   google.protobuf.Timestamp created_at = 11 [(buf.validate.field).required = true];
   google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
+  // Most recent reading value, joined in at the API layer - not stored
+  optional double latest_value = 13;
 }
 
 message CreateReadingRequest {
@@ -122,6 +124,8 @@ message CreateSensorRequest {
   optional int32 sample_rate_ms = 9;
   // When the device was physically installed (client-supplied)
   google.protobuf.Timestamp installed_at = 10 [(buf.validate.field).required = true];
+  // Most recent reading value, joined in at the API layer - not stored
+  optional double latest_value = 13;
 }
 message GetSensorByIDRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
@@ -141,6 +145,8 @@ message UpdateSensorRequest {
   optional string firmware = 8;
   // Sampling interval in milliseconds
   optional int32 sample_rate_ms = 9;
+  // Most recent reading value, joined in at the API layer - not stored
+  optional double latest_value = 13;
 }
 message DeleteSensorRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
