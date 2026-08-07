@@ -5,11 +5,15 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Create /internal/naming/ to have in one place consistant naming
 * figure out integration testing so it has postgres/sqlite/mysql subfolders. Reusing main.go and server.go and web
 * improve integration test - less mocks and folder changing. Maybe copy all content to tmp dir, generate in same dir, compare and then put back from tmp?
-* Implement Comment() generation for sqlc and proto
-* Add Name() option for Queries - for shorter or custom naming
 * Finish up with permissions (read/write only from proto)
+* Implement DefaultFunc for sql generation
 * Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
 * Split get/list/delete sqlc wraps in separate files
+* Move query name to parser instead of generator
+* Proly rename in annotations Message to SQLC - to remove confusion what is generated
+* Proly rename in annotations GRPC to PROTO - a bit clearer what is generated
+* Make annotations optional
+* Add new field type JSON
 * Add Queries:
 ```bash
 func (User) Queries() []entlite.Query {
@@ -30,8 +34,6 @@ func (User) Queries() []entlite.Query {
     }
 }
 ```
-* Make annotations optional
-* Add new field type JSON
 * Add .Indexes() for fields (to index in sql)
 ```bash
 func (User) Indexes() []entlite.Index {
@@ -55,6 +57,8 @@ func (User) Indexes() []entlite.Index {
 	}
 }
 ```
+* Setup docker to run examples with postgres and mysql
+* Reorganize examples - under one example are all sql dialects
 * Figure out migration
 
 ## Folder structure
