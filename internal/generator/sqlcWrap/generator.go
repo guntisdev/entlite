@@ -94,13 +94,11 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 		sqlDialect:          sqlDialect,
 		createParamsStructs: make(map[string]*ast.StructType),
 		updateParamsStructs: make(map[string]*ast.StructType),
+		filterParamsStructs: make(map[string]*ast.StructType),
 	}
 
 	ctx.collectDeclarations()
 
-	// Generate the body first so imports can be derived from what is actually
-	// referenced, rather than guessed up front (which left unused imports for
-	// files that emit only passthrough forwarders, e.g. custom.sql.go).
 	var body string
 	switch fileType {
 	case FileTypeQuery:
@@ -145,6 +143,23 @@ type generationContext struct {
 	sqlDialect          schema.SQLDialect
 	createParamsStructs map[string]*ast.StructType
 	updateParamsStructs map[string]*ast.StructType
+	filterParamsStructs map[string]*ast.StructType
+}
+
+func (ctx *generationContext) filterParamsEntity(structName string) (schema.Entity, bool) {
+	methodName, ok := strings.CutSuffix(structName, "Params")
+	if !ok {
+		return schema.Entity{}, false
+	}
+
+	if strings.HasPrefix(methodName, "List") {
+		return ctx.findEntityForListMethod(methodName)
+	}
+	if strings.HasPrefix(methodName, "Get") {
+		return ctx.findEntityForGetMethod(methodName)
+	}
+
+	return schema.Entity{}, false
 }
 
 func (ctx *generationContext) collectDeclarations() {
@@ -154,6 +169,9 @@ func (ctx *generationContext) collectDeclarations() {
 			for _, spec := range d.Specs {
 				if typeSpec, ok := spec.(*ast.TypeSpec); ok {
 					if structType, ok := typeSpec.Type.(*ast.StructType); ok {
+						if _, ok := ctx.filterParamsEntity(typeSpec.Name.Name); ok {
+							ctx.filterParamsStructs[typeSpec.Name.Name] = structType
+						}
 						if target, ok := ctx.paramsQuery(typeSpec.Name.Name); ok {
 							switch target.query.Type {
 							case schema.QueryCreate, schema.QueryCreateBulk:
@@ -431,6 +449,13 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 				}
 			}
 
+			if structType, ok := ctx.filterParamsStructs[s.Name.Name]; ok {
+				if entity, ok := ctx.filterParamsEntity(s.Name.Name); ok {
+					sb.WriteString(generateFilterParamsStruct(s.Name.Name, structType, entity))
+					continue
+				}
+			}
+
 			if s.Name.Name == "Queries" {
 				sb.WriteString(fmt.Sprintf("type %s %s.%s\n", s.Name.Name, ctx.inputPackageName, s.Name.Name))
 			} else {
@@ -496,13 +521,13 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "Get") {
 			if entity, ok := ctx.findEntityForGetMethod(funcDecl.Name.Name); ok {
-				sb.WriteString(generateGetQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(ctx.generateGetQuery(funcDecl, entity))
 				return
 			}
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "List") {
 			if entity, ok := ctx.findEntityForListMethod(funcDecl.Name.Name); ok {
-				sb.WriteString(generateListQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(ctx.generateListQuery(funcDecl, entity))
 				return
 			}
 		}
@@ -542,9 +567,9 @@ func (ctx *generationContext) generateDslQuery(funcDecl *ast.FuncDecl, target ds
 	case schema.QueryUpdate:
 		return generateUpdateQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
 	case schema.QueryGetBy:
-		return generateGetQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+		return ctx.generateGetQuery(funcDecl, target.entity)
 	case schema.QueryListBy, schema.QueryListAll:
-		return generateListQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+		return ctx.generateListQuery(funcDecl, target.entity)
 	case schema.QueryDelete:
 		return generateDeleteQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
 	case schema.QueryDeleteAll:

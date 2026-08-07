@@ -9,8 +9,8 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/db"
-	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/gen/pb"
+	"github.com/guntisdev/entlite/examples/02-postgres-entity/ent/gen/db"
+	"github.com/guntisdev/entlite/examples/02-postgres-entity/ent/gen/pb"
 )
 
 type UserServer struct {
@@ -226,7 +226,7 @@ func (s *UserServer) ListActive(
 
 	queries := db.New(s.db)
 
-	dbUsers, err := queries.ListActive(ctx, db.SQLiteBoolToInt(req.Msg.GetIsActive()))
+	dbUsers, err := queries.ListActive(ctx, req.Msg.GetIsActive())
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
@@ -255,8 +255,8 @@ func (s *UserServer) FilterByAgeName(
 	minAge := req.Msg.GetMinAge()
 	maxAge := req.Msg.GetMaxAge()
 	dbUsers, err := queries.ListUserFilterByAgeName(ctx, db.ListUserFilterByAgeNameParams{
-		MinAge: db.IntPtrConvert[int32, int64](&minAge),
-		MaxAge: db.IntPtrConvert[int32, int64](&maxAge),
+		MinAge: &minAge,
+		MaxAge: &maxAge,
 		Name:   req.Msg.GetName(),
 	})
 	if err != nil {

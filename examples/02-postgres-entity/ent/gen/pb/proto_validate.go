@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"connectrpc.com/connect"
-	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/logic"
+	"github.com/guntisdev/entlite/examples/02-postgres-entity/ent/logic"
 )
 
 func (r *CreateUserRequest) Validate() error {

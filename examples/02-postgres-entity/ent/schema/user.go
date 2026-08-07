@@ -3,7 +3,7 @@ package schema
 import (
 	"time"
 
-	"github.com/guntisdev/entlite/examples/01-sqlite-entity/ent/logic"
+	"github.com/guntisdev/entlite/examples/02-postgres-entity/ent/logic"
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/filter"
@@ -57,14 +57,14 @@ func (User) Queries() []entlite.Query {
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
 		// 1. Primary Key (Compound)
-		// index.Primary("country", "timestamp", "env"),
+		// index.Primary("email", "created_at"),
 		// 2. Simple Single/Multi-Column Index
-		index.Fields("env", "is_active"),
+		index.Fields("age", "is_active"),
 		// 3. Composite Index with Sort Ordering (ASC / DESC)
-		index.Fields("country", "env").
+		index.Fields("is_active").
 			Desc("created_at"), // Sorting timestamp DESC for fast time-series queries
 		// 4. Multi-Column Unique Constraint
-		index.Fields("tenant_id", "email").Unique(),
+		index.Fields("name", "email").Unique(),
 		// 5. Named Index (Useful to avoid DB auto-generated name conflicts)
 		index.Fields("login_count", "rating").
 			Name("idx_users_stats"),
