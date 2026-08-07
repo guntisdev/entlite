@@ -31,6 +31,7 @@ type Sensor struct {
 	InstalledAt time.Time `json:"installed_at"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	LatestValue *float64 `json:"latest_value"`
 }
 
 func (m *Reading) ReadingToSQL() *internal.Reading {
@@ -143,6 +144,7 @@ func (m *Sensor) ToProto() *pb.Sensor {
 		InstalledAt: timestamppb.New(m.InstalledAt),
 		CreatedAt: timestamppb.New(m.CreatedAt),
 		UpdatedAt: timestamppb.New(m.UpdatedAt),
+		LatestValue: m.LatestValue,
 	}
 }
 
