@@ -63,22 +63,22 @@ SELECT * FROM "user" WHERE email = ?;
 SELECT * FROM "user";
 
 -- name: ListActive :many
-SELECT * FROM "user" WHERE is_active = :is_active;
+SELECT * FROM "user" WHERE is_active = @is_active;
 
 -- name: ListUserFilterByAgeName :many
-SELECT * FROM "user" WHERE age BETWEEN :min_age AND :max_age AND name LIKE :name;
+SELECT * FROM "user" WHERE age BETWEEN @min_age AND @max_age AND name LIKE @name;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
-  email = :email,
-  name = :name,
-  age = :age,
+  email = @email,
+  name = @name,
+  age = @age,
   password = COALESCE(sqlc.narg('password'), password),
   is_active = COALESCE(sqlc.narg('is_active'), is_active),
   login_count = COALESCE(sqlc.narg('login_count'), login_count),
   rating = COALESCE(sqlc.narg('rating'), rating),
-  updated_at = :updated_at
-WHERE ID = :ID
+  updated_at = @updated_at
+WHERE ID = @ID
 RETURNING *;
 
 -- name: DeleteUser :exec
