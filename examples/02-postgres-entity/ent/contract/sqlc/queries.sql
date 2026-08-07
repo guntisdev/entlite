@@ -9,11 +9,10 @@ INSERT INTO "user" (
   name,
   age,
   password,
-  score,
-  uuid,
-  is_admin,
   api_key,
-  last_login_ms,
+  is_active,
+  login_count,
+  rating,
   created_at,
   updated_at
 ) VALUES (
@@ -26,8 +25,32 @@ INSERT INTO "user" (
   $7,
   $8,
   $9,
-  $10,
-  $11
+  $10
+) RETURNING ID;
+
+-- name: CreateBulkUser :one
+INSERT INTO "user" (
+  email,
+  name,
+  age,
+  password,
+  api_key,
+  is_active,
+  login_count,
+  rating,
+  created_at,
+  updated_at
+) VALUES (
+  $1,
+  $2,
+  $3,
+  $4,
+  $5,
+  $6,
+  $7,
+  $8,
+  $9,
+  $10
 ) RETURNING ID;
 
 -- name: GetUserByID :one
@@ -36,26 +59,31 @@ SELECT * FROM "user" WHERE ID = $1;
 -- name: GetUserByEmail :one
 SELECT * FROM "user" WHERE email = $1;
 
--- name: GetUserByNameAge :one
-SELECT * FROM "user" WHERE name = $1 AND age = $2;
+-- name: ListAllUser :many
+SELECT * FROM "user";
 
--- name: ListUserByName :many
-SELECT * FROM "user" WHERE name = :name;
+-- name: ListActive :many
+SELECT * FROM "user" WHERE is_active = @is_active;
+
+-- name: ListUserFilterByAgeName :many
+SELECT * FROM "user" WHERE age BETWEEN @min_age AND @max_age AND name LIKE @name;
 
 -- name: UpdateUser :one
 UPDATE "user" SET
-  email = :email,
-  name = :name,
-  age = :age,
+  email = @email,
+  name = @name,
+  age = @age,
   password = COALESCE(sqlc.narg('password'), password),
-  score = COALESCE(sqlc.narg('score'), score),
-  is_admin = :is_admin,
-  api_key = COALESCE(sqlc.narg('api_key'), api_key),
-  last_login_ms = :last_login_ms,
-  updated_at = :updated_at
-WHERE ID = :ID
+  is_active = COALESCE(sqlc.narg('is_active'), is_active),
+  login_count = COALESCE(sqlc.narg('login_count'), login_count),
+  rating = COALESCE(sqlc.narg('rating'), rating),
+  updated_at = @updated_at
+WHERE ID = @ID
 RETURNING *;
 
 -- name: DeleteUser :exec
 DELETE FROM "user" WHERE ID = $1;
+
+-- name: DeleteAllUser :exec
+DELETE FROM "user";
 

@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiyAIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIVCgVzY29yZRgJIAEoAUIGukgDyAEBEhQKBHV1aWQYCiABKAlCBrpIA8gBARIQCghpc19hZG1pbhgFIAEoCBIXCgdhcGlfa2V5GAsgASgMQga6SAPIAQESHQoNbGFzdF9sb2dpbl9tcxgMIAEoA0IGukgDyAEBEjYKCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIGCgRfYWdlIoECChFDcmVhdGVVc2VyUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgIIAEoCUIGukgDyAEBEhIKBXNjb3JlGAkgASgBSAGIAQESEQoEdXVpZBgKIAEoCUgCiAEBEhAKCGlzX2FkbWluGAUgASgIEhQKB2FwaV9rZXkYCyABKAxIA4gBARIdCg1sYXN0X2xvZ2luX21zGAwgASgDQga6SAPIAQFCBgoEX2FnZUIICgZfc2NvcmVCBwoFX3V1aWRCCgoIX2FwaV9rZXkiKAoSR2V0VXNlckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiiwIKEVVwZGF0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFQoIcGFzc3dvcmQYCCABKAlIAYgBARISCgVzY29yZRgJIAEoAUgCiAEBEhgKCGlzX2FkbWluGAUgASgIQga6SAPIAQESFAoHYXBpX2tleRgLIAEoDEgDiAEBEh0KDWxhc3RfbG9naW5fbXMYDCABKANCBrpIA8gBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIICgZfc2NvcmVCCgoIX2FwaV9rZXkiJwoRRGVsZXRlVXNlclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASJEChdHZXRVc2VyQnlOYW1lQWdlUmVxdWVzdBIUCgRuYW1lGAMgASgJQga6SAPIAQESEwoDYWdlGAQgASgFQga6SAPIAQEiVAoVTGlzdFVzZXJCeU5hbWVSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhQKBG5hbWUYAyABKAlCBrpIA8gBASI2ChZMaXN0VXNlckJ5TmFtZVJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyMrkDCgtVc2VyU2VydmljZRIzCgZDcmVhdGUSGi5lbnRsaXRlLkNyZWF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjUKB0dldEJ5SUQSGy5lbnRsaXRlLkdldFVzZXJCeUlEUmVxdWVzdBoNLmVudGxpdGUuVXNlchIzCgZVcGRhdGUSGi5lbnRsaXRlLlVwZGF0ZVVzZXJSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEjwKBkRlbGV0ZRIaLmVudGxpdGUuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSOwoKR2V0QnlFbWFpbBIeLmVudGxpdGUuR2V0VXNlckJ5RW1haWxSZXF1ZXN0Gg0uZW50bGl0ZS5Vc2VyEj8KDEdldEJ5TmFtZUFnZRIgLmVudGxpdGUuR2V0VXNlckJ5TmFtZUFnZVJlcXVlc3QaDS5lbnRsaXRlLlVzZXISTQoKTGlzdEJ5TmFtZRIeLmVudGxpdGUuTGlzdFVzZXJCeU5hbWVSZXF1ZXN0Gh8uZW50bGl0ZS5MaXN0VXNlckJ5TmFtZVJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUisgIKBFVzZXISEgoCSUQYASABKAVCBrpIA8gBARIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIXCgdhcGlfa2V5GAYgASgMQga6SAPIAQESEQoJaXNfYWN0aXZlGAcgASgIEhsKC2xvZ2luX2NvdW50GAggASgDQga6SAPIAQESFgoGcmF0aW5nGAkgASgBQga6SAPIAQESNgoKY3JlYXRlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UihgIKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAUgASgJQga6SAPIAQESFAoHYXBpX2tleRgGIAEoDEgBiAEBEhYKCWlzX2FjdGl2ZRgHIAEoCEgCiAEBEhgKC2xvZ2luX2NvdW50GAggASgDSAOIAQESEwoGcmF0aW5nGAkgASgBSASIAQFCBgoEX2FnZUIKCghfYXBpX2tleUIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nIigKEkdldFVzZXJCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIoICChFVcGRhdGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhUKCHBhc3N3b3JkGAUgASgJSAGIAQESFgoJaXNfYWN0aXZlGAcgASgISAKIAQESGAoLbG9naW5fY291bnQYCCABKANIA4gBARITCgZyYXRpbmcYCSABKAFIBIgBAUIGCgRfYWdlQgsKCV9wYXNzd29yZEIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEihwIKEkNyZWF0ZUJ1bGtVc2VySXRlbRIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgFIAEoCUIGukgDyAEBEhQKB2FwaV9rZXkYBiABKAxIAYgBARIWCglpc19hY3RpdmUYByABKAhIAogBARIYCgtsb2dpbl9jb3VudBgIIAEoA0gDiAEBEhMKBnJhdGluZxgJIAEoAUgEiAEBQgYKBF9hZ2VCCgoIX2FwaV9rZXlCDAoKX2lzX2FjdGl2ZUIOCgxfbG9naW5fY291bnRCCQoHX3JhdGluZyJLChVDcmVhdGVCdWxrVXNlclJlcXVlc3QSMgoFaXRlbXMYASADKAsyGy5lbnRsaXRlLkNyZWF0ZUJ1bGtVc2VySXRlbUIGukgDyAEBIjYKFkNyZWF0ZUJ1bGtVc2VyUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIiLgoVR2V0VXNlckJ5RW1haWxSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQEiFAoSTGlzdEFsbFVzZXJSZXF1ZXN0IjMKE0xpc3RBbGxVc2VyUmVzcG9uc2USHAoFdXNlcnMYASADKAsyDS5lbnRsaXRlLlVzZXIiFgoURGVsZXRlQWxsVXNlclJlcXVlc3QiVQoRTGlzdEFjdGl2ZVJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSGQoJaXNfYWN0aXZlGAMgASgIQga6SAPIAQEiMgoSTGlzdEFjdGl2ZVJlc3BvbnNlEhwKBXVzZXJzGAEgAygLMg0uZW50bGl0ZS5Vc2VyIo8BCh5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZVJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSFwoHbWluX2FnZRgDIAEoBUIGukgDyAEBEhcKB21heF9hZ2UYBCABKAVCBrpIA8gBARIUCgRuYW1lGAUgASgJQga6SAPIAQEiPwofTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXNwb25zZRIcCgV1c2VycxgBIAMoCzINLmVudGxpdGUuVXNlcjKvBQoLVXNlclNlcnZpY2USMwoGQ3JlYXRlEhouZW50bGl0ZS5DcmVhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchI1CgdHZXRCeUlEEhsuZW50bGl0ZS5HZXRVc2VyQnlJRFJlcXVlc3QaDS5lbnRsaXRlLlVzZXISMwoGVXBkYXRlEhouZW50bGl0ZS5VcGRhdGVVc2VyUmVxdWVzdBoNLmVudGxpdGUuVXNlchI8CgZEZWxldGUSGi5lbnRsaXRlLkRlbGV0ZVVzZXJSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Ek0KCkNyZWF0ZUJ1bGsSHi5lbnRsaXRlLkNyZWF0ZUJ1bGtVc2VyUmVxdWVzdBofLmVudGxpdGUuQ3JlYXRlQnVsa1VzZXJSZXNwb25zZRI7CgpHZXRCeUVtYWlsEh4uZW50bGl0ZS5HZXRVc2VyQnlFbWFpbFJlcXVlc3QaDS5lbnRsaXRlLlVzZXISRAoHTGlzdEFsbBIbLmVudGxpdGUuTGlzdEFsbFVzZXJSZXF1ZXN0GhwuZW50bGl0ZS5MaXN0QWxsVXNlclJlc3BvbnNlEkIKCURlbGV0ZUFsbBIdLmVudGxpdGUuRGVsZXRlQWxsVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSRQoKTGlzdEFjdGl2ZRIaLmVudGxpdGUuTGlzdEFjdGl2ZVJlcXVlc3QaGy5lbnRsaXRlLkxpc3RBY3RpdmVSZXNwb25zZRJkCg9GaWx0ZXJCeUFnZU5hbWUSJy5lbnRsaXRlLkxpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lUmVxdWVzdBooLmVudGxpdGUuTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXNwb25zZUIGWgQuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -32,7 +32,7 @@ export type User = Message<"entlite.User"> & {
   email: string;
 
   /**
-   * First name and surname
+   * Full name, e.g. "Jane Doe"
    *
    * @generated from field: string name = 3;
    */
@@ -44,37 +44,32 @@ export type User = Message<"entlite.User"> & {
   age?: number;
 
   /**
-   * @generated from field: double score = 9;
-   */
-  score: number;
-
-  /**
-   * @generated from field: string uuid = 10;
-   */
-  uuid: string;
-
-  /**
-   * @generated from field: bool is_admin = 5;
-   */
-  isAdmin: boolean;
-
-  /**
-   * @generated from field: bytes api_key = 11;
+   * @generated from field: bytes api_key = 6;
    */
   apiKey: Uint8Array;
 
   /**
-   * @generated from field: int64 last_login_ms = 12;
+   * @generated from field: bool is_active = 7;
    */
-  lastLoginMs: bigint;
+  isActive: boolean;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 6;
+   * @generated from field: int64 login_count = 8;
+   */
+  loginCount: bigint;
+
+  /**
+   * @generated from field: double rating = 9;
+   */
+  rating: number;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 10;
    */
   createdAt?: Timestamp;
 
   /**
-   * @generated from field: google.protobuf.Timestamp updated_at = 7;
+   * @generated from field: google.protobuf.Timestamp updated_at = 11;
    */
   updatedAt?: Timestamp;
 };
@@ -96,7 +91,7 @@ export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
   email: string;
 
   /**
-   * First name and surname
+   * Full name, e.g. "Jane Doe"
    *
    * @generated from field: string name = 3;
    */
@@ -108,34 +103,29 @@ export type CreateUserRequest = Message<"entlite.CreateUserRequest"> & {
   age?: number;
 
   /**
-   * @generated from field: string password = 8;
+   * @generated from field: string password = 5;
    */
   password: string;
 
   /**
-   * @generated from field: optional double score = 9;
-   */
-  score?: number;
-
-  /**
-   * @generated from field: optional string uuid = 10;
-   */
-  uuid?: string;
-
-  /**
-   * @generated from field: bool is_admin = 5;
-   */
-  isAdmin: boolean;
-
-  /**
-   * @generated from field: optional bytes api_key = 11;
+   * @generated from field: optional bytes api_key = 6;
    */
   apiKey?: Uint8Array;
 
   /**
-   * @generated from field: int64 last_login_ms = 12;
+   * @generated from field: optional bool is_active = 7;
    */
-  lastLoginMs: bigint;
+  isActive?: boolean;
+
+  /**
+   * @generated from field: optional int64 login_count = 8;
+   */
+  loginCount?: bigint;
+
+  /**
+   * @generated from field: optional double rating = 9;
+   */
+  rating?: number;
 };
 
 /**
@@ -177,7 +167,7 @@ export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
   email: string;
 
   /**
-   * First name and surname
+   * Full name, e.g. "Jane Doe"
    *
    * @generated from field: string name = 3;
    */
@@ -189,29 +179,24 @@ export type UpdateUserRequest = Message<"entlite.UpdateUserRequest"> & {
   age?: number;
 
   /**
-   * @generated from field: optional string password = 8;
+   * @generated from field: optional string password = 5;
    */
   password?: string;
 
   /**
-   * @generated from field: optional double score = 9;
+   * @generated from field: optional bool is_active = 7;
    */
-  score?: number;
+  isActive?: boolean;
 
   /**
-   * @generated from field: bool is_admin = 5;
+   * @generated from field: optional int64 login_count = 8;
    */
-  isAdmin: boolean;
+  loginCount?: bigint;
 
   /**
-   * @generated from field: optional bytes api_key = 11;
+   * @generated from field: optional double rating = 9;
    */
-  apiKey?: Uint8Array;
-
-  /**
-   * @generated from field: int64 last_login_ms = 12;
-   */
-  lastLoginMs: bigint;
+  rating?: number;
 };
 
 /**
@@ -239,6 +224,94 @@ export const DeleteUserRequestSchema: GenMessage<DeleteUserRequest> = /*@__PURE_
   messageDesc(file_schema, 4);
 
 /**
+ * @generated from message entlite.CreateBulkUserItem
+ */
+export type CreateBulkUserItem = Message<"entlite.CreateBulkUserItem"> & {
+  /**
+   * @generated from field: string email = 2;
+   */
+  email: string;
+
+  /**
+   * Full name, e.g. "Jane Doe"
+   *
+   * @generated from field: string name = 3;
+   */
+  name: string;
+
+  /**
+   * @generated from field: optional int32 age = 4;
+   */
+  age?: number;
+
+  /**
+   * @generated from field: string password = 5;
+   */
+  password: string;
+
+  /**
+   * @generated from field: optional bytes api_key = 6;
+   */
+  apiKey?: Uint8Array;
+
+  /**
+   * @generated from field: optional bool is_active = 7;
+   */
+  isActive?: boolean;
+
+  /**
+   * @generated from field: optional int64 login_count = 8;
+   */
+  loginCount?: bigint;
+
+  /**
+   * @generated from field: optional double rating = 9;
+   */
+  rating?: number;
+};
+
+/**
+ * Describes the message entlite.CreateBulkUserItem.
+ * Use `create(CreateBulkUserItemSchema)` to create a new message.
+ */
+export const CreateBulkUserItemSchema: GenMessage<CreateBulkUserItem> = /*@__PURE__*/
+  messageDesc(file_schema, 5);
+
+/**
+ * @generated from message entlite.CreateBulkUserRequest
+ */
+export type CreateBulkUserRequest = Message<"entlite.CreateBulkUserRequest"> & {
+  /**
+   * @generated from field: repeated entlite.CreateBulkUserItem items = 1;
+   */
+  items: CreateBulkUserItem[];
+};
+
+/**
+ * Describes the message entlite.CreateBulkUserRequest.
+ * Use `create(CreateBulkUserRequestSchema)` to create a new message.
+ */
+export const CreateBulkUserRequestSchema: GenMessage<CreateBulkUserRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 6);
+
+/**
+ * @generated from message entlite.CreateBulkUserResponse
+ */
+export type CreateBulkUserResponse = Message<"entlite.CreateBulkUserResponse"> & {
+  /**
+   * @generated from field: repeated entlite.User users = 1;
+   */
+  users: User[];
+};
+
+/**
+ * Describes the message entlite.CreateBulkUserResponse.
+ * Use `create(CreateBulkUserResponseSchema)` to create a new message.
+ */
+export const CreateBulkUserResponseSchema: GenMessage<CreateBulkUserResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 7);
+
+/**
  * @generated from message entlite.GetUserByEmailRequest
  */
 export type GetUserByEmailRequest = Message<"entlite.GetUserByEmailRequest"> & {
@@ -253,34 +326,55 @@ export type GetUserByEmailRequest = Message<"entlite.GetUserByEmailRequest"> & {
  * Use `create(GetUserByEmailRequestSchema)` to create a new message.
  */
 export const GetUserByEmailRequestSchema: GenMessage<GetUserByEmailRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 5);
+  messageDesc(file_schema, 8);
 
 /**
- * @generated from message entlite.GetUserByNameAgeRequest
+ * @generated from message entlite.ListAllUserRequest
  */
-export type GetUserByNameAgeRequest = Message<"entlite.GetUserByNameAgeRequest"> & {
-  /**
-   * @generated from field: string name = 3;
-   */
-  name: string;
-
-  /**
-   * @generated from field: int32 age = 4;
-   */
-  age: number;
+export type ListAllUserRequest = Message<"entlite.ListAllUserRequest"> & {
 };
 
 /**
- * Describes the message entlite.GetUserByNameAgeRequest.
- * Use `create(GetUserByNameAgeRequestSchema)` to create a new message.
+ * Describes the message entlite.ListAllUserRequest.
+ * Use `create(ListAllUserRequestSchema)` to create a new message.
  */
-export const GetUserByNameAgeRequestSchema: GenMessage<GetUserByNameAgeRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 6);
+export const ListAllUserRequestSchema: GenMessage<ListAllUserRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 9);
 
 /**
- * @generated from message entlite.ListUserByNameRequest
+ * @generated from message entlite.ListAllUserResponse
  */
-export type ListUserByNameRequest = Message<"entlite.ListUserByNameRequest"> & {
+export type ListAllUserResponse = Message<"entlite.ListAllUserResponse"> & {
+  /**
+   * @generated from field: repeated entlite.User users = 1;
+   */
+  users: User[];
+};
+
+/**
+ * Describes the message entlite.ListAllUserResponse.
+ * Use `create(ListAllUserResponseSchema)` to create a new message.
+ */
+export const ListAllUserResponseSchema: GenMessage<ListAllUserResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 10);
+
+/**
+ * @generated from message entlite.DeleteAllUserRequest
+ */
+export type DeleteAllUserRequest = Message<"entlite.DeleteAllUserRequest"> & {
+};
+
+/**
+ * Describes the message entlite.DeleteAllUserRequest.
+ * Use `create(DeleteAllUserRequestSchema)` to create a new message.
+ */
+export const DeleteAllUserRequestSchema: GenMessage<DeleteAllUserRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 11);
+
+/**
+ * @generated from message entlite.ListActiveRequest
+ */
+export type ListActiveRequest = Message<"entlite.ListActiveRequest"> & {
   /**
    * @generated from field: int32 limit = 1;
    */
@@ -292,22 +386,22 @@ export type ListUserByNameRequest = Message<"entlite.ListUserByNameRequest"> & {
   offset: number;
 
   /**
-   * @generated from field: string name = 3;
+   * @generated from field: bool is_active = 3;
    */
-  name: string;
+  isActive: boolean;
 };
 
 /**
- * Describes the message entlite.ListUserByNameRequest.
- * Use `create(ListUserByNameRequestSchema)` to create a new message.
+ * Describes the message entlite.ListActiveRequest.
+ * Use `create(ListActiveRequestSchema)` to create a new message.
  */
-export const ListUserByNameRequestSchema: GenMessage<ListUserByNameRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 7);
+export const ListActiveRequestSchema: GenMessage<ListActiveRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 12);
 
 /**
- * @generated from message entlite.ListUserByNameResponse
+ * @generated from message entlite.ListActiveResponse
  */
-export type ListUserByNameResponse = Message<"entlite.ListUserByNameResponse"> & {
+export type ListActiveResponse = Message<"entlite.ListActiveResponse"> & {
   /**
    * @generated from field: repeated entlite.User users = 1;
    */
@@ -315,11 +409,65 @@ export type ListUserByNameResponse = Message<"entlite.ListUserByNameResponse"> &
 };
 
 /**
- * Describes the message entlite.ListUserByNameResponse.
- * Use `create(ListUserByNameResponseSchema)` to create a new message.
+ * Describes the message entlite.ListActiveResponse.
+ * Use `create(ListActiveResponseSchema)` to create a new message.
  */
-export const ListUserByNameResponseSchema: GenMessage<ListUserByNameResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 8);
+export const ListActiveResponseSchema: GenMessage<ListActiveResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 13);
+
+/**
+ * @generated from message entlite.ListUserFilterByAgeNameRequest
+ */
+export type ListUserFilterByAgeNameRequest = Message<"entlite.ListUserFilterByAgeNameRequest"> & {
+  /**
+   * @generated from field: int32 limit = 1;
+   */
+  limit: number;
+
+  /**
+   * @generated from field: int32 offset = 2;
+   */
+  offset: number;
+
+  /**
+   * @generated from field: int32 min_age = 3;
+   */
+  minAge: number;
+
+  /**
+   * @generated from field: int32 max_age = 4;
+   */
+  maxAge: number;
+
+  /**
+   * @generated from field: string name = 5;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message entlite.ListUserFilterByAgeNameRequest.
+ * Use `create(ListUserFilterByAgeNameRequestSchema)` to create a new message.
+ */
+export const ListUserFilterByAgeNameRequestSchema: GenMessage<ListUserFilterByAgeNameRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 14);
+
+/**
+ * @generated from message entlite.ListUserFilterByAgeNameResponse
+ */
+export type ListUserFilterByAgeNameResponse = Message<"entlite.ListUserFilterByAgeNameResponse"> & {
+  /**
+   * @generated from field: repeated entlite.User users = 1;
+   */
+  users: User[];
+};
+
+/**
+ * Describes the message entlite.ListUserFilterByAgeNameResponse.
+ * Use `create(ListUserFilterByAgeNameResponseSchema)` to create a new message.
+ */
+export const ListUserFilterByAgeNameResponseSchema: GenMessage<ListUserFilterByAgeNameResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 15);
 
 /**
  * UserService provides CRUD opertions for User entities
@@ -360,6 +508,14 @@ export const UserService: GenService<{
     output: typeof EmptySchema;
   },
   /**
+   * @generated from rpc entlite.UserService.CreateBulk
+   */
+  createBulk: {
+    methodKind: "unary";
+    input: typeof CreateBulkUserRequestSchema;
+    output: typeof CreateBulkUserResponseSchema;
+  },
+  /**
    * @generated from rpc entlite.UserService.GetByEmail
    */
   getByEmail: {
@@ -368,20 +524,36 @@ export const UserService: GenService<{
     output: typeof UserSchema;
   },
   /**
-   * @generated from rpc entlite.UserService.GetByNameAge
+   * @generated from rpc entlite.UserService.ListAll
    */
-  getByNameAge: {
+  listAll: {
     methodKind: "unary";
-    input: typeof GetUserByNameAgeRequestSchema;
-    output: typeof UserSchema;
+    input: typeof ListAllUserRequestSchema;
+    output: typeof ListAllUserResponseSchema;
   },
   /**
-   * @generated from rpc entlite.UserService.ListByName
+   * @generated from rpc entlite.UserService.DeleteAll
    */
-  listByName: {
+  deleteAll: {
     methodKind: "unary";
-    input: typeof ListUserByNameRequestSchema;
-    output: typeof ListUserByNameResponseSchema;
+    input: typeof DeleteAllUserRequestSchema;
+    output: typeof EmptySchema;
+  },
+  /**
+   * @generated from rpc entlite.UserService.ListActive
+   */
+  listActive: {
+    methodKind: "unary";
+    input: typeof ListActiveRequestSchema;
+    output: typeof ListActiveResponseSchema;
+  },
+  /**
+   * @generated from rpc entlite.UserService.FilterByAgeName
+   */
+  filterByAgeName: {
+    methodKind: "unary";
+    input: typeof ListUserFilterByAgeNameRequestSchema;
+    output: typeof ListUserFilterByAgeNameResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_schema, 0);
