@@ -255,8 +255,8 @@ func (s *UserServer) FilterByAgeName(
 	minAge := req.Msg.GetMinAge()
 	maxAge := req.Msg.GetMaxAge()
 	dbUsers, err := queries.ListUserFilterByAgeName(ctx, db.ListUserFilterByAgeNameParams{
-		MinAge: db.PtrToNullInt32(&minAge),
-		MaxAge: db.PtrToNullInt32(&maxAge),
+		MinAge: &minAge,
+		MaxAge: &maxAge,
 		Name:   req.Msg.GetName(),
 	})
 	if err != nil {

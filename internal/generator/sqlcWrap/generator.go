@@ -169,6 +169,9 @@ func (ctx *generationContext) collectDeclarations() {
 			for _, spec := range d.Specs {
 				if typeSpec, ok := spec.(*ast.TypeSpec); ok {
 					if structType, ok := typeSpec.Type.(*ast.StructType); ok {
+						if _, ok := ctx.filterParamsEntity(typeSpec.Name.Name); ok {
+							ctx.filterParamsStructs[typeSpec.Name.Name] = structType
+						}
 						if target, ok := ctx.paramsQuery(typeSpec.Name.Name); ok {
 							switch target.query.Type {
 							case schema.QueryCreate, schema.QueryCreateBulk:
@@ -183,9 +186,6 @@ func (ctx *generationContext) collectDeclarations() {
 						}
 						if strings.HasPrefix(typeSpec.Name.Name, "Update") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
 							ctx.updateParamsStructs[typeSpec.Name.Name] = structType
-						}
-						if _, ok := ctx.filterParamsEntity(typeSpec.Name.Name); ok {
-							ctx.filterParamsStructs[typeSpec.Name.Name] = structType
 						}
 					}
 				}
@@ -521,13 +521,13 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "Get") {
 			if entity, ok := ctx.findEntityForGetMethod(funcDecl.Name.Name); ok {
-				sb.WriteString(generateGetQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(ctx.generateGetQuery(funcDecl, entity))
 				return
 			}
 		}
 		if strings.HasPrefix(funcDecl.Name.Name, "List") {
 			if entity, ok := ctx.findEntityForListMethod(funcDecl.Name.Name); ok {
-				sb.WriteString(generateListQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(ctx.generateListQuery(funcDecl, entity))
 				return
 			}
 		}
@@ -567,9 +567,9 @@ func (ctx *generationContext) generateDslQuery(funcDecl *ast.FuncDecl, target ds
 	case schema.QueryUpdate:
 		return generateUpdateQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
 	case schema.QueryGetBy:
-		return generateGetQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+		return ctx.generateGetQuery(funcDecl, target.entity)
 	case schema.QueryListBy, schema.QueryListAll:
-		return generateListQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+		return ctx.generateListQuery(funcDecl, target.entity)
 	case schema.QueryDelete:
 		return generateDeleteQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
 	case schema.QueryDeleteAll:

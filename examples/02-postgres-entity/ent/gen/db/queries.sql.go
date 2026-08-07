@@ -124,9 +124,19 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]*User, error) {
 	return result, nil
 }
 
-type ListUserFilterByAgeNameParams = internal.ListUserFilterByAgeNameParams
+type ListUserFilterByAgeNameParams struct {
+	MinAge *int32 `json:"min_age"`
+	MaxAge *int32 `json:"max_age"`
+	Name string `json:"name"`
+}
+
 func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeName(ctx, arg)
+	internalArg := internal.ListUserFilterByAgeNameParams{
+		MinAge: PtrToNullInt32(arg.MinAge),
+		MaxAge: PtrToNullInt32(arg.MaxAge),
+		Name: arg.Name,
+	}
+	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeName(ctx, internalArg)
 	if err != nil {
 		return nil, err
 	}
