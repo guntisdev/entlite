@@ -57,6 +57,9 @@ func sqlcWrapCommand() {
 		}
 
 		fileName := file.Name()
+		if fileName == sqlcwrap.EntliteAccessFileName {
+			continue
+		}
 		if strings.HasSuffix(fileName, ".go") {
 			inputFilePath := filepath.Join(inputDir, fileName)
 			outputFilePath := filepath.Join(outputDir, fileName)
@@ -73,6 +76,19 @@ func sqlcWrapCommand() {
 				os.Exit(1)
 			}
 		}
+	}
+
+	// Expose sqlc's connection handle so the wrapper can open transactions.
+	sqlcPackageName, err := sqlcwrap.PackageNameOf(inputDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading package name of %s: %v\n", inputDir, err)
+		os.Exit(1)
+	}
+	accessFilePath := filepath.Join(inputDir, sqlcwrap.EntliteAccessFileName)
+	accessContent := sqlcwrap.GenerateAccessFile(sqlcPackageName)
+	if err := os.WriteFile(accessFilePath, []byte(accessContent), 0644); err != nil {
+		fmt.Fprintf(os.Stderr, "Error writing %s file: %v\n", sqlcwrap.EntliteAccessFileName, err)
+		os.Exit(1)
 	}
 
 	// Generate convert.go file with converter helper functions

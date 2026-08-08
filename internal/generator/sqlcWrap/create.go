@@ -128,32 +128,73 @@ func writeCreateParamsFields(sb *strings.Builder, entity schema.Entity, argVar, 
 	}
 }
 
-// generateCreateBulkQuery wraps the sqlc single-row CreateBulk<Entity> insert in a loop
+// generateCreateBulkQuery wraps the sqlc single-row CreateBulk<Entity> insert.
 func generateCreateBulkQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect schema.SQLDialect) string {
 	var sb strings.Builder
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
-	paramsType := funcDecl.Name.Name + "Params"
+	queryName := funcDecl.Name.Name
+	paramsType := queryName + "Params"
+	internalParamsType := fmt.Sprintf("%s.%sParams", inputPkg, queryName)
 	idField := entity.GetIdField()
 	idType := fieldToGoType(idField)
+	rowsFunc := toUnexportedName(queryName) + "Rows"
 
-	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, args []%s) ([]%s, error) {\n", receiverType, funcDecl.Name.Name, paramsType, idType))
+	// Handle return value conversion for SQLite/MySQL ID (int64 -> int32)
+	idExpr := "id"
+	if (sqlDialect == schema.SQLite || sqlDialect == schema.MySQL) && idField.Type == schema.FieldTypeInt {
+		idExpr = "IntConvert[int64, int32](id)"
+	}
+
+	sb.WriteString(fmt.Sprintf("// %s inserts every row through q, which the caller binds to a transaction.\n", rowsFunc))
+	sb.WriteString(fmt.Sprintf("func %s(ctx context.Context, q *%s.Queries, args []%s) ([]%s, error) {\n", rowsFunc, inputPkg, internalParamsType, idType))
 	sb.WriteString(fmt.Sprintf("\tresults := make([]%s, 0, len(args))\n", idType))
-	sb.WriteString("\tfor _, item := range args {\n")
-	sb.WriteString(addValidationChecks(entity, "create_bulk", "nil", "item", "\t\t"))
-	sb.WriteString(fmt.Sprintf("\t\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
-	writeCreateParamsFields(&sb, entity, "item", "\t\t\t", sqlDialect)
-	sb.WriteString("\t\t}\n")
-	sb.WriteString(fmt.Sprintf("\t\tid, err := (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
+	sb.WriteString("\tfor _, internalArg := range args {\n")
+	sb.WriteString(fmt.Sprintf("\t\tid, err := q.%s(ctx, internalArg)\n", queryName))
 	sb.WriteString("\t\tif err != nil {\n")
 	sb.WriteString("\t\t\treturn nil, err\n")
 	sb.WriteString("\t\t}\n")
-	// Handle return value conversion for SQLite/MySQL ID (int64 -> int32)
-	if (sqlDialect == schema.SQLite || sqlDialect == schema.MySQL) && idField.Type == schema.FieldTypeInt {
-		sb.WriteString("\t\tresults = append(results, IntConvert[int64, int32](id))\n")
-	} else {
-		sb.WriteString("\t\tresults = append(results, id)\n")
+	sb.WriteString(fmt.Sprintf("\t\tresults = append(results, %s)\n", idExpr))
+	sb.WriteString("\t}\n")
+	sb.WriteString("\treturn results, nil\n")
+	sb.WriteString("}\n\n")
+
+	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, args []%s) ([]%s, error) {\n", receiverType, queryName, paramsType, idType))
+	sb.WriteString("\tif len(args) == 0 {\n")
+	sb.WriteString(fmt.Sprintf("\t\treturn []%s{}, nil\n", idType))
+	sb.WriteString("\t}\n\n")
+
+	indexVar := "_"
+	validation := addValidationChecksIndexed(entity, "create_bulk", "nil", "item", "\t\t", "i")
+	if validation != "" {
+		indexVar = "i"
 	}
+	sb.WriteString(fmt.Sprintf("\tinternalArgs := make([]%s, 0, len(args))\n", internalParamsType))
+	sb.WriteString(fmt.Sprintf("\tfor %s, item := range args {\n", indexVar))
+	sb.WriteString(validation)
+	sb.WriteString(fmt.Sprintf("\t\tinternalArgs = append(internalArgs, %s{\n", internalParamsType))
+	writeCreateParamsFields(&sb, entity, "item", "\t\t\t", sqlDialect)
+	sb.WriteString("\t\t})\n")
+	sb.WriteString("\t}\n\n")
+
+	sb.WriteString(fmt.Sprintf("\tinternalQueries := (*%s.Queries)(q)\n", inputPkg))
+	sb.WriteString("\tbeginner, ok := internalQueries.DB().(txBeginner)\n")
+	sb.WriteString("\tif !ok {\n")
+	sb.WriteString("\t\t// Already inside a transaction; the caller owns atomicity.\n")
+	sb.WriteString(fmt.Sprintf("\t\treturn %s(ctx, internalQueries, internalArgs)\n", rowsFunc))
+	sb.WriteString("\t}\n\n")
+
+	sb.WriteString("\ttx, err := beginner.BeginTx(ctx, nil)\n")
+	sb.WriteString("\tif err != nil {\n")
+	sb.WriteString("\t\treturn nil, err\n")
+	sb.WriteString("\t}\n")
+	sb.WriteString("\tdefer func() { _ = tx.Rollback() }()\n\n")
+	sb.WriteString(fmt.Sprintf("\tresults, err := %s(ctx, internalQueries.WithTx(tx), internalArgs)\n", rowsFunc))
+	sb.WriteString("\tif err != nil {\n")
+	sb.WriteString("\t\treturn nil, err\n")
+	sb.WriteString("\t}\n")
+	sb.WriteString("\tif err := tx.Commit(); err != nil {\n")
+	sb.WriteString("\t\treturn nil, err\n")
 	sb.WriteString("\t}\n")
 	sb.WriteString("\treturn results, nil\n")
 	sb.WriteString("}\n\n")

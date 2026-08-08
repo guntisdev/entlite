@@ -19,13 +19,30 @@ type CreateBulkUserParams struct {
 	Rating *float64 `json:"rating"`
 }
 
-func (q *Queries) CreateBulkUser(ctx context.Context, args []CreateBulkUserParams) ([]int32, error) {
+// createBulkUserRows inserts every row through q, which the caller binds to a transaction.
+func createBulkUserRows(ctx context.Context, q *internal.Queries, args []internal.CreateBulkUserParams) ([]int32, error) {
 	results := make([]int32, 0, len(args))
-	for _, item := range args {
-		if !logic.StartsWithCapital(item.Name) {
-			return nil, fmt.Errorf("Failed create_bulk: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
+	for _, internalArg := range args {
+		id, err := q.CreateBulkUser(ctx, internalArg)
+		if err != nil {
+			return nil, err
 		}
-		internalArg := internal.CreateBulkUserParams{
+		results = append(results, id)
+	}
+	return results, nil
+}
+
+func (q *Queries) CreateBulkUser(ctx context.Context, args []CreateBulkUserParams) ([]int32, error) {
+	if len(args) == 0 {
+		return []int32{}, nil
+	}
+
+	internalArgs := make([]internal.CreateBulkUserParams, 0, len(args))
+	for i, item := range args {
+		if !logic.StartsWithCapital(item.Name) {
+			return nil, fmt.Errorf("Failed create_bulk: item %d: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'", i)
+		}
+		internalArgs = append(internalArgs, internal.CreateBulkUserParams{
 			Email: item.Email,
 			Name: item.Name,
 			Age: PtrToNullInt32(item.Age),
@@ -36,12 +53,28 @@ func (q *Queries) CreateBulkUser(ctx context.Context, args []CreateBulkUserParam
 			Rating: OptionalWithFallback(item.Rating, 0),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
-		}
-		id, err := (*internal.Queries)(q).CreateBulkUser(ctx, internalArg)
-		if err != nil {
-			return nil, err
-		}
-		results = append(results, id)
+		})
+	}
+
+	internalQueries := (*internal.Queries)(q)
+	beginner, ok := internalQueries.DB().(txBeginner)
+	if !ok {
+		// Already inside a transaction; the caller owns atomicity.
+		return createBulkUserRows(ctx, internalQueries, internalArgs)
+	}
+
+	tx, err := beginner.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	results, err := createBulkUserRows(ctx, internalQueries.WithTx(tx), internalArgs)
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
 	}
 	return results, nil
 }

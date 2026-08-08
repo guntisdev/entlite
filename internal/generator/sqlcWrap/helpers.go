@@ -159,6 +159,10 @@ func (ctx *generationContext) wrapFilterParams(funcDecl *ast.FuncDecl, entity sc
 }
 
 func addValidationChecks(entity schema.Entity, sqlQuery string, returnType, argVar, indent string) string {
+	return addValidationChecksIndexed(entity, sqlQuery, returnType, argVar, indent, "")
+}
+
+func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnType, argVar, indent, indexVar string) string {
 	var sb strings.Builder
 
 	var zeroValue string
@@ -175,6 +179,12 @@ func addValidationChecks(entity schema.Entity, sqlQuery string, returnType, argV
 		zeroValue = "nil"
 	}
 
+	itemPrefix, itemArgs := "", ""
+	if indexVar != "" {
+		itemPrefix = "item %d: "
+		itemArgs = ", " + indexVar
+	}
+
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue
@@ -186,7 +196,7 @@ func addValidationChecks(entity schema.Entity, sqlQuery string, returnType, argV
 		validateName := field.Validate().(string)
 		fieldName := toDBFieldName(field)
 		sb.WriteString(fmt.Sprintf("%sif !%s(%s.%s) {\n", indent, validateName, argVar, fieldName))
-		sb.WriteString(fmt.Sprintf("%s\treturn %s, fmt.Errorf(\"Failed %s: incorrect value for '%s' in field '%s', validated by '%s'\")\n", indent, zeroValue, sqlQuery, entity.Name, field.Name, validateName))
+		sb.WriteString(fmt.Sprintf("%s\treturn %s, fmt.Errorf(\"Failed %s: %sincorrect value for '%s' in field '%s', validated by '%s'\"%s)\n", indent, zeroValue, sqlQuery, itemPrefix, entity.Name, field.Name, validateName, itemArgs))
 		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}
 	return sb.String()
@@ -297,11 +307,13 @@ func toExportedName(name string) string {
 	return snakeToCamelCase(name)
 }
 
-// qualifyType renders a type expression, prefixing package-local exported
-// identifiers (types declared in the sqlc-generated package, e.g.
-// GetSensorReadingStatsRow) with pkg so they resolve from the wrapper package.
-// Already-qualified selectors (time.Time, sql.NullString) and builtins are left
-// as-is.
+func toUnexportedName(name string) string {
+	if name == "" {
+		return name
+	}
+	return strings.ToLower(name[:1]) + name[1:]
+}
+
 func qualifyType(expr ast.Expr, pkg string) string {
 	switch t := expr.(type) {
 	case *ast.Ident:
