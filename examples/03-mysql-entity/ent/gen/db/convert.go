@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"reflect"
 	"time"
@@ -37,6 +38,13 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 		Time:  t.AsTime(),
 		Valid: true,
 	}
+}
+
+// txBeginner is satisfied by *sql.DB and *sql.Conn, but deliberately not by
+// *sql.Tx: a Queries already bound to a transaction runs inside the caller's
+// one rather than opening a nested one.
+type txBeginner interface {
+	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 }
 
 // OptionalWithFallback chooses fallback if optional value is nil
@@ -167,6 +175,25 @@ func SQLiteBoolToInt(b bool) int64 {
     } else {
         return 0
     }
+}
+
+// SQLiteBoolPtrToInt64Ptr converts an optional bool to an optional SQLite int64
+// (used for nullable columns via sqlc.narg, e.g. *bool -> *int64).
+func SQLiteBoolPtrToInt64Ptr(b *bool) *int64 {
+    if b == nil {
+        return nil
+    }
+    v := SQLiteBoolToInt(*b)
+    return &v
+}
+
+// SQLiteInt64PtrToBoolPtr is the inverse of SQLiteBoolPtrToInt64Ptr.
+func SQLiteInt64PtrToBoolPtr(i *int64) *bool {
+    if i == nil {
+        return nil
+    }
+    v := SQLiteIntToBool(*i)
+    return &v
 }
 
 // example: IntPtrConvert[int64, int32](dbRow.Age)

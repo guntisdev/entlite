@@ -11,19 +11,18 @@ import (
 
 	"connectrpc.com/connect"
 	"connectrpc.com/validate"
-	_ "github.com/jackc/pgx/v5/stdlib"
+	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"github.com/guntisdev/entlite/examples/02-postgres-entity/ent/gen/pb"
-	"github.com/guntisdev/entlite/examples/02-postgres-entity/server"
+	"github.com/guntisdev/entlite/examples/03-mysql-entity/ent/gen/pb"
+	"github.com/guntisdev/entlite/examples/03-mysql-entity/server"
 )
 
-// Credentials match docker-compose.yml, see `make db`
-const connStr = "postgres://postgres:postgres@localhost:5432/entlite?sslmode=disable"
+const connStr = "root:mysql@tcp(localhost:3306)/entlite?parseTime=true"
 
 func main() {
-	database, err := sql.Open("pgx", connStr)
+	database, err := sql.Open("mysql", connStr)
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
@@ -67,7 +66,6 @@ func main() {
 	}
 }
 
-// waitForDatabase polls until postgres finishes its startup, which takes a few seconds
 func waitForDatabase(db *sql.DB) error {
 	deadline := time.Now().Add(60 * time.Second)
 	var lastErr error

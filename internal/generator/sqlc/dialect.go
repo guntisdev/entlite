@@ -131,7 +131,9 @@ func (g *Generator) getSQLiteType(fieldType schema.FieldType) string {
 func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
-		return "TEXT"
+		// VARCHAR rather than TEXT: MySQL refuses to index a TEXT column without
+		// an explicit key length, which breaks Unique() and index.Fields().
+		return "VARCHAR(255)"
 	case schema.FieldTypeInt:
 		return "INT"
 	case schema.FieldTypeInt64:
@@ -179,7 +181,16 @@ func (g *Generator) supportsReturning() bool {
 }
 
 func (g *Generator) namedArg(name string) string {
-	return fmt.Sprintf("@%s", name)
+	switch g.sqlDialect {
+	case schema.MySQL:
+		// sqlc's MySQL parser reads @name as a MySQL user variable and drops the
+		// parameter, so named args have to be spelled out as sqlc.arg().
+		return fmt.Sprintf("sqlc.arg('%s')", name)
+	case schema.PostgreSQL, schema.SQLite:
+		return fmt.Sprintf("@%s", name)
+	}
+
+	panic("unreachable: invalid SQL dialect")
 }
 
 func (g *Generator) getParameterPlaceholder(index int) string {

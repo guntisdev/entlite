@@ -4,16 +4,20 @@
 -- user table
 CREATE TABLE `user`(
   ID INT AUTO_INCREMENT PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  name TEXT NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  -- Full name, e.g. "Jane Doe"
+  name VARCHAR(255) NOT NULL,
   age INT,
-  password TEXT NOT NULL,
-  score DOUBLE DEFAULT 4.2 NOT NULL,
-  uuid TEXT NOT NULL,
-  is_admin TINYINT(1) NOT NULL,
+  password VARCHAR(255) NOT NULL,
   api_key BLOB NOT NULL,
-  last_login_ms BIGINT NOT NULL,
+  is_active TINYINT(1) DEFAULT true NOT NULL,
+  login_count BIGINT DEFAULT 0 NOT NULL,
+  rating DOUBLE DEFAULT 0 NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
 );
+CREATE INDEX `idx_user_age_is_active` ON `user` (age, is_active);
+CREATE INDEX `idx_user_is_active_created_at` ON `user` (is_active, created_at DESC);
+CREATE UNIQUE INDEX `idx_user_name_email` ON `user` (name, email);
+CREATE INDEX `idx_users_stats` ON `user` (login_count, rating);
 
