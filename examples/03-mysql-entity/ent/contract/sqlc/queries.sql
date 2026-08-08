@@ -9,15 +9,37 @@ INSERT INTO `user` (
   name,
   age,
   password,
-  score,
-  uuid,
-  is_admin,
   api_key,
-  last_login_ms,
+  is_active,
+  login_count,
+  rating,
   created_at,
   updated_at
 ) VALUES (
   ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?
+);
+-- name: CreateBulkUser :execlastid
+INSERT INTO `user` (
+  email,
+  name,
+  age,
+  password,
+  api_key,
+  is_active,
+  login_count,
+  rating,
+  created_at,
+  updated_at
+) VALUES (
   ?,
   ?,
   ?,
@@ -35,11 +57,14 @@ SELECT * FROM `user` WHERE ID = ?;
 -- name: GetUserByEmail :one
 SELECT * FROM `user` WHERE email = ?;
 
--- name: GetUserByNameAge :one
-SELECT * FROM `user` WHERE name = ? AND age = ?;
+-- name: ListAllUser :many
+SELECT * FROM `user`;
 
--- name: ListUserByName :many
-SELECT * FROM `user` WHERE name = ?;
+-- name: ListActive :many
+SELECT * FROM `user` WHERE is_active = sqlc.arg('is_active');
+
+-- name: ListUserFilterByAgeName :many
+SELECT * FROM `user` WHERE age BETWEEN sqlc.arg('min_age') AND sqlc.arg('max_age') AND name LIKE sqlc.arg('name');
 
 -- name: UpdateUser :exec
 UPDATE `user` SET
@@ -47,13 +72,15 @@ UPDATE `user` SET
   name = sqlc.arg('name'),
   age = sqlc.arg('age'),
   password = COALESCE(sqlc.narg('password'), password),
-  score = COALESCE(sqlc.narg('score'), score),
-  is_admin = sqlc.arg('is_admin'),
-  api_key = COALESCE(sqlc.narg('api_key'), api_key),
-  last_login_ms = sqlc.arg('last_login_ms'),
+  is_active = COALESCE(sqlc.narg('is_active'), is_active),
+  login_count = COALESCE(sqlc.narg('login_count'), login_count),
+  rating = COALESCE(sqlc.narg('rating'), rating),
   updated_at = sqlc.arg('updated_at')
 WHERE ID = sqlc.arg('ID');
 
 -- name: DeleteUser :exec
 DELETE FROM `user` WHERE ID = ?;
+
+-- name: DeleteAllUser :exec
+DELETE FROM `user`;
 
