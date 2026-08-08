@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"strings"
 	"time"
 
@@ -20,23 +19,10 @@ import (
 	"github.com/guntisdev/entlite/examples/02-postgres-entity/server"
 )
 
-const (
-	containerName  = "entlite-postgres-02"
-	postgresImage  = "postgres:17-alpine"
-	postgresPort   = "5432"
-	defaultConnStr = "postgres://postgres:postgres@localhost:" + postgresPort + "/entlite?sslmode=disable"
-)
+// Credentials match docker-compose.yml, see `make db`
+const connStr = "postgres://postgres:postgres@localhost:5432/entlite?sslmode=disable"
 
 func main() {
-	connStr := os.Getenv("DATABASE_URL")
-	if connStr == "" {
-		// No external database configured, so run a throwaway one in Docker.
-		if err := startPostgresContainer(); err != nil {
-			log.Fatalf("Failed to start postgres container: %v", err)
-		}
-		connStr = defaultConnStr
-	}
-
 	database, err := sql.Open("pgx", connStr)
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
@@ -81,41 +67,6 @@ func main() {
 	}
 }
 
-// startPostgresContainer reuses the example container or creates a new one
-func startPostgresContainer() error {
-	if _, err := exec.LookPath("docker"); err != nil {
-		return fmt.Errorf("docker not found in PATH; start postgres yourself and set DATABASE_URL: %w", err)
-	}
-
-	state, err := exec.Command("docker", "inspect", "-f", "{{.State.Running}}", containerName).Output()
-	switch {
-	case err == nil && strings.TrimSpace(string(state)) == "true":
-		log.Printf("Reusing running container %q", containerName)
-		return nil
-	case err == nil:
-		log.Printf("Starting existing container %q", containerName)
-		if out, err := exec.Command("docker", "start", containerName).CombinedOutput(); err != nil {
-			return fmt.Errorf("docker start: %w: %s", err, out)
-		}
-		return nil
-	}
-
-	log.Printf("Creating container %q from %s", containerName, postgresImage)
-	out, err := exec.Command("docker", "run", "-d",
-		"--name", containerName,
-		"-p", postgresPort+":5432",
-		"-e", "POSTGRES_USER=postgres",
-		"-e", "POSTGRES_PASSWORD=postgres",
-		"-e", "POSTGRES_DB=entlite",
-		postgresImage,
-	).CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("docker run: %w: %s", err, out)
-	}
-
-	return nil
-}
-
 // waitForDatabase polls until postgres finishes its startup, which takes a few seconds
 func waitForDatabase(db *sql.DB) error {
 	deadline := time.Now().Add(60 * time.Second)
@@ -129,7 +80,7 @@ func waitForDatabase(db *sql.DB) error {
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	return fmt.Errorf("database not reachable after 60s: %w", lastErr)
+	return fmt.Errorf("database not reachable after 60s, is it running? (`make db`): %w", lastErr)
 }
 
 func initSchema(db *sql.DB) error {

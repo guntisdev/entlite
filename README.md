@@ -56,7 +56,7 @@ func (User) Indexes() []entlite.Index {
 	}
 }
 ```
-* Setup docker to run examples with postgres and mysql
+* Setup docker to run mysql example (postgres example is done)
 * Reorganize examples - under one example are all sql dialects
 * Figure out migration
 
@@ -87,7 +87,21 @@ go run github.com/guntisdev/entlite/cmd/entlite new --dialect sqlite User Post
 ```
 
 ## Launch example
-Go to one of examples and generate types
+Each example has a Makefile that generates types, bundles the JavaScript and starts the web server
+```bash
+cd examples/01-sqlite-entity
+make run
+```
+Example 02 runs postgres from `docker-compose.yml`, `make run` starts it and waits until it is ready.
+Use `make down` to stop it and drop its data
+```bash
+cd examples/02-postgres-entity
+make run
+```
+Individual steps are available as `make gen`, `make web` and (for 02) `make db`.
+`make clean` removes node_modules, the bundle and the database
+
+Doing it by hand, generate types
 ```bash
 cd examples/01-sqlite-entity
 cd ent/

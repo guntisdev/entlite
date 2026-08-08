@@ -102,6 +102,9 @@ type txBeginner interface {
 }
 `
 
+// TODO: the IsNil call below panics for every non-nilable T.
+// CreateUser hits this for is_active, login_count and rating, which
+// makes Create panic in examples 01 and 02. Guard with a Kind() switch before IsNil.
 const optionalWithFallback = `
 // OptionalWithFallback chooses fallback if optional value is nil
 func OptionalWithFallback[T any](val *T, fallback T) T {
