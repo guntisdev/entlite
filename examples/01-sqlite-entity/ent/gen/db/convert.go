@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"reflect"
 	"time"
@@ -37,6 +38,13 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 		Time:  t.AsTime(),
 		Valid: true,
 	}
+}
+
+// txBeginner is satisfied by *sql.DB and *sql.Conn, but deliberately not by
+// *sql.Tx: a Queries already bound to a transaction runs inside the caller's
+// one rather than opening a nested one.
+type txBeginner interface {
+	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 }
 
 // OptionalWithFallback chooses fallback if optional value is nil

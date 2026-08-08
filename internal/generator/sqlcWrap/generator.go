@@ -379,14 +379,24 @@ func (ctx *generationContext) processDBGenDecl(sb *strings.Builder, decl *ast.Ge
 
 // processDBFunc processes function declarations for db.go
 func (ctx *generationContext) processDBFunc(sb *strings.Builder, funcDecl *ast.FuncDecl) {
-	if funcDecl.Name.IsExported() && funcDecl.Recv == nil {
-		// Special handling for New function to return wrapped Queries type
-		if funcDecl.Name.Name == "New" {
-			sb.WriteString(fmt.Sprintf("func %s(db DBTX) *Queries { return (*Queries)(%s.%s(db)) }\n",
-				funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
-		} else {
-			sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
+	if !funcDecl.Name.IsExported() {
+		return
+	}
+
+	if funcDecl.Recv != nil {
+		if funcDecl.Name.Name == "WithTx" {
+			sb.WriteString(fmt.Sprintf("func (q *Queries) WithTx(tx *sql.Tx) *Queries { return (*Queries)((*%s.Queries)(q).WithTx(tx)) }\n",
+				ctx.inputPackageName))
 		}
+		return
+	}
+
+	// Special handling for New function to return wrapped Queries type
+	if funcDecl.Name.Name == "New" {
+		sb.WriteString(fmt.Sprintf("func %s(db DBTX) *Queries { return (*Queries)(%s.%s(db)) }\n",
+			funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
+	} else {
+		sb.WriteString(fmt.Sprintf("var %s = %s.%s\n", funcDecl.Name.Name, ctx.inputPackageName, funcDecl.Name.Name))
 	}
 }
 
