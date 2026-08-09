@@ -1,0 +1,11 @@
+package db
+
+import (
+	"database/sql"
+	internal "github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/gen/db/internal"
+)
+
+type DBTX = internal.DBTX
+func New(db DBTX) *Queries { return (*Queries)(internal.New(db)) }
+type Queries internal.Queries
+func (q *Queries) WithTx(tx *sql.Tx) *Queries { return (*Queries)((*internal.Queries)(q).WithTx(tx)) }
