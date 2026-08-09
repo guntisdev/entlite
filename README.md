@@ -89,21 +89,21 @@ go run github.com/guntisdev/entlite/cmd/entlite new --dialect sqlite User Post
 ## Launch example
 Each example has a Makefile that generates types, bundles the JavaScript and starts the web server
 ```bash
-cd examples/01-sqlite-entity
+cd examples/01-basic-entity/sqlite
 make run
 ```
-Example 02 runs postgres from `docker-compose.yml`, `make run` starts it and waits until it is ready.
-Use `make down` to stop it and drop its data
+The `postgres` and `mysql` variants run their database from `docker-compose.yml`, `make run` starts it
+and waits until it is ready. Use `make down` to stop it and drop its data
 ```bash
-cd examples/02-postgres-entity
+cd examples/01-basic-entity/postgres
 make run
 ```
-Individual steps are available as `make gen`, `make web` and (for 02) `make db`.
+Individual steps are available as `make gen`, `make web` and (for postgres/mysql) `make db`.
 `make clean` removes node_modules, the bundle and the database
 
 Doing it by hand, generate types
 ```bash
-cd examples/01-sqlite-entity
+cd examples/01-basic-entity/sqlite
 cd ent/
 go generate
 ```

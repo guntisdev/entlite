@@ -55,26 +55,50 @@ func TestMain(m *testing.M) {
 }
 
 func TestExamples(t *testing.T) {
-	// Auto-discover all example directories
-	entries, err := os.ReadDir(".")
+	// Auto-discover all example directories, at any depth, so that related
+	// examples can be grouped in a parent folder (01-basic-entity/sqlite, ...)
+	exampleDirs, err := findExamples(".")
 	if err != nil {
 		t.Fatalf("Failed to read examples directory: %v", err)
 	}
 
-	for _, entry := range entries {
-		if !entry.IsDir() {
-			continue
-		}
-
-		schemaDir := filepath.Join(entry.Name(), "ent", "schema")
-		if _, err := os.Stat(schemaDir); err != nil {
-			continue
-		}
-
-		t.Run(entry.Name(), func(t *testing.T) {
-			testExample(t, entry.Name())
+	for _, exampleDir := range exampleDirs {
+		t.Run(exampleDir, func(t *testing.T) {
+			testExample(t, exampleDir)
 		})
 	}
+}
+
+// findExamples returns every directory below root holding an ent/schema, as a
+// path relative to root. An example is never searched for nested examples.
+func findExamples(root string) ([]string, error) {
+	var found []string
+
+	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() {
+			return nil
+		}
+		if name := d.Name(); name == "node_modules" || strings.HasPrefix(name, ".") && path != root {
+			return filepath.SkipDir
+		}
+
+		if _, err := os.Stat(filepath.Join(path, "ent", "schema")); err != nil {
+			return nil
+		}
+
+		relPath, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		found = append(found, filepath.ToSlash(relPath))
+
+		return filepath.SkipDir
+	})
+
+	return found, err
 }
 
 func testExample(t *testing.T, exampleDir string) {
@@ -87,8 +111,8 @@ func testExample(t *testing.T, exampleDir string) {
 	tmpDir := t.TempDir()
 
 	// Copy the entire example to temp directory
-	srcDir := filepath.Join(".", exampleDir)
-	dstDir := filepath.Join(tmpDir, exampleDir)
+	srcDir := filepath.Join(".", filepath.FromSlash(exampleDir))
+	dstDir := filepath.Join(tmpDir, filepath.FromSlash(exampleDir))
 
 	if err := copyDir(srcDir, dstDir); err != nil {
 		t.Fatalf("Failed to copy example to temp dir: %v", err)
