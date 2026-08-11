@@ -54,9 +54,23 @@ and the `permissions.Virtual` `latest_value` field is filled from the joined rea
 [`main.go`](main.go) mounts all three on one Connect mux with both validation
 layers (protovalidate + the generated `Validate()` interceptor).
 
+## Web
+
+[`web/src/main.ts`](web/src/main.ts) drives every RPC from the browser through
+Connect-Web, using the TypeScript types in `ent/gen/ts`. It builds three clients
+the same way — two from `schema_pb.ts` (DSL) and one from `custom_pb.ts`
+(hand-written) — which is the TS-side proof of the same point the server makes:
+the custom service returns the very same `Sensor` message, `latest_value` and all.
+
+The page also has two buttons that deliberately fail (`kind: "plasma"`,
+`quality: 150`) to show the generated `Validate()` interceptor rejecting a request
+before it reaches the database.
+
 ```bash
-make run   # generates, then serves on :8080
+make run   # generates, bundles the frontend, then serves on :8080
 ```
+
+Then open http://localhost:8080. Or call it directly:
 
 ```bash
 curl -X POST localhost:8080/entlite.SensorService/Create \
@@ -66,9 +80,6 @@ curl -X POST localhost:8080/entlite.SensorService/Create \
 curl -X POST localhost:8080/entlite.SensorAnalyticsService/ListWithLatestReading \
   -H "Content-Type: application/json" -d '{"limit":10,"offset":0}'
 ```
-
-Unlike `01-basic-entity`, this example has no web UI — it is exercised over HTTP
-directly.
 
 Known gap: `ReadingService.FilterBySensorIdRecordedAtFlagged` fails at runtime.
 The DSL's `filter.Range("recorded_at")` emits `recorded_at BETWEEN @min AND @max`,

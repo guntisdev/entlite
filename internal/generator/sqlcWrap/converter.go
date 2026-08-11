@@ -102,9 +102,6 @@ type txBeginner interface {
 }
 `
 
-// TODO: the IsNil call below panics for every non-nilable T.
-// CreateUser hits this for is_active, login_count and rating, which
-// makes Create panic in examples 01 and 02. Guard with a Kind() switch before IsNil.
 const optionalWithFallback = `
 // OptionalWithFallback chooses fallback if optional value is nil
 func OptionalWithFallback[T any](val *T, fallback T) T {
@@ -112,9 +109,13 @@ func OptionalWithFallback[T any](val *T, fallback T) T {
 		return fallback
 	}
 
-	// For nil-able types like []byte, check if the dereferenced value is nil
-	if reflect.ValueOf(any(*val)).IsNil() {
-		return fallback
+	// For nil-able types like []byte, check if the dereferenced value is nil.
+	// IsNil panics on every other kind, so ask for the kind first
+	switch value := reflect.ValueOf(any(*val)); value.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
+		if value.IsNil() {
+			return fallback
+		}
 	}
 
 	return *val

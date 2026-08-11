@@ -1,10 +1,13 @@
-.PHONY: run gen clean
+.PHONY: run gen web clean
 
-run: gen
+run: gen web
 	go run main.go
 
 gen:
 	cd ent && go generate
 
+web:
+	cd web && npm install && npm run build
+
 clean:
-	rm -f server/db.db
+	rm -rf web/node_modules web/dist/bundle.js web/dist/bundle.js.map server/db.db

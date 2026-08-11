@@ -32,6 +32,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// Every service is mounted the same way, whether it came from the DSL
+	// (SensorService, ReadingService) or from hand-written custom.proto
+	// (SensorAnalyticsService)
 	interceptors := connect.WithInterceptors(
 		validate.NewInterceptor(),
 		pb.NewValidateInterceptor(),
@@ -60,15 +63,28 @@ func main() {
 		fmt.Fprintf(w, "OK")
 	})
 
+	fs := http.FileServer(http.Dir("./web/dist"))
+	mux.Handle("/", noStore(fs))
+
 	port := "8080"
 	addr := fmt.Sprintf(":%s", port)
 	log.Printf("Starting gRPC server on %s", addr)
 	log.Printf("Services: %s %s %s", sensorPath, readingPath, analyticsPath)
+	log.Printf("Web UI available at http://localhost%s", addr)
 	log.Printf("Health check available at http://localhost%s/health", addr)
 
 	if err := http.ListenAndServe(addr, h2c.NewHandler(mux, &http2.Server{})); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
+}
+
+// noStore keeps the browser from caching the frontend, so switching between the
+// examples on this port always serves the current one rather than a stale copy
+func noStore(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		h.ServeHTTP(w, r)
+	})
 }
 
 func initSchema(db *sql.DB) error {
