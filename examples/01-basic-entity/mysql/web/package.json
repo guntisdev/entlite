@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/main.ts --bundle --outfile=dist/bundle.js --format=esm --sourcemap",
-    "watch": "esbuild src/main.ts --bundle --outfile=dist/bundle.js --format=esm --sourcemap --watch"
+    "build": "NODE_PATH=node_modules esbuild src/main.ts --bundle --outfile=dist/bundle.js --format=esm --sourcemap",
+    "watch": "NODE_PATH=node_modules esbuild src/main.ts --bundle --outfile=dist/bundle.js --format=esm --sourcemap --watch"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.11.0",
