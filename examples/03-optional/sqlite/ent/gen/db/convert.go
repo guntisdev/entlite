@@ -53,9 +53,13 @@ func OptionalWithFallback[T any](val *T, fallback T) T {
 		return fallback
 	}
 
-	// For nil-able types like []byte, check if the dereferenced value is nil
-	if reflect.ValueOf(any(*val)).IsNil() {
-		return fallback
+	// For nil-able types like []byte, check if the dereferenced value is nil.
+	// IsNil panics on every other kind, so ask for the kind first
+	switch value := reflect.ValueOf(any(*val)); value.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
+		if value.IsNil() {
+			return fallback
+		}
 	}
 
 	return *val

@@ -3,7 +3,7 @@ package schema
 import (
 	"time"
 
-	"github.com/guntisdev/entlite/examples/05-sqlite-optional/ent/logic"
+	"github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/logic"
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/filter"
@@ -39,7 +39,7 @@ func (Article) Fields() []entlite.Field {
 		field.String("author"),
 
 		// --- optional fields: one per optional-capable type ---
-		field.String("subtitle").Optional(),     // optional string
+		field.String("subtitle").Optional(),      // optional string
 		field.Int("reading_minutes").Optional(),  // optional int32 - estimated read time
 		field.Int64("last_viewed_ms").Optional(), // optional int64 - epoch millis, null until first view
 		field.Float("rating").Optional(),         // optional float - null until first rated

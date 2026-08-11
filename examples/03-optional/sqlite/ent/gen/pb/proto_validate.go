@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"connectrpc.com/connect"
-	"github.com/guntisdev/entlite/examples/05-sqlite-optional/ent/logic"
+	"github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/logic"
 )
 
 func (r *CreateArticleRequest) Validate() error {

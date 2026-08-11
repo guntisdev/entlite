@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/guntisdev/entlite/examples/05-sqlite-optional/ent/logic"
+	"github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/logic"
 	"time"
 	internal "github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/gen/db/internal"
 )
