@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { UserService } from "./gen/schema_pb.js";
-import type { CreateBulkUserItem, CreateBulkUserRequest, CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "./gen/schema_pb.js";
+import { UserService } from "../../ent/gen/ts/schema_pb.js";
+import type { CreateBulkUserItem, CreateBulkUserRequest, CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "../../ent/gen/ts/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
