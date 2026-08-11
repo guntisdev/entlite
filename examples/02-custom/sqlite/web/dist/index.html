@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
+  <title>Custom proto and sql sqlite</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+      margin-bottom: 0.75rem;
+    }
+
+    h2 small {
+      display: block;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #9ca3af;
+      margin-top: 0.15rem;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid #e5e5e5;
+    }
+
+    .section.custom {
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 6px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button {
+      min-width: 80px;
+      height: 40px;
+      padding: 0 1.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      background: #3b82f6;
+      color: white;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .button-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem;
+      background: rgba(0,0,0,0.03);
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.1);
+      height: 40px;
+    }
+
+    .button-group label {
+      font-size: 0.8rem;
+      color: #6b7280;
+      padding-left: 0.5rem;
+    }
+
+    .button-group input[type="number"],
+    .button-group input[type="text"] {
+      height: 30px;
+      padding: 0 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .button-group input[type="number"] {
+      width: 55px;
+    }
+
+    .button-group input[type="text"] {
+      width: 110px;
+    }
+
+    .button-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Hide number input spinner arrows */
+    .button-group input[type="number"]::-webkit-inner-spin-button,
+    .button-group input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .create { background: #10b981; }
+    .read { background: #3b82f6; }
+    .list { background: #8b5cf6; }
+    .update { background: #f59e0b; }
+    .delete { background: #ef4444; }
+    .invalid { background: #6366f1; }
+    .custom-btn { background: #d97706; }
+
+    #clearBtn { background: #6b7280; }
+
+    #output {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 4px;
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    #output div {
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #334155;
+      word-break: break-all;
+    }
+
+    #output div:last-child {
+      border-bottom: none;
+    }
+
+    .info-container {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .info {
+      flex: 1;
+      padding: 1rem;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Custom proto and sql sqlite</h1>
+    <p class="subtitle">Generated CRUD services next to a hand-written service, from one set of generated types</p>
+
+    <div class="section">
+      <h2>Sensor
+        <small>SensorService — generated from ent/schema/sensor.go</small>
+      </h2>
+      <div class="controls">
+        <button id="createSensorBtn" class="create">Create</button>
+        <button id="createInvalidSensorBtn" class="invalid">Create Invalid Kind</button>
+        <div class="button-group">
+          <input type="number" id="getSensorId" placeholder="ID" value="1">
+          <button id="getSensorBtn" class="read">Get</button>
+        </div>
+        <div class="button-group">
+          <input type="text" id="getSensorCode" placeholder="code" value="TEMP-A1">
+          <button id="getSensorCodeBtn" class="read">Get By Code</button>
+        </div>
+        <div class="button-group">
+          <input type="number" id="updateSensorId" placeholder="ID" value="1">
+          <button id="updateSensorBtn" class="update">Update</button>
+        </div>
+        <div class="button-group">
+          <input type="number" id="deleteSensorId" placeholder="ID" value="1">
+          <button id="deleteSensorBtn" class="delete">Delete</button>
+        </div>
+        <div class="button-group">
+          <input type="text" id="filterLabel" placeholder="label LIKE" value="%probe%">
+          <input type="text" id="filterKind" placeholder="kind" value="temperature">
+          <label><input type="checkbox" id="filterActive" checked> active</label>
+          <button id="filterSensorBtn" class="list">Filter</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Reading
+        <small>ReadingService — generated from ent/schema/reading.go</small>
+      </h2>
+      <div class="controls">
+        <div class="button-group">
+          <label>sensor</label>
+          <input type="number" id="readingSensorId" placeholder="ID" value="1">
+          <button id="createReadingBtn" class="create">Create</button>
+          <button id="listReadingBtn" class="list">List</button>
+          <button id="filterReadingBtn" class="list">Filter Range</button>
+        </div>
+        <button id="createInvalidReadingBtn" class="invalid">Create Invalid Quality</button>
+        <div class="button-group">
+          <input type="number" id="getReadingId" placeholder="ID" value="1">
+          <button id="getReadingBtn" class="read">Get</button>
+        </div>
+        <div class="button-group">
+          <input type="number" id="updateReadingId" placeholder="ID" value="1">
+          <button id="updateReadingBtn" class="update">Update</button>
+        </div>
+        <div class="button-group">
+          <input type="number" id="deleteReadingId" placeholder="ID" value="1">
+          <button id="deleteReadingBtn" class="delete">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section custom">
+      <h2>Sensor Analytics
+        <small>SensorAnalyticsService — hand-written custom.proto over custom.sql, no DSL involved</small>
+      </h2>
+      <div class="controls">
+        <button id="latestBtn" class="custom-btn">List With Latest Reading</button>
+        <div class="button-group">
+          <label>sensor</label>
+          <input type="number" id="statsSensorId" placeholder="ID" value="1">
+          <button id="statsBtn" class="custom-btn">Reading Stats</button>
+        </div>
+        <div class="button-group">
+          <label>older than</label>
+          <input type="number" id="pruneDays" placeholder="days" value="30">
+          <label>days</label>
+          <button id="pruneBtn" class="delete">Prune</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="output"></div>
+
+    <div class="info-container">
+      <div class="info">
+        <strong>What's happening:</strong><br>
+        Every button calls the Go server through Connect-Web using the TypeScript
+        types in <code>ent/gen/ts</code>. The yellow section is the hand-written
+        service: its client comes from <code>custom_pb.ts</code>, yet it returns the
+        same <code>Sensor</code> message as the generated CRUD service — including the
+        <code>permissions.Virtual</code> <code>latest_value</code> field, which has no
+        column and is filled from the custom JOIN.
+      </div>
+      <button id="clearBtn">Clear</button>
+    </div>
+  </div>
+
+  <script type="module" src="bundle.js"></script>
+</body>
+</html>
