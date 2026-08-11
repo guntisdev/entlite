@@ -1,0 +1,220 @@
+package db
+
+import (
+	"context"
+	"fmt"
+	"github.com/guntisdev/entlite/examples/02-custom/sqlite/ent/logic"
+	"time"
+	internal "github.com/guntisdev/entlite/examples/02-custom/sqlite/ent/gen/db/internal"
+)
+
+type CreateReadingParams struct {
+	SensorID int32 `json:"sensor_id"`
+	Value float64 `json:"value"`
+	Quality int32 `json:"quality"`
+	Flagged *bool `json:"flagged"`
+	RecordedAt time.Time `json:"recorded_at"`
+}
+
+func (q *Queries) CreateReading(ctx context.Context, arg CreateReadingParams) (int32, error) {
+	if !logic.IsPercentage(arg.Quality) {
+		return 0, fmt.Errorf("Failed create: incorrect value for 'Reading' in field 'quality', validated by 'logic.IsPercentage'")
+	}
+	internalArg := internal.CreateReadingParams{
+		SensorID: IntConvert[int32, int64](arg.SensorID),
+		Value: arg.Value,
+		Quality: IntConvert[int32, int64](arg.Quality),
+		Flagged: SQLiteBoolToInt(OptionalWithFallback(arg.Flagged, false)),
+		RecordedAt: arg.RecordedAt,
+		CreatedAt: time.Now(),
+	}
+	id, err := (*internal.Queries)(q).CreateReading(ctx, internalArg)
+	return IntConvert[int64, int32](id), err
+}
+
+type CreateSensorParams struct {
+	Code string `json:"code"`
+	Label string `json:"label"`
+	Kind string `json:"kind"`
+	Unit string `json:"unit"`
+	Location *string `json:"location"`
+	Active *bool `json:"active"`
+	Firmware *string `json:"firmware"`
+	SampleRateMs *int32 `json:"sample_rate_ms"`
+	InstalledAt time.Time `json:"installed_at"`
+}
+
+func (q *Queries) CreateSensor(ctx context.Context, arg CreateSensorParams) (int32, error) {
+	if !logic.IsKnownSensorKind(arg.Kind) {
+		return 0, fmt.Errorf("Failed create: incorrect value for 'Sensor' in field 'kind', validated by 'logic.IsKnownSensorKind'")
+	}
+	internalArg := internal.CreateSensorParams{
+		Code: arg.Code,
+		Label: arg.Label,
+		Kind: arg.Kind,
+		Unit: arg.Unit,
+		Location: arg.Location,
+		Active: SQLiteBoolToInt(OptionalWithFallback(arg.Active, true)),
+		Firmware: OptionalWithFallback(arg.Firmware, "1.0.0"),
+		SampleRateMs: IntConvert[int32, int64](OptionalWithFallback(arg.SampleRateMs, 1000)),
+		InstalledAt: arg.InstalledAt,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	id, err := (*internal.Queries)(q).CreateSensor(ctx, internalArg)
+	return IntConvert[int64, int32](id), err
+}
+
+func (q *Queries) DeleteReading(ctx context.Context, id int32) error {
+	return (*internal.Queries)(q).DeleteReading(ctx, IntConvert[int32, int64](id))
+}
+
+func (q *Queries) DeleteSensor(ctx context.Context, id int32) error {
+	return (*internal.Queries)(q).DeleteSensor(ctx, IntConvert[int32, int64](id))
+}
+
+func (q *Queries) GetReadingByID(ctx context.Context, id int32) (*Reading, error) {
+	dbResult, err := (*internal.Queries)(q).GetReadingByID(ctx, IntConvert[int32, int64](id))
+	if err != nil {
+		return nil, err
+	}
+	return ReadingFromSQL(&dbResult), nil
+}
+
+func (q *Queries) GetSensorByCode(ctx context.Context, code string) (*Sensor, error) {
+	dbResult, err := (*internal.Queries)(q).GetSensorByCode(ctx, code)
+	if err != nil {
+		return nil, err
+	}
+	return SensorFromSQL(&dbResult), nil
+}
+
+func (q *Queries) GetSensorByID(ctx context.Context, id int32) (*Sensor, error) {
+	dbResult, err := (*internal.Queries)(q).GetSensorByID(ctx, IntConvert[int32, int64](id))
+	if err != nil {
+		return nil, err
+	}
+	return SensorFromSQL(&dbResult), nil
+}
+
+func (q *Queries) ListReadingBySensorId(ctx context.Context, sensorID int32) ([]*Reading, error) {
+	dbResults, err := (*internal.Queries)(q).ListReadingBySensorId(ctx, IntConvert[int32, int64](sensorID))
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*Reading, len(dbResults))
+	for i := range dbResults {
+		result[i] = ReadingFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
+type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
+	SensorID int32 `json:"sensor_id"`
+	Flagged bool `json:"flagged"`
+}
+
+func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]*Reading, error) {
+	internalArg := internal.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
+		SensorID: IntConvert[int32, int64](arg.SensorID),
+		Flagged: SQLiteBoolToInt(arg.Flagged),
+	}
+	dbResults, err := (*internal.Queries)(q).ListReadingFilterBySensorIdRecordedAtFlagged(ctx, internalArg)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*Reading, len(dbResults))
+	for i := range dbResults {
+		result[i] = ReadingFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
+type ListSensorFilterByLabelKindActiveParams struct {
+	Label string `json:"label"`
+	Kind string `json:"kind"`
+	Active bool `json:"active"`
+}
+
+func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg ListSensorFilterByLabelKindActiveParams) ([]*Sensor, error) {
+	internalArg := internal.ListSensorFilterByLabelKindActiveParams{
+		Label: arg.Label,
+		Kind: arg.Kind,
+		Active: SQLiteBoolToInt(arg.Active),
+	}
+	dbResults, err := (*internal.Queries)(q).ListSensorFilterByLabelKindActive(ctx, internalArg)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*Sensor, len(dbResults))
+	for i := range dbResults {
+		result[i] = SensorFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
+type UpdateReadingParams struct {
+	SensorID int32 `json:"sensor_id"`
+	Value float64 `json:"value"`
+	Quality int32 `json:"quality"`
+	Flagged *bool `json:"flagged"`
+	RecordedAt time.Time `json:"recorded_at"`
+	ID int32 `json:"ID"`
+}
+
+func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (*Reading, error) {
+	if !logic.IsPercentage(arg.Quality) {
+		return nil, fmt.Errorf("Failed update: incorrect value for 'Reading' in field 'quality', validated by 'logic.IsPercentage'")
+	}
+	internalArg := internal.UpdateReadingParams{
+		ID: IntConvert[int32, int64](arg.ID),
+		SensorID: IntConvert[int32, int64](arg.SensorID),
+		Value: arg.Value,
+		Quality: IntConvert[int32, int64](arg.Quality),
+		Flagged: SQLiteBoolPtrToInt64Ptr(arg.Flagged),
+		RecordedAt: arg.RecordedAt,
+	}
+
+	dbReading, err := (*internal.Queries)(q).UpdateReading(ctx, internalArg)
+	if err != nil {
+		return nil, err
+	}
+	return ReadingFromSQL(&dbReading), nil
+}
+
+type UpdateSensorParams struct {
+	Code string `json:"code"`
+	Label string `json:"label"`
+	Kind string `json:"kind"`
+	Unit string `json:"unit"`
+	Location *string `json:"location"`
+	Active *bool `json:"active"`
+	Firmware *string `json:"firmware"`
+	SampleRateMs *int32 `json:"sample_rate_ms"`
+	ID int32 `json:"ID"`
+}
+
+func (q *Queries) UpdateSensor(ctx context.Context, arg UpdateSensorParams) (*Sensor, error) {
+	if !logic.IsKnownSensorKind(arg.Kind) {
+		return nil, fmt.Errorf("Failed update: incorrect value for 'Sensor' in field 'kind', validated by 'logic.IsKnownSensorKind'")
+	}
+	internalArg := internal.UpdateSensorParams{
+		ID: IntConvert[int32, int64](arg.ID),
+		Code: arg.Code,
+		Label: arg.Label,
+		Kind: arg.Kind,
+		Unit: arg.Unit,
+		Location: arg.Location,
+		Active: SQLiteBoolPtrToInt64Ptr(arg.Active),
+		Firmware: arg.Firmware,
+		SampleRateMs: IntPtrConvert[int32, int64](arg.SampleRateMs),
+		UpdatedAt: time.Now(),
+	}
+
+	dbSensor, err := (*internal.Queries)(q).UpdateSensor(ctx, internalArg)
+	if err != nil {
+		return nil, err
+	}
+	return SensorFromSQL(&dbSensor), nil
+}
+
