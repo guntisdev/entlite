@@ -11,8 +11,7 @@ import type {
     UpdateReadingRequest,
     UpdateSensorRequest,
 } from "../../ent/gen/ts/schema_pb.js";
-// The custom service lives in its own hand-written proto file, but it is the
-// same package and the same generated client machinery
+// from custom proto
 import { SensorAnalyticsService } from "../../ent/gen/ts/custom_pb.js";
 import type {
     GetSensorReadingStatsRequest,

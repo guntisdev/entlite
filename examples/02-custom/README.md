@@ -1,4 +1,4 @@
-# 02-custom / sqlite
+# 02-custom 
 
 Demonstrates that a developer can add functionality **outside** the entlite DSL
 and still have it compile into typed Go/TS alongside the generated code.
@@ -14,9 +14,6 @@ Defined in [`ent/schema`](ent/schema):
 - **Reading** — a measurement emitted by a sensor (`sensor_id`, `value`,
   `quality`, `flagged`, `recorded_at`).
 
-From these, entlite generates the contract:
-`contract/proto/schema.proto`, `contract/sqlc/schema.sql`, `contract/sqlc/queries.sql`.
-
 ## Custom additions (hand-written)
 
 These files live next to the generated ones. entlite only ever writes the fixed
@@ -31,17 +28,6 @@ filenames above, so these survive regeneration:
   hand-written `SensorAnalyticsService` in the same `entlite` package that
   imports `schema.proto` and reuses the generated `Sensor` message.
 
-Wiring:
-
-- `sqlc.yaml` lists both `queries.sql` and `custom.sql`, so `sqlc generate`
-  compiles them together; `entlite sqlc-wrap` then wraps every generated query
-  (custom included) into typed helpers.
-- `buf.yaml` compiles the whole `contract/proto` directory, so `custom.proto`
-  builds alongside `schema.proto` into `gen/pb` and `gen/ts`.
-
-The goal: prove the generated and custom layers compile into one coherent set of
-types, so extending beyond the DSL requires no escape hatch — just drop files in.
-
 ## Server
 
 [`server/server.go`](server/server.go) implements all three services against the
@@ -51,34 +37,10 @@ is where both halves meet — the custom `LEFT JOIN` returns an embedded sensor 
 the generated converter turns it into the same `pb.Sensor` the CRUD service returns,
 and the `permissions.Virtual` `latest_value` field is filled from the joined reading.
 
-[`main.go`](main.go) mounts all three on one Connect mux with both validation
-layers (protovalidate + the generated `Validate()` interceptor).
-
-## Web
-
-[`web/src/main.ts`](web/src/main.ts) drives every RPC from the browser through
-Connect-Web, using the TypeScript types in `ent/gen/ts`. It builds three clients
-the same way — two from `schema_pb.ts` (DSL) and one from `custom_pb.ts`
-(hand-written) — which is the TS-side proof of the same point the server makes:
-the custom service returns the very same `Sensor` message, `latest_value` and all.
-
-The page also has two buttons that deliberately fail (`kind: "plasma"`,
-`quality: 150`) to show the generated `Validate()` interceptor rejecting a request
-before it reaches the database.
+## Run
 
 ```bash
 make run   # generates, bundles the frontend, then serves on :8080
-```
-
-Then open http://localhost:8080. Or call it directly:
-
-```bash
-curl -X POST localhost:8080/entlite.SensorService/Create \
-  -H "Content-Type: application/json" \
-  -d '{"code":"TEMP-A1","label":"Lab temp","kind":"temperature","unit":"celsius","installed_at":"2026-01-01T00:00:00Z"}'
-
-curl -X POST localhost:8080/entlite.SensorAnalyticsService/ListWithLatestReading \
-  -H "Content-Type: application/json" -d '{"limit":10,"offset":0}'
 ```
 
 Known gap: `ReadingService.FilterBySensorIdRecordedAtFlagged` fails at runtime.

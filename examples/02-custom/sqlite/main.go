@@ -32,9 +32,6 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Every service is mounted the same way, whether it came from the DSL
-	// (SensorService, ReadingService) or from hand-written custom.proto
-	// (SensorAnalyticsService)
 	interceptors := connect.WithInterceptors(
 		validate.NewInterceptor(),
 		pb.NewValidateInterceptor(),
@@ -78,8 +75,6 @@ func main() {
 	}
 }
 
-// noStore keeps the browser from caching the frontend, so switching between the
-// examples on this port always serves the current one rather than a stale copy
 func noStore(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
