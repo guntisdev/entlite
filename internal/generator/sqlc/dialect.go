@@ -102,6 +102,8 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 		return "TIMESTAMPTZ"
 	case schema.FieldTypeByte:
 		return "BYTEA"
+	case schema.FieldTypeJSON:
+		return "JSONB"
 	default:
 		return "TEXT"
 	}
@@ -123,6 +125,8 @@ func (g *Generator) getSQLiteType(fieldType schema.FieldType) string {
 		return "DATETIME"
 	case schema.FieldTypeByte:
 		return "BLOB"
+	case schema.FieldTypeJSON:
+		return "TEXT" // sqlite has no json type, json1 functions work on TEXT
 	default:
 		return "TEXT"
 	}
@@ -146,6 +150,8 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 		return "TIMESTAMP"
 	case schema.FieldTypeByte:
 		return "BLOB"
+	case schema.FieldTypeJSON:
+		return "JSON"
 	default:
 		return "TEXT"
 	}

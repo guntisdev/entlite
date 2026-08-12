@@ -143,6 +143,10 @@ func validateIndexFields(entity schema.Entity) error {
 			if entityFieldIsVirtual(entity, column.Name) {
 				return fmt.Errorf("entity %q index references virtual field %q, which has no database column", entity.Name, column.Name)
 			}
+			// TODO support indexing json fields (postgres needs GIN, mysql needs a generated column)
+			if entityFieldHasType(entity, column.Name, schema.FieldTypeJSON) {
+				return fmt.Errorf("entity %q index references json field %q, indexing json fields is not supported", entity.Name, column.Name)
+			}
 		}
 	}
 
