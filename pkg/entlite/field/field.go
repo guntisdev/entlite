@@ -1,6 +1,7 @@
 package field
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
@@ -654,6 +655,113 @@ func (f *ByteField) DefaultFunc(fn func() []byte) ByteFieldBuilder {
 }
 
 func (f *ByteField) Validate(fn func([]byte) bool) ByteFieldBuilder {
+	f.validate = fn
+	return f
+}
+
+// --------------------------------- json ---------------------------------
+type JSONFieldBuilder interface {
+	Optional() JSONFieldBuilder
+	Immutable() JSONFieldBuilder
+	ProtoField(int) JSONFieldBuilder
+	Comment(string) JSONFieldBuilder
+	Permissions(permissions.Permission) JSONFieldBuilder
+	// Default takes the raw JSON text of the document, e.g. `{}` or `{"theme":"dark"}`.
+	Default(string) JSONFieldBuilder
+	DefaultFunc(func() json.RawMessage) JSONFieldBuilder
+	Validate(func(json.RawMessage) bool) JSONFieldBuilder
+
+	Field()
+}
+
+type JSONField struct {
+	name        string
+	optional    bool
+	immutable   bool
+	protoField  *int
+	comment     *string
+	permissions permissions.Permission
+	defaultVal  *string
+	defaultFunc func() json.RawMessage
+	validate    func(json.RawMessage) bool
+}
+
+func (*JSONField) Field() {}
+
+func JSON(name string) JSONFieldBuilder {
+	return &JSONField{name: name}
+}
+
+func (f *JSONField) GetOptional() bool {
+	return f.optional
+}
+
+func (f *JSONField) GetImmutable() bool {
+	return f.immutable
+}
+
+func (f *JSONField) GetProtoField() *int {
+	return f.protoField
+}
+
+func (f *JSONField) GetComment() *string {
+	return f.comment
+}
+
+func (f *JSONField) GetPermissions() permissions.Permission {
+	return f.permissions
+}
+
+func (f *JSONField) GetDefault() *string {
+	return f.defaultVal
+}
+
+func (f *JSONField) GetDefaultFunc() func() json.RawMessage {
+	return f.defaultFunc
+}
+
+func (f *JSONField) GetValidate() func(json.RawMessage) bool {
+	return f.validate
+}
+
+func (f *JSONField) Optional() JSONFieldBuilder {
+	f.optional = true
+	return f
+}
+
+func (f *JSONField) Immutable() JSONFieldBuilder {
+	f.immutable = true
+	return f
+}
+
+func (f *JSONField) ProtoField(num int) JSONFieldBuilder {
+	f.protoField = &num
+	return f
+}
+
+func (f *JSONField) Comment(text string) JSONFieldBuilder {
+	f.comment = &text
+	return f
+}
+
+func (f *JSONField) Permissions(permission permissions.Permission) JSONFieldBuilder {
+	f.permissions = permission
+	return f
+}
+
+func (f *JSONField) Default(value string) JSONFieldBuilder {
+	f.defaultFunc = nil
+	f.defaultVal = &value
+	return f
+}
+
+func (f *JSONField) DefaultFunc(fn func() json.RawMessage) JSONFieldBuilder {
+	f.defaultVal = nil
+	f.defaultFunc = fn
+	return f
+}
+
+func (f *JSONField) Validate(fn func(json.RawMessage) bool) JSONFieldBuilder {
 	f.validate = fn
 	return f
 }
