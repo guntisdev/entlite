@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"encoding/json"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -121,7 +122,29 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 		return entity, err
 	}
 
+	if err := validateJSONDefaults(entity); err != nil {
+		return entity, err
+	}
+
 	return entity, nil
+}
+
+// catch malformed text at generation time
+func validateJSONDefaults(entity schema.Entity) error {
+	for _, field := range entity.Fields {
+		if field.Type != schema.FieldTypeJSON || field.DefaultValue == nil {
+			continue
+		}
+		text, ok := field.DefaultValue.(string)
+		if !ok {
+			return fmt.Errorf("entity %q field %q json default must be a string", entity.Name, field.Name)
+		}
+		if !json.Valid([]byte(text)) {
+			return fmt.Errorf("entity %q field %q json default is not valid json: %s", entity.Name, field.Name, text)
+		}
+	}
+
+	return nil
 }
 
 func validateVirtualFields(entity schema.Entity) error {

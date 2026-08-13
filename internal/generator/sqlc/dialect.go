@@ -28,8 +28,7 @@ func (g *Generator) getIdFieldSQL(field schema.Field) string {
 }
 
 func (g *Generator) getIdFieldType(fieldType schema.FieldType, primary bool) string {
-	// When an explicit index.Primary overrides the id field, it is no longer the
-	// primary key, so emit a plain column type without the auto-increment & PRIMARY KEY clause.
+	// index.Primary overrides the id field, it is no longer primary key
 	if !primary {
 		return g.getSQLType(fieldType)
 	}
@@ -103,7 +102,8 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 	case schema.FieldTypeByte:
 		return "BYTEA"
 	case schema.FieldTypeJSON:
-		return "JSONB"
+		// TODO consider JSONB once json indexing/querying is supported, it needs sqlc overrides to stay a Go string
+		return "TEXT"
 	default:
 		return "TEXT"
 	}
@@ -151,7 +151,8 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	case schema.FieldTypeByte:
 		return "BLOB"
 	case schema.FieldTypeJSON:
-		return "JSON"
+		// TODO consider native JSON once json indexing/querying is supported, it needs sqlc overrides to stay a Go string
+		return "TEXT"
 	default:
 		return "TEXT"
 	}

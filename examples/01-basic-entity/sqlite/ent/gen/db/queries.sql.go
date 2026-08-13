@@ -17,6 +17,7 @@ type CreateBulkUserParams struct {
 	IsActive *bool `json:"is_active"`
 	LoginCount *int64 `json:"login_count"`
 	Rating *float64 `json:"rating"`
+	Preferences *string `json:"preferences"`
 }
 
 // createBulkUserRows inserts every row through q, which the caller binds to a transaction.
@@ -51,6 +52,7 @@ func (q *Queries) CreateBulkUser(ctx context.Context, args []CreateBulkUserParam
 			IsActive: SQLiteBoolToInt(OptionalWithFallback(item.IsActive, true)),
 			LoginCount: OptionalWithFallback(item.LoginCount, 0),
 			Rating: OptionalWithFallback(item.Rating, 0),
+			Preferences: OptionalWithFallback(item.Preferences, "{}"),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		})
@@ -88,6 +90,7 @@ type CreateUserParams struct {
 	IsActive *bool `json:"is_active"`
 	LoginCount *int64 `json:"login_count"`
 	Rating *float64 `json:"rating"`
+	Preferences *string `json:"preferences"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
@@ -103,6 +106,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		IsActive: SQLiteBoolToInt(OptionalWithFallback(arg.IsActive, true)),
 		LoginCount: OptionalWithFallback(arg.LoginCount, 0),
 		Rating: OptionalWithFallback(arg.Rating, 0),
+		Preferences: OptionalWithFallback(arg.Preferences, "{}"),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -189,6 +193,7 @@ type UpdateUserParams struct {
 	IsActive *bool `json:"is_active"`
 	LoginCount *int64 `json:"login_count"`
 	Rating *float64 `json:"rating"`
+	Preferences *string `json:"preferences"`
 	ID int32 `json:"ID"`
 }
 
@@ -205,6 +210,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		IsActive: SQLiteBoolPtrToInt64Ptr(arg.IsActive),
 		LoginCount: arg.LoginCount,
 		Rating: arg.Rating,
+		Preferences: arg.Preferences,
 		UpdatedAt: time.Now(),
 	}
 

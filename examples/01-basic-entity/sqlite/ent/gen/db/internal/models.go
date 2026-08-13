@@ -9,15 +9,16 @@ import (
 )
 
 type User struct {
-	ID         int64     `json:"id"`
-	Email      string    `json:"email"`
-	Name       string    `json:"name"`
-	Age        *int64    `json:"age"`
-	Password   string    `json:"password"`
-	ApiKey     []byte    `json:"api_key"`
-	IsActive   int64     `json:"is_active"`
-	LoginCount int64     `json:"login_count"`
-	Rating     float64   `json:"rating"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID          int64     `json:"id"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Age         *int64    `json:"age"`
+	Password    string    `json:"password"`
+	ApiKey      []byte    `json:"api_key"`
+	IsActive    int64     `json:"is_active"`
+	LoginCount  int64     `json:"login_count"`
+	Rating      float64   `json:"rating"`
+	Preferences string    `json:"preferences"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

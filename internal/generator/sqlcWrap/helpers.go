@@ -16,7 +16,7 @@ func fieldToGoType(field schema.Field) string {
 	}
 
 	switch field.Type {
-	case schema.FieldTypeString:
+	case schema.FieldTypeString, schema.FieldTypeJSON:
 		return fmt.Sprintf("%sstring", optionalStr)
 	case schema.FieldTypeInt:
 		return fmt.Sprintf("%sint32", optionalStr)
@@ -401,7 +401,7 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect
 
 	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
 		switch field.Type {
-		case schema.FieldTypeString:
+		case schema.FieldTypeString, schema.FieldTypeJSON:
 			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
 		case schema.FieldTypeInt:
 			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
@@ -443,7 +443,7 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect schema.SQLDiale
 
 	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
 		switch field.Type {
-		case schema.FieldTypeString:
+		case schema.FieldTypeString, schema.FieldTypeJSON:
 			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeInt:
 			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)

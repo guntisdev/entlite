@@ -1,7 +1,6 @@
 package field
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/guntisdev/entlite/pkg/entlite/permissions"
@@ -666,10 +665,10 @@ type JSONFieldBuilder interface {
 	ProtoField(int) JSONFieldBuilder
 	Comment(string) JSONFieldBuilder
 	Permissions(permissions.Permission) JSONFieldBuilder
-	// Default takes the raw JSON text of the document, e.g. `{}` or `{"theme":"dark"}`.
+	// Default takes raw json text, e.g. `{}` or `{"theme":"dark"}`
 	Default(string) JSONFieldBuilder
-	DefaultFunc(func() json.RawMessage) JSONFieldBuilder
-	Validate(func(json.RawMessage) bool) JSONFieldBuilder
+	DefaultFunc(func() string) JSONFieldBuilder
+	Validate(func(string) bool) JSONFieldBuilder
 
 	Field()
 }
@@ -682,8 +681,8 @@ type JSONField struct {
 	comment     *string
 	permissions permissions.Permission
 	defaultVal  *string
-	defaultFunc func() json.RawMessage
-	validate    func(json.RawMessage) bool
+	defaultFunc func() string
+	validate    func(string) bool
 }
 
 func (*JSONField) Field() {}
@@ -716,11 +715,11 @@ func (f *JSONField) GetDefault() *string {
 	return f.defaultVal
 }
 
-func (f *JSONField) GetDefaultFunc() func() json.RawMessage {
+func (f *JSONField) GetDefaultFunc() func() string {
 	return f.defaultFunc
 }
 
-func (f *JSONField) GetValidate() func(json.RawMessage) bool {
+func (f *JSONField) GetValidate() func(string) bool {
 	return f.validate
 }
 
@@ -755,13 +754,13 @@ func (f *JSONField) Default(value string) JSONFieldBuilder {
 	return f
 }
 
-func (f *JSONField) DefaultFunc(fn func() json.RawMessage) JSONFieldBuilder {
+func (f *JSONField) DefaultFunc(fn func() string) JSONFieldBuilder {
 	f.defaultVal = nil
 	f.defaultFunc = fn
 	return f
 }
 
-func (f *JSONField) Validate(fn func(json.RawMessage) bool) JSONFieldBuilder {
+func (f *JSONField) Validate(fn func(string) bool) JSONFieldBuilder {
 	f.validate = fn
 	return f
 }
