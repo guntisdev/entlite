@@ -107,6 +107,13 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 							field.Name = unquote(lit.Value)
 						}
 					}
+				case "JSON":
+					field.Type = schema.FieldTypeJSON
+					if len(e.Args) > 0 {
+						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+							field.Name = unquote(lit.Value)
+						}
+					}
 				case "ProtoField":
 					if len(e.Args) > 0 {
 						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.INT {

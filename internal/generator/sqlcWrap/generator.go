@@ -264,6 +264,8 @@ func (ctx *generationContext) generateImports(body string) string {
 	// context/fmt are used by generated wrappers even if the source file omits them.
 	add("context", "", "context")
 	add("fmt", "", "fmt")
+	// json is used to check json fields
+	add("json", "", "encoding/json")
 
 	used := make([]importSpec, 0, len(specs))
 	for _, s := range specs {

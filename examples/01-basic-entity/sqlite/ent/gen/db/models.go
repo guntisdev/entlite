@@ -18,6 +18,7 @@ type User struct {
 	IsActive bool `json:"is_active"`
 	LoginCount int64 `json:"login_count"`
 	Rating float64 `json:"rating"`
+	Preferences string `json:"preferences"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -37,6 +38,7 @@ func (m *User) UserToSQL() *internal.User {
 		IsActive: SQLiteBoolToInt(m.IsActive),
 		LoginCount: m.LoginCount,
 		Rating: m.Rating,
+		Preferences: m.Preferences,
 		CreatedAt: m.CreatedAt,
 		UpdatedAt: m.UpdatedAt,
 	}
@@ -57,6 +59,7 @@ func UserFromSQL(db *internal.User) *User {
 		IsActive: SQLiteIntToBool(db.IsActive),
 		LoginCount: db.LoginCount,
 		Rating: db.Rating,
+		Preferences: db.Preferences,
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 	}
@@ -77,6 +80,7 @@ func (m *User) ToProto() *pb.User {
 		IsActive: m.IsActive,
 		LoginCount: m.LoginCount,
 		Rating: m.Rating,
+		Preferences: m.Preferences,
 		CreatedAt: timestamppb.New(m.CreatedAt),
 		UpdatedAt: timestamppb.New(m.UpdatedAt),
 	}

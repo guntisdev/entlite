@@ -657,3 +657,110 @@ func (f *ByteField) Validate(fn func([]byte) bool) ByteFieldBuilder {
 	f.validate = fn
 	return f
 }
+
+// --------------------------------- json ---------------------------------
+type JSONFieldBuilder interface {
+	Optional() JSONFieldBuilder
+	Immutable() JSONFieldBuilder
+	ProtoField(int) JSONFieldBuilder
+	Comment(string) JSONFieldBuilder
+	Permissions(permissions.Permission) JSONFieldBuilder
+	// Default takes raw json text, e.g. `{}` or `{"theme":"dark"}`
+	Default(string) JSONFieldBuilder
+	DefaultFunc(func() string) JSONFieldBuilder
+	Validate(func(string) bool) JSONFieldBuilder
+
+	Field()
+}
+
+type JSONField struct {
+	name        string
+	optional    bool
+	immutable   bool
+	protoField  *int
+	comment     *string
+	permissions permissions.Permission
+	defaultVal  *string
+	defaultFunc func() string
+	validate    func(string) bool
+}
+
+func (*JSONField) Field() {}
+
+func JSON(name string) JSONFieldBuilder {
+	return &JSONField{name: name}
+}
+
+func (f *JSONField) GetOptional() bool {
+	return f.optional
+}
+
+func (f *JSONField) GetImmutable() bool {
+	return f.immutable
+}
+
+func (f *JSONField) GetProtoField() *int {
+	return f.protoField
+}
+
+func (f *JSONField) GetComment() *string {
+	return f.comment
+}
+
+func (f *JSONField) GetPermissions() permissions.Permission {
+	return f.permissions
+}
+
+func (f *JSONField) GetDefault() *string {
+	return f.defaultVal
+}
+
+func (f *JSONField) GetDefaultFunc() func() string {
+	return f.defaultFunc
+}
+
+func (f *JSONField) GetValidate() func(string) bool {
+	return f.validate
+}
+
+func (f *JSONField) Optional() JSONFieldBuilder {
+	f.optional = true
+	return f
+}
+
+func (f *JSONField) Immutable() JSONFieldBuilder {
+	f.immutable = true
+	return f
+}
+
+func (f *JSONField) ProtoField(num int) JSONFieldBuilder {
+	f.protoField = &num
+	return f
+}
+
+func (f *JSONField) Comment(text string) JSONFieldBuilder {
+	f.comment = &text
+	return f
+}
+
+func (f *JSONField) Permissions(permission permissions.Permission) JSONFieldBuilder {
+	f.permissions = permission
+	return f
+}
+
+func (f *JSONField) Default(value string) JSONFieldBuilder {
+	f.defaultFunc = nil
+	f.defaultVal = &value
+	return f
+}
+
+func (f *JSONField) DefaultFunc(fn func() string) JSONFieldBuilder {
+	f.defaultVal = nil
+	f.defaultFunc = fn
+	return f
+}
+
+func (f *JSONField) Validate(fn func(string) bool) JSONFieldBuilder {
+	f.validate = fn
+	return f
+}

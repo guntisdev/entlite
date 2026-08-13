@@ -7,23 +7,30 @@ import (
 	"github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (string, error) {
 	var content strings.Builder
 
-	content.WriteString("package pb\n\n")
-
-	fmtImportNeeded := false
+	var methods strings.Builder
 	for _, entity := range entities {
-		if hasValidateField(entity) {
-			fmtImportNeeded = true
+		if !hasValidateField(entity) && !hasJSONField(entity) {
+			continue
 		}
+		methods.WriteString(generateValidateMethod(entity, schema.QueryCreate))
+		methods.WriteString(generateValidateMethod(entity, schema.QueryUpdate))
 	}
+	body := methods.String()
+
+	content.WriteString("package pb\n\n")
 
 	content.WriteString("import (\n")
 	content.WriteString("\t\"context\"\n")
-	if fmtImportNeeded {
+	if strings.Contains(body, "json.") {
+		content.WriteString("\t\"encoding/json\"\n")
+	}
+	if strings.Contains(body, "fmt.") {
 		content.WriteString("\t\"fmt\"\n")
 	}
 	content.WriteString("\t\"connectrpc.com/connect\"\n")
@@ -33,13 +40,7 @@ func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (s
 	}
 	content.WriteString(")\n\n")
 
-	for _, entity := range entities {
-		if !hasValidateField(entity) {
-			continue
-		}
-		content.WriteString(generateValidateMethod(entity, schema.QueryCreate))
-		content.WriteString(generateValidateMethod(entity, schema.QueryUpdate))
-	}
+	content.WriteString(body)
 
 	content.WriteString(interceptorSource)
 
@@ -104,12 +105,30 @@ func (c *validatingHandlerConn) Receive(msg any) error {
 }
 `
 
-// generateValidateMethod writes Validate() for the request message of the
-// entity's create or update query, honoring a custom query Name().
+// generateValidateMethod writes Validate() for the create/update queries
 func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) string {
 	var content strings.Builder
 	messageName := util.GenEntityQueryName(entity, queryType)
 	content.WriteString(fmt.Sprintf("func (r *%sRequest) Validate() error {\n", messageName))
+
+	// json text is checked before the request reaches the handler
+	for _, field := range entity.Fields {
+		if field.Type != schema.FieldTypeJSON || !inRequest(field, queryType) {
+			continue
+		}
+
+		fieldName := toProtoFieldName(field)
+		ref := fmt.Sprintf("r.%s", fieldName)
+		cond := fmt.Sprintf("!json.Valid([]byte(%s))", ref)
+		if isPointerField(field, queryType) {
+			cond = fmt.Sprintf("%s != nil && !json.Valid([]byte(*%s))", ref, ref)
+		}
+		content.WriteString(fmt.Sprintf("\tif %s {\n", cond))
+		content.WriteString(fmt.Sprintf("\t\treturn fmt.Errorf(\"Invalid json for field name: %s\")\n", fieldName))
+		content.WriteString("\t}\n")
+	}
+
+	// TODO fix Optional() with Validate() - a pointer is passed to a value func and does not compile
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue
@@ -123,6 +142,35 @@ func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) st
 	content.WriteString("\treturn nil\n")
 	content.WriteString("}\n\n")
 	return content.String()
+}
+
+// inRequest reports if the field exists in the create or update request message
+func inRequest(field schema.Field, queryType schema.QueryType) bool {
+	if (field.Permissions & permissions.ApiWrite) == 0 {
+		return false
+	}
+	if queryType == schema.QueryCreate {
+		return !field.IsID()
+	}
+	return field.IsID() || !field.Immutable
+}
+
+// isPointerField reports if protoc emits the field as a pointer
+func isPointerField(field schema.Field, queryType schema.QueryType) bool {
+	if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
+		return true
+	}
+	// update makes write-only fields optional so they can be left alone
+	return queryType == schema.QueryUpdate && (field.Permissions&permissions.ApiRead) == 0
+}
+
+func hasJSONField(entity schema.Entity) bool {
+	for _, field := range entity.Fields {
+		if field.Type == schema.FieldTypeJSON {
+			return true
+		}
+	}
+	return false
 }
 
 func hasValidateField(entity schema.Entity) bool {

@@ -20,9 +20,11 @@ INSERT INTO "user" (
   is_active,
   login_count,
   rating,
+  preferences,
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -37,16 +39,17 @@ INSERT INTO "user" (
 `
 
 type CreateBulkUserParams struct {
-	Email      string    `json:"email"`
-	Name       string    `json:"name"`
-	Age        *int64    `json:"age"`
-	Password   string    `json:"password"`
-	ApiKey     []byte    `json:"api_key"`
-	IsActive   int64     `json:"is_active"`
-	LoginCount int64     `json:"login_count"`
-	Rating     float64   `json:"rating"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Age         *int64    `json:"age"`
+	Password    string    `json:"password"`
+	ApiKey      []byte    `json:"api_key"`
+	IsActive    int64     `json:"is_active"`
+	LoginCount  int64     `json:"login_count"`
+	Rating      float64   `json:"rating"`
+	Preferences string    `json:"preferences"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateBulkUser(ctx context.Context, arg CreateBulkUserParams) (int64, error) {
@@ -59,6 +62,7 @@ func (q *Queries) CreateBulkUser(ctx context.Context, arg CreateBulkUserParams) 
 		arg.IsActive,
 		arg.LoginCount,
 		arg.Rating,
+		arg.Preferences,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -79,9 +83,11 @@ INSERT INTO "user" (
   is_active,
   login_count,
   rating,
+  preferences,
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -96,16 +102,17 @@ INSERT INTO "user" (
 `
 
 type CreateUserParams struct {
-	Email      string    `json:"email"`
-	Name       string    `json:"name"`
-	Age        *int64    `json:"age"`
-	Password   string    `json:"password"`
-	ApiKey     []byte    `json:"api_key"`
-	IsActive   int64     `json:"is_active"`
-	LoginCount int64     `json:"login_count"`
-	Rating     float64   `json:"rating"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Age         *int64    `json:"age"`
+	Password    string    `json:"password"`
+	ApiKey      []byte    `json:"api_key"`
+	IsActive    int64     `json:"is_active"`
+	LoginCount  int64     `json:"login_count"`
+	Rating      float64   `json:"rating"`
+	Preferences string    `json:"preferences"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // Generate queries.sql
@@ -121,6 +128,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.IsActive,
 		arg.LoginCount,
 		arg.Rating,
+		arg.Preferences,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -148,7 +156,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE email = ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE email = ?
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -164,6 +172,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.IsActive,
 		&i.LoginCount,
 		&i.Rating,
+		&i.Preferences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -171,7 +180,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE ID = ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE ID = ?
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
@@ -187,6 +196,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
 		&i.IsActive,
 		&i.LoginCount,
 		&i.Rating,
+		&i.Preferences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -194,7 +204,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
 }
 
 const listActive = `-- name: ListActive :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE is_active = ?1
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE is_active = ?1
 `
 
 func (q *Queries) ListActive(ctx context.Context, isActive int64) ([]User, error) {
@@ -216,6 +226,7 @@ func (q *Queries) ListActive(ctx context.Context, isActive int64) ([]User, error
 			&i.IsActive,
 			&i.LoginCount,
 			&i.Rating,
+			&i.Preferences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -233,7 +244,7 @@ func (q *Queries) ListActive(ctx context.Context, isActive int64) ([]User, error
 }
 
 const listAllUser = `-- name: ListAllUser :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user"
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user"
 `
 
 func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
@@ -255,6 +266,7 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 			&i.IsActive,
 			&i.LoginCount,
 			&i.Rating,
+			&i.Preferences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -272,7 +284,7 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 }
 
 const listUserFilterByAgeName = `-- name: ListUserFilterByAgeName :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM "user" WHERE age BETWEEN ?1 AND ?2 AND name LIKE ?3
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE age BETWEEN ?1 AND ?2 AND name LIKE ?3
 `
 
 type ListUserFilterByAgeNameParams struct {
@@ -300,6 +312,7 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 			&i.IsActive,
 			&i.LoginCount,
 			&i.Rating,
+			&i.Preferences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -325,21 +338,23 @@ UPDATE "user" SET
   is_active = COALESCE(?5, is_active),
   login_count = COALESCE(?6, login_count),
   rating = COALESCE(?7, rating),
-  updated_at = ?8
-WHERE ID = ?9
-RETURNING id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at
+  preferences = COALESCE(?8, preferences),
+  updated_at = ?9
+WHERE ID = ?10
+RETURNING id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	Email      string    `json:"email"`
-	Name       string    `json:"name"`
-	Age        *int64    `json:"age"`
-	Password   *string   `json:"password"`
-	IsActive   *int64    `json:"is_active"`
-	LoginCount *int64    `json:"login_count"`
-	Rating     *float64  `json:"rating"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	ID         int64     `json:"ID"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Age         *int64    `json:"age"`
+	Password    *string   `json:"password"`
+	IsActive    *int64    `json:"is_active"`
+	LoginCount  *int64    `json:"login_count"`
+	Rating      *float64  `json:"rating"`
+	Preferences *string   `json:"preferences"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int64     `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -351,6 +366,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.IsActive,
 		arg.LoginCount,
 		arg.Rating,
+		arg.Preferences,
 		arg.UpdatedAt,
 		arg.ID,
 	)
@@ -365,6 +381,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.IsActive,
 		&i.LoginCount,
 		&i.Rating,
+		&i.Preferences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

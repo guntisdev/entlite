@@ -353,3 +353,13 @@ func entityFieldIsVirtual(entity schema.Entity, fieldName string) bool {
 
 	return false
 }
+
+func entityFieldHasType(entity schema.Entity, fieldName string, fieldType schema.FieldType) bool {
+	for _, field := range entity.Fields {
+		if strings.EqualFold(field.Name, fieldName) {
+			return field.Type == fieldType
+		}
+	}
+
+	return false
+}

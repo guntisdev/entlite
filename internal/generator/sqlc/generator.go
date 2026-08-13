@@ -91,7 +91,8 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 			content.WriteString(" UNIQUE")
 		}
 
-		if field.DefaultValue != nil {
+		// json defaults are applied in Go, mysql does not allow them on a JSON column
+		if field.DefaultValue != nil && field.Type != schema.FieldTypeJSON {
 			defaultVal := g.formatDefaultValue(field.DefaultValue, field.Type)
 			content.WriteString(fmt.Sprintf(" DEFAULT %s", defaultVal))
 		}

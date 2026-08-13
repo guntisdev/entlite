@@ -19,8 +19,10 @@ message User {
   bool is_active = 7;
   int64 login_count = 8 [(buf.validate.field).required = true];
   double rating = 9 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp created_at = 10 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp updated_at = 11 [(buf.validate.field).required = true];
+  // UI preferences, e.g. {"theme":"dark"}
+  string preferences = 10 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp created_at = 11 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
 }
 
 message CreateUserRequest {
@@ -33,6 +35,8 @@ message CreateUserRequest {
   optional bool is_active = 7;
   optional int64 login_count = 8;
   optional double rating = 9;
+  // UI preferences, e.g. {"theme":"dark"}
+  optional string preferences = 10;
 }
 message GetUserByIDRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
@@ -47,6 +51,8 @@ message UpdateUserRequest {
   optional bool is_active = 7;
   optional int64 login_count = 8;
   optional double rating = 9;
+  // UI preferences, e.g. {"theme":"dark"}
+  optional string preferences = 10;
 }
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
@@ -61,6 +67,8 @@ message CreateBulkUserItem {
   optional bool is_active = 7;
   optional int64 login_count = 8;
   optional double rating = 9;
+  // UI preferences, e.g. {"theme":"dark"}
+  optional string preferences = 10;
 }
 
 message CreateBulkUserRequest {

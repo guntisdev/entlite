@@ -90,6 +90,7 @@ const (
 	FieldTypeBool   FieldType = "bool"
 	FieldTypeTime   FieldType = "time"
 	FieldTypeByte   FieldType = "[]byte"
+	FieldTypeJSON   FieldType = "json"
 )
 
 type Annotation struct {

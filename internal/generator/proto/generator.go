@@ -371,6 +371,8 @@ func getProtoType(fieldType schema.FieldType) string {
 		return "google.protobuf.Timestamp"
 	case schema.FieldTypeByte:
 		return "bytes"
+	case schema.FieldTypeJSON:
+		return "string" // raw json text, kept as string so it passes through unchanged
 	default:
 		return "string"
 	}
