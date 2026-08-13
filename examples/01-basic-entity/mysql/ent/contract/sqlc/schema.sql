@@ -13,6 +13,8 @@ CREATE TABLE `user`(
   is_active TINYINT(1) DEFAULT true NOT NULL,
   login_count BIGINT DEFAULT 0 NOT NULL,
   rating DOUBLE DEFAULT 0 NOT NULL,
+  -- UI preferences, e.g. {"theme":"dark"}
+  preferences TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
 );

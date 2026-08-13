@@ -33,6 +33,7 @@ func (User) Fields() []entlite.Field {
 		field.Bool("is_active").Default(true),
 		field.Int64("login_count").Default(0),
 		field.Float("rating").Default(0),
+		field.JSON("preferences").Comment("UI preferences, e.g. {\"theme\":\"dark\"}").Default("{}"),
 		field.Time("created_at").DefaultFunc(time.Now).Immutable().Permissions(permissions.ReadOnly),
 		field.Time("updated_at").DefaultFunc(time.Now).Permissions(permissions.ReadOnly),
 	}

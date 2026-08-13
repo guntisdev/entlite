@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/sqlite/ent/logic"
 	"time"
@@ -40,6 +41,9 @@ func (q *Queries) CreateBulkUser(ctx context.Context, args []CreateBulkUserParam
 
 	internalArgs := make([]internal.CreateBulkUserParams, 0, len(args))
 	for i, item := range args {
+		if item.Preferences != nil && !json.Valid([]byte(*item.Preferences)) {
+			return nil, fmt.Errorf("Failed create_bulk: item %d: invalid json for 'User' in field 'preferences'", i)
+		}
 		if !logic.StartsWithCapital(item.Name) {
 			return nil, fmt.Errorf("Failed create_bulk: item %d: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'", i)
 		}
@@ -94,6 +98,9 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, error) {
+	if arg.Preferences != nil && !json.Valid([]byte(*arg.Preferences)) {
+		return 0, fmt.Errorf("Failed create: invalid json for 'User' in field 'preferences'")
+	}
 	if !logic.StartsWithCapital(arg.Name) {
 		return 0, fmt.Errorf("Failed create: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}
@@ -198,6 +205,9 @@ type UpdateUserParams struct {
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
+	if arg.Preferences != nil && !json.Valid([]byte(*arg.Preferences)) {
+		return nil, fmt.Errorf("Failed update: invalid json for 'User' in field 'preferences'")
+	}
 	if !logic.StartsWithCapital(arg.Name) {
 		return nil, fmt.Errorf("Failed update: incorrect value for 'User' in field 'name', validated by 'logic.StartsWithCapital'")
 	}

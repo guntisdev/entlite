@@ -21,9 +21,11 @@ INSERT INTO ` + "`" + `user` + "`" + ` (
   is_active,
   login_count,
   rating,
+  preferences,
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -38,16 +40,17 @@ INSERT INTO ` + "`" + `user` + "`" + ` (
 `
 
 type CreateBulkUserParams struct {
-	Email      string        `json:"email"`
-	Name       string        `json:"name"`
-	Age        sql.NullInt32 `json:"age"`
-	Password   string        `json:"password"`
-	ApiKey     []byte        `json:"api_key"`
-	IsActive   bool          `json:"is_active"`
-	LoginCount int64         `json:"login_count"`
-	Rating     float64       `json:"rating"`
-	CreatedAt  time.Time     `json:"created_at"`
-	UpdatedAt  time.Time     `json:"updated_at"`
+	Email       string        `json:"email"`
+	Name        string        `json:"name"`
+	Age         sql.NullInt32 `json:"age"`
+	Password    string        `json:"password"`
+	ApiKey      []byte        `json:"api_key"`
+	IsActive    bool          `json:"is_active"`
+	LoginCount  int64         `json:"login_count"`
+	Rating      float64       `json:"rating"`
+	Preferences string        `json:"preferences"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 func (q *Queries) CreateBulkUser(ctx context.Context, arg CreateBulkUserParams) (int64, error) {
@@ -60,6 +63,7 @@ func (q *Queries) CreateBulkUser(ctx context.Context, arg CreateBulkUserParams) 
 		arg.IsActive,
 		arg.LoginCount,
 		arg.Rating,
+		arg.Preferences,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -81,9 +85,11 @@ INSERT INTO ` + "`" + `user` + "`" + ` (
   is_active,
   login_count,
   rating,
+  preferences,
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -98,16 +104,17 @@ INSERT INTO ` + "`" + `user` + "`" + ` (
 `
 
 type CreateUserParams struct {
-	Email      string        `json:"email"`
-	Name       string        `json:"name"`
-	Age        sql.NullInt32 `json:"age"`
-	Password   string        `json:"password"`
-	ApiKey     []byte        `json:"api_key"`
-	IsActive   bool          `json:"is_active"`
-	LoginCount int64         `json:"login_count"`
-	Rating     float64       `json:"rating"`
-	CreatedAt  time.Time     `json:"created_at"`
-	UpdatedAt  time.Time     `json:"updated_at"`
+	Email       string        `json:"email"`
+	Name        string        `json:"name"`
+	Age         sql.NullInt32 `json:"age"`
+	Password    string        `json:"password"`
+	ApiKey      []byte        `json:"api_key"`
+	IsActive    bool          `json:"is_active"`
+	LoginCount  int64         `json:"login_count"`
+	Rating      float64       `json:"rating"`
+	Preferences string        `json:"preferences"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 // Generate queries.sql
@@ -123,6 +130,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 		arg.IsActive,
 		arg.LoginCount,
 		arg.Rating,
+		arg.Preferences,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
@@ -151,7 +159,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE email = ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE email = ?
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -167,6 +175,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.IsActive,
 		&i.LoginCount,
 		&i.Rating,
+		&i.Preferences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -174,7 +183,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE ID = ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE ID = ?
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
@@ -190,6 +199,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
 		&i.IsActive,
 		&i.LoginCount,
 		&i.Rating,
+		&i.Preferences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -197,7 +207,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
 }
 
 const listActive = `-- name: ListActive :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE is_active = ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE is_active = ?
 `
 
 func (q *Queries) ListActive(ctx context.Context, isActive bool) ([]User, error) {
@@ -219,6 +229,7 @@ func (q *Queries) ListActive(ctx context.Context, isActive bool) ([]User, error)
 			&i.IsActive,
 			&i.LoginCount,
 			&i.Rating,
+			&i.Preferences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -236,7 +247,7 @@ func (q *Queries) ListActive(ctx context.Context, isActive bool) ([]User, error)
 }
 
 const listAllUser = `-- name: ListAllUser :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM ` + "`" + `user` + "`" + `
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM ` + "`" + `user` + "`" + `
 `
 
 func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
@@ -258,6 +269,7 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 			&i.IsActive,
 			&i.LoginCount,
 			&i.Rating,
+			&i.Preferences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -275,7 +287,7 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 }
 
 const listUserFilterByAgeName = `-- name: ListUserFilterByAgeName :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE age BETWEEN ? AND ? AND name LIKE ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE age BETWEEN ? AND ? AND name LIKE ?
 `
 
 type ListUserFilterByAgeNameParams struct {
@@ -303,6 +315,7 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 			&i.IsActive,
 			&i.LoginCount,
 			&i.Rating,
+			&i.Preferences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -328,20 +341,22 @@ UPDATE ` + "`" + `user` + "`" + ` SET
   is_active = COALESCE(?, is_active),
   login_count = COALESCE(?, login_count),
   rating = COALESCE(?, rating),
+  preferences = COALESCE(?, preferences),
   updated_at = ?
 WHERE ID = ?
 `
 
 type UpdateUserParams struct {
-	Email      string          `json:"email"`
-	Name       string          `json:"name"`
-	Age        sql.NullInt32   `json:"age"`
-	Password   sql.NullString  `json:"password"`
-	IsActive   sql.NullBool    `json:"is_active"`
-	LoginCount sql.NullInt64   `json:"login_count"`
-	Rating     sql.NullFloat64 `json:"rating"`
-	UpdatedAt  time.Time       `json:"updated_at"`
-	ID         int32           `json:"ID"`
+	Email       string          `json:"email"`
+	Name        string          `json:"name"`
+	Age         sql.NullInt32   `json:"age"`
+	Password    sql.NullString  `json:"password"`
+	IsActive    sql.NullBool    `json:"is_active"`
+	LoginCount  sql.NullInt64   `json:"login_count"`
+	Rating      sql.NullFloat64 `json:"rating"`
+	Preferences sql.NullString  `json:"preferences"`
+	UpdatedAt   time.Time       `json:"updated_at"`
+	ID          int32           `json:"ID"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
@@ -353,6 +368,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 		arg.IsActive,
 		arg.LoginCount,
 		arg.Rating,
+		arg.Preferences,
 		arg.UpdatedAt,
 		arg.ID,
 	)

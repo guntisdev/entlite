@@ -13,6 +13,7 @@ INSERT INTO "user" (
   is_active,
   login_count,
   rating,
+  preferences,
   created_at,
   updated_at
 ) VALUES (
@@ -25,7 +26,8 @@ INSERT INTO "user" (
   $7,
   $8,
   $9,
-  $10
+  $10,
+  $11
 ) RETURNING ID;
 
 -- name: CreateBulkUser :one
@@ -38,6 +40,7 @@ INSERT INTO "user" (
   is_active,
   login_count,
   rating,
+  preferences,
   created_at,
   updated_at
 ) VALUES (
@@ -50,7 +53,8 @@ INSERT INTO "user" (
   $7,
   $8,
   $9,
-  $10
+  $10,
+  $11
 ) RETURNING ID;
 
 -- name: GetUserByID :one
@@ -77,6 +81,7 @@ UPDATE "user" SET
   is_active = COALESCE(sqlc.narg('is_active'), is_active),
   login_count = COALESCE(sqlc.narg('login_count'), login_count),
   rating = COALESCE(sqlc.narg('rating'), rating),
+  preferences = COALESCE(sqlc.narg('preferences'), preferences),
   updated_at = @updated_at
 WHERE ID = @ID
 RETURNING *;

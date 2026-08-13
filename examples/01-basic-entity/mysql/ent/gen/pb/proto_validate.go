@@ -2,12 +2,16 @@ package pb
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"connectrpc.com/connect"
 	"github.com/guntisdev/entlite/examples/01-basic-entity/mysql/ent/logic"
 )
 
 func (r *CreateUserRequest) Validate() error {
+	if r.Preferences != nil && !json.Valid([]byte(*r.Preferences)) {
+		return fmt.Errorf("Invalid json for field name: Preferences")
+	}
 	if !logic.StartsWithCapital(r.Name) {
 		return fmt.Errorf("Validation failed for field name: Name")
 	}
@@ -15,6 +19,9 @@ func (r *CreateUserRequest) Validate() error {
 }
 
 func (r *UpdateUserRequest) Validate() error {
+	if r.Preferences != nil && !json.Valid([]byte(*r.Preferences)) {
+		return fmt.Errorf("Invalid json for field name: Preferences")
+	}
 	if !logic.StartsWithCapital(r.Name) {
 		return fmt.Errorf("Validation failed for field name: Name")
 	}
