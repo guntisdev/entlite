@@ -46,6 +46,9 @@ func (Article) Fields() []entlite.Field {
 		field.Byte("cover_image").Optional(),     // optional bytes - raw image, may be absent
 		field.Time("published_at").Optional(),    // optional time  - null means still a draft
 
+		field.JSON("metadata").Optional().
+			Comment("Free-form metadata, e.g. {\"og_image\":\"/cover.png\"}"),
+
 		// --- non-optional flag + server-managed timestamps ---
 		field.Bool("is_featured").Default(false), // bool cannot be optional; use a default instead
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),

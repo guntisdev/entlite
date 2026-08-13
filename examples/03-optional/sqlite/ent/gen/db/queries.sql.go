@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/logic"
 	"time"
@@ -18,10 +19,14 @@ type CreateArticleParams struct {
 	Rating *float64 `json:"rating"`
 	CoverImage *[]byte `json:"cover_image"`
 	PublishedAt *time.Time `json:"published_at"`
+	Metadata *string `json:"metadata"`
 	IsFeatured *bool `json:"is_featured"`
 }
 
 func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (string, error) {
+	if arg.Metadata != nil && !json.Valid([]byte(*arg.Metadata)) {
+		return "", fmt.Errorf("Failed create: invalid json for 'Article' in field 'metadata'")
+	}
 	if !logic.NotBlank(arg.Title) {
 		return "", fmt.Errorf("Failed create: incorrect value for 'Article' in field 'title', validated by 'logic.NotBlank'")
 	}
@@ -36,6 +41,7 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (s
 		Rating: arg.Rating,
 		CoverImage: PtrToNullBytes(arg.CoverImage),
 		PublishedAt: arg.PublishedAt,
+		Metadata: arg.Metadata,
 		IsFeatured: SQLiteBoolToInt(OptionalWithFallback(arg.IsFeatured, false)),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -108,10 +114,14 @@ type UpdateArticleParams struct {
 	Rating *float64 `json:"rating"`
 	CoverImage *[]byte `json:"cover_image"`
 	PublishedAt *time.Time `json:"published_at"`
+	Metadata *string `json:"metadata"`
 	IsFeatured *bool `json:"is_featured"`
 }
 
 func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (*Article, error) {
+	if arg.Metadata != nil && !json.Valid([]byte(*arg.Metadata)) {
+		return nil, fmt.Errorf("Failed update: invalid json for 'Article' in field 'metadata'")
+	}
 	if !logic.NotBlank(arg.Title) {
 		return nil, fmt.Errorf("Failed update: incorrect value for 'Article' in field 'title', validated by 'logic.NotBlank'")
 	}
@@ -126,6 +136,7 @@ func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (*
 		Rating: arg.Rating,
 		CoverImage: PtrToNullBytes(arg.CoverImage),
 		PublishedAt: arg.PublishedAt,
+		Metadata: arg.Metadata,
 		IsFeatured: SQLiteBoolPtrToInt64Ptr(arg.IsFeatured),
 		UpdatedAt: time.Now(),
 	}

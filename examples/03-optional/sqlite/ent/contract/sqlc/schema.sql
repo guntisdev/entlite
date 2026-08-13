@@ -14,6 +14,8 @@ CREATE TABLE "article"(
   rating REAL,
   cover_image BLOB,
   published_at DATETIME,
+  -- Free-form metadata, e.g. {"og_image":"/cover.png"}
+  metadata TEXT,
   is_featured INTEGER DEFAULT false NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL

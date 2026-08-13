@@ -15,10 +15,12 @@ INSERT INTO "article" (
   rating,
   cover_image,
   published_at,
+  metadata,
   is_featured,
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -57,6 +59,7 @@ UPDATE "article" SET
   rating = @rating,
   cover_image = @cover_image,
   published_at = @published_at,
+  metadata = @metadata,
   is_featured = COALESCE(sqlc.narg('is_featured'), is_featured),
   updated_at = @updated_at
 WHERE ID = @ID

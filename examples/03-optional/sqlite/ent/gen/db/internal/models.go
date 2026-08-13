@@ -19,6 +19,7 @@ type Article struct {
 	Rating         *float64   `json:"rating"`
 	CoverImage     []byte     `json:"cover_image"`
 	PublishedAt    *time.Time `json:"published_at"`
+	Metadata       *string    `json:"metadata"`
 	IsFeatured     int64      `json:"is_featured"`
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`

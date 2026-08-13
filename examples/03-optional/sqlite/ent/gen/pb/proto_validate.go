@@ -2,12 +2,16 @@ package pb
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"connectrpc.com/connect"
 	"github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/logic"
 )
 
 func (r *CreateArticleRequest) Validate() error {
+	if r.Metadata != nil && !json.Valid([]byte(*r.Metadata)) {
+		return fmt.Errorf("Invalid json for field name: Metadata")
+	}
 	if !logic.NotBlank(r.Title) {
 		return fmt.Errorf("Validation failed for field name: Title")
 	}
@@ -15,6 +19,9 @@ func (r *CreateArticleRequest) Validate() error {
 }
 
 func (r *UpdateArticleRequest) Validate() error {
+	if r.Metadata != nil && !json.Valid([]byte(*r.Metadata)) {
+		return fmt.Errorf("Invalid json for field name: Metadata")
+	}
 	if !logic.NotBlank(r.Title) {
 		return fmt.Errorf("Validation failed for field name: Title")
 	}
