@@ -35,14 +35,15 @@ func (s *UserServer) Create(
 	queries := db.New(s.db)
 
 	userID, err := queries.CreateUser(ctx, db.CreateUserParams{
-		Email:      req.Msg.Email,
-		Name:       req.Msg.Name,
-		Age:        req.Msg.Age,
-		Password:   req.Msg.Password,
-		ApiKey:     &req.Msg.ApiKey,
-		IsActive:   req.Msg.IsActive,
-		LoginCount: req.Msg.LoginCount,
-		Rating:     req.Msg.Rating,
+		Email:       req.Msg.Email,
+		Name:        req.Msg.Name,
+		Age:         req.Msg.Age,
+		Password:    req.Msg.Password,
+		ApiKey:      &req.Msg.ApiKey,
+		IsActive:    req.Msg.IsActive,
+		LoginCount:  req.Msg.LoginCount,
+		Rating:      req.Msg.Rating,
+		Preferences: req.Msg.Preferences,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create user: %w", err))
@@ -67,14 +68,15 @@ func (s *UserServer) CreateBulk(
 	params := make([]db.CreateBulkUserParams, 0, len(req.Msg.Items))
 	for _, item := range req.Msg.Items {
 		params = append(params, db.CreateBulkUserParams{
-			Email:      item.Email,
-			Name:       item.Name,
-			Age:        item.Age,
-			Password:   item.Password,
-			ApiKey:     &item.ApiKey,
-			IsActive:   item.IsActive,
-			LoginCount: item.LoginCount,
-			Rating:     item.Rating,
+			Email:       item.Email,
+			Name:        item.Name,
+			Age:         item.Age,
+			Password:    item.Password,
+			ApiKey:      &item.ApiKey,
+			IsActive:    item.IsActive,
+			LoginCount:  item.LoginCount,
+			Rating:      item.Rating,
+			Preferences: item.Preferences,
 		})
 	}
 
@@ -142,14 +144,15 @@ func (s *UserServer) Update(
 	queries := db.New(s.db)
 
 	dbUser, err := queries.UpdateUser(ctx, db.UpdateUserParams{
-		ID:         req.Msg.ID,
-		Email:      req.Msg.Email,
-		Name:       req.Msg.Name,
-		Age:        req.Msg.Age,
-		Password:   req.Msg.Password,
-		IsActive:   req.Msg.IsActive,
-		LoginCount: req.Msg.LoginCount,
-		Rating:     req.Msg.Rating,
+		ID:          req.Msg.ID,
+		Email:       req.Msg.Email,
+		Name:        req.Msg.Name,
+		Age:         req.Msg.Age,
+		Password:    req.Msg.Password,
+		IsActive:    req.Msg.IsActive,
+		LoginCount:  req.Msg.LoginCount,
+		Rating:      req.Msg.Rating,
+		Preferences: req.Msg.Preferences,
 	})
 	if err != nil {
 		if err == sql.ErrNoRows {
