@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func fieldToGoType(field schema.Field) string {
@@ -185,6 +186,30 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		itemArgs = ", " + indexVar
 	}
 
+	// json text is checked before it reaches the db
+	for _, field := range entity.Fields {
+		if field.Type != schema.FieldTypeJSON || field.IsVirtual() {
+			continue
+		}
+		if (field.Permissions & permissions.ApiWrite) == 0 {
+			continue
+		}
+		// update skips immutable fields, so they are not in the params struct
+		if sqlQuery == "update" && field.Immutable {
+			continue
+		}
+
+		ref := fmt.Sprintf("%s.%s", argVar, toDBFieldName(field))
+		cond := fmt.Sprintf("!json.Valid([]byte(%s))", ref)
+		if isPointerParam(field, sqlQuery) {
+			cond = fmt.Sprintf("%s != nil && !json.Valid([]byte(*%s))", ref, ref)
+		}
+		sb.WriteString(fmt.Sprintf("%sif %s {\n", indent, cond))
+		sb.WriteString(fmt.Sprintf("%s\treturn %s, fmt.Errorf(\"Failed %s: %sinvalid json for '%s' in field '%s'\"%s)\n", indent, zeroValue, sqlQuery, itemPrefix, entity.Name, field.Name, itemArgs))
+		sb.WriteString(fmt.Sprintf("%s}\n", indent))
+	}
+
+	// TODO fix Optional() with Validate() - a pointer is passed to a value func and does not compile
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue
@@ -269,6 +294,15 @@ func protoGoCamelCase(s string) string {
 
 func isASCIILower(c byte) bool { return 'a' <= c && c <= 'z' }
 func isASCIIDigit(c byte) bool { return '0' <= c && c <= '9' }
+
+// params are pointers when the field is optional or gets a default
+func isPointerParam(field schema.Field, sqlQuery string) bool {
+	if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
+		return true
+	}
+	// update makes write-only fields optional so they can be left alone
+	return sqlQuery == "update" && (field.Permissions&permissions.ApiRead) == 0
+}
 
 func hasValidateField(entity schema.Entity) bool {
 	for _, field := range entity.Fields {

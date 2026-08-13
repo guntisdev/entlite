@@ -12,6 +12,7 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Proly rename in annotations Message to SQLC - to remove confusion what is generated
 * Proly rename in annotations GRPC to PROTO - a bit clearer what is generated
 * Make annotations optional
+* Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 * Add new field type JSON
 * Add Queries:
 ```bash
