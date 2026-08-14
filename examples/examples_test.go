@@ -1,78 +1,64 @@
 //go:build integration
 // +build integration
 
+// Integration tests that generate each example in place and check the result
+// against what is committed.
 package examples
 
 import (
-	"io"
+	"errors"
+	"fmt"
+	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/guntisdev/entlite/internal/util"
+	"time"
 )
 
-var entliteBinary string
+// Directories owned by codegen, relative to the example.
+var generated = []string{"ent/contract", "ent/gen"}
 
-func TestMain(m *testing.M) {
-	requiredTools := []string{"sqlc", "buf"}
-	for _, tool := range requiredTools {
-		if _, err := exec.LookPath(tool); err != nil {
-			panic("Required tool '" + tool + "' is not installed. " +
-				"Integration tests require sqlc and buf to be installed.\n" +
-				"Install sqlc: https://docs.sqlc.dev/en/latest/overview/install.html\n" +
-				"Install buf: https://buf.build/docs/installation\n")
-		}
-	}
-
-	// Build entlite binary before running tests
-	tmpDir, err := os.MkdirTemp("", "entlite-test-")
-	if err != nil {
-		panic("Failed to create temp dir: " + err.Error())
-	}
-	defer os.RemoveAll(tmpDir)
-
-	entliteBinary = filepath.Join(tmpDir, "entlite")
-
-	// Get module root (parent of examples/)
-	wd, err := os.Getwd()
-	if err != nil {
-		panic("Failed to get working directory: " + err.Error())
-	}
-	moduleRoot := filepath.Dir(wd)
-
-	cmd := exec.Command("go", "build", "-o", entliteBinary, "./cmd/entlite")
-	cmd.Dir = moduleRoot
-	if output, err := cmd.CombinedOutput(); err != nil {
-		panic("Failed to build entlite: " + err.Error() + "\n" + string(output))
-	}
-
-	// Run tests
-	code := m.Run()
-	os.Exit(code)
+type example struct {
+	dir  string // path relative to examples/, slash separated
+	name string // subtest name, no slashes to keep -run patterns simple
 }
 
 func TestExamples(t *testing.T) {
-	// Auto-discover all example directories, at any depth, so that related
-	// examples can be grouped in a parent folder (01-basic-entity/sqlite, ...)
-	exampleDirs, err := findExamples(".")
+	examples, err := findExamples(".")
 	if err != nil {
-		t.Fatalf("Failed to read examples directory: %v", err)
+		t.Fatalf("Failed to discover examples: %v", err)
+	}
+	if len(examples) == 0 {
+		t.Fatal("No examples found")
 	}
 
-	for _, exampleDir := range exampleDirs {
-		t.Run(exampleDir, func(t *testing.T) {
-			testExample(t, exampleDir)
+	for _, ex := range examples {
+		t.Run(ex.name, func(t *testing.T) {
+			t.Parallel()
+
+			if !t.Run("codegen", func(t *testing.T) { testCodegen(t, ex) }) {
+				return
+			}
+
+			// Owned here because the binary outlives the build step
+			binDir, bin := t.TempDir(), ""
+			if !t.Run("build", func(t *testing.T) { bin = testBuild(t, ex, binDir) }) {
+				return
+			}
+
+			t.Run("web", func(t *testing.T) { testWeb(t, ex) })
+			t.Run("run", func(t *testing.T) { testRun(t, ex, bin) })
 		})
 	}
 }
 
-// findExamples returns every directory below root holding an ent/schema, as a
-// path relative to root. An example is never searched for nested examples.
-func findExamples(root string) ([]string, error) {
-	var found []string
+// findExamples returns every directory below root that holds an ent/generate.go.
+// Examples are not searched for nested examples.
+func findExamples(root string) ([]example, error) {
+	var found []example
 
 	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
@@ -81,19 +67,20 @@ func findExamples(root string) ([]string, error) {
 		if !d.IsDir() {
 			return nil
 		}
-		if name := d.Name(); name == "node_modules" || strings.HasPrefix(name, ".") && path != root {
+		if name := d.Name(); name == "node_modules" || (strings.HasPrefix(name, ".") && path != root) {
 			return filepath.SkipDir
 		}
 
-		if _, err := os.Stat(filepath.Join(path, "ent", "schema")); err != nil {
+		if _, err := os.Stat(filepath.Join(path, "ent", "generate.go")); err != nil {
 			return nil
 		}
 
-		relPath, err := filepath.Rel(root, path)
+		rel, err := filepath.Rel(root, path)
 		if err != nil {
 			return err
 		}
-		found = append(found, filepath.ToSlash(relPath))
+		dir := filepath.ToSlash(rel)
+		found = append(found, example{dir: dir, name: strings.ReplaceAll(dir, "/", "_")})
 
 		return filepath.SkipDir
 	})
@@ -101,234 +88,195 @@ func findExamples(root string) ([]string, error) {
 	return found, err
 }
 
-func testExample(t *testing.T, exampleDir string) {
-	originalDir, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Failed to get current directory: %v", err)
-	}
-	moduleRoot := filepath.Dir(originalDir) // examples/.. = module root
+// testCodegen regenerates the example and fails if the output differs from git.
+func testCodegen(t *testing.T, ex example) {
+	requireClean(t, ex)
 
-	tmpDir := t.TempDir()
+	entDir := filepath.Join(filepath.FromSlash(ex.dir), "ent")
 
-	// Copy the entire example to temp directory
-	srcDir := filepath.Join(".", filepath.FromSlash(exampleDir))
-	dstDir := filepath.Join(tmpDir, filepath.FromSlash(exampleDir))
+	// buf dep update rewrites the lock file, that is not a codegen result
+	keep(t, filepath.Join(entDir, "buf.lock"))
 
-	if err := copyDir(srcDir, dstDir); err != nil {
-		t.Fatalf("Failed to copy example to temp dir: %v", err)
+	if out, err := run(entDir, "go", "generate", "."); err != nil {
+		t.Fatalf("go generate failed: %v\nOutput:\n%s", err, out)
 	}
 
-	// Create a go.mod file with replace directive pointing to local entlite
-	goModContent := "module github.com/guntisdev/entlite/examples/" + exampleDir + "\n\n" +
-		"go 1.26.1\n\n" +
-		"replace github.com/guntisdev/entlite => " + moduleRoot + "\n"
-	goModPath := filepath.Join(dstDir, "go.mod")
-	if err := os.WriteFile(goModPath, []byte(goModContent), 0644); err != nil {
-		t.Fatalf("Failed to create go.mod: %v", err)
-	}
-
-	// Update generate.go files to use the built binary instead of go run
-	generateFiles := []string{
-		filepath.Join(dstDir, "ent", "generate.go"),
-		filepath.Join(dstDir, "ent", "schema", "generate.go"),
-	}
-
-	sqlcPath, _ := exec.LookPath("sqlc")
-	bufPath, _ := exec.LookPath("buf")
-
-	for _, generatePath := range generateFiles {
-		if _, err := os.Stat(generatePath); os.IsNotExist(err) {
-			continue // Skip if file doesn't exist
-		}
-
-		generateContent, err := os.ReadFile(generatePath)
-		if err != nil {
-			t.Fatalf("Failed to read %s: %v", generatePath, err)
-		}
-
-		// Replace patterns:
-		// 1. "go run github.com/guntisdev/entlite/cmd/entlite" -> entlite binary
-		// 2. "go run ../../../../cmd/entlite" -> entlite binary
-		// 3. "go tool sqlc" -> sqlc binary
-		// 4. "go tool buf" -> buf binary
-		updatedContent := strings.ReplaceAll(string(generateContent),
-			"go run github.com/guntisdev/entlite/cmd/entlite",
-			entliteBinary)
-		updatedContent = strings.ReplaceAll(updatedContent,
-			"go run ../../../../cmd/entlite",
-			entliteBinary)
-		updatedContent = strings.ReplaceAll(updatedContent,
-			"go tool sqlc",
-			sqlcPath)
-		updatedContent = strings.ReplaceAll(updatedContent,
-			"go tool buf",
-			bufPath)
-
-		if err := os.WriteFile(generatePath, []byte(updatedContent), 0644); err != nil {
-			t.Fatalf("Failed to write updated %s: %v", generatePath, err)
-		}
-	}
-
-	entDir := filepath.Join(dstDir, "ent")
-	defer os.Chdir(originalDir)
-
-	if err := os.Chdir(entDir); err != nil {
-		t.Fatalf("Failed to change to ent directory: %v", err)
-	}
-
-	cmd := exec.Command("go", "generate", ".")
-	cmd.Env = os.Environ()
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("go generate failed: %v\nOutput:\n%s", err, output)
-	}
-
-	if err := os.Chdir(originalDir); err != nil {
-		t.Fatalf("Failed to change back to original directory: %v", err)
-	}
-
-	goldenDir := filepath.Join(srcDir, "ent")
-	actualDir := filepath.Join(dstDir, "ent")
-
-	compareDirectory(t, exampleDir,
-		filepath.Join(goldenDir, "contract"),
-		filepath.Join(actualDir, "contract"))
-
-	compareDirectory(t, exampleDir,
-		filepath.Join(goldenDir, "gen"),
-		filepath.Join(actualDir, "gen"))
-}
-
-func compareDirectory(t *testing.T, exampleName, goldenDir, actualDir string) {
-	if _, err := os.Stat(goldenDir); os.IsNotExist(err) {
+	dirty := status(t, ex, generated...)
+	if dirty == "" {
 		return
 	}
 
-	err := filepath.Walk(goldenDir, func(goldenPath string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+	diff, _ := run(".", append([]string{"git", "diff", "--"}, paths(ex, generated...)...)...)
+	t.Errorf("Generated output differs from what is committed.\n"+
+		"Changed files:\n%s\nDiff:\n%s\n"+
+		"Run `cd examples/%s/ent && go generate .` and commit the result if this is expected.",
+		dirty, diff, ex.dir)
+}
 
-		if info.IsDir() {
-			return nil
-		}
-
-		relPath, err := filepath.Rel(goldenDir, goldenPath)
-		if err != nil {
-			return err
-		}
-
-		actualPath := filepath.Join(actualDir, relPath)
-
-		if _, err := os.Stat(actualPath); os.IsNotExist(err) {
-			t.Errorf("[%s] Missing generated file: %s", exampleName, relPath)
-			return nil
-		}
-
-		goldenContent, err := os.ReadFile(goldenPath)
-		if err != nil {
-			return err
-		}
-
-		actualContent, err := os.ReadFile(actualPath)
-		if err != nil {
-			return err
-		}
-
-		if diff := util.Diff(string(goldenContent), string(actualContent)); diff != "" {
-			t.Errorf("[%s] File mismatch: %s\n(-expected +actual):\n%s",
-				exampleName, relPath, diff)
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		t.Fatalf("Failed to walk golden directory: %v", err)
+// testBuild compiles the example and returns its server binary.
+func testBuild(t *testing.T, ex example, binDir string) string {
+	if out, err := run(filepath.FromSlash(ex.dir), "go", "build", "-o", binDir+string(os.PathSeparator), "./..."); err != nil {
+		t.Fatalf("go build failed: %v\nOutput:\n%s", err, out)
 	}
 
-	err = filepath.Walk(actualDir, func(actualPath string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			return nil
-		}
-		relPath, err := filepath.Rel(actualDir, actualPath)
-		if err != nil {
-			return err
-		}
-		goldenPath := filepath.Join(goldenDir, relPath)
-		if _, err := os.Stat(goldenPath); os.IsNotExist(err) {
-			t.Errorf("[%s] Unexpected generated file: %s", exampleName, relPath)
-		}
-
-		return nil
-	})
-
+	entries, err := os.ReadDir(binDir)
 	if err != nil {
-		t.Fatalf("Failed to walk actual directory: %v", err)
+		t.Fatalf("Failed to read build output: %v", err)
+	}
+	if len(entries) != 1 {
+		t.Fatalf("Expected exactly one binary in %s, got %d", binDir, len(entries))
+	}
+
+	return filepath.Join(binDir, entries[0].Name())
+}
+
+// testWeb bundles the frontend, which fails when the generated client no longer
+// fits the example code.
+func testWeb(t *testing.T, ex example) {
+	webDir := filepath.Join(filepath.FromSlash(ex.dir), "web")
+	if _, err := os.Stat(filepath.Join(webDir, "package.json")); err != nil {
+		t.Skip("No web/package.json")
+	}
+	if _, err := exec.LookPath("npm"); err != nil {
+		t.Skip("npm is not installed")
+	}
+
+	if _, err := os.Stat(filepath.Join(webDir, "node_modules")); err != nil {
+		if out, err := run(webDir, "npm", "ci", "--no-audit", "--no-fund"); err != nil {
+			t.Fatalf("npm ci failed: %v\nOutput:\n%s", err, out)
+		}
+	}
+
+	if out, err := run(webDir, "npm", "run", "build"); err != nil {
+		t.Errorf("npm run build failed: %v\nOutput:\n%s", err, out)
 	}
 }
 
-func copyDir(src, dst string) error {
-	srcInfo, err := os.Stat(src)
-	if err != nil {
-		return err
+// testRun starts the server and checks /health, to catch a crash on startup.
+func testRun(t *testing.T, ex example, bin string) {
+	exDir := filepath.FromSlash(ex.dir)
+	if _, err := os.Stat(filepath.Join(exDir, "docker-compose.yml")); err == nil {
+		t.Skip("Needs a database from docker compose")
 	}
 
-	if err := os.MkdirAll(dst, srcInfo.Mode()); err != nil {
-		return err
+	// The example creates this database, remove it if it was not there before
+	dbPath := filepath.Join(exDir, "server", "db.db")
+	if _, err := os.Stat(dbPath); errors.Is(err, os.ErrNotExist) {
+		t.Cleanup(func() { os.Remove(dbPath) })
 	}
 
-	entries, err := os.ReadDir(src)
-	if err != nil {
-		return err
+	port := freePort(t)
+	cmd := exec.Command(bin, fmt.Sprintf("-port=%d", port))
+	cmd.Dir = exDir
+	var output strings.Builder
+	cmd.Stdout = &output
+	cmd.Stderr = &output
+
+	if err := cmd.Start(); err != nil {
+		t.Fatalf("Failed to start server: %v", err)
 	}
 
-	for _, entry := range entries {
-		srcPath := filepath.Join(src, entry.Name())
-		dstPath := filepath.Join(dst, entry.Name())
+	exited := make(chan error, 1)
+	go func() { exited <- cmd.Wait() }()
 
-		if entry.IsDir() && (entry.Name() == "contract" || entry.Name() == "gen") {
-			continue
+	t.Cleanup(func() {
+		_ = cmd.Process.Signal(os.Interrupt)
+		select {
+		case <-exited:
+		case <-time.After(5 * time.Second):
+			_ = cmd.Process.Kill()
 		}
+	})
 
-		if entry.IsDir() {
-			if err := copyDir(srcPath, dstPath); err != nil {
-				return err
+	healthURL := fmt.Sprintf("http://127.0.0.1:%d/health", port)
+	deadline := time.After(30 * time.Second)
+
+	for {
+		select {
+		case err := <-exited:
+			t.Fatalf("Server exited before serving /health: %v\nOutput:\n%s", err, output.String())
+		case <-deadline:
+			t.Fatalf("Server did not answer %s within 30s\nOutput:\n%s", healthURL, output.String())
+		case <-time.After(100 * time.Millisecond):
+			resp, err := http.Get(healthURL)
+			if err != nil {
+				continue
 			}
-		} else {
-			if err := copyFile(srcPath, dstPath); err != nil {
-				return err
+			resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				t.Fatalf("GET /health returned %s\nOutput:\n%s", resp.Status, output.String())
 			}
+			return
 		}
 	}
-
-	return nil
 }
 
-func copyFile(src, dst string) error {
-	srcFile, err := os.Open(src)
+// requireClean fails on local changes, which would make the diff after
+// generating meaningless.
+func requireClean(t *testing.T, ex example) {
+	if dirty := status(t, ex, generated...); dirty != "" {
+		t.Fatalf("Generated files have uncommitted changes, commit or stash "+
+			"them first:\n%s", dirty)
+	}
+}
+
+// status returns the git porcelain output for the given paths of an example.
+func status(t *testing.T, ex example, dirs ...string) string {
+	out, err := run(".", append([]string{"git", "status", "--porcelain", "--"}, paths(ex, dirs...)...)...)
 	if err != nil {
-		return err
+		t.Fatalf("git status failed: %v\nOutput:\n%s", err, out)
 	}
-	defer srcFile.Close()
 
-	srcInfo, err := srcFile.Stat()
+	return out
+}
+
+// keep writes a file's content back when the test ends. Restoring by hand
+// instead of by git, so the test can never throw away local work.
+func keep(t *testing.T, path string) {
+	before, err := os.ReadFile(path)
 	if err != nil {
-		return err
+		t.Fatalf("Failed to read %s: %v", path, err)
 	}
-
-	dstFile, err := os.OpenFile(dst, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, srcInfo.Mode())
+	info, err := os.Stat(path)
 	if err != nil {
-		return err
-	}
-	defer dstFile.Close()
-
-	if _, err := io.Copy(dstFile, srcFile); err != nil {
-		return err
+		t.Fatalf("Failed to stat %s: %v", path, err)
 	}
 
-	return nil
+	t.Cleanup(func() {
+		after, err := os.ReadFile(path)
+		if err == nil && string(after) == string(before) {
+			return
+		}
+		if err := os.WriteFile(path, before, info.Mode()); err != nil {
+			t.Errorf("Failed to restore %s: %v", path, err)
+		}
+	})
+}
+
+func paths(ex example, dirs ...string) []string {
+	out := make([]string, 0, len(dirs))
+	for _, dir := range dirs {
+		out = append(out, filepath.FromSlash(ex.dir+"/"+dir))
+	}
+
+	return out
+}
+
+func run(dir string, args ...string) (string, error) {
+	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Dir = dir
+	cmd.Env = os.Environ()
+	out, err := cmd.CombinedOutput()
+
+	return string(out), err
+}
+
+func freePort(t *testing.T) int {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("Failed to find a free port: %v", err)
+	}
+	defer listener.Close()
+
+	return listener.Addr().(*net.TCPAddr).Port
 }

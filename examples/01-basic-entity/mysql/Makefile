@@ -1,9 +1,11 @@
 COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
 
+PORT ?= 8080
+
 .PHONY: run db gen web down clean
 
 run: db gen web
-	go run main.go
+	go run main.go -port=$(PORT)
 
 db:
 	$(COMPOSE) up -d --wait

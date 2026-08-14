@@ -1,7 +1,9 @@
+PORT ?= 8080
+
 .PHONY: run gen web clean
 
 run: gen web
-	go run main.go
+	go run main.go -port=$(PORT)
 
 gen:
 	cd ent && go generate

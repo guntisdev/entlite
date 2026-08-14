@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,6 +23,9 @@ import (
 const connStr = "root:mysql@tcp(localhost:3306)/entlite?parseTime=true"
 
 func main() {
+	port := flag.String("port", "8080", "http port to listen on")
+	flag.Parse()
+
 	database, err := sql.Open("mysql", connStr)
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
@@ -55,8 +59,7 @@ func main() {
 	fs := http.FileServer(http.Dir("./web/dist"))
 	mux.Handle("/", noStore(fs))
 
-	port := "8080"
-	addr := fmt.Sprintf(":%s", port)
+	addr := fmt.Sprintf(":%s", *port)
 	log.Printf("Starting gRPC server on %s", addr)
 	log.Printf("Web UI available at http://localhost%s", addr)
 	log.Printf("Health check available at http://localhost%s/health", addr)
