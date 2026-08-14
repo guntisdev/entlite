@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,6 +19,9 @@ import (
 )
 
 func main() {
+	port := flag.String("port", "8080", "http port to listen on")
+	flag.Parse()
+
 	dbPath := "./server/db.db"
 
 	database, err := sql.Open("sqlite", dbPath)
@@ -63,8 +67,7 @@ func main() {
 	fs := http.FileServer(http.Dir("./web/dist"))
 	mux.Handle("/", noStore(fs))
 
-	port := "8080"
-	addr := fmt.Sprintf(":%s", port)
+	addr := fmt.Sprintf(":%s", *port)
 	log.Printf("Starting gRPC server on %s", addr)
 	log.Printf("Services: %s %s %s", sensorPath, readingPath, analyticsPath)
 	log.Printf("Web UI available at http://localhost%s", addr)
