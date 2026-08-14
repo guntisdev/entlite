@@ -11,9 +11,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
-// Article is a single piece of content in a CMS. Most descriptive attributes
-// are genuinely optional, which makes it a natural showcase for optional
-// fields and optional query filters.
 type Article struct {
 	entlite.Schema
 }
@@ -27,30 +24,27 @@ func (Article) Annotations() []entlite.Annotation {
 
 func (Article) Fields() []entlite.Field {
 	return []entlite.Field{
-		// UUID primary key. A field named "id" is treated as the primary key;
-		// the String type makes it a TEXT PRIMARY KEY, and a server-side
-		// DefaultFunc means the value is always generated. ReadOnly keeps it out
-		// of the Create/Update request bodies - clients never set the id.
+		// uuid primary key, generated on the server and not part of requests
 		field.String("id").Permissions(permissions.ReadOnly).Immutable().DefaultFunc(logic.NewUUID),
 
-		// --- required core ---
+		// --- required fields ---
 		field.String("slug").Unique().Comment("Human/URL identifier, e.g. hello-world"),
 		field.String("title").Validate(logic.NotBlank),
 		field.String("author"),
 
-		// --- optional fields: one per optional-capable type ---
-		field.String("subtitle").Optional(),      // optional string
-		field.Int("reading_minutes").Optional(),  // optional int32 - estimated read time
-		field.Int64("last_viewed_ms").Optional(), // optional int64 - epoch millis, null until first view
-		field.Float("rating").Optional(),         // optional float - null until first rated
-		field.Byte("cover_image").Optional(),     // optional bytes - raw image, may be absent
-		field.Time("published_at").Optional(),    // optional time  - null means still a draft
+		// --- optional fields, one per optional type ---
+		field.String("subtitle").Optional(),      // string
+		field.Int("reading_minutes").Optional(),  // int32, estimated read time
+		field.Int64("last_viewed_ms").Optional(), // int64, epoch millis
+		field.Float("rating").Optional(),         // float, null until rated
+		field.Byte("cover_image").Optional(),     // bytes, raw image
+		field.Time("published_at").Optional(),    // time, null means draft
 
 		field.JSON("metadata").Optional().
 			Comment("Free-form metadata, e.g. {\"og_image\":\"/cover.png\"}"),
 
-		// --- non-optional flag + server-managed timestamps ---
-		field.Bool("is_featured").Default(false), // bool cannot be optional; use a default instead
+		// --- required flag and server managed timestamps ---
+		field.Bool("is_featured").Default(false), // bool cannot be optional, use a default
 		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),
 		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now),
 	}
@@ -63,11 +57,7 @@ func (Article) Queries() []entlite.Query {
 		query.ListBy("author"),
 		query.ListAll(),
 
-		// Faceted search: one required filter plus several OPTIONAL filters.
-		// Optional filters become `optional` proto fields backed by NULL-aware
-		// SQL, so a caller only sends the facets it actually wants to filter by.
-		// Note that `is_featured` is a required column but an optional *filter* -
-		// the two are independent choices.
+		// is_featured is a required field, but an optional filter
 		query.ListBy(
 			filter.Eq("author"),
 			filter.Eq("is_featured").Optional(),
