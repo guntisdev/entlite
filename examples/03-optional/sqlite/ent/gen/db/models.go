@@ -19,6 +19,7 @@ type Article struct {
 	Rating *float64 `json:"rating"`
 	CoverImage *[]byte `json:"cover_image"`
 	PublishedAt *time.Time `json:"published_at"`
+	Metadata *string `json:"metadata"`
 	IsFeatured bool `json:"is_featured"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -40,6 +41,7 @@ func (m *Article) ArticleToSQL() *internal.Article {
 		Rating: m.Rating,
 		CoverImage: PtrToNullBytes(m.CoverImage),
 		PublishedAt: m.PublishedAt,
+		Metadata: m.Metadata,
 		IsFeatured: SQLiteBoolToInt(m.IsFeatured),
 		CreatedAt: m.CreatedAt,
 		UpdatedAt: m.UpdatedAt,
@@ -62,6 +64,7 @@ func ArticleFromSQL(db *internal.Article) *Article {
 		Rating: db.Rating,
 		CoverImage: NullBytesToPtr(db.CoverImage),
 		PublishedAt: db.PublishedAt,
+		Metadata: db.Metadata,
 		IsFeatured: SQLiteIntToBool(db.IsFeatured),
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
@@ -85,6 +88,7 @@ func (m *Article) ToProto() *pb.Article {
 		Rating: m.Rating,
 		CoverImage: PtrToNullBytes(m.CoverImage),
 		PublishedAt: func() *timestamppb.Timestamp { if m.PublishedAt != nil { return timestamppb.New(*m.PublishedAt) }; return nil }(),
+		Metadata: m.Metadata,
 		IsFeatured: m.IsFeatured,
 		CreatedAt: timestamppb.New(m.CreatedAt),
 		UpdatedAt: timestamppb.New(m.UpdatedAt),

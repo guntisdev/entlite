@@ -24,10 +24,12 @@ INSERT INTO "article" (
   rating,
   cover_image,
   published_at,
+  metadata,
   is_featured,
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -55,6 +57,7 @@ type CreateArticleParams struct {
 	Rating         *float64   `json:"rating"`
 	CoverImage     []byte     `json:"cover_image"`
 	PublishedAt    *time.Time `json:"published_at"`
+	Metadata       *string    `json:"metadata"`
 	IsFeatured     int64      `json:"is_featured"`
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`
@@ -75,6 +78,7 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (s
 		arg.Rating,
 		arg.CoverImage,
 		arg.PublishedAt,
+		arg.Metadata,
 		arg.IsFeatured,
 		arg.CreatedAt,
 		arg.UpdatedAt,
@@ -94,7 +98,7 @@ func (q *Queries) DeleteArticle(ctx context.Context, id string) error {
 }
 
 const getArticleByID = `-- name: GetArticleByID :one
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, is_featured, created_at, updated_at FROM "article" WHERE ID = ?
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE ID = ?
 `
 
 func (q *Queries) GetArticleByID(ctx context.Context, id string) (Article, error) {
@@ -111,6 +115,7 @@ func (q *Queries) GetArticleByID(ctx context.Context, id string) (Article, error
 		&i.Rating,
 		&i.CoverImage,
 		&i.PublishedAt,
+		&i.Metadata,
 		&i.IsFeatured,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -119,7 +124,7 @@ func (q *Queries) GetArticleByID(ctx context.Context, id string) (Article, error
 }
 
 const getArticleBySlug = `-- name: GetArticleBySlug :one
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, is_featured, created_at, updated_at FROM "article" WHERE slug = ?
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE slug = ?
 `
 
 func (q *Queries) GetArticleBySlug(ctx context.Context, slug string) (Article, error) {
@@ -136,6 +141,7 @@ func (q *Queries) GetArticleBySlug(ctx context.Context, slug string) (Article, e
 		&i.Rating,
 		&i.CoverImage,
 		&i.PublishedAt,
+		&i.Metadata,
 		&i.IsFeatured,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -143,8 +149,50 @@ func (q *Queries) GetArticleBySlug(ctx context.Context, slug string) (Article, e
 	return i, err
 }
 
+const listAllArticle = `-- name: ListAllArticle :many
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article"
+`
+
+func (q *Queries) ListAllArticle(ctx context.Context) ([]Article, error) {
+	rows, err := q.db.QueryContext(ctx, listAllArticle)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Article
+	for rows.Next() {
+		var i Article
+		if err := rows.Scan(
+			&i.ID,
+			&i.Slug,
+			&i.Title,
+			&i.Author,
+			&i.Subtitle,
+			&i.ReadingMinutes,
+			&i.LastViewedMs,
+			&i.Rating,
+			&i.CoverImage,
+			&i.PublishedAt,
+			&i.Metadata,
+			&i.IsFeatured,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listArticleByAuthor = `-- name: ListArticleByAuthor :many
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, is_featured, created_at, updated_at FROM "article" WHERE author = ?1
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1
 `
 
 func (q *Queries) ListArticleByAuthor(ctx context.Context, author string) ([]Article, error) {
@@ -167,6 +215,7 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, author string) ([]Art
 			&i.Rating,
 			&i.CoverImage,
 			&i.PublishedAt,
+			&i.Metadata,
 			&i.IsFeatured,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -185,7 +234,7 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, author string) ([]Art
 }
 
 const listArticleFilterByAuthorIsFeaturedPublishedAtTitle = `-- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, is_featured, created_at, updated_at FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5
 `
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
@@ -214,6 +263,7 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 			&i.Rating,
 			&i.CoverImage,
 			&i.PublishedAt,
+			&i.Metadata,
 			&i.IsFeatured,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -242,10 +292,11 @@ UPDATE "article" SET
   rating = ?7,
   cover_image = ?8,
   published_at = ?9,
-  is_featured = COALESCE(?10, is_featured),
-  updated_at = ?11
-WHERE ID = ?12
-RETURNING id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, is_featured, created_at, updated_at
+  metadata = ?10,
+  is_featured = COALESCE(?11, is_featured),
+  updated_at = ?12
+WHERE ID = ?13
+RETURNING id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at
 `
 
 type UpdateArticleParams struct {
@@ -258,6 +309,7 @@ type UpdateArticleParams struct {
 	Rating         *float64   `json:"rating"`
 	CoverImage     []byte     `json:"cover_image"`
 	PublishedAt    *time.Time `json:"published_at"`
+	Metadata       *string    `json:"metadata"`
 	IsFeatured     *int64     `json:"is_featured"`
 	UpdatedAt      time.Time  `json:"updated_at"`
 	ID             string     `json:"ID"`
@@ -274,6 +326,7 @@ func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (A
 		arg.Rating,
 		arg.CoverImage,
 		arg.PublishedAt,
+		arg.Metadata,
 		arg.IsFeatured,
 		arg.UpdatedAt,
 		arg.ID,
@@ -290,6 +343,7 @@ func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (A
 		&i.Rating,
 		&i.CoverImage,
 		&i.PublishedAt,
+		&i.Metadata,
 		&i.IsFeatured,
 		&i.CreatedAt,
 		&i.UpdatedAt,

@@ -15,10 +15,12 @@ INSERT INTO "article" (
   rating,
   cover_image,
   published_at,
+  metadata,
   is_featured,
   created_at,
   updated_at
 ) VALUES (
+  ?,
   ?,
   ?,
   ?,
@@ -43,6 +45,9 @@ SELECT * FROM "article" WHERE slug = ?;
 -- name: ListArticleByAuthor :many
 SELECT * FROM "article" WHERE author = @author;
 
+-- name: ListAllArticle :many
+SELECT * FROM "article";
+
 -- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
 SELECT * FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at BETWEEN @min_published_at AND @max_published_at AND title LIKE @title;
 
@@ -57,6 +62,7 @@ UPDATE "article" SET
   rating = @rating,
   cover_image = @cover_image,
   published_at = @published_at,
+  metadata = @metadata,
   is_featured = COALESCE(sqlc.narg('is_featured'), is_featured),
   updated_at = @updated_at
 WHERE ID = @ID

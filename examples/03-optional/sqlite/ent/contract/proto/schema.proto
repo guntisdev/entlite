@@ -21,9 +21,11 @@ message Article {
   optional double rating = 8;
   optional bytes cover_image = 9;
   optional google.protobuf.Timestamp published_at = 10;
-  bool is_featured = 11;
-  google.protobuf.Timestamp created_at = 12 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp updated_at = 13 [(buf.validate.field).required = true];
+  // Free-form metadata, e.g. {"og_image":"/cover.png"}
+  optional string metadata = 11;
+  bool is_featured = 12;
+  google.protobuf.Timestamp created_at = 13 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp updated_at = 14 [(buf.validate.field).required = true];
 }
 
 message CreateArticleRequest {
@@ -37,7 +39,9 @@ message CreateArticleRequest {
   optional double rating = 8;
   optional bytes cover_image = 9;
   optional google.protobuf.Timestamp published_at = 10;
-  optional bool is_featured = 11;
+  // Free-form metadata, e.g. {"og_image":"/cover.png"}
+  optional string metadata = 11;
+  optional bool is_featured = 12;
 }
 message GetArticleByIDRequest {
   string ID = 1 [(buf.validate.field).required = true];
@@ -54,7 +58,9 @@ message UpdateArticleRequest {
   optional double rating = 8;
   optional bytes cover_image = 9;
   optional google.protobuf.Timestamp published_at = 10;
-  optional bool is_featured = 11;
+  // Free-form metadata, e.g. {"og_image":"/cover.png"}
+  optional string metadata = 11;
+  optional bool is_featured = 12;
 }
 message DeleteArticleRequest {
   string ID = 1 [(buf.validate.field).required = true];
@@ -69,6 +75,12 @@ message ListArticleByAuthorRequest {
 }
 
 message ListArticleByAuthorResponse {
+  repeated Article articles = 1;
+}
+message ListAllArticleRequest {
+}
+
+message ListAllArticleResponse {
   repeated Article articles = 1;
 }
 message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
@@ -93,5 +105,6 @@ service ArticleService {
   rpc Delete(DeleteArticleRequest) returns (google.protobuf.Empty);
   rpc GetBySlug(GetArticleBySlugRequest) returns (Article);
   rpc ListByAuthor(ListArticleByAuthorRequest) returns (ListArticleByAuthorResponse);
+  rpc ListAll(ListAllArticleRequest) returns (ListAllArticleResponse);
   rpc FilterByAuthorIsFeaturedPublishedAtTitle(ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest) returns (ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse);
 }

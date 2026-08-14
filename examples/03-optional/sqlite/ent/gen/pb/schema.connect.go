@@ -47,6 +47,8 @@ const (
 	// ArticleServiceListByAuthorProcedure is the fully-qualified name of the ArticleService's
 	// ListByAuthor RPC.
 	ArticleServiceListByAuthorProcedure = "/entlite.ArticleService/ListByAuthor"
+	// ArticleServiceListAllProcedure is the fully-qualified name of the ArticleService's ListAll RPC.
+	ArticleServiceListAllProcedure = "/entlite.ArticleService/ListAll"
 	// ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure is the fully-qualified name of
 	// the ArticleService's FilterByAuthorIsFeaturedPublishedAtTitle RPC.
 	ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure = "/entlite.ArticleService/FilterByAuthorIsFeaturedPublishedAtTitle"
@@ -60,6 +62,7 @@ type ArticleServiceClient interface {
 	Delete(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error)
 	GetBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error)
 	ListByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error)
+	ListAll(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error)
 	FilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error)
 }
 
@@ -110,6 +113,12 @@ func NewArticleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(articleServiceMethods.ByName("ListByAuthor")),
 			connect.WithClientOptions(opts...),
 		),
+		listAll: connect.NewClient[ListAllArticleRequest, ListAllArticleResponse](
+			httpClient,
+			baseURL+ArticleServiceListAllProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("ListAll")),
+			connect.WithClientOptions(opts...),
+		),
 		filterByAuthorIsFeaturedPublishedAtTitle: connect.NewClient[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest, ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse](
 			httpClient,
 			baseURL+ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure,
@@ -127,6 +136,7 @@ type articleServiceClient struct {
 	delete                                   *connect.Client[DeleteArticleRequest, emptypb.Empty]
 	getBySlug                                *connect.Client[GetArticleBySlugRequest, Article]
 	listByAuthor                             *connect.Client[ListArticleByAuthorRequest, ListArticleByAuthorResponse]
+	listAll                                  *connect.Client[ListAllArticleRequest, ListAllArticleResponse]
 	filterByAuthorIsFeaturedPublishedAtTitle *connect.Client[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest, ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse]
 }
 
@@ -160,6 +170,11 @@ func (c *articleServiceClient) ListByAuthor(ctx context.Context, req *connect.Re
 	return c.listByAuthor.CallUnary(ctx, req)
 }
 
+// ListAll calls entlite.ArticleService.ListAll.
+func (c *articleServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
+	return c.listAll.CallUnary(ctx, req)
+}
+
 // FilterByAuthorIsFeaturedPublishedAtTitle calls
 // entlite.ArticleService.FilterByAuthorIsFeaturedPublishedAtTitle.
 func (c *articleServiceClient) FilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, req *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
@@ -174,6 +189,7 @@ type ArticleServiceHandler interface {
 	Delete(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error)
 	GetBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error)
 	ListByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error)
+	ListAll(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error)
 	FilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error)
 }
 
@@ -220,6 +236,12 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 		connect.WithSchema(articleServiceMethods.ByName("ListByAuthor")),
 		connect.WithHandlerOptions(opts...),
 	)
+	articleServiceListAllHandler := connect.NewUnaryHandler(
+		ArticleServiceListAllProcedure,
+		svc.ListAll,
+		connect.WithSchema(articleServiceMethods.ByName("ListAll")),
+		connect.WithHandlerOptions(opts...),
+	)
 	articleServiceFilterByAuthorIsFeaturedPublishedAtTitleHandler := connect.NewUnaryHandler(
 		ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure,
 		svc.FilterByAuthorIsFeaturedPublishedAtTitle,
@@ -240,6 +262,8 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 			articleServiceGetBySlugHandler.ServeHTTP(w, r)
 		case ArticleServiceListByAuthorProcedure:
 			articleServiceListByAuthorHandler.ServeHTTP(w, r)
+		case ArticleServiceListAllProcedure:
+			articleServiceListAllHandler.ServeHTTP(w, r)
 		case ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure:
 			articleServiceFilterByAuthorIsFeaturedPublishedAtTitleHandler.ServeHTTP(w, r)
 		default:
@@ -273,6 +297,10 @@ func (UnimplementedArticleServiceHandler) GetBySlug(context.Context, *connect.Re
 
 func (UnimplementedArticleServiceHandler) ListByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.ListByAuthor is not implemented"))
+}
+
+func (UnimplementedArticleServiceHandler) ListAll(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.ListAll is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) FilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
