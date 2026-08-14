@@ -149,6 +149,48 @@ func (q *Queries) GetArticleBySlug(ctx context.Context, slug string) (Article, e
 	return i, err
 }
 
+const listAllArticle = `-- name: ListAllArticle :many
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article"
+`
+
+func (q *Queries) ListAllArticle(ctx context.Context) ([]Article, error) {
+	rows, err := q.db.QueryContext(ctx, listAllArticle)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Article
+	for rows.Next() {
+		var i Article
+		if err := rows.Scan(
+			&i.ID,
+			&i.Slug,
+			&i.Title,
+			&i.Author,
+			&i.Subtitle,
+			&i.ReadingMinutes,
+			&i.LastViewedMs,
+			&i.Rating,
+			&i.CoverImage,
+			&i.PublishedAt,
+			&i.Metadata,
+			&i.IsFeatured,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listArticleByAuthor = `-- name: ListArticleByAuthor :many
 SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1
 `

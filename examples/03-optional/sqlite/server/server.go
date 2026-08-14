@@ -148,6 +148,24 @@ func (s *ArticleServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
+func (s *ArticleServer) ListAll(
+	ctx context.Context,
+	req *connect.Request[pb.ListAllArticleRequest],
+) (*connect.Response[pb.ListAllArticleResponse], error) {
+	log.Printf("List all articles")
+
+	queries := db.New(s.db)
+
+	dbArticles, err := queries.ListAllArticle(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list all articles: %w", err))
+	}
+
+	return connect.NewResponse(&pb.ListAllArticleResponse{
+		Articles: toProtoArticles(dbArticles),
+	}), nil
+}
+
 func (s *ArticleServer) ListByAuthor(
 	ctx context.Context,
 	req *connect.Request[pb.ListArticleByAuthorRequest],

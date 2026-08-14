@@ -77,6 +77,12 @@ message ListArticleByAuthorRequest {
 message ListArticleByAuthorResponse {
   repeated Article articles = 1;
 }
+message ListAllArticleRequest {
+}
+
+message ListAllArticleResponse {
+  repeated Article articles = 1;
+}
 message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
   int32 offset = 2;
@@ -99,5 +105,6 @@ service ArticleService {
   rpc Delete(DeleteArticleRequest) returns (google.protobuf.Empty);
   rpc GetBySlug(GetArticleBySlugRequest) returns (Article);
   rpc ListByAuthor(ListArticleByAuthorRequest) returns (ListArticleByAuthorResponse);
+  rpc ListAll(ListAllArticleRequest) returns (ListAllArticleResponse);
   rpc FilterByAuthorIsFeaturedPublishedAtTitle(ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest) returns (ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse);
 }

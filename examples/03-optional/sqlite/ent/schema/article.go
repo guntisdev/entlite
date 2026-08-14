@@ -60,9 +60,8 @@ func (Article) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.DefaultCRUD(),
 		query.GetBy("slug"),
-
-		// Simple list: a single required equality filter (author = ?).
 		query.ListBy("author"),
+		query.ListAll(),
 
 		// Faceted search: one required filter plus several OPTIONAL filters.
 		// Optional filters become `optional` proto fields backed by NULL-aware

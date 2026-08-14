@@ -45,6 +45,9 @@ SELECT * FROM "article" WHERE slug = ?;
 -- name: ListArticleByAuthor :many
 SELECT * FROM "article" WHERE author = @author;
 
+-- name: ListAllArticle :many
+SELECT * FROM "article";
+
 -- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
 SELECT * FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at BETWEEN @min_published_at AND @max_published_at AND title LIKE @title;
 

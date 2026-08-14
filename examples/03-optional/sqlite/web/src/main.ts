@@ -284,6 +284,18 @@ function deleteArticle() {
 
 // --- List and filter -------------------------------------------------------
 
+function listAll() {
+    log("Listing all articles...");
+    articleClient.listAll({})
+        .then((response) => {
+            log(`✓ Articles listed (${response.articles.length} articles):`);
+            response.articles.forEach((article) => log(describeArticle(article)));
+        })
+        .catch((error) => {
+            log("✗ Error listing all articles:", error);
+        });
+}
+
 function listByAuthor() {
     const author = textInput("listAuthor");
     if (author === "") {
@@ -350,6 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("clearOptionalsBtn")!.addEventListener("click", clearOptionals);
     document.getElementById("deleteArticleBtn")!.addEventListener("click", deleteArticle);
 
+    document.getElementById("listAllBtn")!.addEventListener("click", listAll);
     document.getElementById("listAuthorBtn")!.addEventListener("click", listByAuthor);
     document.getElementById("filterArticleBtn")!.addEventListener("click", filterArticles);
 

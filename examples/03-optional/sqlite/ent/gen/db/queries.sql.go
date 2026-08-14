@@ -69,6 +69,18 @@ func (q *Queries) GetArticleBySlug(ctx context.Context, slug string) (*Article, 
 	return ArticleFromSQL(&dbResult), nil
 }
 
+func (q *Queries) ListAllArticle(ctx context.Context) ([]*Article, error) {
+	dbResults, err := (*internal.Queries)(q).ListAllArticle(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*Article, len(dbResults))
+	for i := range dbResults {
+		result[i] = ArticleFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
 func (q *Queries) ListArticleByAuthor(ctx context.Context, author string) ([]*Article, error) {
 	dbResults, err := (*internal.Queries)(q).ListArticleByAuthor(ctx, author)
 	if err != nil {
