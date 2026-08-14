@@ -46,15 +46,27 @@ func main() {
 		fmt.Fprintf(w, "OK")
 	})
 
+	fs := http.FileServer(http.Dir("./web/dist"))
+	mux.Handle("/", noStore(fs))
+
 	port := "8080"
 	addr := fmt.Sprintf(":%s", port)
 	log.Printf("Starting gRPC server on %s", addr)
 	log.Printf("Service: %s", articlePath)
+	log.Printf("Web UI available at http://localhost%s", addr)
 	log.Printf("Health check available at http://localhost%s/health", addr)
 
 	if err := http.ListenAndServe(addr, h2c.NewHandler(mux, &http2.Server{})); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
+}
+
+// noStore disables browser cache, so the port serves the current example
+func noStore(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		h.ServeHTTP(w, r)
+	})
 }
 
 func initSchema(db *sql.DB) error {

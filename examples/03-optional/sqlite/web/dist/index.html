@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+  <title>Optional fields sqlite</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+      margin-bottom: 0.75rem;
+    }
+
+    h2 small {
+      display: block;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: #9ca3af;
+      margin-top: 0.15rem;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid #e5e5e5;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    button {
+      min-width: 80px;
+      height: 40px;
+      padding: 0 1.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      background: #3b82f6;
+      color: white;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .button-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem;
+      background: rgba(0,0,0,0.03);
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.1);
+      height: 40px;
+    }
+
+    .button-group label {
+      font-size: 0.8rem;
+      color: #6b7280;
+      padding-left: 0.5rem;
+    }
+
+    .button-group input[type="number"],
+    .button-group input[type="text"] {
+      height: 30px;
+      padding: 0 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .button-group input[type="number"] {
+      width: 55px;
+    }
+
+    .button-group input[type="text"] {
+      width: 110px;
+    }
+
+    .button-group input.wide {
+      width: 260px;
+      text-align: left;
+    }
+
+    .button-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Hide number input spinner arrows */
+    .button-group input[type="number"]::-webkit-inner-spin-button,
+    .button-group input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .create { background: #10b981; }
+    .read { background: #3b82f6; }
+    .list { background: #8b5cf6; }
+    .update { background: #f59e0b; }
+    .delete { background: #ef4444; }
+    .invalid { background: #6366f1; }
+
+    #clearBtn { background: #6b7280; }
+
+    #output {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 4px;
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    #output div {
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #334155;
+      word-break: break-all;
+    }
+
+    #output div:last-child {
+      border-bottom: none;
+    }
+
+    .info-container {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .info {
+      flex: 1;
+      padding: 1rem;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Optional fields sqlite</h1>
+    <p class="subtitle">Optional fields and optional query filters, from one Article schema</p>
+
+    <div class="section">
+      <h2>Create
+        <small>ArticleService.Create — optional fields may be sent or left out</small>
+      </h2>
+      <div class="controls">
+        <button id="createFullBtn" class="create">Create Full</button>
+        <button id="createMinimalBtn" class="create">Create Minimal</button>
+        <div class="button-group">
+          <input type="text" id="createMetadata" class="wide" placeholder="metadata json" value='{"og_image":"/cover.png"}'>
+          <button id="createMetadataBtn" class="create">Create With Metadata</button>
+        </div>
+        <button id="createInvalidJsonBtn" class="invalid">Create Invalid Json</button>
+        <button id="createBlankTitleBtn" class="invalid">Create Blank Title</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Read
+        <small>GetByID and GetBySlug — the id is a uuid from logic.NewUUID</small>
+      </h2>
+      <div class="controls">
+        <div class="button-group">
+          <input type="text" id="getArticleId" class="wide" placeholder="ID">
+          <button id="getArticleBtn" class="read">Get</button>
+        </div>
+        <div class="button-group">
+          <input type="text" id="getArticleSlug" placeholder="slug">
+          <button id="getArticleSlugBtn" class="read">Get By Slug</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Update and delete
+        <small>Update replaces the whole entity, so omitted optional fields become NULL</small>
+      </h2>
+      <div class="controls">
+        <div class="button-group">
+          <input type="text" id="updateArticleId" class="wide" placeholder="ID">
+          <button id="updateArticleBtn" class="update">Update</button>
+          <button id="clearOptionalsBtn" class="update">Clear Optionals</button>
+        </div>
+        <div class="button-group">
+          <input type="text" id="deleteArticleId" class="wide" placeholder="ID">
+          <button id="deleteArticleBtn" class="delete">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>List and filter
+        <small>ListByAuthor takes one required filter, the faceted search adds optional ones</small>
+      </h2>
+      <div class="controls">
+        <div class="button-group">
+          <input type="text" id="listAuthor" placeholder="author" value="guntis">
+          <button id="listAuthorBtn" class="list">List By Author</button>
+        </div>
+        <div class="button-group">
+          <input type="text" id="filterAuthor" placeholder="author" value="guntis">
+          <label><input type="checkbox" id="useFeatured" checked> is_featured</label>
+          <input type="checkbox" id="filterFeatured" checked>
+          <label><input type="checkbox" id="useTitle"> title LIKE</label>
+          <input type="text" id="filterTitle" value="%optional%">
+          <label><input type="checkbox" id="useRange"> last</label>
+          <input type="number" id="filterDays" value="30">
+          <label>days</label>
+          <button id="filterArticleBtn" class="list">Filter</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="output"></div>
+
+    <div class="info-container">
+      <div class="info">
+        <strong>What's happening:</strong><br>
+        Every button calls the Go server through Connect-Web using the TypeScript
+        types in <code>ent/gen/ts</code>. Optional DSL fields become
+        <code>optional</code> proto fields, so an unset field is absent from the
+        message instead of arriving as <code>0</code> or <code>""</code> — the log
+        lists which ones came back NULL. The filter checkboxes pick which optional
+        facets are sent at all, and <code>metadata</code> is a
+        <code>field.JSON</code>, validated before the handler runs.
+      </div>
+      <button id="clearBtn">Clear</button>
+    </div>
+  </div>
+
+  <script type="module" src="bundle.js"></script>
+</body>
+</html>
