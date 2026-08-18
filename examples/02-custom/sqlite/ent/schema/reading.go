@@ -16,10 +16,10 @@ type Reading struct {
 	entlite.Schema
 }
 
-func (Reading) Annotations() []entlite.Annotation {
-	return []entlite.Annotation{
-		entlite.Message(),
-		entlite.GRPC(),
+func (Reading) Contracts() []entlite.Contract {
+	return []entlite.Contract{
+		entlite.SQLC(),
+		entlite.PROTO(),
 	}
 }
 

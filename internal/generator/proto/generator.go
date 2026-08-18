@@ -12,16 +12,17 @@ import (
 )
 
 func Generate(entities []schema.Entity, dir string) error {
+	// TODO gating unchanged for now: SQLC() drives messages, PROTO() drives service
 	var messageEntities []schema.Entity
 	for _, entity := range entities {
-		if entity.HasMessage() {
+		if entity.HasSQLC() {
 			messageEntities = append(messageEntities, entity)
 		}
 	}
 
 	var serviceEntities []schema.Entity
 	for _, entity := range entities {
-		if entity.HasService() {
+		if entity.HasPROTO() {
 			serviceEntities = append(serviceEntities, entity)
 		}
 	}

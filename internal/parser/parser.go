@@ -61,13 +61,13 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			continue
 		}
 
-		// Parse Annotations
-		if funcDecl.Name.Name == "Annotations" {
-			annotations, err := parseAnnotationsMethod(funcDecl)
+		// Parse Contracts
+		if funcDecl.Name.Name == "Contracts" {
+			contracts, err := parseContractsMethod(funcDecl)
 			if err != nil {
-				return entity, fmt.Errorf("failed to parse annotations: %w", err)
+				return entity, fmt.Errorf("failed to parse contracts: %w", err)
 			}
-			entity.Annotations = annotations
+			entity.Contracts = contracts
 		}
 
 		// Parse Fields
