@@ -749,7 +749,11 @@ func (ctx *generationContext) generateModelFileDeclarations() string {
 		sb.WriteString("\n")
 	}
 
+	// only entities with the proto contract have a pb type to convert to
 	for _, entity := range ctx.parsedEntities {
+		if !entity.HasPROTO() {
+			continue
+		}
 		sb.WriteString(ctx.generateProtoConverter(entity))
 		sb.WriteString("\n")
 	}
