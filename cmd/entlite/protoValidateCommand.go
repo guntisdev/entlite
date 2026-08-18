@@ -6,6 +6,7 @@ import (
 	"path"
 
 	protovalidate "github.com/guntisdev/entlite/internal/generator/protoValidate"
+	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
 )
 
@@ -36,7 +37,7 @@ func protoValidate() {
 		os.Exit(1)
 	}
 
-	content, err := protovalidate.Generate(parsedEntities, validateImports)
+	content, err := protovalidate.Generate(schema.FilterPROTO(parsedEntities), validateImports)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating proto validation: %v\n", err)
 		os.Exit(1)

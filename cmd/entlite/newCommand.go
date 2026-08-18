@@ -95,10 +95,10 @@ type %s struct {
 	entlite.Schema
 }
 
-func (%s) Annotations() []entlite.Annotation {
-	return []entlite.Annotation{
-		entlite.Message(),
-		entlite.Service(),
+func (%s) Contracts() []entlite.Contract {
+	return []entlite.Contract{
+		entlite.SQLC(),
+		entlite.PROTO(),
 	}
 }
 

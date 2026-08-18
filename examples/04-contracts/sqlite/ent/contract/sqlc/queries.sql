@@ -1,0 +1,51 @@
+-- Generate queries.sql
+-- This file contains SQLC-compatible queries definitions
+
+-- Audit CRUD operations
+
+-- name: CreateAudit :one
+INSERT INTO "audit" (
+  action,
+  match_id,
+  detail,
+  created_at
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?
+) RETURNING ID;
+
+-- name: ListAllAudit :many
+SELECT * FROM "audit";
+
+-- Match CRUD operations
+
+-- name: CreateMatch :one
+INSERT INTO "match" (
+  white,
+  black,
+  result,
+  opening,
+  moves,
+  played_at,
+  created_at
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?
+) RETURNING ID;
+
+-- name: GetMatchByID :one
+SELECT * FROM "match" WHERE ID = ?;
+
+-- name: ListAllMatch :many
+SELECT * FROM "match";
+
+-- name: DeleteMatch :exec
+DELETE FROM "match" WHERE ID = ?;
+

@@ -19,6 +19,8 @@ func sqlcWrapCommand() {
 		os.Exit(1)
 	}
 
+	sqlcEntities := schema.FilterSQLC(parsedEntities)
+
 	entityImports, err := getEntityImports(entityDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error loading entity imports: %v\n", err)
@@ -64,7 +66,7 @@ func sqlcWrapCommand() {
 			inputFilePath := filepath.Join(inputDir, fileName)
 			outputFilePath := filepath.Join(outputDir, fileName)
 
-			content, err := sqlcwrap.Generate(inputFilePath, pbDir, parsedEntities, entityImports, sqlcConfig.Dialect)
+			content, err := sqlcwrap.Generate(inputFilePath, pbDir, sqlcEntities, entityImports, sqlcConfig.Dialect)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating wrapper content for %s: %v\n", fileName, err)
 				os.Exit(1)
@@ -93,7 +95,7 @@ func sqlcWrapCommand() {
 
 	// Generate convert.go file with converter helper functions
 	hasTimeField := false
-	for _, entity := range parsedEntities {
+	for _, entity := range sqlcEntities {
 		for _, field := range entity.Fields {
 			if field.Type == schema.FieldTypeTime {
 				hasTimeField = true

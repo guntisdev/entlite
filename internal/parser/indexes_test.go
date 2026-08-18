@@ -20,6 +20,13 @@ type User struct {
 	entlite.Schema
 }
 
+func (User) Contracts() []entlite.Contract {
+	return []entlite.Contract{
+		entlite.SQLC(),
+		entlite.PROTO(),
+	}
+}
+
 func (User) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("email").Unique(),

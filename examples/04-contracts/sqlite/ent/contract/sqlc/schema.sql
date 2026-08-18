@@ -1,0 +1,27 @@
+-- Generated schema.sql
+-- This file contains table definitions for all entities
+
+-- audit table
+CREATE TABLE "audit"(
+  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  -- created | deleted
+  action TEXT NOT NULL,
+  match_id INTEGER NOT NULL,
+  detail TEXT NOT NULL,
+  created_at DATETIME NOT NULL
+);
+
+-- match table
+CREATE TABLE "match"(
+  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  white TEXT NOT NULL,
+  black TEXT NOT NULL,
+  -- 1-0 | 0-1 | 1/2-1/2
+  result TEXT NOT NULL,
+  -- e.g. Sicilian Defence
+  opening TEXT,
+  moves INTEGER NOT NULL,
+  played_at DATETIME NOT NULL,
+  created_at DATETIME NOT NULL
+);
+

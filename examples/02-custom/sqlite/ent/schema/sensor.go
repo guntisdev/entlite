@@ -16,10 +16,10 @@ type Sensor struct {
 	entlite.Schema
 }
 
-func (Sensor) Annotations() []entlite.Annotation {
-	return []entlite.Annotation{
-		entlite.Message(),
-		entlite.GRPC(),
+func (Sensor) Contracts() []entlite.Contract {
+	return []entlite.Contract{
+		entlite.SQLC(),
+		entlite.PROTO(),
 	}
 }
 

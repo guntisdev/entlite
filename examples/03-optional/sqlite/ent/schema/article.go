@@ -15,10 +15,10 @@ type Article struct {
 	entlite.Schema
 }
 
-func (Article) Annotations() []entlite.Annotation {
-	return []entlite.Annotation{
-		entlite.Message(),
-		entlite.GRPC(),
+func (Article) Contracts() []entlite.Contract {
+	return []entlite.Contract{
+		entlite.SQLC(),
+		entlite.PROTO(),
 	}
 }
 

@@ -35,6 +35,8 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 		return entity, fmt.Errorf("failed to parse file %s: %w", discovered.Path, err)
 	}
 
+	hasContractsMethod := false
+
 	for _, decl := range file.Decls {
 		funcDecl, ok := decl.(*ast.FuncDecl)
 		if !ok {
@@ -61,13 +63,15 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 			continue
 		}
 
-		// Parse Annotations
-		if funcDecl.Name.Name == "Annotations" {
-			annotations, err := parseAnnotationsMethod(funcDecl)
+		// Parse Contracts
+		if funcDecl.Name.Name == "Contracts" {
+			hasContractsMethod = true
+
+			contracts, err := parseContractsMethod(funcDecl)
 			if err != nil {
-				return entity, fmt.Errorf("failed to parse annotations: %w", err)
+				return entity, fmt.Errorf("failed to parse contracts: %w", err)
 			}
-			entity.Annotations = annotations
+			entity.Contracts = contracts
 		}
 
 		// Parse Fields
@@ -105,6 +109,10 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 		}
 	}
 
+	if err := validateContracts(entity, hasContractsMethod); err != nil {
+		return entity, err
+	}
+
 	// An explicit index.Primary overrides the auto-assigned primary key on the
 	// id field: the compound key declared in Indexes() becomes the table's only
 	// PRIMARY KEY.
@@ -127,6 +135,19 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 	}
 
 	return entity, nil
+}
+
+// contracts are always explicit, an entity without them generates nothing
+func validateContracts(entity schema.Entity, hasMethod bool) error {
+	if !hasMethod {
+		return fmt.Errorf("entity %q is missing Contracts() method, declare entlite.SQLC() and/or entlite.PROTO()", entity.Name)
+	}
+
+	if len(entity.Contracts) == 0 {
+		return fmt.Errorf("entity %q has empty Contracts(), declare entlite.SQLC() and/or entlite.PROTO()", entity.Name)
+	}
+
+	return nil
 }
 
 // catch malformed text at generation time

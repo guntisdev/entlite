@@ -10,30 +10,52 @@ type Schema struct {
 	Entities []Entity
 }
 
-func (e Entity) HasMessage() bool {
-	for _, ann := range e.Annotations {
-		if ann.Type == AnnotationMessage {
+func (e Entity) HasSQLC() bool {
+	for _, c := range e.Contracts {
+		if c.Type == ContractSQLC {
 			return true
 		}
 	}
 	return false
 }
 
-func (e Entity) HasService() bool {
-	for _, ann := range e.Annotations {
-		if ann.Type == AnnotationGRPC {
+func (e Entity) HasPROTO() bool {
+	for _, c := range e.Contracts {
+		if c.Type == ContractPROTO {
 			return true
 		}
 	}
 	return false
+}
+
+func FilterSQLC(entities []Entity) []Entity {
+	var filtered []Entity
+	for _, entity := range entities {
+		if entity.HasSQLC() {
+			filtered = append(filtered, entity)
+		}
+	}
+
+	return filtered
+}
+
+func FilterPROTO(entities []Entity) []Entity {
+	var filtered []Entity
+	for _, entity := range entities {
+		if entity.HasPROTO() {
+			filtered = append(filtered, entity)
+		}
+	}
+
+	return filtered
 }
 
 type Entity struct {
-	Name        string
-	Fields      []Field
-	Annotations []Annotation
-	Queries     []Query
-	Indexes     []Index
+	Name      string
+	Fields    []Field
+	Contracts []Contract
+	Queries   []Query
+	Indexes   []Index
 }
 
 func (e Entity) GetIdField() Field {
@@ -93,15 +115,15 @@ const (
 	FieldTypeJSON   FieldType = "json"
 )
 
-type Annotation struct {
-	Type AnnotationType
+type Contract struct {
+	Type ContractType
 }
 
-type AnnotationType string
+type ContractType string
 
 const (
-	AnnotationMessage AnnotationType = "message"
-	AnnotationGRPC    AnnotationType = "grpc"
+	ContractSQLC  ContractType = "sqlc"
+	ContractPROTO ContractType = "proto"
 )
 
 type Query struct {

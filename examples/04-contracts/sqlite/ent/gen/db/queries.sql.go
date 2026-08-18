@@ -1,0 +1,96 @@
+package db
+
+import (
+	"context"
+	"fmt"
+	"github.com/guntisdev/entlite/examples/04-contracts/sqlite/ent/logic"
+	"time"
+	internal "github.com/guntisdev/entlite/examples/04-contracts/sqlite/ent/gen/db/internal"
+)
+
+type CreateAuditParams struct {
+	Action string `json:"action"`
+	MatchID int32 `json:"match_id"`
+	Detail string `json:"detail"`
+	CreatedAt *time.Time `json:"created_at"`
+}
+
+func (q *Queries) CreateAudit(ctx context.Context, arg CreateAuditParams) (int32, error) {
+	internalArg := internal.CreateAuditParams{
+		Action: arg.Action,
+		MatchID: IntConvert[int32, int64](arg.MatchID),
+		Detail: arg.Detail,
+		CreatedAt: OptionalWithFallback(arg.CreatedAt, time.Now()),
+	}
+	id, err := (*internal.Queries)(q).CreateAudit(ctx, internalArg)
+	return IntConvert[int64, int32](id), err
+}
+
+type CreateMatchParams struct {
+	White string `json:"white"`
+	Black string `json:"black"`
+	Result string `json:"result"`
+	Opening *string `json:"opening"`
+	Moves int32 `json:"moves"`
+	PlayedAt *time.Time `json:"played_at"`
+}
+
+func (q *Queries) CreateMatch(ctx context.Context, arg CreateMatchParams) (int32, error) {
+	if !logic.NotBlank(arg.White) {
+		return 0, fmt.Errorf("Failed create: incorrect value for 'Match' in field 'white', validated by 'logic.NotBlank'")
+	}
+	if !logic.NotBlank(arg.Black) {
+		return 0, fmt.Errorf("Failed create: incorrect value for 'Match' in field 'black', validated by 'logic.NotBlank'")
+	}
+	if !logic.IsKnownResult(arg.Result) {
+		return 0, fmt.Errorf("Failed create: incorrect value for 'Match' in field 'result', validated by 'logic.IsKnownResult'")
+	}
+	internalArg := internal.CreateMatchParams{
+		White: arg.White,
+		Black: arg.Black,
+		Result: arg.Result,
+		Opening: arg.Opening,
+		Moves: IntConvert[int32, int64](arg.Moves),
+		PlayedAt: OptionalWithFallback(arg.PlayedAt, time.Now()),
+		CreatedAt: time.Now(),
+	}
+	id, err := (*internal.Queries)(q).CreateMatch(ctx, internalArg)
+	return IntConvert[int64, int32](id), err
+}
+
+func (q *Queries) DeleteMatch(ctx context.Context, id int32) error {
+	return (*internal.Queries)(q).DeleteMatch(ctx, IntConvert[int32, int64](id))
+}
+
+func (q *Queries) GetMatchByID(ctx context.Context, id int32) (*Match, error) {
+	dbResult, err := (*internal.Queries)(q).GetMatchByID(ctx, IntConvert[int32, int64](id))
+	if err != nil {
+		return nil, err
+	}
+	return MatchFromSQL(&dbResult), nil
+}
+
+func (q *Queries) ListAllAudit(ctx context.Context) ([]*Audit, error) {
+	dbResults, err := (*internal.Queries)(q).ListAllAudit(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*Audit, len(dbResults))
+	for i := range dbResults {
+		result[i] = AuditFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
+func (q *Queries) ListAllMatch(ctx context.Context) ([]*Match, error) {
+	dbResults, err := (*internal.Queries)(q).ListAllMatch(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*Match, len(dbResults))
+	for i := range dbResults {
+		result[i] = MatchFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+

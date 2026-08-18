@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package entlite;
+
+option go_package = "./pb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "buf/validate/validate.proto";
+
+// Match represents as match entity
+message Match {
+  int32 ID = 1 [(buf.validate.field).required = true];
+  string white = 2 [(buf.validate.field).required = true];
+  string black = 3 [(buf.validate.field).required = true];
+  // 1-0 | 0-1 | 1/2-1/2
+  string result = 4 [(buf.validate.field).required = true];
+  // e.g. Sicilian Defence
+  optional string opening = 5;
+  int32 moves = 6 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp played_at = 7 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp created_at = 8 [(buf.validate.field).required = true];
+}
+
+// Standing represents as standing entity
+message Standing {
+  // Place in the table, 1 is best
+  int32 ID = 1 [(buf.validate.field).required = true];
+  string player = 2 [(buf.validate.field).required = true];
+  int32 played = 3 [(buf.validate.field).required = true];
+  int32 wins = 4 [(buf.validate.field).required = true];
+  int32 draws = 5 [(buf.validate.field).required = true];
+  int32 losses = 6 [(buf.validate.field).required = true];
+  // Win 1, draw 0.5
+  double points = 7 [(buf.validate.field).required = true];
+}
+
+message CreateMatchRequest {
+  string white = 2 [(buf.validate.field).required = true];
+  string black = 3 [(buf.validate.field).required = true];
+  // 1-0 | 0-1 | 1/2-1/2
+  string result = 4 [(buf.validate.field).required = true];
+  // e.g. Sicilian Defence
+  optional string opening = 5;
+  int32 moves = 6 [(buf.validate.field).required = true];
+  optional google.protobuf.Timestamp played_at = 7;
+}
+message GetMatchByIDRequest {
+  int32 ID = 1 [(buf.validate.field).required = true];
+}
+message DeleteMatchRequest {
+  int32 ID = 1 [(buf.validate.field).required = true];
+}
+message ListAllMatchRequest {
+}
+
+message ListAllMatchResponse {
+  repeated Match matchs = 1;
+}
+
+// MatchService provides CRUD opertions for Match entities
+service MatchService {
+  rpc Create(CreateMatchRequest) returns (Match);
+  rpc GetByID(GetMatchByIDRequest) returns (Match);
+  rpc Delete(DeleteMatchRequest) returns (google.protobuf.Empty);
+  rpc ListAll(ListAllMatchRequest) returns (ListAllMatchResponse);
+}
+
+message ListAllStandingRequest {
+}
+
+message ListAllStandingResponse {
+  repeated Standing standings = 1;
+}
+
+// StandingService provides CRUD opertions for Standing entities
+service StandingService {
+  rpc ListAll(ListAllStandingRequest) returns (ListAllStandingResponse);
+}

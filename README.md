@@ -8,9 +8,6 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
 * Split get/list/delete sqlc wraps in separate files
 * Move query name to parser instead of generator
-* Proly rename in annotations Message to SQLC - to remove confusion what is generated
-* Proly rename in annotations GRPC to PROTO - a bit clearer what is generated
-* Make annotations optional
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 * Comment out in examples Queries use case for: Count, GroupBy, Having, OrderBy
 * Implement Queries Count()

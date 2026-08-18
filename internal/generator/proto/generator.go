@@ -12,21 +12,7 @@ import (
 )
 
 func Generate(entities []schema.Entity, dir string) error {
-	var messageEntities []schema.Entity
-	for _, entity := range entities {
-		if entity.HasMessage() {
-			messageEntities = append(messageEntities, entity)
-		}
-	}
-
-	var serviceEntities []schema.Entity
-	for _, entity := range entities {
-		if entity.HasService() {
-			serviceEntities = append(serviceEntities, entity)
-		}
-	}
-
-	protoContent := generateSchemaProto(messageEntities, serviceEntities)
+	protoContent := generateSchemaProto(entities)
 
 	fileName := "schema.proto"
 	filePath := filepath.Join(dir, fileName)
@@ -38,7 +24,7 @@ func Generate(entities []schema.Entity, dir string) error {
 	return nil
 }
 
-func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []schema.Entity) string {
+func generateSchemaProto(entities []schema.Entity) string {
 	var content strings.Builder
 
 	content.WriteString("syntax = \"proto3\";\n\n")
@@ -46,10 +32,10 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 	content.WriteString("option go_package = \"./pb\";\n\n")
 
 	imports := []string{}
-	if needsCommonImports(messageEntities) {
+	if needsCommonImports(entities) {
 		imports = append(imports, "google/protobuf/timestamp.proto")
 	}
-	if needsEmptyImportForEntities(serviceEntities) {
+	if needsEmptyImportForEntities(entities) {
 		imports = append(imports, "google/protobuf/empty.proto")
 	}
 	imports = append(imports, "buf/validate/validate.proto")
@@ -62,7 +48,7 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 
 	var requiredStr = "[(buf.validate.field).required = true]"
 
-	for i, entity := range messageEntities {
+	for i, entity := range entities {
 		if i > 0 {
 			content.WriteString("\n")
 		}
@@ -91,17 +77,17 @@ func generateSchemaProto(messageEntities []schema.Entity, serviceEntities []sche
 		}
 
 		content.WriteString("}")
-		if i < len(messageEntities)-1 {
+		if i < len(entities)-1 {
 			content.WriteString("\n")
 		}
 	}
 
-	// Add spacing betweenn mesages and services if both exists
-	if len(messageEntities) > 0 && len(serviceEntities) > 0 {
+	// Add spacing between messages and services
+	if len(entities) > 0 {
 		content.WriteString("\n\n")
 	}
 
-	for i, entity := range serviceEntities {
+	for i, entity := range entities {
 		if i > 0 {
 			content.WriteString("\n\n")
 		}

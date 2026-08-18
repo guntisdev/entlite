@@ -2,8 +2,8 @@ package entlite
 
 type Schema struct{}
 
-type Annotation interface {
-	Annotation()
+type Contract interface {
+	Contract()
 }
 
 type Field interface {
@@ -18,18 +18,18 @@ type Index interface {
 	Index()
 }
 
-type MessageAnnotation struct{}
+type SQLCContract struct{}
 
-func (MessageAnnotation) Annotation() {}
+func (SQLCContract) Contract() {}
 
-func Message() Annotation {
-	return MessageAnnotation{}
+func SQLC() Contract {
+	return SQLCContract{}
 }
 
-type GRPCAnnotation struct{}
+type PROTOContract struct{}
 
-func (GRPCAnnotation) Annotation() {}
+func (PROTOContract) Contract() {}
 
-func GRPC(annotations ...Annotation) Annotation {
-	return GRPCAnnotation{}
+func PROTO(contracts ...Contract) Contract {
+	return PROTOContract{}
 }

@@ -18,8 +18,12 @@ func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (s
 		if !hasValidateField(entity) && !hasJSONField(entity) {
 			continue
 		}
-		methods.WriteString(generateValidateMethod(entity, schema.QueryCreate))
-		methods.WriteString(generateValidateMethod(entity, schema.QueryUpdate))
+		for _, queryType := range []schema.QueryType{schema.QueryCreate, schema.QueryUpdate} {
+			if !hasQueryType(entity, queryType) {
+				continue
+			}
+			methods.WriteString(generateValidateMethod(entity, queryType))
+		}
 	}
 	body := methods.String()
 
@@ -162,6 +166,17 @@ func isPointerField(field schema.Field, queryType schema.QueryType) bool {
 	}
 	// update makes write-only fields optional so they can be left alone
 	return queryType == schema.QueryUpdate && (field.Permissions&permissions.ApiRead) == 0
+}
+
+// only a declared query has a request message to hang Validate() on
+func hasQueryType(entity schema.Entity, queryType schema.QueryType) bool {
+	for _, query := range entity.Queries {
+		if query.Type == queryType {
+			return true
+		}
+	}
+
+	return false
 }
 
 func hasJSONField(entity schema.Entity) bool {
