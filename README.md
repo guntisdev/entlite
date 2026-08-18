@@ -2,15 +2,18 @@
 Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
 ## TODO
+* Rename `Annotation` type to `Contract`, `Annotations()` method to `Contracts()`
+* Rename `Message()` to `SQLC()`, `GRPC()` to `PROTO()` - names match contract/ folders
+* Make `Contracts()` required - parser errors if the method is missing or the list is empty
+* Gate sqlc generation on `SQLC()` in genCommand - currently it generates for all entities
+* Fix newCommand template - it scaffolds `entlite.Service()` which does not exist
+* Update example schemas and test_input_helpers.go to the new names
 * Create /internal/naming/ to have in one place consistant naming
 * Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/
 * Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
 * Split get/list/delete sqlc wraps in separate files
 * Move query name to parser instead of generator
-* Proly rename in annotations Message to SQLC - to remove confusion what is generated
-* Proly rename in annotations GRPC to PROTO - a bit clearer what is generated
-* Make annotations optional
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 * Comment out in examples Queries use case for: Count, GroupBy, Having, OrderBy
 * Implement Queries Count()
