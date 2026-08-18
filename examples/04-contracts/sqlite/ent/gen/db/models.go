@@ -1,0 +1,109 @@
+package db
+
+import (
+	pb "github.com/guntisdev/entlite/examples/04-contracts/sqlite/ent/gen/pb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
+	internal "github.com/guntisdev/entlite/examples/04-contracts/sqlite/ent/gen/db/internal"
+)
+
+
+type Audit struct {
+	ID int32 `json:"ID"`
+	Action string `json:"action"`
+	MatchID int32 `json:"match_id"`
+	Detail string `json:"detail"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type Match struct {
+	ID int32 `json:"ID"`
+	White string `json:"white"`
+	Black string `json:"black"`
+	Result string `json:"result"`
+	Opening *string `json:"opening"`
+	Moves int32 `json:"moves"`
+	PlayedAt time.Time `json:"played_at"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func (m *Audit) AuditToSQL() *internal.Audit {
+	if m == nil {
+		return nil
+	}
+
+	return &internal.Audit{
+		ID: IntConvert[int32, int64](m.ID),
+		Action: m.Action,
+		MatchID: IntConvert[int32, int64](m.MatchID),
+		Detail: m.Detail,
+		CreatedAt: m.CreatedAt,
+	}
+}
+
+func AuditFromSQL(db *internal.Audit) *Audit {
+	if db == nil {
+		return nil
+	}
+
+	return &Audit{
+		ID: IntConvert[int64, int32](db.ID),
+		Action: db.Action,
+		MatchID: IntConvert[int64, int32](db.MatchID),
+		Detail: db.Detail,
+		CreatedAt: db.CreatedAt,
+	}
+}
+
+func (m *Match) MatchToSQL() *internal.Match {
+	if m == nil {
+		return nil
+	}
+
+	return &internal.Match{
+		ID: IntConvert[int32, int64](m.ID),
+		White: m.White,
+		Black: m.Black,
+		Result: m.Result,
+		Opening: m.Opening,
+		Moves: IntConvert[int32, int64](m.Moves),
+		PlayedAt: m.PlayedAt,
+		CreatedAt: m.CreatedAt,
+	}
+}
+
+func MatchFromSQL(db *internal.Match) *Match {
+	if db == nil {
+		return nil
+	}
+
+	return &Match{
+		ID: IntConvert[int64, int32](db.ID),
+		White: db.White,
+		Black: db.Black,
+		Result: db.Result,
+		Opening: db.Opening,
+		Moves: IntConvert[int64, int32](db.Moves),
+		PlayedAt: db.PlayedAt,
+		CreatedAt: db.CreatedAt,
+	}
+}
+
+// ToProto converts Match to proto format
+func (m *Match) ToProto() *pb.Match {
+	if m == nil {
+		return nil
+	}
+
+	return &pb.Match{
+		ID: m.ID,
+		White: m.White,
+		Black: m.Black,
+		Result: m.Result,
+		Opening: m.Opening,
+		Moves: m.Moves,
+		PlayedAt: timestamppb.New(m.PlayedAt),
+		CreatedAt: timestamppb.New(m.CreatedAt),
+	}
+}
+
