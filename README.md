@@ -2,7 +2,6 @@
 Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
 ## TODO
-* Make `Contracts()` required - parser errors if the method is missing or the list is empty
 * Gate sqlc generation on `SQLC()` in genCommand - currently it generates for all entities
 * Create /internal/naming/ to have in one place consistant naming
 * Implement DefaultFunc for sql generation
