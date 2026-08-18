@@ -7,6 +7,7 @@ import (
 
 	"github.com/guntisdev/entlite/internal/generator/proto"
 	"github.com/guntisdev/entlite/internal/generator/sqlc"
+	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
 )
 
@@ -38,22 +39,28 @@ func genCommand(args []string) {
 	}
 
 	// PROTO
-	if err := proto.Generate(parsedEntities, protoDir); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed generating proto: %v\n", err)
-		os.Exit(1)
-	}
-
-	sqlcYamlPath := filepath.Join(filepath.Dir(dir), "sqlc.yaml")
-	sqlcConfig, err := util.GetSqlcConfigFromYaml(sqlcYamlPath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
-		os.Exit(1)
+	protoEntities := schema.FilterPROTO(parsedEntities)
+	if len(protoEntities) > 0 {
+		if err := proto.Generate(protoEntities, protoDir); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed generating proto: %v\n", err)
+			os.Exit(1)
+		}
 	}
 
 	// SQLC
-	sqlcGenerator := sqlc.NewGenerator(sqlcConfig.Dialect)
-	if err := sqlcGenerator.Generate(parsedEntities, sqlcDir); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed generating sqlc: %v\n", err)
-		os.Exit(1)
+	sqlcEntities := schema.FilterSQLC(parsedEntities)
+	if len(sqlcEntities) > 0 {
+		sqlcYamlPath := filepath.Join(filepath.Dir(dir), "sqlc.yaml")
+		sqlcConfig, err := util.GetSqlcConfigFromYaml(sqlcYamlPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed reading sqlc.yaml: %v\n", err)
+			os.Exit(1)
+		}
+
+		sqlcGenerator := sqlc.NewGenerator(sqlcConfig.Dialect)
+		if err := sqlcGenerator.Generate(sqlcEntities, sqlcDir); err != nil {
+			fmt.Fprintf(os.Stderr, "Failed generating sqlc: %v\n", err)
+			os.Exit(1)
+		}
 	}
 }

@@ -28,6 +28,28 @@ func (e Entity) HasPROTO() bool {
 	return false
 }
 
+func FilterSQLC(entities []Entity) []Entity {
+	var filtered []Entity
+	for _, entity := range entities {
+		if entity.HasSQLC() {
+			filtered = append(filtered, entity)
+		}
+	}
+
+	return filtered
+}
+
+func FilterPROTO(entities []Entity) []Entity {
+	var filtered []Entity
+	for _, entity := range entities {
+		if entity.HasPROTO() {
+			filtered = append(filtered, entity)
+		}
+	}
+
+	return filtered
+}
+
 type Entity struct {
 	Name      string
 	Fields    []Field
