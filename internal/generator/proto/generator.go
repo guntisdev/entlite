@@ -27,6 +27,7 @@ func Generate(entities []schema.Entity, dir string) error {
 func generateSchemaProto(entities []schema.Entity) string {
 	var content strings.Builder
 
+	content.WriteString(util.GeneratedGo)
 	content.WriteString("syntax = \"proto3\";\n\n")
 	content.WriteString(fmt.Sprintf("package %s;\n\n", "entlite"))
 	content.WriteString("option go_package = \"./pb\";\n\n")

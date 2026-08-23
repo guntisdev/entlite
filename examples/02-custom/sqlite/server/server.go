@@ -353,6 +353,7 @@ func (s *AnalyticsServer) GetReadingStats(
 	// AVG/MIN/MAX are NULL when the window holds no rows
 	stats := &pb.SensorReadingStats{
 		ReadingCount: row.ReadingCount,
+		AvgValue:     0,
 		MinValue:     anyToFloat(row.MinValue),
 		MaxValue:     anyToFloat(row.MaxValue),
 	}
@@ -385,8 +386,9 @@ func (s *AnalyticsServer) ListWithLatestReading(
 		sensor.LatestValue = row.LatestValue
 
 		item := &pb.SensorWithLatestReading{
-			Sensor:      sensor,
-			LatestValue: row.LatestValue,
+			Sensor:           sensor,
+			LatestValue:      row.LatestValue,
+			LatestRecordedAt: nil,
 		}
 		if row.LatestRecordedAt != nil {
 			item.LatestRecordedAt = timestamppb.New(*row.LatestRecordedAt)

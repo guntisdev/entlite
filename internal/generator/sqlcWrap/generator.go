@@ -113,6 +113,7 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 
 	var sb strings.Builder
 	packageName := filepath.Base(filepath.Dir(absInputDir))
+	sb.WriteString(util.GeneratedGo)
 	sb.WriteString(fmt.Sprintf("package %s\n\n", packageName))
 	sb.WriteString(ctx.generateImports(body))
 	sb.WriteString(body)
@@ -816,6 +817,26 @@ func (ctx *generationContext) generateModelConverters(entity schema.Entity) stri
 
 	return sb.String()
 }
+
+func protoZeroValue(field schema.Field) string {
+	if field.Optional {
+		return "nil"
+	}
+
+	switch field.Type {
+	case schema.FieldTypeString, schema.FieldTypeJSON:
+		return `""`
+	case schema.FieldTypeInt, schema.FieldTypeInt64, schema.FieldTypeFloat:
+		return "0"
+	case schema.FieldTypeBool:
+		return "false"
+	case schema.FieldTypeTime, schema.FieldTypeByte:
+		return "nil"
+	default:
+		return `""`
+	}
+}
+
 func (ctx *generationContext) generateProtoConverter(entity schema.Entity) string {
 	var sb strings.Builder
 	protoPackage := "pb"
@@ -823,6 +844,7 @@ func (ctx *generationContext) generateProtoConverter(entity schema.Entity) strin
 	sb.WriteString(fmt.Sprintf("// ToProto converts %s to proto format\n", entity.Name))
 	sb.WriteString(fmt.Sprintf("func (m *%s) ToProto() *%s.%s {\n", entity.Name, protoPackage, entity.Name))
 	sb.WriteString("\tif m == nil {\n\t\treturn nil\n\t}\n\n")
+
 	sb.WriteString(fmt.Sprintf("\treturn &%s.%s{\n", protoPackage, entity.Name))
 
 	for _, field := range entity.Fields {
@@ -830,11 +852,14 @@ func (ctx *generationContext) generateProtoConverter(entity schema.Entity) strin
 		if !canRead {
 			continue
 		}
+		protoName := toProtoFieldName(field)
+
+		// virtual fields have no column, the api layer fills them in later
 		if field.IsVirtual() {
+			sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", protoName, protoZeroValue(field)))
 			continue
 		}
 
-		protoName := toProtoFieldName(field)
 		modelName := toDBFieldName(field)
 
 		if field.Type == schema.FieldTypeTime {

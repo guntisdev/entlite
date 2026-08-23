@@ -27,6 +27,7 @@ func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (s
 	}
 	body := methods.String()
 
+	content.WriteString(util.GeneratedGo)
 	content.WriteString("package pb\n\n")
 
 	content.WriteString("import (\n")

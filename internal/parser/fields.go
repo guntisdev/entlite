@@ -193,13 +193,18 @@ func parseDefaultValue(expr ast.Expr) any {
 		case token.STRING:
 			return unquote(e.Value)
 		case token.INT:
-			var val int
-			fmt.Sscanf(e.Value, "%d", &val)
-			return val
+			// base 0 also handles 0x, 0b, 0o and underscores
+			val, err := strconv.ParseInt(e.Value, 0, 64)
+			if err != nil {
+				return nil
+			}
+			return int(val)
 		case token.FLOAT:
-			var val float32
-			fmt.Sscanf(e.Value, "%f", &val)
-			return val
+			val, err := strconv.ParseFloat(e.Value, 32)
+			if err != nil {
+				return nil
+			}
+			return float32(val)
 		}
 	case *ast.Ident:
 		if e.Name == "true" {

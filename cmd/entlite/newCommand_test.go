@@ -9,9 +9,7 @@ import (
 
 func TestNewCommandFunction(t *testing.T) {
 	tmpDir := t.TempDir()
-	oldWd, _ := os.Getwd()
-	defer os.Chdir(oldWd)
-	os.Chdir(tmpDir)
+	t.Chdir(tmpDir)
 
 	newCommand([]string{"User", "Post"})
 

@@ -94,21 +94,8 @@ func sqlcWrapCommand() {
 	}
 
 	// Generate convert.go file with converter helper functions
-	hasTimeField := false
-	for _, entity := range sqlcEntities {
-		for _, field := range entity.Fields {
-			if field.Type == schema.FieldTypeTime {
-				hasTimeField = true
-				break
-			}
-		}
-		if hasTimeField {
-			break
-		}
-	}
-
 	convertFilePath := filepath.Join(outputDir, "convert.go")
-	convertContent := sqlcwrap.GenerateConvertFile("db", hasTimeField)
+	convertContent := sqlcwrap.GenerateConvertFile("db", sqlcEntities)
 	err = os.WriteFile(convertFilePath, []byte(convertContent), 0644)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing convert.go file: %v\n", err)

@@ -304,24 +304,6 @@ func isPointerParam(field schema.Field, sqlQuery string) bool {
 	return sqlQuery == "update" && (field.Permissions&permissions.ApiRead) == 0
 }
 
-func hasValidateField(entity schema.Entity) bool {
-	for _, field := range entity.Fields {
-		if field.Validate != nil {
-			return true
-		}
-	}
-	return false
-}
-
-func hasDefaultFuncFields(entity schema.Entity) bool {
-	for _, field := range entity.Fields {
-		if field.DefaultFunc != nil {
-			return true
-		}
-	}
-	return false
-}
-
 func formatType(expr ast.Expr) string {
 	switch t := expr.(type) {
 	case *ast.Ident:

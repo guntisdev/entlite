@@ -164,14 +164,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		t.Fatalf("Failed to write sqlc queries file: %v", err)
 	}
 
-	originalDir, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Failed to get current directory: %v", err)
-	}
-	if err := os.Chdir(filepath.Join(tmpDir, "ent")); err != nil {
-		t.Fatalf("Failed to change directory: %v", err)
-	}
-	defer os.Chdir(originalDir)
+	t.Chdir(filepath.Join(tmpDir, "ent"))
 
 	sqlcYamlContent := `version: "2"
 sql:
@@ -201,7 +194,7 @@ sql:
 		t.Fatalf("Failed to read generated queries.sql.go: %v", err)
 	}
 
-	expectedContent := `package db
+	expectedContent := util.GeneratedGo + `package db
 
 import (
 	"context"

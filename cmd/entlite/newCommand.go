@@ -15,7 +15,7 @@ func newCommand(args []string) {
 	fs := flag.NewFlagSet("new", flag.ExitOnError)
 	dialect := fs.String("dialect", "postgresql", "SQL dialect: postgresql, sqlite, or mysql")
 
-	fs.Parse(args)
+	_ = fs.Parse(args)
 	entityNames := fs.Args()
 
 	if len(entityNames) == 0 {

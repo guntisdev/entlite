@@ -5,6 +5,13 @@ linters:
 linters-settings:
   exhaustruct:
     include:
-      - ".+"
-    check-internal: true
-    check-external: true
+      - '.*/ent/gen/.+'
+
+issues:
+  # Skip files marked as generated, both entlite's own output and sqlc, buf and protoc
+  exclude-generated: lax
+  # examples/ is skipped by default, but it holds code worth linting
+  exclude-dirs-use-default: false
+  # never hide findings behind a cap
+  max-issues-per-linter: 0
+  max-same-issues: 0
