@@ -36,8 +36,8 @@ func (g *Generator) Generate(entities []schema.Entity, dir string) error {
 func (g *Generator) generateSchema(entities []schema.Entity, dir string) error {
 	var content strings.Builder
 
-	content.WriteString("-- Generated schema.sql\n")
-	content.WriteString("-- This file contains table definitions for all entities\n\n")
+	content.WriteString(util.GeneratedSQL)
+	content.WriteString("-- Table definitions for all entities\n\n")
 
 	for _, entity := range entities {
 		content.WriteString(g.generateTableSQL(entity))
@@ -178,8 +178,8 @@ func (g *Generator) defaultIndexName(tableName string, idx schema.Index) string 
 func (g *Generator) generateQueries(entities []schema.Entity, dir string) error {
 	var content strings.Builder
 
-	content.WriteString("-- Generate queries.sql\n")
-	content.WriteString("-- This file contains SQLC-compatible queries definitions\n\n")
+	content.WriteString(util.GeneratedSQL)
+	content.WriteString("-- SQLC compatible query definitions\n\n")
 
 	for _, entity := range entities {
 		entityQueries := g.generateCRUDQueries(entity)

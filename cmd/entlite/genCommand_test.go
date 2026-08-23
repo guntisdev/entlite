@@ -74,7 +74,7 @@ sql:
 
 	// Verify schema.proto
 	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto")
-	expectedProtoContent := `syntax = "proto3";
+	expectedProtoContent := testutil.GeneratedGo + `syntax = "proto3";
 
 package entlite;
 
@@ -161,8 +161,7 @@ service UserService {
 
 	// Verify schema.sql
 	sqlSchemaPath := filepath.Join(tmpDir, "ent", "contract", "sqlc", "schema.sql")
-	expectedSQLSchema := `-- Generated schema.sql
--- This file contains table definitions for all entities
+	expectedSQLSchema := testutil.GeneratedSQL + `-- Table definitions for all entities
 
 -- user table
 CREATE TABLE "user"(
@@ -192,8 +191,7 @@ CREATE TABLE "user"(
 
 	// Verify queries.sql
 	sqlQueriesPath := filepath.Join(tmpDir, "ent", "contract", "sqlc", "queries.sql")
-	expectedSQLQueries := `-- Generate queries.sql
--- This file contains SQLC-compatible queries definitions
+	expectedSQLQueries := testutil.GeneratedSQL + `-- SQLC compatible query definitions
 
 -- User CRUD operations
 

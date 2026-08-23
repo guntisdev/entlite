@@ -133,9 +133,10 @@ func AuditCount(ctx context.Context, database *sql.DB) (int, error) {
 // audit appends an internal row, a failure here must not fail the rpc
 func audit(ctx context.Context, queries *db.Queries, action string, matchID int32, detail string) {
 	_, err := queries.CreateAudit(ctx, db.CreateAuditParams{
-		Action:  action,
-		MatchID: matchID,
-		Detail:  detail,
+		Action:    action,
+		MatchID:   matchID,
+		Detail:    detail,
+		CreatedAt: nil,
 	})
 	if err != nil {
 		log.Printf("Failed to write audit entry: %v", err)
@@ -193,7 +194,15 @@ func countStandings(matches []*db.Match) []*pb.Standing {
 		if entry, ok := byPlayer[player]; ok {
 			return entry
 		}
-		entry := &pb.Standing{Player: player}
+		entry := &pb.Standing{
+			ID:     0,
+			Player: player,
+			Played: 0,
+			Wins:   0,
+			Draws:  0,
+			Losses: 0,
+			Points: 0,
+		}
 		byPlayer[player] = entry
 		return entry
 	}

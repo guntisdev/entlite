@@ -33,15 +33,7 @@ func TestProtoValidateCommand(t *testing.T) {
 	writeTestUserSchema(t, schemaDir)
 	writeTestLogic(t, logicDir)
 
-	// Change to tmpDir/ent to simulate working in the project
-	originalDir, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Failed to get current directory: %v", err)
-	}
-	if err := os.Chdir(filepath.Join(tmpDir, "ent")); err != nil {
-		t.Fatalf("Failed to change directory: %v", err)
-	}
-	defer os.Chdir(originalDir)
+	t.Chdir(filepath.Join(tmpDir, "ent"))
 
 	bufGenYamlContent := `version: v2
 plugins:
@@ -71,7 +63,7 @@ plugins:
 		t.Fatalf("Failed to read generated proto_validate.go: %v", err)
 	}
 
-	expectedContent := `package pb
+	expectedContent := util.GeneratedGo + `package pb
 
 import (
 	"context"

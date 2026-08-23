@@ -8,10 +8,17 @@ build:
 	go build ./...
 
 lint:
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./examples/...
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./...
 
 test:
 	go test -v ./...
+
+# regenerates every example, needs sqlc, buf and a network
+gen:
+	@for dir in examples/*/*/ent; do \
+		echo "==> $$dir"; \
+		(cd $$dir && go generate .) || exit 1; \
+	done
 
 # runs through each example and checks if nothing is broken
 integration:
