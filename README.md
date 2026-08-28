@@ -73,3 +73,18 @@ Run go web server
 ```bash
 go run main.go
 ```
+
+## Release
+```bash
+# Tag and push version
+git tag v0.0.3
+git push origin v0.0.3
+
+# Force Go proxy cache update
+GOPROXY=https://proxy.golang.org GOPRIVATE= go list -m github.com/guntisdev/entlite@v0.0.3
+
+# Update CLI tool & library dependencies in projects
+go install github.com/guntisdev/entlite/cmd/entlite@v0.0.3
+go get github.com/guntisdev/entlite@v0.0.3
+```
+
