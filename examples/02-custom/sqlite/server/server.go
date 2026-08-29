@@ -47,7 +47,7 @@ func (s *SensorServer) Create(
 		Firmware:     req.Msg.Firmware,
 		SampleRateMs: req.Msg.SampleRateMs,
 		InstalledAt:  req.Msg.InstalledAt.AsTime(),
-		// latest_value is permissions.Virtual: it exists on the proto message
+		// latest_value is proto only: it exists on the proto message
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create sensor: %w", err))
