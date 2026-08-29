@@ -76,6 +76,7 @@ INSERT INTO "sensor" (
 SELECT * FROM "sensor" WHERE ID = ?;
 
 -- name: GetSensorByCode :one
+-- Look up a sensor by its hardware code
 SELECT * FROM "sensor" WHERE code = ?;
 
 -- name: ListSensorFilterByLabelKindActive :many

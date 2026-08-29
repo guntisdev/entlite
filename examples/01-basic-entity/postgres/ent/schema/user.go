@@ -25,14 +25,16 @@ func (User) Contracts() []entlite.Contract {
 func (User) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("email").Unique(),
-		field.String("name").Comment("Full name, e.g. \"Jane Doe\"").Validate(logic.StartsWithCapital),
+		// Full name, e.g. "Jane Doe"
+		field.String("name").Validate(logic.StartsWithCapital),
 		field.Int("age").Optional(),
 		field.String("password").Contracts(entlite.SQLC(), entlite.PROTO().WriteOnly()),
 		field.Byte("api_key").Immutable().DefaultFunc(logic.GenerateAPIKey),
 		field.Bool("is_active").Default(true),
 		field.Int64("login_count").Default(0),
 		field.Float("rating").Default(0),
-		field.JSON("preferences").Comment("UI preferences, e.g. {\"theme\":\"dark\"}").Default("{}"),
+		// UI preferences, e.g. {"theme":"dark"}
+		field.JSON("preferences").Default("{}"),
 		field.Time("created_at").DefaultFunc(time.Now).Immutable().Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()),
 		field.Time("updated_at").DefaultFunc(time.Now).Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()),
 	}
@@ -40,9 +42,9 @@ func (User) Fields() []entlite.Field {
 
 func (User) Queries() []entlite.Query {
 	return []entlite.Query{
-		// DefaultCRUD expands to Create / GetByID / Update / Delete / List.
 		query.DefaultCRUD(),
 		query.CreateBulk(),
+		// Look up a user by email address
 		query.GetBy("email"),
 		query.ListAll(),
 		query.DeleteAll(),

@@ -161,6 +161,7 @@ const getSensorByCode = `-- name: GetSensorByCode :one
 SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at FROM "sensor" WHERE code = ?
 `
 
+// Look up a sensor by its hardware code
 func (q *Queries) GetSensorByCode(ctx context.Context, code string) (Sensor, error) {
 	row := q.db.QueryRowContext(ctx, getSensorByCode, code)
 	var i Sensor

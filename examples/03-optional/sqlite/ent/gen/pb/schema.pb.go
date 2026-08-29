@@ -31,6 +31,7 @@ type Article struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// uuid primary key, generated on the server and not part of requests
 	ID string `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
 	// Human/URL identifier, e.g. hello-world
 	Slug           string                 `protobuf:"bytes,2,opt,name=slug,proto3" json:"slug,omitempty"`
@@ -360,6 +361,7 @@ type UpdateArticleRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// uuid primary key, generated on the server and not part of requests
 	ID *string `protobuf:"bytes,1,opt,name=ID,proto3,oneof" json:"ID,omitempty"`
 	// Human/URL identifier, e.g. hello-world
 	Slug           string                 `protobuf:"bytes,2,opt,name=slug,proto3" json:"slug,omitempty"`

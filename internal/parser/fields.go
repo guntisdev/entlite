@@ -10,7 +10,7 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
+func parseFieldsMethod(funcDecl *ast.FuncDecl, comments commentLookup) ([]schema.Field, error) {
 	var fields []schema.Field
 
 	if funcDecl.Body == nil {
@@ -25,11 +25,14 @@ func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
 
 		for _, result := range retStmt.Results {
 			if compLit, ok := result.(*ast.CompositeLit); ok {
+				prevEnd := compLit.Lbrace
 				for _, elt := range compLit.Elts {
 					field, err := parseFieldExpression(elt)
 					if err != nil {
 						return nil, err
 					}
+					field.Comment = comments.docAbove(elt.Pos(), prevEnd)
+					prevEnd = elt.End()
 					if field.Name != "" {
 						fields = append(fields, field)
 					}
@@ -117,12 +120,6 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 							if val := parseInt(lit.Value); val != nil {
 								field.ProtoField = *val
 							}
-						}
-					}
-				case "Comment":
-					if len(e.Args) > 0 {
-						if lit, ok := e.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
-							field.Comment = unquote(lit.Value)
 						}
 					}
 				case "Contracts":

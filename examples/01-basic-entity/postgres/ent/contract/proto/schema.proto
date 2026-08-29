@@ -119,6 +119,7 @@ service UserService {
   rpc Update(UpdateUserRequest) returns (User);
   rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
   rpc CreateBulk(CreateBulkUserRequest) returns (CreateBulkUserResponse);
+  // Look up a user by email address
   rpc GetByEmail(GetUserByEmailRequest) returns (User);
   rpc ListAll(ListAllUserRequest) returns (ListAllUserResponse);
   rpc DeleteAll(DeleteAllUserRequest) returns (google.protobuf.Empty);

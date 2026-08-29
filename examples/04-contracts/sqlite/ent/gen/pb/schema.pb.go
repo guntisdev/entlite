@@ -131,7 +131,8 @@ func (x *Match) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-// Player represents as player entity
+// Player is the club roster. The secretary maintains it on the server,
+// members only read it.
 type Player struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

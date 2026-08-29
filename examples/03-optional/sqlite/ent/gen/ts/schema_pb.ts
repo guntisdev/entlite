@@ -24,6 +24,8 @@ export const file_schema: GenFile = /*@__PURE__*/
  */
 export type Article = Message<"entlite.Article"> & {
   /**
+   * uuid primary key, generated on the server and not part of requests
+   *
    * @generated from field: string ID = 1;
    */
   ID: string;
@@ -198,6 +200,8 @@ export const GetArticleByIDRequestSchema: GenMessage<GetArticleByIDRequest> = /*
  */
 export type UpdateArticleRequest = Message<"entlite.UpdateArticleRequest"> & {
   /**
+   * uuid primary key, generated on the server and not part of requests
+   *
    * @generated from field: optional string ID = 1;
    */
   ID?: string;

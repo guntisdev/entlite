@@ -76,7 +76,8 @@ export const MatchSchema: GenMessage<Match> = /*@__PURE__*/
   messageDesc(file_schema, 0);
 
 /**
- * Player represents as player entity
+ * Player is the club roster. The secretary maintains it on the server,
+ * members only read it.
  *
  * @generated from message entlite.Player
  */

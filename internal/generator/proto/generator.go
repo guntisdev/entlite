@@ -53,7 +53,7 @@ func generateSchemaProto(entities []schema.Entity) string {
 			content.WriteString("\n")
 		}
 
-		content.WriteString(fmt.Sprintf("// %s represents as %s entity\n", entity.Name, strings.ToLower(entity.Name)))
+		writeMessageComment(&content, entity)
 		content.WriteString(fmt.Sprintf("message %s {\n", entity.Name))
 
 		for _, field := range entity.Fields {
@@ -256,6 +256,16 @@ func generateResponseMessages(entity schema.Entity) string {
 	return content.String()
 }
 
+func writeMessageComment(content *strings.Builder, entity schema.Entity) {
+	if entity.Comment == "" {
+		fmt.Fprintf(content, "// %s represents as %s entity\n", entity.Name, strings.ToLower(entity.Name))
+		return
+	}
+	for line := range strings.SplitSeq(entity.Comment, "\n") {
+		fmt.Fprintf(content, "// %s\n", strings.TrimRight(line, "\r"))
+	}
+}
+
 func writeFieldComment(content *strings.Builder, comment string) {
 	if comment == "" {
 		return
@@ -299,6 +309,27 @@ func getIdFieldAsStr(fields []schema.Field) string {
 }
 
 func generateRequests(entity schema.Entity, query schema.Query) string {
+	rpc := generateRpc(entity, query)
+	if rpc == "" {
+		return ""
+	}
+
+	return rpcComment(query) + rpc
+}
+
+func rpcComment(query schema.Query) string {
+	var content strings.Builder
+	for line := range strings.SplitSeq(query.Comment, "\n") {
+		if line == "" {
+			continue
+		}
+		fmt.Fprintf(&content, "  // %s\n", strings.TrimRight(line, "\r"))
+	}
+
+	return content.String()
+}
+
+func generateRpc(entity schema.Entity, query schema.Query) string {
 	rpcName := util.GenQueryRpcName(query, entity.Name)
 	messageName := util.GenQueryName(query, entity.Name)
 

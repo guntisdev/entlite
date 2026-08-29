@@ -6,6 +6,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
 )
@@ -34,6 +35,9 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 	if err != nil {
 		return entity, fmt.Errorf("failed to parse file %s: %w", discovered.Path, err)
 	}
+
+	comments := newCommentLookup(fset, file)
+	entity.Comment = parseEntityComment(file, entity.Name)
 
 	hasContractsMethod := false
 
@@ -76,7 +80,7 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 
 		// Parse Fields
 		if funcDecl.Name.Name == "Fields" {
-			fields, err := parseFieldsMethod(funcDecl)
+			fields, err := parseFieldsMethod(funcDecl, comments)
 			if err != nil {
 				return entity, fmt.Errorf("failed to parse fields: %w", err)
 			}
@@ -92,7 +96,7 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 
 		// Parse Queries
 		if funcDecl.Name.Name == "Queries" {
-			queries, err := parseQueriesMethod(funcDecl)
+			queries, err := parseQueriesMethod(funcDecl, comments)
 			if err != nil {
 				return entity, fmt.Errorf("failed to parse queries: %w", err)
 			}
@@ -226,4 +230,31 @@ func applyPrimaryIndexOverride(entity *schema.Entity) {
 			entity.Fields[i].Primary = false
 		}
 	}
+}
+
+// parseEntityComment reads the doc comment line above the entity type declaration.
+func parseEntityComment(file *ast.File, name string) string {
+	for _, decl := range file.Decls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.TYPE {
+			continue
+		}
+
+		for _, spec := range genDecl.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok || typeSpec.Name.Name != name {
+				continue
+			}
+
+			doc := typeSpec.Doc
+			if doc == nil {
+				doc = genDecl.Doc
+			}
+			if doc != nil {
+				return strings.TrimSpace(doc.Text())
+			}
+		}
+	}
+
+	return ""
 }

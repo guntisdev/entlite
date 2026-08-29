@@ -112,6 +112,7 @@ func FilterPROTO(entities []Entity) []Entity {
 
 type Entity struct {
 	Name      string
+	Comment   string
 	Fields    []Field
 	Contracts []Contract
 	Queries   []Query
@@ -240,6 +241,7 @@ type Query struct {
 	Count     bool
 	OrderBy   string
 	Name      string // custom query name; empty means auto-generated
+	Comment   string
 	Contracts []Contract
 }
 

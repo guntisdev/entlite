@@ -12,6 +12,7 @@ import "buf/validate/validate.proto";
 
 // Article represents as article entity
 message Article {
+  // uuid primary key, generated on the server and not part of requests
   string ID = 1 [(buf.validate.field).required = true];
   // Human/URL identifier, e.g. hello-world
   string slug = 2 [(buf.validate.field).required = true];
@@ -49,6 +50,7 @@ message GetArticleByIDRequest {
   string ID = 1 [(buf.validate.field).required = true];
 }
 message UpdateArticleRequest {
+  // uuid primary key, generated on the server and not part of requests
   optional string ID = 1;
   // Human/URL identifier, e.g. hello-world
   string slug = 2 [(buf.validate.field).required = true];
