@@ -546,6 +546,8 @@ export const UserService: GenService<{
     output: typeof CreateBulkUserResponseSchema;
   },
   /**
+   * Look up a user by email address
+   *
    * @generated from rpc entlite.UserService.GetByEmail
    */
   getByEmail: {

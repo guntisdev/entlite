@@ -41,7 +41,6 @@ func (Match) Queries() []entlite.Query {
 		query.Get(),
 		query.Delete(),
 		query.ListAll(),
-		// end of season cleanup, the server runs it, clients never see an rpc
-		query.DeleteAll().Contracts(entlite.SQLC()),
+		query.DeleteAll().Contracts(entlite.SQLC()), // end of season cleanup, the server runs it, no rpc
 	}
 }

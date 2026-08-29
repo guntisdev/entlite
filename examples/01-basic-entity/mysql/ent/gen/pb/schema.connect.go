@@ -65,6 +65,7 @@ type UserServiceClient interface {
 	Update(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	CreateBulk(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error)
+	// Look up a user by email address
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
 	ListAll(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error)
 	DeleteAll(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error)
@@ -217,6 +218,7 @@ type UserServiceHandler interface {
 	Update(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	CreateBulk(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error)
+	// Look up a user by email address
 	GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
 	ListAll(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error)
 	DeleteAll(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error)

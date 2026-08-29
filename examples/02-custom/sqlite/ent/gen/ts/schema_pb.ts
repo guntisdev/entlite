@@ -692,6 +692,8 @@ export const SensorService: GenService<{
     output: typeof EmptySchema;
   },
   /**
+   * Look up a sensor by its hardware code
+   *
    * @generated from rpc entlite.SensorService.GetByCode
    */
   getByCode: {

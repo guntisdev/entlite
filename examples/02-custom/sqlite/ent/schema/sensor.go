@@ -52,6 +52,7 @@ func (Sensor) Fields() []entlite.Field {
 func (Sensor) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.DefaultCRUD(),
+		// Look up a sensor by its hardware code
 		query.GetBy("code"),
 		query.ListBy(
 			filter.Search("label"),

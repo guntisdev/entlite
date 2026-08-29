@@ -62,6 +62,7 @@ INSERT INTO "user" (
 SELECT * FROM "user" WHERE ID = ?;
 
 -- name: GetUserByEmail :one
+-- Look up a user by email address
 SELECT * FROM "user" WHERE email = ?;
 
 -- name: ListAllUser :many

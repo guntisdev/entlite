@@ -35,8 +35,7 @@ func (Player) Fields() []entlite.Field {
 
 func (Player) Queries() []entlite.Query {
 	return []entlite.Query{
-		// create stays a db query, the read only proto contract keeps it out of the service
-		query.Create(),
+		query.Create(), // stays a db query, the read only proto contract keeps it out of the service
 		query.Get(),
 		query.ListAll(),
 	}

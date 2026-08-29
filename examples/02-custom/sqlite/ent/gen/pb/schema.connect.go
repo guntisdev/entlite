@@ -244,6 +244,7 @@ type SensorServiceClient interface {
 	GetByID(context.Context, *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error)
 	Update(context.Context, *connect.Request[UpdateSensorRequest]) (*connect.Response[Sensor], error)
 	Delete(context.Context, *connect.Request[DeleteSensorRequest]) (*connect.Response[emptypb.Empty], error)
+	// Look up a sensor by its hardware code
 	GetByCode(context.Context, *connect.Request[GetSensorByCodeRequest]) (*connect.Response[Sensor], error)
 	FilterByLabelKindActive(context.Context, *connect.Request[ListSensorFilterByLabelKindActiveRequest]) (*connect.Response[ListSensorFilterByLabelKindActiveResponse], error)
 }
@@ -344,6 +345,7 @@ type SensorServiceHandler interface {
 	GetByID(context.Context, *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error)
 	Update(context.Context, *connect.Request[UpdateSensorRequest]) (*connect.Response[Sensor], error)
 	Delete(context.Context, *connect.Request[DeleteSensorRequest]) (*connect.Response[emptypb.Empty], error)
+	// Look up a sensor by its hardware code
 	GetByCode(context.Context, *connect.Request[GetSensorByCodeRequest]) (*connect.Response[Sensor], error)
 	FilterByLabelKindActive(context.Context, *connect.Request[ListSensorFilterByLabelKindActiveRequest]) (*connect.Response[ListSensorFilterByLabelKindActiveResponse], error)
 }

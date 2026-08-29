@@ -61,6 +61,7 @@ func (Article) Queries() []entlite.Query {
 		query.ListAll(),
 
 		// is_featured is a required field, but an optional filter
+
 		query.ListBy(
 			filter.Eq("author"),
 			filter.Eq("is_featured").Optional(),

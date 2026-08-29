@@ -41,8 +41,7 @@ func (Reading) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.Create(),
 		query.Get(),
-		// a measurement is a recorded fact, clients never edit it, disabled in proto level
-		query.Update().Contracts(entlite.SQLC()),
+		query.Update().Contracts(entlite.SQLC()), // a recorded fact, clients never edit it, no proto rpc
 		query.Delete(),
 		query.ListBy("sensor_id"),
 		query.ListBy(

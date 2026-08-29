@@ -161,6 +161,7 @@ const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE email = $1
 `
 
+// Look up a user by email address
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User

@@ -42,9 +42,9 @@ func (User) Fields() []entlite.Field {
 
 func (User) Queries() []entlite.Query {
 	return []entlite.Query{
-		// DefaultCRUD expands to Create / GetByID / Update / Delete / List.
 		query.DefaultCRUD(),
 		query.CreateBulk(),
+		// Look up a user by email address
 		query.GetBy("email"),
 		query.ListAll(),
 		query.DeleteAll(),
