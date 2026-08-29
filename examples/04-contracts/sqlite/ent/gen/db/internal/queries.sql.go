@@ -96,6 +96,50 @@ func (q *Queries) CreateMatch(ctx context.Context, arg CreateMatchParams) (int64
 	return id, err
 }
 
+const createPlayer = `-- name: CreatePlayer :one
+
+INSERT INTO "player" (
+  name,
+  rating,
+  title,
+  joined_at
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?
+) RETURNING ID
+`
+
+type CreatePlayerParams struct {
+	Name     string    `json:"name"`
+	Rating   int64     `json:"rating"`
+	Title    *string   `json:"title"`
+	JoinedAt time.Time `json:"joined_at"`
+}
+
+// Player CRUD operations
+func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, createPlayer,
+		arg.Name,
+		arg.Rating,
+		arg.Title,
+		arg.JoinedAt,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const deleteAllMatch = `-- name: DeleteAllMatch :exec
+DELETE FROM "match"
+`
+
+func (q *Queries) DeleteAllMatch(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteAllMatch)
+	return err
+}
+
 const deleteMatch = `-- name: DeleteMatch :exec
 DELETE FROM "match" WHERE ID = ?
 `
@@ -121,6 +165,23 @@ func (q *Queries) GetMatchByID(ctx context.Context, id int64) (Match, error) {
 		&i.Moves,
 		&i.PlayedAt,
 		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getPlayerByID = `-- name: GetPlayerByID :one
+SELECT id, name, rating, title, joined_at FROM "player" WHERE ID = ?
+`
+
+func (q *Queries) GetPlayerByID(ctx context.Context, id int64) (Player, error) {
+	row := q.db.QueryRowContext(ctx, getPlayerByID, id)
+	var i Player
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Rating,
+		&i.Title,
+		&i.JoinedAt,
 	)
 	return i, err
 }
@@ -180,6 +241,39 @@ func (q *Queries) ListAllMatch(ctx context.Context) ([]Match, error) {
 			&i.Moves,
 			&i.PlayedAt,
 			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listAllPlayer = `-- name: ListAllPlayer :many
+SELECT id, name, rating, title, joined_at FROM "player"
+`
+
+func (q *Queries) ListAllPlayer(ctx context.Context) ([]Player, error) {
+	rows, err := q.db.QueryContext(ctx, listAllPlayer)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Player
+	for rows.Next() {
+		var i Player
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Rating,
+			&i.Title,
+			&i.JoinedAt,
 		); err != nil {
 			return nil, err
 		}

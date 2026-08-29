@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
@@ -45,8 +44,6 @@ func parseFieldsMethod(funcDecl *ast.FuncDecl) ([]schema.Field, error) {
 
 func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 	field := schema.Field{}
-
-	field.Permissions = permissions.Default // default all permission
 
 	// Handle method chaining like entlite.String("name").ProtoField(2)
 	currentExpr := expr
@@ -128,10 +125,12 @@ func parseFieldExpression(expr ast.Expr) (schema.Field, error) {
 							field.Comment = unquote(lit.Value)
 						}
 					}
-				case "Permissions":
-					if len(e.Args) > 0 {
-						field.Permissions = parsePermissionsExpression(e.Args[0])
+				case "Contracts":
+					contracts, err := parseFieldContracts(e.Args)
+					if err != nil {
+						return field, err
 					}
+					field.Contracts = contracts
 				case "Unique":
 					field.Unique = true
 				case "Immutable":
@@ -273,39 +272,55 @@ func parseValidateFuncValue(expr ast.Expr) (func() any, error) {
 	return nil, fmt.Errorf("validate must be a function reference")
 }
 
-func parsePermissionsExpression(expr ast.Expr) permissions.Permission {
-	var perm permissions.Permission
+// applyFieldContracts fills in the entity contracts where a field declares none
+// and checks the declared ones against the entity
+func applyFieldContracts(entity schema.Entity) ([]schema.Field, error) {
+	fields := make([]schema.Field, 0, len(entity.Fields))
 
-	if binExpr, ok := expr.(*ast.BinaryExpr); ok && binExpr.Op == token.OR {
-		// Handle binary OR expressions like permissions.DbRead | permissions.ApiRead
-		leftPerm := parsePermissionsExpression(binExpr.X)
-		rightPerm := parsePermissionsExpression(binExpr.Y)
-		perm = leftPerm | rightPerm
-	} else if selExpr, ok := expr.(*ast.SelectorExpr); ok {
-		// Handle selector expressions like permissions.Standard
-		if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "permissions" {
-			switch selExpr.Sel.Name {
-			case "DbRead":
-				perm = permissions.DbRead
-			case "DbWrite":
-				perm = permissions.DbWrite
-			case "ApiRead":
-				perm = permissions.ApiRead
-			case "ApiWrite":
-				perm = permissions.ApiWrite
-			case "Default":
-				perm = permissions.Default
-			case "ReadOnly":
-				perm = permissions.ReadOnly
-			case "WriteOnly":
-				perm = permissions.WriteOnly
-			case "Internal":
-				perm = permissions.Internal
-			case "Virtual":
-				perm = permissions.Virtual
+	for _, field := range entity.Fields {
+		if len(field.Contracts) == 0 {
+			for _, contract := range entity.Contracts {
+				field.Contracts = append(field.Contracts, schema.Contract{Type: contract.Type})
+			}
+			fields = append(fields, field)
+			continue
+		}
+
+		for _, contract := range field.Contracts {
+			if _, ok := entity.GetContract(contract.Type); !ok {
+				return nil, fmt.Errorf("entity %q field %q declares contract %q, which the entity does not have", entity.Name, field.Name, contract.Type)
 			}
 		}
+
+		fields = append(fields, field)
 	}
 
-	return perm
+	return fields, nil
+}
+
+// parseFieldContracts reads the contracts of a single field
+func parseFieldContracts(args []ast.Expr) ([]schema.Contract, error) {
+	if len(args) == 0 {
+		return nil, fmt.Errorf("Contracts expects at least one of entlite.SQLC() or entlite.PROTO()")
+	}
+
+	var contracts []schema.Contract
+	for _, arg := range args {
+		callExpr, ok := arg.(*ast.CallExpr)
+		if !ok {
+			return nil, fmt.Errorf("Contracts expects entlite.SQLC() or entlite.PROTO()")
+		}
+
+		contract, err := parseContractCall(callExpr)
+		if err != nil {
+			return nil, err
+		}
+		if contract.Type == "" {
+			return nil, fmt.Errorf("Contracts expects entlite.SQLC() or entlite.PROTO()")
+		}
+
+		contracts = append(contracts, contract)
+	}
+
+	return contracts, nil
 }

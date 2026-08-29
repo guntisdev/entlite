@@ -41,8 +41,6 @@ const (
 	ReadingServiceCreateProcedure = "/entlite.ReadingService/Create"
 	// ReadingServiceGetByIDProcedure is the fully-qualified name of the ReadingService's GetByID RPC.
 	ReadingServiceGetByIDProcedure = "/entlite.ReadingService/GetByID"
-	// ReadingServiceUpdateProcedure is the fully-qualified name of the ReadingService's Update RPC.
-	ReadingServiceUpdateProcedure = "/entlite.ReadingService/Update"
 	// ReadingServiceDeleteProcedure is the fully-qualified name of the ReadingService's Delete RPC.
 	ReadingServiceDeleteProcedure = "/entlite.ReadingService/Delete"
 	// ReadingServiceListBySensorIdProcedure is the fully-qualified name of the ReadingService's
@@ -70,7 +68,6 @@ const (
 type ReadingServiceClient interface {
 	Create(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error)
 	GetByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error)
-	Update(context.Context, *connect.Request[UpdateReadingRequest]) (*connect.Response[Reading], error)
 	Delete(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error)
 	ListBySensorId(context.Context, *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error)
 	FilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
@@ -99,12 +96,6 @@ func NewReadingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(readingServiceMethods.ByName("GetByID")),
 			connect.WithClientOptions(opts...),
 		),
-		update: connect.NewClient[UpdateReadingRequest, Reading](
-			httpClient,
-			baseURL+ReadingServiceUpdateProcedure,
-			connect.WithSchema(readingServiceMethods.ByName("Update")),
-			connect.WithClientOptions(opts...),
-		),
 		delete: connect.NewClient[DeleteReadingRequest, emptypb.Empty](
 			httpClient,
 			baseURL+ReadingServiceDeleteProcedure,
@@ -130,7 +121,6 @@ func NewReadingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 type readingServiceClient struct {
 	create                            *connect.Client[CreateReadingRequest, Reading]
 	getByID                           *connect.Client[GetReadingByIDRequest, Reading]
-	update                            *connect.Client[UpdateReadingRequest, Reading]
 	delete                            *connect.Client[DeleteReadingRequest, emptypb.Empty]
 	listBySensorId                    *connect.Client[ListReadingBySensorIdRequest, ListReadingBySensorIdResponse]
 	filterBySensorIdRecordedAtFlagged *connect.Client[ListReadingFilterBySensorIdRecordedAtFlaggedRequest, ListReadingFilterBySensorIdRecordedAtFlaggedResponse]
@@ -144,11 +134,6 @@ func (c *readingServiceClient) Create(ctx context.Context, req *connect.Request[
 // GetByID calls entlite.ReadingService.GetByID.
 func (c *readingServiceClient) GetByID(ctx context.Context, req *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error) {
 	return c.getByID.CallUnary(ctx, req)
-}
-
-// Update calls entlite.ReadingService.Update.
-func (c *readingServiceClient) Update(ctx context.Context, req *connect.Request[UpdateReadingRequest]) (*connect.Response[Reading], error) {
-	return c.update.CallUnary(ctx, req)
 }
 
 // Delete calls entlite.ReadingService.Delete.
@@ -170,7 +155,6 @@ func (c *readingServiceClient) FilterBySensorIdRecordedAtFlagged(ctx context.Con
 type ReadingServiceHandler interface {
 	Create(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error)
 	GetByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error)
-	Update(context.Context, *connect.Request[UpdateReadingRequest]) (*connect.Response[Reading], error)
 	Delete(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error)
 	ListBySensorId(context.Context, *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error)
 	FilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
@@ -193,12 +177,6 @@ func NewReadingServiceHandler(svc ReadingServiceHandler, opts ...connect.Handler
 		ReadingServiceGetByIDProcedure,
 		svc.GetByID,
 		connect.WithSchema(readingServiceMethods.ByName("GetByID")),
-		connect.WithHandlerOptions(opts...),
-	)
-	readingServiceUpdateHandler := connect.NewUnaryHandler(
-		ReadingServiceUpdateProcedure,
-		svc.Update,
-		connect.WithSchema(readingServiceMethods.ByName("Update")),
 		connect.WithHandlerOptions(opts...),
 	)
 	readingServiceDeleteHandler := connect.NewUnaryHandler(
@@ -225,8 +203,6 @@ func NewReadingServiceHandler(svc ReadingServiceHandler, opts ...connect.Handler
 			readingServiceCreateHandler.ServeHTTP(w, r)
 		case ReadingServiceGetByIDProcedure:
 			readingServiceGetByIDHandler.ServeHTTP(w, r)
-		case ReadingServiceUpdateProcedure:
-			readingServiceUpdateHandler.ServeHTTP(w, r)
 		case ReadingServiceDeleteProcedure:
 			readingServiceDeleteHandler.ServeHTTP(w, r)
 		case ReadingServiceListBySensorIdProcedure:
@@ -248,10 +224,6 @@ func (UnimplementedReadingServiceHandler) Create(context.Context, *connect.Reque
 
 func (UnimplementedReadingServiceHandler) GetByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ReadingService.GetByID is not implemented"))
-}
-
-func (UnimplementedReadingServiceHandler) Update(context.Context, *connect.Request[UpdateReadingRequest]) (*connect.Response[Reading], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ReadingService.Update is not implemented"))
 }
 
 func (UnimplementedReadingServiceHandler) Delete(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error) {

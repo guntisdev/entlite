@@ -8,7 +8,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/filter"
 	"github.com/guntisdev/entlite/pkg/entlite/index"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
@@ -28,14 +27,14 @@ func (User) Fields() []entlite.Field {
 		field.String("email").Unique(),
 		field.String("name").Comment("Full name, e.g. \"Jane Doe\"").Validate(logic.StartsWithCapital),
 		field.Int("age").Optional(),
-		field.String("password").Permissions(permissions.WriteOnly),
+		field.String("password").Contracts(entlite.SQLC(), entlite.PROTO().WriteOnly()),
 		field.Byte("api_key").Immutable().DefaultFunc(logic.GenerateAPIKey),
 		field.Bool("is_active").Default(true),
 		field.Int64("login_count").Default(0),
 		field.Float("rating").Default(0),
 		field.JSON("preferences").Comment("UI preferences, e.g. {\"theme\":\"dark\"}").Default("{}"),
-		field.Time("created_at").DefaultFunc(time.Now).Immutable().Permissions(permissions.ReadOnly),
-		field.Time("updated_at").DefaultFunc(time.Now).Permissions(permissions.ReadOnly),
+		field.Time("created_at").DefaultFunc(time.Now).Immutable().Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()),
+		field.Time("updated_at").DefaultFunc(time.Now).Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()),
 	}
 }
 

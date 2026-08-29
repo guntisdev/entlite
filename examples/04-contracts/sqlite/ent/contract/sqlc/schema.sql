@@ -26,3 +26,14 @@ CREATE TABLE "match"(
   created_at DATETIME NOT NULL
 );
 
+-- player table
+CREATE TABLE "player"(
+  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT UNIQUE NOT NULL,
+  -- Elo rating, kept by the secretary
+  rating INTEGER NOT NULL,
+  -- e.g. GM, IM, FM
+  title TEXT,
+  joined_at DATETIME NOT NULL
+);
+

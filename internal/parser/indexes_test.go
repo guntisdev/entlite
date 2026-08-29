@@ -13,7 +13,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/index"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 type User struct {
@@ -32,7 +31,7 @@ func (User) Fields() []entlite.Field {
 		field.String("email").Unique(),
 		field.String("name"),
 		field.Bool("is_active").Default(true),
-		field.String("captcha").Permissions(permissions.Virtual),
+		field.String("captcha").Contracts(entlite.PROTO()),
 	}
 }
 

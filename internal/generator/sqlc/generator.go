@@ -8,7 +8,6 @@ import (
 
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 type Generator struct {
@@ -212,7 +211,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var getQueries []schema.Query
 	var listQueries []schema.Query
 
-	for _, query := range entity.Queries {
+	for _, query := range entity.SQLCQueries() {
 		switch query.Type {
 		case schema.QueryCreate:
 			createQuery = &query
@@ -296,7 +295,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 		var updateFields []string
 		for _, field := range entity.Fields {
-			canWrite := (field.Permissions & permissions.DbWrite) != 0
+			canWrite := field.CanDbWrite()
 			if !canWrite {
 				continue
 			}
@@ -305,8 +304,8 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			}
 
 			// For non-readable fields (like passwords), use COALESCE with nullable parameter
-			canApiRead := (field.Permissions & permissions.ApiRead) != 0
-			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			canApiRead := entity.CanFieldRead(field)
+			canApiWrite := entity.CanFieldWrite(field)
 			acceptOptional := false
 			if canApiWrite && (field.DefaultFunc != nil || field.DefaultValue != nil) {
 				acceptOptional = true
@@ -360,7 +359,7 @@ func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Ent
 	var insertPlaceholders []string
 
 	for _, field := range entity.Fields {
-		canWrite := (field.Permissions & permissions.DbWrite) != 0
+		canWrite := field.CanDbWrite()
 		if !canWrite {
 			continue
 		}

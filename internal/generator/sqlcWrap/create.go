@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func generateCreateStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
@@ -21,7 +20,7 @@ func generateCreateStruct(structName string, structType *ast.StructType, entity 
 				continue
 			}
 			field := *fieldPtr
-			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			canApiWrite := entity.CanFieldWrite(field)
 			if !canApiWrite {
 				continue
 			}
@@ -101,7 +100,7 @@ func writeCreateParamsFields(sb *strings.Builder, entity schema.Entity, argVar, 
 		}
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			funcName := field.DefaultFunc().(string)
-			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			canApiWrite := entity.CanFieldWrite(field)
 			if canApiWrite {
 				// Resolve the optional arg against the fallback first, then apply
 				// any dialect conversion around the resulting non-pointer value.
@@ -112,7 +111,7 @@ func writeCreateParamsFields(sb *strings.Builder, entity schema.Entity, argVar, 
 			}
 		} else if defValField, hasDefaultVal := defaultValueFields[exportedName]; hasDefaultVal {
 			valueLiteral := formatDefaultValue(defValField)
-			canApiWrite := (defValField.Permissions & permissions.ApiWrite) != 0
+			canApiWrite := entity.CanFieldWrite(defValField)
 			if canApiWrite {
 				// Resolve the optional arg against the fallback first, then apply
 				// any dialect conversion around the resulting non-pointer value.

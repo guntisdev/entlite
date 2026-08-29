@@ -7,7 +7,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/filter"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
@@ -25,7 +24,7 @@ func (Article) Contracts() []entlite.Contract {
 func (Article) Fields() []entlite.Field {
 	return []entlite.Field{
 		// uuid primary key, generated on the server and not part of requests
-		field.String("id").Permissions(permissions.ReadOnly).Immutable().DefaultFunc(logic.NewUUID),
+		field.String("id").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).Immutable().DefaultFunc(logic.NewUUID),
 
 		// --- required fields ---
 		field.String("slug").Unique().Comment("Human/URL identifier, e.g. hello-world"),
@@ -45,8 +44,8 @@ func (Article) Fields() []entlite.Field {
 
 		// --- required flag and server managed timestamps ---
 		field.Bool("is_featured").Default(false), // bool cannot be optional, use a default
-		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),
-		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now),
+		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
+		field.Time("updated_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now),
 	}
 }
 

@@ -156,6 +156,93 @@ func protoToTimePtr(t *timestamppb.Timestamp) *time.Time {
 	return &value
 }
 
+type PlayerServer struct {
+	db *sql.DB
+}
+
+// enforces implementation of proto methods
+var _ pb.PlayerServiceHandler = (*PlayerServer)(nil)
+
+func NewPlayerServiceServer(db *sql.DB) *PlayerServer {
+	return &PlayerServer{
+		db: db,
+	}
+}
+
+// GetByID reads one roster entry. Player has a read only proto contract,
+// so there is no create, update or delete rpc to implement here
+func (s *PlayerServer) GetByID(
+	ctx context.Context,
+	req *connect.Request[pb.GetPlayerByIDRequest],
+) (*connect.Response[pb.Player], error) {
+	log.Printf("Get player: ID=%d", req.Msg.ID)
+
+	player, err := db.New(s.db).GetPlayerByID(ctx, req.Msg.ID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("player not found"))
+		}
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get player: %w", err))
+	}
+
+	return connect.NewResponse(player.ToProto()), nil
+}
+
+func (s *PlayerServer) ListAll(
+	ctx context.Context,
+	req *connect.Request[pb.ListAllPlayerRequest],
+) (*connect.Response[pb.ListAllPlayerResponse], error) {
+	log.Printf("List roster")
+
+	players, err := db.New(s.db).ListAllPlayer(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list players: %w", err))
+	}
+
+	protoPlayers := make([]*pb.Player, len(players))
+	for i, player := range players {
+		protoPlayers[i] = player.ToProto()
+	}
+
+	return connect.NewResponse(&pb.ListAllPlayerResponse{
+		Players: protoPlayers,
+	}), nil
+}
+
+// SeedRoster fills the roster once. CreatePlayer lives only on the sqlc side,
+// so the server is the only writer there is
+func SeedRoster(ctx context.Context, database *sql.DB) error {
+	queries := db.New(database)
+
+	players, err := queries.ListAllPlayer(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to read roster: %w", err)
+	}
+	if len(players) > 0 {
+		return nil
+	}
+
+	roster := []db.CreatePlayerParams{
+		{Name: "Vera Menchik", Rating: 2300, Title: playerTitle("WGM")},
+		{Name: "Mikhail Tal", Rating: 2700, Title: playerTitle("GM")},
+		{Name: "Judit Polgar", Rating: 2735, Title: playerTitle("GM")},
+		{Name: "Club Newcomer", Rating: 1400, Title: nil},
+	}
+
+	for _, player := range roster {
+		if _, err := queries.CreatePlayer(ctx, player); err != nil {
+			return fmt.Errorf("failed to seed player %q: %w", player.Name, err)
+		}
+	}
+
+	log.Printf("Seeded roster with %d players", len(roster))
+	return nil
+}
+
+func playerTitle(value string) *string {
+	return &value
+}
+
 type StandingServer struct {
 	db *sql.DB
 }

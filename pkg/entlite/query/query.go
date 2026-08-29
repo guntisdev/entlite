@@ -1,6 +1,9 @@
 package query
 
-import "github.com/guntisdev/entlite/pkg/entlite/filter"
+import (
+	"github.com/guntisdev/entlite/pkg/entlite"
+	"github.com/guntisdev/entlite/pkg/entlite/filter"
+)
 
 type Type string
 
@@ -25,6 +28,7 @@ type QueryOperations interface {
 	QueryBuilder
 	// Name overrides the auto-generated query/method name
 	Name(name string) QueryOperations
+	Contracts(contracts ...entlite.Layer) QueryOperations
 }
 
 type ListByOperations interface {
@@ -33,15 +37,17 @@ type ListByOperations interface {
 	OrderBy(field string) ListByOperations
 	// Name overrides the auto-generated query/method name
 	Name(name string) ListByOperations
+	Contracts(contracts ...entlite.Layer) ListByOperations
 }
 
 type Query struct {
-	typeName Type
-	fields   []string        // For GetBy: list of field name strings
-	filters  []filter.Filter // For ListBy: list of filters
-	count    bool            // For ListBy: whether to count
-	orderBy  string          // For ListBy: order by field
-	name     string          // Custom query name
+	typeName  Type
+	fields    []string        // For GetBy: list of field name strings
+	filters   []filter.Filter // For ListBy: list of filters
+	count     bool            // For ListBy: whether to count
+	orderBy   string          // For ListBy: order by field
+	name      string          // Custom query name
+	contracts []entlite.Layer
 }
 
 // marker method for sealed interface
@@ -49,6 +55,11 @@ func (Query) Query() {}
 
 func (q Query) Name(name string) QueryOperations {
 	q.name = name
+	return q
+}
+
+func (q Query) Contracts(contracts ...entlite.Layer) QueryOperations {
+	q.contracts = contracts
 	return q
 }
 
@@ -62,6 +73,11 @@ func (listByQuery) Query() {}
 // Name overrides the auto-generated query/method name
 func (q listByQuery) Name(name string) ListByOperations {
 	q.base.name = name
+	return q
+}
+
+func (q listByQuery) Contracts(contracts ...entlite.Layer) ListByOperations {
+	q.base.contracts = contracts
 	return q
 }
 
@@ -158,4 +174,8 @@ func (q Query) GetOrderBy() string {
 // GetName returns the custom query name, or "" when auto-generated.
 func (q Query) GetName() string {
 	return q.name
+}
+
+func (q Query) GetContracts() []entlite.Layer {
+	return q.contracts
 }

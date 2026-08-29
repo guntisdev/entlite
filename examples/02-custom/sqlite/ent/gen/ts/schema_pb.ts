@@ -15,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUi6gEKB1JlYWRpbmcSEgoCSUQYASABKAVCBrpIA8gBARIZCglzZW5zb3JfaWQYAiABKAVCBrpIA8gBARIVCgV2YWx1ZRgDIAEoAUIGukgDyAEBEhcKB3F1YWxpdHkYBCABKAVCBrpIA8gBARIPCgdmbGFnZ2VkGAUgASgIEjcKC3JlY29yZGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEjYKCmNyZWF0ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQEiuQMKBlNlbnNvchISCgJJRBgBIAEoBUIGukgDyAEBEhQKBGNvZGUYAiABKAlCBrpIA8gBARIVCgVsYWJlbBgDIAEoCUIGukgDyAEBEhQKBGtpbmQYBCABKAlCBrpIA8gBARIUCgR1bml0GAUgASgJQga6SAPIAQESFQoIbG9jYXRpb24YBiABKAlIAIgBARIOCgZhY3RpdmUYByABKAgSGAoIZmlybXdhcmUYCCABKAlCBrpIA8gBARIeCg5zYW1wbGVfcmF0ZV9tcxgJIAEoBUIGukgDyAEBEjgKDGluc3RhbGxlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2CgpjcmVhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEjYKCnVwZGF0ZWRfYXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESGQoMbGF0ZXN0X3ZhbHVlGA0gASgBSAGIAQFCCwoJX2xvY2F0aW9uQg8KDV9sYXRlc3RfdmFsdWUivAEKFENyZWF0ZVJlYWRpbmdSZXF1ZXN0EhkKCXNlbnNvcl9pZBgCIAEoBUIGukgDyAEBEhUKBXZhbHVlGAMgASgBQga6SAPIAQESFwoHcXVhbGl0eRgEIAEoBUIGukgDyAEBEhQKB2ZsYWdnZWQYBSABKAhIAIgBARI3CgtyZWNvcmRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIKCghfZmxhZ2dlZCIrChVHZXRSZWFkaW5nQnlJRFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASLQAQoUVXBkYXRlUmVhZGluZ1JlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBARIZCglzZW5zb3JfaWQYAiABKAVCBrpIA8gBARIVCgV2YWx1ZRgDIAEoAUIGukgDyAEBEhcKB3F1YWxpdHkYBCABKAVCBrpIA8gBARIUCgdmbGFnZ2VkGAUgASgISACIAQESNwoLcmVjb3JkZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQFCCgoIX2ZsYWdnZWQiKgoURGVsZXRlUmVhZGluZ1JlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASJgChxMaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhkKCXNlbnNvcl9pZBgDIAEoBUIGukgDyAEBIkMKHUxpc3RSZWFkaW5nQnlTZW5zb3JJZFJlc3BvbnNlEiIKCHJlYWRpbmdzGAEgAygLMhAuZW50bGl0ZS5SZWFkaW5nIooCCjNMaXN0UmVhZGluZ0ZpbHRlckJ5U2Vuc29ySWRSZWNvcmRlZEF0RmxhZ2dlZFJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSGQoJc2Vuc29yX2lkGAMgASgFQga6SAPIAQESOwoPbWluX3JlY29yZGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEjsKD21heF9yZWNvcmRlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARIXCgdmbGFnZ2VkGAYgASgIQga6SAPIAQEiWgo0TGlzdFJlYWRpbmdGaWx0ZXJCeVNlbnNvcklkUmVjb3JkZWRBdEZsYWdnZWRSZXNwb25zZRIiCghyZWFkaW5ncxgBIAMoCzIQLmVudGxpdGUuUmVhZGluZyLsAgoTQ3JlYXRlU2Vuc29yUmVxdWVzdBIUCgRjb2RlGAIgASgJQga6SAPIAQESFQoFbGFiZWwYAyABKAlCBrpIA8gBARIUCgRraW5kGAQgASgJQga6SAPIAQESFAoEdW5pdBgFIAEoCUIGukgDyAEBEhUKCGxvY2F0aW9uGAYgASgJSACIAQESEwoGYWN0aXZlGAcgASgISAGIAQESFQoIZmlybXdhcmUYCCABKAlIAogBARIbCg5zYW1wbGVfcmF0ZV9tcxgJIAEoBUgDiAEBEjgKDGluc3RhbGxlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARIZCgxsYXRlc3RfdmFsdWUYDSABKAFIBIgBAUILCglfbG9jYXRpb25CCQoHX2FjdGl2ZUILCglfZmlybXdhcmVCEQoPX3NhbXBsZV9yYXRlX21zQg8KDV9sYXRlc3RfdmFsdWUiKgoUR2V0U2Vuc29yQnlJRFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASLGAgoTVXBkYXRlU2Vuc29yUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBEhQKBGNvZGUYAiABKAlCBrpIA8gBARIVCgVsYWJlbBgDIAEoCUIGukgDyAEBEhQKBGtpbmQYBCABKAlCBrpIA8gBARIUCgR1bml0GAUgASgJQga6SAPIAQESFQoIbG9jYXRpb24YBiABKAlIAIgBARITCgZhY3RpdmUYByABKAhIAYgBARIVCghmaXJtd2FyZRgIIAEoCUgCiAEBEhsKDnNhbXBsZV9yYXRlX21zGAkgASgFSAOIAQESGQoMbGF0ZXN0X3ZhbHVlGA0gASgBSASIAQFCCwoJX2xvY2F0aW9uQgkKB19hY3RpdmVCCwoJX2Zpcm13YXJlQhEKD19zYW1wbGVfcmF0ZV9tc0IPCg1fbGF0ZXN0X3ZhbHVlIikKE0RlbGV0ZVNlbnNvclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIuChZHZXRTZW5zb3JCeUNvZGVSZXF1ZXN0EhQKBGNvZGUYAiABKAlCBrpIA8gBASKeAQooTGlzdFNlbnNvckZpbHRlckJ5TGFiZWxLaW5kQWN0aXZlUmVxdWVzdBIVCgVsaW1pdBgBIAEoBUIGukgDyAEBEg4KBm9mZnNldBgCIAEoBRIVCgVsYWJlbBgDIAEoCUIGukgDyAEBEhQKBGtpbmQYBCABKAlCBrpIA8gBARITCgZhY3RpdmUYBSABKAhIAIgBAUIJCgdfYWN0aXZlIk0KKUxpc3RTZW5zb3JGaWx0ZXJCeUxhYmVsS2luZEFjdGl2ZVJlc3BvbnNlEiAKB3NlbnNvcnMYASADKAsyDy5lbnRsaXRlLlNlbnNvcjKIBAoOUmVhZGluZ1NlcnZpY2USOQoGQ3JlYXRlEh0uZW50bGl0ZS5DcmVhdGVSZWFkaW5nUmVxdWVzdBoQLmVudGxpdGUuUmVhZGluZxI7CgdHZXRCeUlEEh4uZW50bGl0ZS5HZXRSZWFkaW5nQnlJRFJlcXVlc3QaEC5lbnRsaXRlLlJlYWRpbmcSOQoGVXBkYXRlEh0uZW50bGl0ZS5VcGRhdGVSZWFkaW5nUmVxdWVzdBoQLmVudGxpdGUuUmVhZGluZxI/CgZEZWxldGUSHS5lbnRsaXRlLkRlbGV0ZVJlYWRpbmdSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5El8KDkxpc3RCeVNlbnNvcklkEiUuZW50bGl0ZS5MaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXF1ZXN0GiYuZW50bGl0ZS5MaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXNwb25zZRKgAQohRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkEjwuZW50bGl0ZS5MaXN0UmVhZGluZ0ZpbHRlckJ5U2Vuc29ySWRSZWNvcmRlZEF0RmxhZ2dlZFJlcXVlc3QaPS5lbnRsaXRlLkxpc3RSZWFkaW5nRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkUmVzcG9uc2UyvgMKDVNlbnNvclNlcnZpY2USNwoGQ3JlYXRlEhwuZW50bGl0ZS5DcmVhdGVTZW5zb3JSZXF1ZXN0Gg8uZW50bGl0ZS5TZW5zb3ISOQoHR2V0QnlJRBIdLmVudGxpdGUuR2V0U2Vuc29yQnlJRFJlcXVlc3QaDy5lbnRsaXRlLlNlbnNvchI3CgZVcGRhdGUSHC5lbnRsaXRlLlVwZGF0ZVNlbnNvclJlcXVlc3QaDy5lbnRsaXRlLlNlbnNvchI+CgZEZWxldGUSHC5lbnRsaXRlLkRlbGV0ZVNlbnNvclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSPQoJR2V0QnlDb2RlEh8uZW50bGl0ZS5HZXRTZW5zb3JCeUNvZGVSZXF1ZXN0Gg8uZW50bGl0ZS5TZW5zb3ISgAEKF0ZpbHRlckJ5TGFiZWxLaW5kQWN0aXZlEjEuZW50bGl0ZS5MaXN0U2Vuc29yRmlsdGVyQnlMYWJlbEtpbmRBY3RpdmVSZXF1ZXN0GjIuZW50bGl0ZS5MaXN0U2Vuc29yRmlsdGVyQnlMYWJlbEtpbmRBY3RpdmVSZXNwb25zZUIGWgQuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUi6gEKB1JlYWRpbmcSEgoCSUQYASABKAVCBrpIA8gBARIZCglzZW5zb3JfaWQYAiABKAVCBrpIA8gBARIVCgV2YWx1ZRgDIAEoAUIGukgDyAEBEhcKB3F1YWxpdHkYBCABKAVCBrpIA8gBARIPCgdmbGFnZ2VkGAUgASgIEjcKC3JlY29yZGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEjYKCmNyZWF0ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQEiuQMKBlNlbnNvchISCgJJRBgBIAEoBUIGukgDyAEBEhQKBGNvZGUYAiABKAlCBrpIA8gBARIVCgVsYWJlbBgDIAEoCUIGukgDyAEBEhQKBGtpbmQYBCABKAlCBrpIA8gBARIUCgR1bml0GAUgASgJQga6SAPIAQESFQoIbG9jYXRpb24YBiABKAlIAIgBARIOCgZhY3RpdmUYByABKAgSGAoIZmlybXdhcmUYCCABKAlCBrpIA8gBARIeCg5zYW1wbGVfcmF0ZV9tcxgJIAEoBUIGukgDyAEBEjgKDGluc3RhbGxlZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2CgpjcmVhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEjYKCnVwZGF0ZWRfYXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESGQoMbGF0ZXN0X3ZhbHVlGA0gASgBSAGIAQFCCwoJX2xvY2F0aW9uQg8KDV9sYXRlc3RfdmFsdWUivAEKFENyZWF0ZVJlYWRpbmdSZXF1ZXN0EhkKCXNlbnNvcl9pZBgCIAEoBUIGukgDyAEBEhUKBXZhbHVlGAMgASgBQga6SAPIAQESFwoHcXVhbGl0eRgEIAEoBUIGukgDyAEBEhQKB2ZsYWdnZWQYBSABKAhIAIgBARI3CgtyZWNvcmRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIKCghfZmxhZ2dlZCIrChVHZXRSZWFkaW5nQnlJRFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIqChREZWxldGVSZWFkaW5nUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBImAKHExpc3RSZWFkaW5nQnlTZW5zb3JJZFJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSGQoJc2Vuc29yX2lkGAMgASgFQga6SAPIAQEiQwodTGlzdFJlYWRpbmdCeVNlbnNvcklkUmVzcG9uc2USIgoIcmVhZGluZ3MYASADKAsyEC5lbnRsaXRlLlJlYWRpbmciigIKM0xpc3RSZWFkaW5nRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkUmVxdWVzdBIVCgVsaW1pdBgBIAEoBUIGukgDyAEBEg4KBm9mZnNldBgCIAEoBRIZCglzZW5zb3JfaWQYAyABKAVCBrpIA8gBARI7Cg9taW5fcmVjb3JkZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESOwoPbWF4X3JlY29yZGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEhcKB2ZsYWdnZWQYBiABKAhCBrpIA8gBASJaCjRMaXN0UmVhZGluZ0ZpbHRlckJ5U2Vuc29ySWRSZWNvcmRlZEF0RmxhZ2dlZFJlc3BvbnNlEiIKCHJlYWRpbmdzGAEgAygLMhAuZW50bGl0ZS5SZWFkaW5nIuwCChNDcmVhdGVTZW5zb3JSZXF1ZXN0EhQKBGNvZGUYAiABKAlCBrpIA8gBARIVCgVsYWJlbBgDIAEoCUIGukgDyAEBEhQKBGtpbmQYBCABKAlCBrpIA8gBARIUCgR1bml0GAUgASgJQga6SAPIAQESFQoIbG9jYXRpb24YBiABKAlIAIgBARITCgZhY3RpdmUYByABKAhIAYgBARIVCghmaXJtd2FyZRgIIAEoCUgCiAEBEhsKDnNhbXBsZV9yYXRlX21zGAkgASgFSAOIAQESOAoMaW5zdGFsbGVkX2F0GAogASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEhkKDGxhdGVzdF92YWx1ZRgNIAEoAUgEiAEBQgsKCV9sb2NhdGlvbkIJCgdfYWN0aXZlQgsKCV9maXJtd2FyZUIRCg9fc2FtcGxlX3JhdGVfbXNCDwoNX2xhdGVzdF92YWx1ZSIqChRHZXRTZW5zb3JCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIsYCChNVcGRhdGVTZW5zb3JSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQESFAoEY29kZRgCIAEoCUIGukgDyAEBEhUKBWxhYmVsGAMgASgJQga6SAPIAQESFAoEa2luZBgEIAEoCUIGukgDyAEBEhQKBHVuaXQYBSABKAlCBrpIA8gBARIVCghsb2NhdGlvbhgGIAEoCUgAiAEBEhMKBmFjdGl2ZRgHIAEoCEgBiAEBEhUKCGZpcm13YXJlGAggASgJSAKIAQESGwoOc2FtcGxlX3JhdGVfbXMYCSABKAVIA4gBARIZCgxsYXRlc3RfdmFsdWUYDSABKAFIBIgBAUILCglfbG9jYXRpb25CCQoHX2FjdGl2ZUILCglfZmlybXdhcmVCEQoPX3NhbXBsZV9yYXRlX21zQg8KDV9sYXRlc3RfdmFsdWUiKQoTRGVsZXRlU2Vuc29yUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIi4KFkdldFNlbnNvckJ5Q29kZVJlcXVlc3QSFAoEY29kZRgCIAEoCUIGukgDyAEBIp4BCihMaXN0U2Vuc29yRmlsdGVyQnlMYWJlbEtpbmRBY3RpdmVSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhUKBWxhYmVsGAMgASgJQga6SAPIAQESFAoEa2luZBgEIAEoCUIGukgDyAEBEhMKBmFjdGl2ZRgFIAEoCEgAiAEBQgkKB19hY3RpdmUiTQopTGlzdFNlbnNvckZpbHRlckJ5TGFiZWxLaW5kQWN0aXZlUmVzcG9uc2USIAoHc2Vuc29ycxgBIAMoCzIPLmVudGxpdGUuU2Vuc29yMs0DCg5SZWFkaW5nU2VydmljZRI5CgZDcmVhdGUSHS5lbnRsaXRlLkNyZWF0ZVJlYWRpbmdSZXF1ZXN0GhAuZW50bGl0ZS5SZWFkaW5nEjsKB0dldEJ5SUQSHi5lbnRsaXRlLkdldFJlYWRpbmdCeUlEUmVxdWVzdBoQLmVudGxpdGUuUmVhZGluZxI/CgZEZWxldGUSHS5lbnRsaXRlLkRlbGV0ZVJlYWRpbmdSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5El8KDkxpc3RCeVNlbnNvcklkEiUuZW50bGl0ZS5MaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXF1ZXN0GiYuZW50bGl0ZS5MaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXNwb25zZRKgAQohRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkEjwuZW50bGl0ZS5MaXN0UmVhZGluZ0ZpbHRlckJ5U2Vuc29ySWRSZWNvcmRlZEF0RmxhZ2dlZFJlcXVlc3QaPS5lbnRsaXRlLkxpc3RSZWFkaW5nRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkUmVzcG9uc2UyvgMKDVNlbnNvclNlcnZpY2USNwoGQ3JlYXRlEhwuZW50bGl0ZS5DcmVhdGVTZW5zb3JSZXF1ZXN0Gg8uZW50bGl0ZS5TZW5zb3ISOQoHR2V0QnlJRBIdLmVudGxpdGUuR2V0U2Vuc29yQnlJRFJlcXVlc3QaDy5lbnRsaXRlLlNlbnNvchI3CgZVcGRhdGUSHC5lbnRsaXRlLlVwZGF0ZVNlbnNvclJlcXVlc3QaDy5lbnRsaXRlLlNlbnNvchI+CgZEZWxldGUSHC5lbnRsaXRlLkRlbGV0ZVNlbnNvclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSPQoJR2V0QnlDb2RlEh8uZW50bGl0ZS5HZXRTZW5zb3JCeUNvZGVSZXF1ZXN0Gg8uZW50bGl0ZS5TZW5zb3ISgAEKF0ZpbHRlckJ5TGFiZWxLaW5kQWN0aXZlEjEuZW50bGl0ZS5MaXN0U2Vuc29yRmlsdGVyQnlMYWJlbEtpbmRBY3RpdmVSZXF1ZXN0GjIuZW50bGl0ZS5MaXN0U2Vuc29yRmlsdGVyQnlMYWJlbEtpbmRBY3RpdmVSZXNwb25zZUIGWgQuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * Reading represents as reading entity
@@ -230,56 +230,6 @@ export const GetReadingByIDRequestSchema: GenMessage<GetReadingByIDRequest> = /*
   messageDesc(file_schema, 3);
 
 /**
- * @generated from message entlite.UpdateReadingRequest
- */
-export type UpdateReadingRequest = Message<"entlite.UpdateReadingRequest"> & {
-  /**
-   * @generated from field: int32 ID = 1;
-   */
-  ID: number;
-
-  /**
-   * References sensor.ID
-   *
-   * @generated from field: int32 sensor_id = 2;
-   */
-  sensorId: number;
-
-  /**
-   * @generated from field: double value = 3;
-   */
-  value: number;
-
-  /**
-   * Signal quality 0-100
-   *
-   * @generated from field: int32 quality = 4;
-   */
-  quality: number;
-
-  /**
-   * Marked as anomalous by ingestion
-   *
-   * @generated from field: optional bool flagged = 5;
-   */
-  flagged?: boolean;
-
-  /**
-   * Device measurement time (client-supplied)
-   *
-   * @generated from field: google.protobuf.Timestamp recorded_at = 6;
-   */
-  recordedAt?: Timestamp;
-};
-
-/**
- * Describes the message entlite.UpdateReadingRequest.
- * Use `create(UpdateReadingRequestSchema)` to create a new message.
- */
-export const UpdateReadingRequestSchema: GenMessage<UpdateReadingRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 4);
-
-/**
  * @generated from message entlite.DeleteReadingRequest
  */
 export type DeleteReadingRequest = Message<"entlite.DeleteReadingRequest"> & {
@@ -294,7 +244,7 @@ export type DeleteReadingRequest = Message<"entlite.DeleteReadingRequest"> & {
  * Use `create(DeleteReadingRequestSchema)` to create a new message.
  */
 export const DeleteReadingRequestSchema: GenMessage<DeleteReadingRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 5);
+  messageDesc(file_schema, 4);
 
 /**
  * @generated from message entlite.ListReadingBySensorIdRequest
@@ -321,7 +271,7 @@ export type ListReadingBySensorIdRequest = Message<"entlite.ListReadingBySensorI
  * Use `create(ListReadingBySensorIdRequestSchema)` to create a new message.
  */
 export const ListReadingBySensorIdRequestSchema: GenMessage<ListReadingBySensorIdRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 6);
+  messageDesc(file_schema, 5);
 
 /**
  * @generated from message entlite.ListReadingBySensorIdResponse
@@ -338,7 +288,7 @@ export type ListReadingBySensorIdResponse = Message<"entlite.ListReadingBySensor
  * Use `create(ListReadingBySensorIdResponseSchema)` to create a new message.
  */
 export const ListReadingBySensorIdResponseSchema: GenMessage<ListReadingBySensorIdResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 7);
+  messageDesc(file_schema, 6);
 
 /**
  * @generated from message entlite.ListReadingFilterBySensorIdRecordedAtFlaggedRequest
@@ -380,7 +330,7 @@ export type ListReadingFilterBySensorIdRecordedAtFlaggedRequest = Message<"entli
  * Use `create(ListReadingFilterBySensorIdRecordedAtFlaggedRequestSchema)` to create a new message.
  */
 export const ListReadingFilterBySensorIdRecordedAtFlaggedRequestSchema: GenMessage<ListReadingFilterBySensorIdRecordedAtFlaggedRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 8);
+  messageDesc(file_schema, 7);
 
 /**
  * @generated from message entlite.ListReadingFilterBySensorIdRecordedAtFlaggedResponse
@@ -397,7 +347,7 @@ export type ListReadingFilterBySensorIdRecordedAtFlaggedResponse = Message<"entl
  * Use `create(ListReadingFilterBySensorIdRecordedAtFlaggedResponseSchema)` to create a new message.
  */
 export const ListReadingFilterBySensorIdRecordedAtFlaggedResponseSchema: GenMessage<ListReadingFilterBySensorIdRecordedAtFlaggedResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 9);
+  messageDesc(file_schema, 8);
 
 /**
  * @generated from message entlite.CreateSensorRequest
@@ -473,7 +423,7 @@ export type CreateSensorRequest = Message<"entlite.CreateSensorRequest"> & {
  * Use `create(CreateSensorRequestSchema)` to create a new message.
  */
 export const CreateSensorRequestSchema: GenMessage<CreateSensorRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 10);
+  messageDesc(file_schema, 9);
 
 /**
  * @generated from message entlite.GetSensorByIDRequest
@@ -490,7 +440,7 @@ export type GetSensorByIDRequest = Message<"entlite.GetSensorByIDRequest"> & {
  * Use `create(GetSensorByIDRequestSchema)` to create a new message.
  */
 export const GetSensorByIDRequestSchema: GenMessage<GetSensorByIDRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 11);
+  messageDesc(file_schema, 10);
 
 /**
  * @generated from message entlite.UpdateSensorRequest
@@ -564,7 +514,7 @@ export type UpdateSensorRequest = Message<"entlite.UpdateSensorRequest"> & {
  * Use `create(UpdateSensorRequestSchema)` to create a new message.
  */
 export const UpdateSensorRequestSchema: GenMessage<UpdateSensorRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 12);
+  messageDesc(file_schema, 11);
 
 /**
  * @generated from message entlite.DeleteSensorRequest
@@ -581,7 +531,7 @@ export type DeleteSensorRequest = Message<"entlite.DeleteSensorRequest"> & {
  * Use `create(DeleteSensorRequestSchema)` to create a new message.
  */
 export const DeleteSensorRequestSchema: GenMessage<DeleteSensorRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 13);
+  messageDesc(file_schema, 12);
 
 /**
  * @generated from message entlite.GetSensorByCodeRequest
@@ -598,7 +548,7 @@ export type GetSensorByCodeRequest = Message<"entlite.GetSensorByCodeRequest"> &
  * Use `create(GetSensorByCodeRequestSchema)` to create a new message.
  */
 export const GetSensorByCodeRequestSchema: GenMessage<GetSensorByCodeRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 14);
+  messageDesc(file_schema, 13);
 
 /**
  * @generated from message entlite.ListSensorFilterByLabelKindActiveRequest
@@ -635,7 +585,7 @@ export type ListSensorFilterByLabelKindActiveRequest = Message<"entlite.ListSens
  * Use `create(ListSensorFilterByLabelKindActiveRequestSchema)` to create a new message.
  */
 export const ListSensorFilterByLabelKindActiveRequestSchema: GenMessage<ListSensorFilterByLabelKindActiveRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 15);
+  messageDesc(file_schema, 14);
 
 /**
  * @generated from message entlite.ListSensorFilterByLabelKindActiveResponse
@@ -652,7 +602,7 @@ export type ListSensorFilterByLabelKindActiveResponse = Message<"entlite.ListSen
  * Use `create(ListSensorFilterByLabelKindActiveResponseSchema)` to create a new message.
  */
 export const ListSensorFilterByLabelKindActiveResponseSchema: GenMessage<ListSensorFilterByLabelKindActiveResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 16);
+  messageDesc(file_schema, 15);
 
 /**
  * ReadingService provides CRUD opertions for Reading entities
@@ -674,14 +624,6 @@ export const ReadingService: GenService<{
   getByID: {
     methodKind: "unary";
     input: typeof GetReadingByIDRequestSchema;
-    output: typeof ReadingSchema;
-  },
-  /**
-   * @generated from rpc entlite.ReadingService.Update
-   */
-  update: {
-    methodKind: "unary";
-    input: typeof UpdateReadingRequestSchema;
     output: typeof ReadingSchema;
   },
   /**

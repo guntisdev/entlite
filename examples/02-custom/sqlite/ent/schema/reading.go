@@ -7,7 +7,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/filter"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
@@ -30,13 +29,17 @@ func (Reading) Fields() []entlite.Field {
 		field.Int("quality").Validate(logic.IsPercentage).Comment("Signal quality 0-100"),
 		field.Bool("flagged").Default(false).Comment("Marked as anomalous by ingestion"),
 		field.Time("recorded_at").Comment("Device measurement time (client-supplied)"),
-		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),
+		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
 	}
 }
 
 func (Reading) Queries() []entlite.Query {
 	return []entlite.Query{
-		query.DefaultCRUD(),
+		query.Create(),
+		query.Get(),
+		// a measurement is a recorded fact, clients never edit it, disabled in proto level
+		query.Update().Contracts(entlite.SQLC()),
+		query.Delete(),
 		query.ListBy("sensor_id"),
 		query.ListBy(
 			filter.Eq("sensor_id"),

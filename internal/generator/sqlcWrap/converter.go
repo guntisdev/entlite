@@ -60,7 +60,7 @@ func convertFileNeeds(entities []schema.Entity) (hasTimeField bool, hasCreateBul
 				hasTimeField = true
 			}
 		}
-		for _, query := range entity.Queries {
+		for _, query := range entity.SQLCQueries() {
 			if query.Type == schema.QueryCreateBulk {
 				hasCreateBulk = true
 			}

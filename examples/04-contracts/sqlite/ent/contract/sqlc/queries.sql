@@ -50,3 +50,27 @@ SELECT * FROM "match";
 -- name: DeleteMatch :exec
 DELETE FROM "match" WHERE ID = ?;
 
+-- name: DeleteAllMatch :exec
+DELETE FROM "match";
+
+-- Player CRUD operations
+
+-- name: CreatePlayer :one
+INSERT INTO "player" (
+  name,
+  rating,
+  title,
+  joined_at
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?
+) RETURNING ID;
+
+-- name: GetPlayerByID :one
+SELECT * FROM "player" WHERE ID = ?;
+
+-- name: ListAllPlayer :many
+SELECT * FROM "player";
+

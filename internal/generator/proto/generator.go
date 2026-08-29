@@ -8,7 +8,6 @@ import (
 
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func Generate(entities []schema.Entity, dir string) error {
@@ -58,7 +57,7 @@ func generateSchemaProto(entities []schema.Entity) string {
 		content.WriteString(fmt.Sprintf("message %s {\n", entity.Name))
 
 		for _, field := range entity.Fields {
-			canRead := (field.Permissions & permissions.ApiRead) != 0
+			canRead := field.CanApiRead()
 			if !canRead {
 				continue
 			}
@@ -88,7 +87,14 @@ func generateSchemaProto(entities []schema.Entity) string {
 		content.WriteString("\n\n")
 	}
 
-	for i, entity := range entities {
+	serviceEntities := []schema.Entity{}
+	for _, entity := range entities {
+		if len(entity.ProtoQueries()) > 0 {
+			serviceEntities = append(serviceEntities, entity)
+		}
+	}
+
+	for i, entity := range serviceEntities {
 		if i > 0 {
 			content.WriteString("\n\n")
 		}
@@ -109,7 +115,7 @@ func generateServiceProto(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("// %s provides CRUD opertions for %s entities\n", serviceName, entity.Name))
 	content.WriteString(fmt.Sprintf("service %s {\n", serviceName))
 
-	for _, query := range entity.Queries {
+	for _, query := range entity.ProtoQueries() {
 		content.WriteString(generateRequests(entity, query))
 	}
 
@@ -122,7 +128,7 @@ func generateResponseMessages(entity schema.Entity) string {
 	var content strings.Builder
 	var requiredStr = "[(buf.validate.field).required = true]"
 
-	for i, query := range entity.Queries {
+	for i, query := range entity.ProtoQueries() {
 		if i > 0 {
 			content.WriteString("\n")
 		}
@@ -162,7 +168,7 @@ func generateResponseMessages(entity schema.Entity) string {
 		case schema.QueryUpdate:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			for _, field := range entity.Fields {
-				canWrite := (field.Permissions & permissions.ApiWrite) != 0
+				canWrite := field.CanApiWrite()
 				if !field.IsID() {
 					if field.Immutable || !canWrite {
 						continue
@@ -173,7 +179,7 @@ func generateResponseMessages(entity schema.Entity) string {
 				var optional string
 				var required string
 				// special case for psw etc - if not readable then no obligatory to update
-				canRead := (field.Permissions & permissions.ApiRead) != 0
+				canRead := field.CanApiRead()
 				if field.Optional || !canRead || field.DefaultValue != nil || field.DefaultFunc != nil {
 					optional = "optional "
 				} else {
@@ -262,7 +268,7 @@ func writeFieldComment(content *strings.Builder, comment string) {
 func writeCreateFields(content *strings.Builder, entity schema.Entity) {
 	var requiredStr = "[(buf.validate.field).required = true]"
 	for _, field := range entity.Fields {
-		canWrite := (field.Permissions & permissions.ApiWrite) != 0
+		canWrite := field.CanApiWrite()
 		if field.IsID() || !canWrite {
 			continue
 		}
@@ -332,7 +338,7 @@ func needsCommonImports(entities []schema.Entity) bool {
 
 func needsEmptyImportForEntities(entities []schema.Entity) bool {
 	for _, entity := range entities {
-		for _, query := range entity.Queries {
+		for _, query := range entity.ProtoQueries() {
 			if query.Type == schema.QueryDelete || query.Type == schema.QueryDeleteAll {
 				return true
 			}

@@ -7,7 +7,6 @@ import (
 
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func generateUpdateStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
@@ -23,13 +22,13 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 			}
 			field := *fieldPtr
 
-			canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+			canApiWrite := entity.CanFieldWrite(field)
 			if !canApiWrite {
 				continue
 			}
 
 			// special case for psw etc - if not readable then no obligatory to update
-			canApiRead := (field.Permissions & permissions.ApiRead) != 0
+			canApiRead := entity.CanFieldRead(field)
 			if field.DefaultFunc != nil || field.DefaultValue != nil || !canApiRead {
 				field.Optional = true
 			}
@@ -79,9 +78,9 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 			continue
 		}
 
-		canApiWrite := (field.Permissions & permissions.ApiWrite) != 0
+		canApiWrite := entity.CanFieldWrite(field)
 		// special case for psw etc - if not readable then no obligatory to update
-		canApiRead := (field.Permissions & permissions.ApiRead) != 0
+		canApiRead := entity.CanFieldRead(field)
 		if !canApiRead {
 			field.Optional = true
 		}

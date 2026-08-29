@@ -60,6 +60,27 @@ func (q *Queries) CreateMatch(ctx context.Context, arg CreateMatchParams) (int32
 	return IntConvert[int64, int32](id), err
 }
 
+type CreatePlayerParams struct {
+	Name string `json:"name"`
+	Rating int32 `json:"rating"`
+	Title *string `json:"title"`
+}
+
+func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (int32, error) {
+	internalArg := internal.CreatePlayerParams{
+		Name: arg.Name,
+		Rating: IntConvert[int32, int64](arg.Rating),
+		Title: arg.Title,
+		JoinedAt: time.Now(),
+	}
+	id, err := (*internal.Queries)(q).CreatePlayer(ctx, internalArg)
+	return IntConvert[int64, int32](id), err
+}
+
+func (q *Queries) DeleteAllMatch(ctx context.Context) error {
+	return (*internal.Queries)(q).DeleteAllMatch(ctx)
+}
+
 func (q *Queries) DeleteMatch(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteMatch(ctx, IntConvert[int32, int64](id))
 }
@@ -70,6 +91,14 @@ func (q *Queries) GetMatchByID(ctx context.Context, id int32) (*Match, error) {
 		return nil, err
 	}
 	return MatchFromSQL(&dbResult), nil
+}
+
+func (q *Queries) GetPlayerByID(ctx context.Context, id int32) (*Player, error) {
+	dbResult, err := (*internal.Queries)(q).GetPlayerByID(ctx, IntConvert[int32, int64](id))
+	if err != nil {
+		return nil, err
+	}
+	return PlayerFromSQL(&dbResult), nil
 }
 
 func (q *Queries) ListAllAudit(ctx context.Context) ([]*Audit, error) {
@@ -92,6 +121,18 @@ func (q *Queries) ListAllMatch(ctx context.Context) ([]*Match, error) {
 	result := make([]*Match, len(dbResults))
 	for i := range dbResults {
 		result[i] = MatchFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
+func (q *Queries) ListAllPlayer(ctx context.Context) ([]*Player, error) {
+	dbResults, err := (*internal.Queries)(q).ListAllPlayer(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*Player, len(dbResults))
+	for i := range dbResults {
+		result[i] = PlayerFromSQL(&dbResults[i])
 	}
 	return result, nil
 }

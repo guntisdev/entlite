@@ -63,18 +63,6 @@ message CreateReadingRequest {
 message GetReadingByIDRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
-message UpdateReadingRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
-  // References sensor.ID
-  int32 sensor_id = 2 [(buf.validate.field).required = true];
-  double value = 3 [(buf.validate.field).required = true];
-  // Signal quality 0-100
-  int32 quality = 4 [(buf.validate.field).required = true];
-  // Marked as anomalous by ingestion
-  optional bool flagged = 5;
-  // Device measurement time (client-supplied)
-  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
-}
 message DeleteReadingRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
@@ -104,7 +92,6 @@ message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
 service ReadingService {
   rpc Create(CreateReadingRequest) returns (Reading);
   rpc GetByID(GetReadingByIDRequest) returns (Reading);
-  rpc Update(UpdateReadingRequest) returns (Reading);
   rpc Delete(DeleteReadingRequest) returns (google.protobuf.Empty);
   rpc ListBySensorId(ListReadingBySensorIdRequest) returns (ListReadingBySensorIdResponse);
   rpc FilterBySensorIdRecordedAtFlagged(ListReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListReadingFilterBySensorIdRecordedAtFlaggedResponse);

@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/guntisdev/entlite/internal/schema"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func addFieldNumbers(fields []schema.Field) []schema.Field {
@@ -31,12 +30,11 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 		usedNumbers = append(usedNumbers, idNumber)
 
 		idField := schema.Field{
-			Name:        "ID",
-			Type:        schema.FieldTypeInt,
-			Primary:     true,
-			ProtoField:  idNumber,
-			Unique:      true,
-			Permissions: permissions.Default,
+			Name:       "ID",
+			Type:       schema.FieldTypeInt,
+			Primary:    true,
+			ProtoField: idNumber,
+			Unique:     true,
 		}
 
 		fields = slices.Insert(fields, 0, idField)

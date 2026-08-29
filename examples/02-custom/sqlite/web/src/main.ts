@@ -8,7 +8,6 @@ import type {
     ListReadingFilterBySensorIdRecordedAtFlaggedRequest,
     ListSensorFilterByLabelKindActiveRequest,
     Sensor,
-    UpdateReadingRequest,
     UpdateSensorRequest,
 } from "../../ent/gen/ts/schema_pb.js";
 // from custom proto
@@ -265,33 +264,6 @@ function getReadingByID() {
         });
 }
 
-function updateReading() {
-    const id = numberInput("updateReadingId");
-    if (isNaN(id) || id <= 0) {
-        log("✗ Invalid reading ID");
-        return;
-    }
-    log(`Updating reading ${id}...`);
-    readingClient.getByID({ ID: id })
-        .then((reading) => {
-            const request: StrictMessageInput<UpdateReadingRequest> = {
-                ID: reading.ID,
-                sensorId: reading.sensorId,
-                value: reading.value + 1,
-                quality: reading.quality,
-                flagged: !reading.flagged,
-                recordedAt: reading.recordedAt,
-            };
-            return readingClient.update(request);
-        })
-        .then((response) => {
-            log("✓ Reading updated:", response);
-        })
-        .catch((error) => {
-            log("✗ Error updating reading:", error);
-        });
-}
-
 function deleteReading() {
     const id = numberInput("deleteReadingId");
     if (isNaN(id) || id <= 0) {
@@ -430,7 +402,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("listReadingBtn")!.addEventListener("click", listReadings);
     document.getElementById("filterReadingBtn")!.addEventListener("click", filterReadings);
     document.getElementById("getReadingBtn")!.addEventListener("click", getReadingByID);
-    document.getElementById("updateReadingBtn")!.addEventListener("click", updateReading);
     document.getElementById("deleteReadingBtn")!.addEventListener("click", deleteReading);
 
     document.getElementById("latestBtn")!.addEventListener("click", listWithLatestReading);

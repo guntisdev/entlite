@@ -26,3 +26,11 @@ type Match struct {
 	PlayedAt  time.Time `json:"played_at"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type Player struct {
+	ID       int64     `json:"id"`
+	Name     string    `json:"name"`
+	Rating   int64     `json:"rating"`
+	Title    *string   `json:"title"`
+	JoinedAt time.Time `json:"joined_at"`
+}

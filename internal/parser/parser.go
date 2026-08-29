@@ -118,6 +118,18 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 	// PRIMARY KEY.
 	applyPrimaryIndexOverride(&entity)
 
+	fields, err := applyFieldContracts(entity)
+	if err != nil {
+		return entity, err
+	}
+	entity.Fields = fields
+
+	queries, err := applyQueryContracts(entity)
+	if err != nil {
+		return entity, err
+	}
+	entity.Queries = queries
+
 	if err := validateQueryFields(entity); err != nil {
 		return entity, err
 	}
@@ -170,7 +182,7 @@ func validateJSONDefaults(entity schema.Entity) error {
 
 func validateVirtualFields(entity schema.Entity) error {
 	for _, field := range entity.Fields {
-		if field.IsID() && field.IsVirtual() {
+		if field.IsID() && entity.IsFieldVirtual(field) {
 			return fmt.Errorf("entity %q id field cannot be virtual", entity.Name)
 		}
 	}

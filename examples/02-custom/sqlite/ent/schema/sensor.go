@@ -7,7 +7,6 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/filter"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
@@ -34,11 +33,11 @@ func (Sensor) Fields() []entlite.Field {
 		field.String("firmware").Default("1.0.0"),
 		field.Int("sample_rate_ms").Default(1000).Comment("Sampling interval in milliseconds"),
 		field.Time("installed_at").Immutable().Comment("When the device was physically installed (client-supplied)"),
-		field.Time("created_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now).Immutable(),
-		field.Time("updated_at").Permissions(permissions.ReadOnly).DefaultFunc(time.Now),
+		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
+		field.Time("updated_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now),
 
 		// Virtual: proto only, no column and no place in any generated SQL
-		field.Float("latest_value").Permissions(permissions.Virtual).Optional().
+		field.Float("latest_value").Contracts(entlite.PROTO()).Optional().
 			Comment("Most recent reading value, joined in at the API layer - not stored"),
 	}
 }
