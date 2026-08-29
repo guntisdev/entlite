@@ -18,7 +18,7 @@ type CreateReadingParams struct {
 	RecordedAt time.Time `json:"recorded_at"`
 }
 
-func (q *Queries) CreateReading(ctx context.Context, arg CreateReadingParams) (int32, error) {
+func (q *Queries) CreateReading(ctx context.Context, arg CreateReadingParams) (int64, error) {
 	if !logic.IsPercentage(arg.Quality) {
 		return 0, fmt.Errorf("Failed create: incorrect value for 'Reading' in field 'quality', validated by 'logic.IsPercentage'")
 	}
@@ -30,8 +30,7 @@ func (q *Queries) CreateReading(ctx context.Context, arg CreateReadingParams) (i
 		RecordedAt: arg.RecordedAt,
 		CreatedAt: time.Now(),
 	}
-	id, err := (*internal.Queries)(q).CreateReading(ctx, internalArg)
-	return IntConvert[int64, int32](id), err
+	return (*internal.Queries)(q).CreateReading(ctx, internalArg)
 }
 
 type CreateSensorParams struct {
@@ -67,16 +66,16 @@ func (q *Queries) CreateSensor(ctx context.Context, arg CreateSensorParams) (int
 	return IntConvert[int64, int32](id), err
 }
 
-func (q *Queries) DeleteReading(ctx context.Context, id int32) error {
-	return (*internal.Queries)(q).DeleteReading(ctx, IntConvert[int32, int64](id))
+func (q *Queries) DeleteReading(ctx context.Context, id int64) error {
+	return (*internal.Queries)(q).DeleteReading(ctx, id)
 }
 
 func (q *Queries) DeleteSensor(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteSensor(ctx, IntConvert[int32, int64](id))
 }
 
-func (q *Queries) GetReadingByID(ctx context.Context, id int32) (*Reading, error) {
-	dbResult, err := (*internal.Queries)(q).GetReadingByID(ctx, IntConvert[int32, int64](id))
+func (q *Queries) GetReadingByID(ctx context.Context, id int64) (*Reading, error) {
+	dbResult, err := (*internal.Queries)(q).GetReadingByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +160,7 @@ type UpdateReadingParams struct {
 	Quality int32 `json:"quality"`
 	Flagged *bool `json:"flagged"`
 	RecordedAt time.Time `json:"recorded_at"`
-	ID int32 `json:"ID"`
+	ID int64 `json:"ID"`
 }
 
 func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (*Reading, error) {
@@ -169,7 +168,7 @@ func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (*
 		return nil, fmt.Errorf("Failed update: incorrect value for 'Reading' in field 'quality', validated by 'logic.IsPercentage'")
 	}
 	internalArg := internal.UpdateReadingParams{
-		ID: IntConvert[int32, int64](arg.ID),
+		ID: arg.ID,
 		SensorID: IntConvert[int32, int64](arg.SensorID),
 		Value: arg.Value,
 		Quality: IntConvert[int32, int64](arg.Quality),

@@ -11,7 +11,7 @@ import (
 
 
 type Reading struct {
-	ID int32 `json:"ID"`
+	ID int64 `json:"ID"`
 	SensorID int32 `json:"sensor_id"`
 	Value float64 `json:"value"`
 	Quality int32 `json:"quality"`
@@ -41,7 +41,7 @@ func (m *Reading) ReadingToSQL() *internal.Reading {
 	}
 
 	return &internal.Reading{
-		ID: IntConvert[int32, int64](m.ID),
+		ID: m.ID,
 		SensorID: IntConvert[int32, int64](m.SensorID),
 		Value: m.Value,
 		Quality: IntConvert[int32, int64](m.Quality),
@@ -57,7 +57,7 @@ func ReadingFromSQL(db *internal.Reading) *Reading {
 	}
 
 	return &Reading{
-		ID: IntConvert[int64, int32](db.ID),
+		ID: db.ID,
 		SensorID: IntConvert[int64, int32](db.SensorID),
 		Value: db.Value,
 		Quality: IntConvert[int64, int32](db.Quality),
