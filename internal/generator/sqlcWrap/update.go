@@ -22,13 +22,13 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 			}
 			field := *fieldPtr
 
-			canApiWrite := field.CanApiWrite()
+			canApiWrite := entity.CanFieldWrite(field)
 			if !canApiWrite {
 				continue
 			}
 
 			// special case for psw etc - if not readable then no obligatory to update
-			canApiRead := field.CanApiRead()
+			canApiRead := entity.CanFieldRead(field)
 			if field.DefaultFunc != nil || field.DefaultValue != nil || !canApiRead {
 				field.Optional = true
 			}
@@ -78,9 +78,9 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 			continue
 		}
 
-		canApiWrite := field.CanApiWrite()
+		canApiWrite := entity.CanFieldWrite(field)
 		// special case for psw etc - if not readable then no obligatory to update
-		canApiRead := field.CanApiRead()
+		canApiRead := entity.CanFieldRead(field)
 		if !canApiRead {
 			field.Optional = true
 		}

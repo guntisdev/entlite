@@ -16,13 +16,6 @@ func (r *CreateReadingRequest) Validate() error {
 	return nil
 }
 
-func (r *UpdateReadingRequest) Validate() error {
-	if !logic.IsPercentage(r.Quality) {
-		return fmt.Errorf("Validation failed for field name: Quality")
-	}
-	return nil
-}
-
 func (r *CreateSensorRequest) Validate() error {
 	if !logic.IsKnownSensorKind(r.Kind) {
 		return fmt.Errorf("Validation failed for field name: Kind")

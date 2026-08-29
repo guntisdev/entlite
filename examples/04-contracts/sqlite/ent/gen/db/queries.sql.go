@@ -11,6 +11,10 @@ import (
 )
 
 type CreateAuditParams struct {
+	Action string `json:"action"`
+	MatchID int32 `json:"match_id"`
+	Detail string `json:"detail"`
+	CreatedAt *time.Time `json:"created_at"`
 }
 
 func (q *Queries) CreateAudit(ctx context.Context, arg CreateAuditParams) (int32, error) {
@@ -18,7 +22,7 @@ func (q *Queries) CreateAudit(ctx context.Context, arg CreateAuditParams) (int32
 		Action: arg.Action,
 		MatchID: IntConvert[int32, int64](arg.MatchID),
 		Detail: arg.Detail,
-		CreatedAt: time.Now(),
+		CreatedAt: OptionalWithFallback(arg.CreatedAt, time.Now()),
 	}
 	id, err := (*internal.Queries)(q).CreateAudit(ctx, internalArg)
 	return IntConvert[int64, int32](id), err

@@ -174,3 +174,39 @@ func TestProtoOnlyEntityHasNoVirtualFields(t *testing.T) {
 		}
 	}
 }
+
+func TestEntityAccessIsNotInheritedByFields(t *testing.T) {
+	entity, err := parseFieldContractEntity(t,
+		"entlite.SQLC(),\n\t\tentlite.PROTO().ReadOnly(),",
+		`field.String("name"),`)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+
+	field := entity.Fields[len(entity.Fields)-1]
+	if !field.CanApiWrite() {
+		t.Error("field should stay api writable, the entity contract only drops write queries")
+	}
+	if !field.CanDbWrite() {
+		t.Error("field should stay db writable")
+	}
+}
+
+func TestSqlcOnlyEntityKeepsWritableFields(t *testing.T) {
+	entity, err := parseFieldContractEntity(t, "entlite.SQLC(),", `field.String("action"),`)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+
+	for _, field := range entity.Fields {
+		if field.CanApiWrite() {
+			t.Errorf("field %q should not be api writable, the entity has no proto contract", field.Name)
+		}
+		if !entity.CanFieldWrite(field) {
+			t.Errorf("field %q should still be a write param, the server is the only caller", field.Name)
+		}
+		if !entity.CanFieldRead(field) {
+			t.Errorf("field %q should still be readable", field.Name)
+		}
+	}
+}

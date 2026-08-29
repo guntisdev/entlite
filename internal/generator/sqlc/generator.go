@@ -304,8 +304,8 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			}
 
 			// For non-readable fields (like passwords), use COALESCE with nullable parameter
-			canApiRead := field.CanApiRead()
-			canApiWrite := field.CanApiWrite()
+			canApiRead := entity.CanFieldRead(field)
+			canApiWrite := entity.CanFieldWrite(field)
 			acceptOptional := false
 			if canApiWrite && (field.DefaultFunc != nil || field.DefaultValue != nil) {
 				acceptOptional = true

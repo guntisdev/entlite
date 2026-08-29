@@ -170,7 +170,7 @@ func isPointerField(field schema.Field, queryType schema.QueryType) bool {
 
 // only a declared query has a request message to hang Validate() on
 func hasQueryType(entity schema.Entity, queryType schema.QueryType) bool {
-	for _, query := range entity.Queries {
+	for _, query := range entity.ProtoQueries() {
 		if query.Type == queryType {
 			return true
 		}

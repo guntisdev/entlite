@@ -226,7 +226,7 @@ func SeedRoster(ctx context.Context, database *sql.DB) error {
 		{Name: "Vera Menchik", Rating: 2300, Title: playerTitle("WGM")},
 		{Name: "Mikhail Tal", Rating: 2700, Title: playerTitle("GM")},
 		{Name: "Judit Polgar", Rating: 2735, Title: playerTitle("GM")},
-		{Name: "Club Newcomer", Rating: 1400},
+		{Name: "Club Newcomer", Rating: 1400, Title: nil},
 	}
 
 	for _, player := range roster {

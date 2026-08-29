@@ -26,12 +26,26 @@ func (e Entity) HasPROTO() bool {
 	return false
 }
 
-// IsFieldVirtual reports a field the entity keeps in proto but not in sqlc.
 func (e Entity) IsFieldVirtual(field Field) bool {
 	return e.HasSQLC() && field.IsVirtual()
 }
 
-// GetContract returns the entity contract of the given type
+func (e Entity) CanFieldWrite(field Field) bool {
+	if e.HasPROTO() {
+		return field.CanApiWrite()
+	}
+
+	return field.CanDbWrite()
+}
+
+func (e Entity) CanFieldRead(field Field) bool {
+	if e.HasPROTO() {
+		return field.CanApiRead()
+	}
+
+	return field.CanDbRead()
+}
+
 func (e Entity) GetContract(contractType ContractType) (Contract, bool) {
 	for _, c := range e.Contracts {
 		if c.Type == contractType {
