@@ -61,6 +61,17 @@ func writeTableComment(content *strings.Builder, entity schema.Entity, tableName
 	}
 }
 
+// writes the sqlc name directive followed by the query comment,
+func writeQueryHeader(content *strings.Builder, query schema.Query, queryName, kind string) {
+	fmt.Fprintf(content, "\n-- name: %s :%s\n", queryName, kind)
+	for line := range strings.SplitSeq(query.Comment, "\n") {
+		if line == "" {
+			continue
+		}
+		fmt.Fprintf(content, "-- %s\n", strings.TrimRight(line, "\r"))
+	}
+}
+
 func writeColumnComment(content *strings.Builder, comment string) {
 	if comment == "" {
 		return
@@ -244,18 +255,18 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// CREATE
 	if createQuery != nil {
-		g.writeInsertQuery(&content, entity, util.GenQueryName(*createQuery, entity.Name))
+		g.writeInsertQuery(&content, entity, *createQuery, util.GenQueryName(*createQuery, entity.Name))
 	}
 
 	// CREATE BULK - a single-row insert; the sqlcWrap layer wraps it in a loop.
 	if createBulkQuery != nil {
-		g.writeInsertQuery(&content, entity, util.GenQueryName(*createBulkQuery, entity.Name))
+		g.writeInsertQuery(&content, entity, *createBulkQuery, util.GenQueryName(*createBulkQuery, entity.Name))
 	}
 
 	// READ (get by)
 	for _, query := range getQueries {
 		queryName := util.GenQueryName(query, entity.Name)
-		content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
+		writeQueryHeader(&content, query, queryName, "one")
 		var whereParts []string
 		for i, fieldName := range query.Fields {
 			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i+1)))
@@ -266,7 +277,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	// LIST
 	for _, query := range listQueries {
 		queryName := util.GenQueryName(query, entity.Name)
-		content.WriteString(fmt.Sprintf("\n-- name: %s :many\n", queryName))
+		writeQueryHeader(&content, query, queryName, "many")
 		var whereParts []string
 		for _, fieldName := range query.Fields {
 			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.namedArg(fieldName)))
@@ -297,9 +308,9 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	if updateQuery != nil {
 		queryName := util.GenQueryName(*updateQuery, entity.Name)
 		if g.supportsReturning() {
-			content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
+			writeQueryHeader(&content, *updateQuery, queryName, "one")
 		} else {
-			content.WriteString(fmt.Sprintf("\n-- name: %s :exec\n", queryName))
+			writeQueryHeader(&content, *updateQuery, queryName, "exec")
 		}
 		content.WriteString(fmt.Sprintf("UPDATE %s SET\n", g.quote(tableName)))
 
@@ -341,27 +352,27 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// DELETE
 	if deleteQuery != nil {
-		content.WriteString(fmt.Sprintf("\n-- name: %s :exec\n", util.GenQueryName(*deleteQuery, entity.Name)))
+		writeQueryHeader(&content, *deleteQuery, util.GenQueryName(*deleteQuery, entity.Name), "exec")
 		content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
 	}
 
 	// DELETE ALL
 	if deleteAllQuery != nil {
-		content.WriteString(fmt.Sprintf("\n-- name: %s :exec\n", util.GenQueryName(*deleteAllQuery, entity.Name)))
+		writeQueryHeader(&content, *deleteAllQuery, util.GenQueryName(*deleteAllQuery, entity.Name), "exec")
 		content.WriteString(fmt.Sprintf("DELETE FROM %s;\n", g.quote(tableName)))
 	}
 
 	return content.String()
 }
 
-func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Entity, queryName string) {
+func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Entity, query schema.Query, queryName string) {
 	tableName := strings.ToLower(entity.Name)
 	idField := entity.GetIdField()
 
 	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf("\n-- name: %s :one\n", queryName))
+		writeQueryHeader(content, query, queryName, "one")
 	} else {
-		content.WriteString(fmt.Sprintf("\n-- name: %s :execlastid\n", queryName))
+		writeQueryHeader(content, query, queryName, "execlastid")
 	}
 	content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
 

@@ -9,7 +9,7 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func parseQueriesMethod(funcDecl *ast.FuncDecl) ([]schema.Query, error) {
+func parseQueriesMethod(funcDecl *ast.FuncDecl, comments commentLookup) ([]schema.Query, error) {
 	var queries []schema.Query
 
 	if funcDecl.Body == nil {
@@ -24,10 +24,18 @@ func parseQueriesMethod(funcDecl *ast.FuncDecl) ([]schema.Query, error) {
 
 		for _, result := range retStmt.Results {
 			if compLit, ok := result.(*ast.CompositeLit); ok {
+				prevEnd := compLit.Lbrace
 				for _, elt := range compLit.Elts {
 					parsedQueries, err := parseQueryExpression(elt)
 					if err != nil {
 						return nil, err
+					}
+
+					// one expression can yield several queries, DefaultCRUD gives four
+					comment := comments.docAbove(elt.Pos(), prevEnd)
+					prevEnd = elt.End()
+					for i := range parsedQueries {
+						parsedQueries[i].Comment = comment
 					}
 					queries = append(queries, parsedQueries...)
 				}

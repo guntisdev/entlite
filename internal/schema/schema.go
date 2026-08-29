@@ -241,6 +241,7 @@ type Query struct {
 	Count     bool
 	OrderBy   string
 	Name      string // custom query name; empty means auto-generated
+	Comment   string
 	Contracts []Contract
 }
 

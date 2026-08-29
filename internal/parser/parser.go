@@ -96,7 +96,7 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 
 		// Parse Queries
 		if funcDecl.Name.Name == "Queries" {
-			queries, err := parseQueriesMethod(funcDecl)
+			queries, err := parseQueriesMethod(funcDecl, comments)
 			if err != nil {
 				return entity, fmt.Errorf("failed to parse queries: %w", err)
 			}

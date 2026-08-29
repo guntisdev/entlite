@@ -309,6 +309,27 @@ func getIdFieldAsStr(fields []schema.Field) string {
 }
 
 func generateRequests(entity schema.Entity, query schema.Query) string {
+	rpc := generateRpc(entity, query)
+	if rpc == "" {
+		return ""
+	}
+
+	return rpcComment(query) + rpc
+}
+
+func rpcComment(query schema.Query) string {
+	var content strings.Builder
+	for line := range strings.SplitSeq(query.Comment, "\n") {
+		if line == "" {
+			continue
+		}
+		fmt.Fprintf(&content, "  // %s\n", strings.TrimRight(line, "\r"))
+	}
+
+	return content.String()
+}
+
+func generateRpc(entity schema.Entity, query schema.Query) string {
 	rpcName := util.GenQueryRpcName(query, entity.Name)
 	messageName := util.GenQueryName(query, entity.Name)
 

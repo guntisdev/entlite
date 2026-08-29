@@ -13,6 +13,7 @@ const commentEntitySource = `package schema
 import (
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
+	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
 // User is a person with an account.
@@ -43,6 +44,18 @@ func (User) Fields() []entlite.Field {
 		// Free-form,
 		// over two lines
 		field.String("bio").Optional(),
+	}
+}
+
+func (User) Queries() []entlite.Query {
+	return []entlite.Query{
+		// standard CRUD
+		query.DefaultCRUD(),
+
+		// note detached by the blank line below
+
+		query.GetBy("email"),
+		query.ListAll(), // trailing note, not a doc
 	}
 }
 `
@@ -96,5 +109,33 @@ func TestFieldComments(t *testing.T) {
 		if field.Comment != test.want {
 			t.Errorf("field %q comment = %q, want %q", test.field, field.Comment, test.want)
 		}
+	}
+}
+
+func TestQueryComments(t *testing.T) {
+	entity := parseCommentEntity(t)
+
+	// DefaultCRUD expands to four queries, all sharing the one comment
+	var crud int
+	for _, query := range entity.Queries {
+		switch {
+		case len(query.Fields) == 1 && query.Fields[0] == "email":
+			if query.Comment != "" {
+				t.Errorf("GetBy(email) comment = %q, want empty", query.Comment)
+			}
+		case query.Type == schema.QueryListAll:
+			if query.Comment != "" {
+				t.Errorf("ListAll comment = %q, want empty", query.Comment)
+			}
+		default:
+			crud++
+			if query.Comment != "standard CRUD" {
+				t.Errorf("CRUD query %v comment = %q, want %q", query.Type, query.Comment, "standard CRUD")
+			}
+		}
+	}
+
+	if crud != 4 {
+		t.Errorf("got %d CRUD queries, want 4", crud)
 	}
 }
