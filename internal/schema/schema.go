@@ -28,6 +28,46 @@ func (e Entity) HasPROTO() bool {
 	return false
 }
 
+func (e Entity) GetContract(contractType ContractType) (Contract, bool) {
+	for _, c := range e.Contracts {
+		if c.Type == contractType {
+			return c, true
+		}
+	}
+	return Contract{}, false
+}
+
+func (e Entity) SQLCQueries() []Query {
+	return e.contractQueries(ContractSQLC)
+}
+
+func (e Entity) ProtoQueries() []Query {
+	return e.contractQueries(ContractPROTO)
+}
+
+func (e Entity) contractQueries(contractType ContractType) []Query {
+	contract, ok := e.GetContract(contractType)
+	if !ok {
+		return nil
+	}
+
+	var queries []Query
+	for _, query := range e.Queries {
+		if !query.HasContract(contractType) {
+			continue
+		}
+		if contract.Access == AccessRead && query.IsWrite() {
+			continue
+		}
+		if contract.Access == AccessWrite && !query.IsWrite() {
+			continue
+		}
+		queries = append(queries, query)
+	}
+
+	return queries
+}
+
 func FilterSQLC(entities []Entity) []Entity {
 	var filtered []Entity
 	for _, entity := range entities {
@@ -116,8 +156,18 @@ const (
 )
 
 type Contract struct {
-	Type ContractType
+	Type   ContractType
+	Access Access
 }
+
+// Access narrows what a contract allows. Empty means both read and write.
+type Access string
+
+const (
+	AccessFull  Access = ""
+	AccessRead  Access = "read"
+	AccessWrite Access = "write"
+)
 
 type ContractType string
 
@@ -127,12 +177,32 @@ const (
 )
 
 type Query struct {
-	Type    QueryType
-	Fields  []string
-	Filters []QueryFilter
-	Count   bool
-	OrderBy string
-	Name    string // custom query name; empty means auto-generated
+	Type      QueryType
+	Fields    []string
+	Filters   []QueryFilter
+	Count     bool
+	OrderBy   string
+	Name      string // custom query name; empty means auto-generated
+	Contracts []Contract
+}
+
+func (q Query) HasContract(contractType ContractType) bool {
+	for _, c := range q.Contracts {
+		if c.Type == contractType {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (q Query) IsWrite() bool {
+	switch q.Type {
+	case QueryCreate, QueryCreateBulk, QueryUpdate, QueryDelete, QueryDeleteAll:
+		return true
+	}
+
+	return false
 }
 
 type QueryFilter struct {

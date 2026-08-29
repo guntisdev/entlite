@@ -39,21 +39,21 @@ Old to new:
 `created_at` keeps a plain `entlite.SQLC()`, because the generated INSERT writes that column through `DefaultFunc`. `SQLC().ReadOnly()` means the generated SQL never writes the column, for example a value kept by a trigger.
 
 Steps, contract level first:
-* Add `Layer` interface in pkg/entlite/schema.go: embeds `Contract`, adds `ReadOnly() Contract` and `WriteOnly() Contract`. `SQLC()` and `PROTO()` return `Layer`
-* Drop the unused variadic arg from `PROTO(contracts ...Contract)`
-* internal/schema: add access to `Contract`
-* Parser: read `.ReadOnly()` and `.WriteOnly()` chains in contracts.go
-* Generators: with `PROTO().ReadOnly()` skip create, create_bulk, update, delete and delete_all from proto, same for `SQLC().ReadOnly()` in sqlc
+* ~~Add `Layer` interface in pkg/entlite/schema.go: embeds `Contract`, adds `ReadOnly() Contract` and `WriteOnly() Contract`. `SQLC()` and `PROTO()` return `Layer`~~
+* ~~Drop the unused variadic arg from `PROTO(contracts ...Contract)`~~
+* ~~internal/schema: add access to `Contract`~~
+* ~~Parser: read `.ReadOnly()` and `.WriteOnly()` chains in contracts.go~~
+* ~~Generators: with `PROTO().ReadOnly()` skip create, create_bulk, update, delete and delete_all from proto, same for `SQLC().ReadOnly()` in sqlc~~
 
 Then query level:
-* Add `Contracts(...Layer)` to `QueryOperations` and `ListByOperations`
-* internal/schema: add `Query.Contracts`, `Entity.SQLCQueries()` and `Entity.ProtoQueries()`
-* Parser: parse query contracts in queries.go, reuse `parseContractCall`
-* Parser: default empty query contracts to the entity contracts, after the method loop in parser.go, because `Queries()` can be parsed before `Contracts()`
-* Parser: error when a query contract is not in the entity contracts, or when the entity access already dropped that query
-* Parser: error on `.ReadOnly()` or `.WriteOnly()` inside a query, as a backstop for the compile error
-* proto generator: use `ProtoQueries()`, skip the service block when it is empty but keep the message
-* sqlc and sqlcWrap generators: use `SQLCQueries()`
+* ~~Add `Contracts(...Layer)` to `QueryOperations` and `ListByOperations`~~
+* ~~internal/schema: add `Query.Contracts`, `Entity.SQLCQueries()` and `Entity.ProtoQueries()`~~
+* ~~Parser: parse query contracts in queries.go, reuse `parseContractCall`~~
+* ~~Parser: default empty query contracts to the entity contracts, after the method loop in parser.go, because `Queries()` can be parsed before `Contracts()`~~
+* ~~Parser: error when a query contract is not in the entity contracts, or when the entity access already dropped that query~~
+* ~~Parser: error on `.ReadOnly()` or `.WriteOnly()` inside a query, as a backstop for the compile error~~
+* ~~proto generator: use `ProtoQueries()`, skip the service block when it is empty but keep the message~~
+* ~~sqlc and sqlcWrap generators: use `SQLCQueries()`~~
 
 Then field level:
 * Add `Contracts(...Contract)` to the field builder

@@ -212,7 +212,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var getQueries []schema.Query
 	var listQueries []schema.Query
 
-	for _, query := range entity.Queries {
+	for _, query := range entity.SQLCQueries() {
 		switch query.Type {
 		case schema.QueryCreate:
 			createQuery = &query

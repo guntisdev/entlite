@@ -118,6 +118,12 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 	// PRIMARY KEY.
 	applyPrimaryIndexOverride(&entity)
 
+	queries, err := applyQueryContracts(entity)
+	if err != nil {
+		return entity, err
+	}
+	entity.Queries = queries
+
 	if err := validateQueryFields(entity); err != nil {
 		return entity, err
 	}

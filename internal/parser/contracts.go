@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"go/ast"
 
 	"github.com/guntisdev/entlite/internal/schema"
@@ -23,7 +24,10 @@ func parseContractsMethod(funcDecl *ast.FuncDecl) ([]schema.Contract, error) {
 			if compLit, ok := result.(*ast.CompositeLit); ok {
 				for _, elt := range compLit.Elts {
 					if callExpr, ok := elt.(*ast.CallExpr); ok {
-						contract := parseContractCall(callExpr)
+						contract, err := parseContractCall(callExpr)
+						if err != nil {
+							return nil, err
+						}
 						if contract.Type != "" {
 							contracts = append(contracts, contract)
 						}
@@ -36,19 +40,47 @@ func parseContractsMethod(funcDecl *ast.FuncDecl) ([]schema.Contract, error) {
 	return contracts, nil
 }
 
-func parseContractCall(callExpr *ast.CallExpr) schema.Contract {
+func parseContractCall(callExpr *ast.CallExpr) (schema.Contract, error) {
 	var contract schema.Contract
 
-	if selExpr, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
-		if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "entlite" {
-			switch selExpr.Sel.Name {
-			case "SQLC":
-				contract.Type = schema.ContractSQLC
-			case "PROTO":
-				contract.Type = schema.ContractPROTO
-			}
-		}
+	selExpr, ok := callExpr.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return contract, nil
 	}
 
-	return contract
+	if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "entlite" {
+		switch selExpr.Sel.Name {
+		case "SQLC":
+			contract.Type = schema.ContractSQLC
+		case "PROTO":
+			contract.Type = schema.ContractPROTO
+		}
+
+		return contract, nil
+	}
+
+	innerCall, ok := selExpr.X.(*ast.CallExpr)
+	if !ok {
+		return contract, nil
+	}
+
+	contract, err := parseContractCall(innerCall)
+	if err != nil || contract.Type == "" {
+		return contract, err
+	}
+
+	if len(callExpr.Args) != 0 {
+		return contract, fmt.Errorf("%s does not accept arguments", selExpr.Sel.Name)
+	}
+
+	switch selExpr.Sel.Name {
+	case "ReadOnly":
+		contract.Access = schema.AccessRead
+	case "WriteOnly":
+		contract.Access = schema.AccessWrite
+	default:
+		return contract, fmt.Errorf("unsupported contract operation %q, expected ReadOnly or WriteOnly", selExpr.Sel.Name)
+	}
+
+	return contract, nil
 }

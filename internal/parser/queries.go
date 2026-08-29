@@ -125,7 +125,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	}
 
 	query := queries[0]
-	if query.Type != schema.QueryListBy && selExpr.Sel.Name != "Name" {
+	if query.Type != schema.QueryListBy && selExpr.Sel.Name != "Name" && selExpr.Sel.Name != "Contracts" {
 		return nil, true, fmt.Errorf("%s is only supported for ListBy queries", selExpr.Sel.Name)
 	}
 
@@ -156,11 +156,46 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return nil, true, fmt.Errorf("Name %q is not a valid identifier", name)
 		}
 		query.Name = name
+	case "Contracts":
+		contracts, err := parseQueryContracts(callExpr.Args)
+		if err != nil {
+			return nil, true, err
+		}
+		query.Contracts = contracts
 	default:
 		return nil, false, nil
 	}
 
 	return []schema.Query{query}, true, nil
+}
+
+func parseQueryContracts(args []ast.Expr) ([]schema.Contract, error) {
+	if len(args) == 0 {
+		return nil, fmt.Errorf("Contracts expects at least one of entlite.SQLC() or entlite.PROTO()")
+	}
+
+	var contracts []schema.Contract
+	for _, arg := range args {
+		callExpr, ok := arg.(*ast.CallExpr)
+		if !ok {
+			return nil, fmt.Errorf("Contracts expects entlite.SQLC() or entlite.PROTO()")
+		}
+
+		contract, err := parseContractCall(callExpr)
+		if err != nil {
+			return nil, err
+		}
+		if contract.Type == "" {
+			return nil, fmt.Errorf("Contracts expects entlite.SQLC() or entlite.PROTO()")
+		}
+		if contract.Access != schema.AccessFull {
+			return nil, fmt.Errorf("query contract %s cannot use ReadOnly or WriteOnly, a query is already a read or a write", contract.Type)
+		}
+
+		contracts = append(contracts, contract)
+	}
+
+	return contracts, nil
 }
 
 func parseStringArgs(args []ast.Expr) ([]string, error) {
@@ -272,6 +307,37 @@ func parseFilterExpression(expr ast.Expr) (schema.QueryFilter, bool, error) {
 	}
 
 	return parsedFilter, true, nil
+}
+
+func applyQueryContracts(entity schema.Entity) ([]schema.Query, error) {
+	queries := make([]schema.Query, 0, len(entity.Queries))
+
+	for _, query := range entity.Queries {
+		if len(query.Contracts) == 0 {
+			for _, contract := range entity.Contracts {
+				query.Contracts = append(query.Contracts, schema.Contract{Type: contract.Type})
+			}
+			queries = append(queries, query)
+			continue
+		}
+
+		for _, contract := range query.Contracts {
+			entityContract, ok := entity.GetContract(contract.Type)
+			if !ok {
+				return nil, fmt.Errorf("entity %q query %q declares contract %q, which the entity does not have", entity.Name, query.Type, contract.Type)
+			}
+			if entityContract.Access == schema.AccessRead && query.IsWrite() {
+				return nil, fmt.Errorf("entity %q query %q cannot use contract %q, that entity contract is read only", entity.Name, query.Type, contract.Type)
+			}
+			if entityContract.Access == schema.AccessWrite && !query.IsWrite() {
+				return nil, fmt.Errorf("entity %q query %q cannot use contract %q, that entity contract is write only", entity.Name, query.Type, contract.Type)
+			}
+		}
+
+		queries = append(queries, query)
+	}
+
+	return queries, nil
 }
 
 func validateQueryFields(entity schema.Entity) error {

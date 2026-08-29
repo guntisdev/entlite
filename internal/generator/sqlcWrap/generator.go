@@ -70,7 +70,7 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 
 	dslQueries := make(map[string]dslQuery)
 	for _, entity := range parsedEntities {
-		for _, query := range entity.Queries {
+		for _, query := range entity.SQLCQueries() {
 			name := util.GenQueryName(query, entity.Name)
 			if name == "" {
 				continue

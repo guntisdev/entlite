@@ -88,7 +88,14 @@ func generateSchemaProto(entities []schema.Entity) string {
 		content.WriteString("\n\n")
 	}
 
-	for i, entity := range entities {
+	serviceEntities := []schema.Entity{}
+	for _, entity := range entities {
+		if len(entity.ProtoQueries()) > 0 {
+			serviceEntities = append(serviceEntities, entity)
+		}
+	}
+
+	for i, entity := range serviceEntities {
 		if i > 0 {
 			content.WriteString("\n\n")
 		}
@@ -109,7 +116,7 @@ func generateServiceProto(entity schema.Entity) string {
 	content.WriteString(fmt.Sprintf("// %s provides CRUD opertions for %s entities\n", serviceName, entity.Name))
 	content.WriteString(fmt.Sprintf("service %s {\n", serviceName))
 
-	for _, query := range entity.Queries {
+	for _, query := range entity.ProtoQueries() {
 		content.WriteString(generateRequests(entity, query))
 	}
 
@@ -122,7 +129,7 @@ func generateResponseMessages(entity schema.Entity) string {
 	var content strings.Builder
 	var requiredStr = "[(buf.validate.field).required = true]"
 
-	for i, query := range entity.Queries {
+	for i, query := range entity.ProtoQueries() {
 		if i > 0 {
 			content.WriteString("\n")
 		}
@@ -332,7 +339,7 @@ func needsCommonImports(entities []schema.Entity) bool {
 
 func needsEmptyImportForEntities(entities []schema.Entity) bool {
 	for _, entity := range entities {
-		for _, query := range entity.Queries {
+		for _, query := range entity.ProtoQueries() {
 			if query.Type == schema.QueryDelete || query.Type == schema.QueryDeleteAll {
 				return true
 			}
