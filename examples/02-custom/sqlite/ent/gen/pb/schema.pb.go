@@ -25,7 +25,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Reading represents as reading entity
+// Reading is a single measurement captured by a Sensor.
 type Reading struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -125,7 +125,7 @@ func (x *Reading) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-// Sensor represents as sensor entity
+// Sensor is a physical device deployed in the field that emits Readings.
 type Sensor struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

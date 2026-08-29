@@ -10,7 +10,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "buf/validate/validate.proto";
 
-// Reading represents as reading entity
+// Reading is a single measurement captured by a Sensor.
 message Reading {
   int32 ID = 1 [(buf.validate.field).required = true];
   // References sensor.ID
@@ -25,7 +25,7 @@ message Reading {
   google.protobuf.Timestamp created_at = 7 [(buf.validate.field).required = true];
 }
 
-// Sensor represents as sensor entity
+// Sensor is a physical device deployed in the field that emits Readings.
 message Sensor {
   int32 ID = 1 [(buf.validate.field).required = true];
   // External hardware identifier, e.g. TEMP-A1

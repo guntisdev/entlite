@@ -2,7 +2,7 @@
 
 -- Table definitions for all entities
 
--- reading table
+-- Reading is a single measurement captured by a Sensor.
 CREATE TABLE "reading"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   -- References sensor.ID
@@ -17,7 +17,7 @@ CREATE TABLE "reading"(
   created_at DATETIME NOT NULL
 );
 
--- sensor table
+-- Sensor is a physical device deployed in the field that emits Readings.
 CREATE TABLE "sensor"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   -- External hardware identifier, e.g. TEMP-A1
