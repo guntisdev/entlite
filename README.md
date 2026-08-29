@@ -56,11 +56,11 @@ Then query level:
 * ~~sqlc and sqlcWrap generators: use `SQLCQueries()`~~
 
 Then field level:
-* Add `Contracts(...Contract)` to the field builder
-* internal/schema: replace `Field.Permissions` with contracts plus access, rewrite `Field.IsVirtual()` as "has no sqlc contract"
-* Parser: parse field contracts in fields.go, default them to the entity contracts, validate the subset
-* Generators: replace the permission bit checks in proto, protoValidate, sqlc and sqlcWrap
-* Delete pkg/entlite/permissions
+* ~~Add `Contracts(...Contract)` to the field builder~~
+* ~~internal/schema: replace `Field.Permissions` with contracts plus access, rewrite `Field.IsVirtual()` as "has no sqlc contract", with `Entity.IsFieldVirtual()` for entities that may be proto only~~
+* ~~Parser: parse field contracts in fields.go, default them to the entity contracts, validate the subset~~
+* ~~Generators: replace the permission bit checks in proto, protoValidate, sqlc and sqlcWrap~~
+* ~~Delete pkg/entlite/permissions~~
 
 Examples, each one shows only what fits it:
 * 01-basic-entity, all three dialects: field level only. `password` becomes write only, `created_at` and `updated_at` become read only

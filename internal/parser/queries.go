@@ -413,7 +413,7 @@ func entityHasField(entity schema.Entity, fieldName string) bool {
 func entityFieldIsVirtual(entity schema.Entity, fieldName string) bool {
 	for _, field := range entity.Fields {
 		if strings.EqualFold(field.Name, fieldName) {
-			return field.IsVirtual()
+			return entity.IsFieldVirtual(field)
 		}
 	}
 

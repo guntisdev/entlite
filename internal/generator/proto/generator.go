@@ -8,7 +8,6 @@ import (
 
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func Generate(entities []schema.Entity, dir string) error {
@@ -58,7 +57,7 @@ func generateSchemaProto(entities []schema.Entity) string {
 		content.WriteString(fmt.Sprintf("message %s {\n", entity.Name))
 
 		for _, field := range entity.Fields {
-			canRead := (field.Permissions & permissions.ApiRead) != 0
+			canRead := field.CanApiRead()
 			if !canRead {
 				continue
 			}
@@ -169,7 +168,7 @@ func generateResponseMessages(entity schema.Entity) string {
 		case schema.QueryUpdate:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			for _, field := range entity.Fields {
-				canWrite := (field.Permissions & permissions.ApiWrite) != 0
+				canWrite := field.CanApiWrite()
 				if !field.IsID() {
 					if field.Immutable || !canWrite {
 						continue
@@ -180,7 +179,7 @@ func generateResponseMessages(entity schema.Entity) string {
 				var optional string
 				var required string
 				// special case for psw etc - if not readable then no obligatory to update
-				canRead := (field.Permissions & permissions.ApiRead) != 0
+				canRead := field.CanApiRead()
 				if field.Optional || !canRead || field.DefaultValue != nil || field.DefaultFunc != nil {
 					optional = "optional "
 				} else {
@@ -269,7 +268,7 @@ func writeFieldComment(content *strings.Builder, comment string) {
 func writeCreateFields(content *strings.Builder, entity schema.Entity) {
 	var requiredStr = "[(buf.validate.field).required = true]"
 	for _, field := range entity.Fields {
-		canWrite := (field.Permissions & permissions.ApiWrite) != 0
+		canWrite := field.CanApiWrite()
 		if field.IsID() || !canWrite {
 			continue
 		}

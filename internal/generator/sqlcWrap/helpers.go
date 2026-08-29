@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func fieldToGoType(field schema.Field) string {
@@ -191,7 +190,7 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		if field.Type != schema.FieldTypeJSON || field.IsVirtual() {
 			continue
 		}
-		if (field.Permissions & permissions.ApiWrite) == 0 {
+		if !field.CanApiWrite() {
 			continue
 		}
 		// update skips immutable fields, so they are not in the params struct
@@ -301,7 +300,7 @@ func isPointerParam(field schema.Field, sqlQuery string) bool {
 		return true
 	}
 	// update makes write-only fields optional so they can be left alone
-	return sqlQuery == "update" && (field.Permissions&permissions.ApiRead) == 0
+	return sqlQuery == "update" && !field.CanApiRead()
 }
 
 func formatType(expr ast.Expr) string {

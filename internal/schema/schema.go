@@ -2,8 +2,6 @@ package schema
 
 import (
 	"strings"
-
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 type Schema struct {
@@ -28,6 +26,12 @@ func (e Entity) HasPROTO() bool {
 	return false
 }
 
+// IsFieldVirtual reports a field the entity keeps in proto but not in sqlc.
+func (e Entity) IsFieldVirtual(field Field) bool {
+	return e.HasSQLC() && field.IsVirtual()
+}
+
+// GetContract returns the entity contract of the given type
 func (e Entity) GetContract(contractType ContractType) (Contract, bool) {
 	for _, c := range e.Contracts {
 		if c.Type == contractType {
@@ -37,10 +41,12 @@ func (e Entity) GetContract(contractType ContractType) (Contract, bool) {
 	return Contract{}, false
 }
 
+// SQLCQueries returns the queries generated for the sqlc contract
 func (e Entity) SQLCQueries() []Query {
 	return e.contractQueries(ContractSQLC)
 }
 
+// ProtoQueries returns the queries generated for the proto contract
 func (e Entity) ProtoQueries() []Query {
 	return e.contractQueries(ContractPROTO)
 }
@@ -127,7 +133,7 @@ type Field struct {
 	DefaultFunc  func() any
 	ProtoField   int
 	Comment      string
-	Permissions  permissions.Permission
+	Contracts    []Contract
 	Immutable    bool
 	Optional     bool
 	Validate     func() any
@@ -137,9 +143,46 @@ func (f Field) IsID() bool {
 	return strings.ToLower(f.Name) == "id"
 }
 
-// IsVirtual reports a field that live only in proto and not in sqlc
+// IsVirtual reports a field that lives only in proto and not in sqlc.
 func (f Field) IsVirtual() bool {
-	return f.Permissions&(permissions.DbRead|permissions.DbWrite) == 0
+	_, ok := f.GetContract(ContractSQLC)
+	return !ok
+}
+
+// GetContract returns the field contract of the given type
+func (f Field) GetContract(contractType ContractType) (Contract, bool) {
+	for _, c := range f.Contracts {
+		if c.Type == contractType {
+			return c, true
+		}
+	}
+
+	return Contract{}, false
+}
+
+func (f Field) CanDbRead() bool {
+	return f.canAccess(ContractSQLC, AccessWrite)
+}
+
+func (f Field) CanDbWrite() bool {
+	return f.canAccess(ContractSQLC, AccessRead)
+}
+
+func (f Field) CanApiRead() bool {
+	return f.canAccess(ContractPROTO, AccessWrite)
+}
+
+func (f Field) CanApiWrite() bool {
+	return f.canAccess(ContractPROTO, AccessRead)
+}
+
+func (f Field) canAccess(contractType ContractType, blockedBy Access) bool {
+	contract, ok := f.GetContract(contractType)
+	if !ok {
+		return false
+	}
+
+	return contract.Access != blockedBy
 }
 
 type FieldType string

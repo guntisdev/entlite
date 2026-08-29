@@ -7,7 +7,6 @@ import (
 	"github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
-	"github.com/guntisdev/entlite/pkg/entlite/permissions"
 )
 
 func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (string, error) {
@@ -151,7 +150,7 @@ func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) st
 
 // inRequest reports if the field exists in the create or update request message
 func inRequest(field schema.Field, queryType schema.QueryType) bool {
-	if (field.Permissions & permissions.ApiWrite) == 0 {
+	if !field.CanApiWrite() {
 		return false
 	}
 	if queryType == schema.QueryCreate {
@@ -166,7 +165,7 @@ func isPointerField(field schema.Field, queryType schema.QueryType) bool {
 		return true
 	}
 	// update makes write-only fields optional so they can be left alone
-	return queryType == schema.QueryUpdate && (field.Permissions&permissions.ApiRead) == 0
+	return queryType == schema.QueryUpdate && !field.CanApiRead()
 }
 
 // only a declared query has a request message to hang Validate() on
