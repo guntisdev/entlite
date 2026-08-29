@@ -29,6 +29,14 @@ type Match struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type Player struct {
+	ID int32 `json:"ID"`
+	Name string `json:"name"`
+	Rating int32 `json:"rating"`
+	Title *string `json:"title"`
+	JoinedAt time.Time `json:"joined_at"`
+}
+
 func (m *Audit) AuditToSQL() *internal.Audit {
 	if m == nil {
 		return nil
@@ -91,6 +99,34 @@ func MatchFromSQL(db *internal.Match) *Match {
 	}
 }
 
+func (m *Player) PlayerToSQL() *internal.Player {
+	if m == nil {
+		return nil
+	}
+
+	return &internal.Player{
+		ID: IntConvert[int32, int64](m.ID),
+		Name: m.Name,
+		Rating: IntConvert[int32, int64](m.Rating),
+		Title: m.Title,
+		JoinedAt: m.JoinedAt,
+	}
+}
+
+func PlayerFromSQL(db *internal.Player) *Player {
+	if db == nil {
+		return nil
+	}
+
+	return &Player{
+		ID: IntConvert[int64, int32](db.ID),
+		Name: db.Name,
+		Rating: IntConvert[int64, int32](db.Rating),
+		Title: db.Title,
+		JoinedAt: db.JoinedAt,
+	}
+}
+
 // ToProto converts Match to proto format
 func (m *Match) ToProto() *pb.Match {
 	if m == nil {
@@ -106,6 +142,21 @@ func (m *Match) ToProto() *pb.Match {
 		Moves: m.Moves,
 		PlayedAt: timestamppb.New(m.PlayedAt),
 		CreatedAt: timestamppb.New(m.CreatedAt),
+	}
+}
+
+// ToProto converts Player to proto format
+func (m *Player) ToProto() *pb.Player {
+	if m == nil {
+		return nil
+	}
+
+	return &pb.Player{
+		ID: m.ID,
+		Name: m.Name,
+		Rating: m.Rating,
+		Title: m.Title,
+		JoinedAt: timestamppb.New(m.JoinedAt),
 	}
 }
 

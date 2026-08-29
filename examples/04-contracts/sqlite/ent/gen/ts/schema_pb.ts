@@ -15,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiiQIKBU1hdGNoEhIKAklEGAEgASgFQga6SAPIAQESFQoFd2hpdGUYAiABKAlCBrpIA8gBARIVCgVibGFjaxgDIAEoCUIGukgDyAEBEhYKBnJlc3VsdBgEIAEoCUIGukgDyAEBEhQKB29wZW5pbmcYBSABKAlIAIgBARIVCgVtb3ZlcxgGIAEoBUIGukgDyAEBEjUKCXBsYXllZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2CgpjcmVhdGVkX2F0GAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgoKCF9vcGVuaW5nIqsBCghTdGFuZGluZxISCgJJRBgBIAEoBUIGukgDyAEBEhYKBnBsYXllchgCIAEoCUIGukgDyAEBEhYKBnBsYXllZBgDIAEoBUIGukgDyAEBEhQKBHdpbnMYBCABKAVCBrpIA8gBARIVCgVkcmF3cxgFIAEoBUIGukgDyAEBEhYKBmxvc3NlcxgGIAEoBUIGukgDyAEBEhYKBnBvaW50cxgHIAEoAUIGukgDyAEBItUBChJDcmVhdGVNYXRjaFJlcXVlc3QSFQoFd2hpdGUYAiABKAlCBrpIA8gBARIVCgVibGFjaxgDIAEoCUIGukgDyAEBEhYKBnJlc3VsdBgEIAEoCUIGukgDyAEBEhQKB29wZW5pbmcYBSABKAlIAIgBARIVCgVtb3ZlcxgGIAEoBUIGukgDyAEBEjIKCXBsYXllZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBAUIKCghfb3BlbmluZ0IMCgpfcGxheWVkX2F0IikKE0dldE1hdGNoQnlJRFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIoChJEZWxldGVNYXRjaFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIVChNMaXN0QWxsTWF0Y2hSZXF1ZXN0IjYKFExpc3RBbGxNYXRjaFJlc3BvbnNlEh4KBm1hdGNocxgBIAMoCzIOLmVudGxpdGUuTWF0Y2giGAoWTGlzdEFsbFN0YW5kaW5nUmVxdWVzdCI/ChdMaXN0QWxsU3RhbmRpbmdSZXNwb25zZRIkCglzdGFuZGluZ3MYASADKAsyES5lbnRsaXRlLlN0YW5kaW5nMoUCCgxNYXRjaFNlcnZpY2USNQoGQ3JlYXRlEhsuZW50bGl0ZS5DcmVhdGVNYXRjaFJlcXVlc3QaDi5lbnRsaXRlLk1hdGNoEjcKB0dldEJ5SUQSHC5lbnRsaXRlLkdldE1hdGNoQnlJRFJlcXVlc3QaDi5lbnRsaXRlLk1hdGNoEj0KBkRlbGV0ZRIbLmVudGxpdGUuRGVsZXRlTWF0Y2hSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EkYKB0xpc3RBbGwSHC5lbnRsaXRlLkxpc3RBbGxNYXRjaFJlcXVlc3QaHS5lbnRsaXRlLkxpc3RBbGxNYXRjaFJlc3BvbnNlMl8KD1N0YW5kaW5nU2VydmljZRJMCgdMaXN0QWxsEh8uZW50bGl0ZS5MaXN0QWxsU3RhbmRpbmdSZXF1ZXN0GiAuZW50bGl0ZS5MaXN0QWxsU3RhbmRpbmdSZXNwb25zZUIGWgQuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SB2VudGxpdGUiiQIKBU1hdGNoEhIKAklEGAEgASgFQga6SAPIAQESFQoFd2hpdGUYAiABKAlCBrpIA8gBARIVCgVibGFjaxgDIAEoCUIGukgDyAEBEhYKBnJlc3VsdBgEIAEoCUIGukgDyAEBEhQKB29wZW5pbmcYBSABKAlIAIgBARIVCgVtb3ZlcxgGIAEoBUIGukgDyAEBEjUKCXBsYXllZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2CgpjcmVhdGVkX2F0GAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgoKCF9vcGVuaW5nIp8BCgZQbGF5ZXISEgoCSUQYASABKAVCBrpIA8gBARIUCgRuYW1lGAIgASgJQga6SAPIAQESFgoGcmF0aW5nGAMgASgFQga6SAPIAQESEgoFdGl0bGUYBCABKAlIAIgBARI1Cglqb2luZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQFCCAoGX3RpdGxlIqsBCghTdGFuZGluZxISCgJJRBgBIAEoBUIGukgDyAEBEhYKBnBsYXllchgCIAEoCUIGukgDyAEBEhYKBnBsYXllZBgDIAEoBUIGukgDyAEBEhQKBHdpbnMYBCABKAVCBrpIA8gBARIVCgVkcmF3cxgFIAEoBUIGukgDyAEBEhYKBmxvc3NlcxgGIAEoBUIGukgDyAEBEhYKBnBvaW50cxgHIAEoAUIGukgDyAEBItUBChJDcmVhdGVNYXRjaFJlcXVlc3QSFQoFd2hpdGUYAiABKAlCBrpIA8gBARIVCgVibGFjaxgDIAEoCUIGukgDyAEBEhYKBnJlc3VsdBgEIAEoCUIGukgDyAEBEhQKB29wZW5pbmcYBSABKAlIAIgBARIVCgVtb3ZlcxgGIAEoBUIGukgDyAEBEjIKCXBsYXllZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBAUIKCghfb3BlbmluZ0IMCgpfcGxheWVkX2F0IikKE0dldE1hdGNoQnlJRFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIoChJEZWxldGVNYXRjaFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIVChNMaXN0QWxsTWF0Y2hSZXF1ZXN0IjYKFExpc3RBbGxNYXRjaFJlc3BvbnNlEh4KBm1hdGNocxgBIAMoCzIOLmVudGxpdGUuTWF0Y2giKgoUR2V0UGxheWVyQnlJRFJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBASIWChRMaXN0QWxsUGxheWVyUmVxdWVzdCI5ChVMaXN0QWxsUGxheWVyUmVzcG9uc2USIAoHcGxheWVycxgBIAMoCzIPLmVudGxpdGUuUGxheWVyIhgKFkxpc3RBbGxTdGFuZGluZ1JlcXVlc3QiPwoXTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2USJAoJc3RhbmRpbmdzGAEgAygLMhEuZW50bGl0ZS5TdGFuZGluZzKFAgoMTWF0Y2hTZXJ2aWNlEjUKBkNyZWF0ZRIbLmVudGxpdGUuQ3JlYXRlTWF0Y2hSZXF1ZXN0Gg4uZW50bGl0ZS5NYXRjaBI3CgdHZXRCeUlEEhwuZW50bGl0ZS5HZXRNYXRjaEJ5SURSZXF1ZXN0Gg4uZW50bGl0ZS5NYXRjaBI9CgZEZWxldGUSGy5lbnRsaXRlLkRlbGV0ZU1hdGNoUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRJGCgdMaXN0QWxsEhwuZW50bGl0ZS5MaXN0QWxsTWF0Y2hSZXF1ZXN0Gh0uZW50bGl0ZS5MaXN0QWxsTWF0Y2hSZXNwb25zZTKUAQoNUGxheWVyU2VydmljZRI5CgdHZXRCeUlEEh0uZW50bGl0ZS5HZXRQbGF5ZXJCeUlEUmVxdWVzdBoPLmVudGxpdGUuUGxheWVyEkgKB0xpc3RBbGwSHS5lbnRsaXRlLkxpc3RBbGxQbGF5ZXJSZXF1ZXN0Gh4uZW50bGl0ZS5MaXN0QWxsUGxheWVyUmVzcG9uc2UyXwoPU3RhbmRpbmdTZXJ2aWNlEkwKB0xpc3RBbGwSHy5lbnRsaXRlLkxpc3RBbGxTdGFuZGluZ1JlcXVlc3QaIC5lbnRsaXRlLkxpc3RBbGxTdGFuZGluZ1Jlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * Match represents as match entity
@@ -76,6 +76,49 @@ export const MatchSchema: GenMessage<Match> = /*@__PURE__*/
   messageDesc(file_schema, 0);
 
 /**
+ * Player represents as player entity
+ *
+ * @generated from message entlite.Player
+ */
+export type Player = Message<"entlite.Player"> & {
+  /**
+   * @generated from field: int32 ID = 1;
+   */
+  ID: number;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * Elo rating, kept by the secretary
+   *
+   * @generated from field: int32 rating = 3;
+   */
+  rating: number;
+
+  /**
+   * e.g. GM, IM, FM
+   *
+   * @generated from field: optional string title = 4;
+   */
+  title?: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp joined_at = 5;
+   */
+  joinedAt?: Timestamp;
+};
+
+/**
+ * Describes the message entlite.Player.
+ * Use `create(PlayerSchema)` to create a new message.
+ */
+export const PlayerSchema: GenMessage<Player> = /*@__PURE__*/
+  messageDesc(file_schema, 1);
+
+/**
  * Standing represents as standing entity
  *
  * @generated from message entlite.Standing
@@ -126,7 +169,7 @@ export type Standing = Message<"entlite.Standing"> & {
  * Use `create(StandingSchema)` to create a new message.
  */
 export const StandingSchema: GenMessage<Standing> = /*@__PURE__*/
-  messageDesc(file_schema, 1);
+  messageDesc(file_schema, 2);
 
 /**
  * @generated from message entlite.CreateMatchRequest
@@ -172,7 +215,7 @@ export type CreateMatchRequest = Message<"entlite.CreateMatchRequest"> & {
  * Use `create(CreateMatchRequestSchema)` to create a new message.
  */
 export const CreateMatchRequestSchema: GenMessage<CreateMatchRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 2);
+  messageDesc(file_schema, 3);
 
 /**
  * @generated from message entlite.GetMatchByIDRequest
@@ -189,7 +232,7 @@ export type GetMatchByIDRequest = Message<"entlite.GetMatchByIDRequest"> & {
  * Use `create(GetMatchByIDRequestSchema)` to create a new message.
  */
 export const GetMatchByIDRequestSchema: GenMessage<GetMatchByIDRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 3);
+  messageDesc(file_schema, 4);
 
 /**
  * @generated from message entlite.DeleteMatchRequest
@@ -206,7 +249,7 @@ export type DeleteMatchRequest = Message<"entlite.DeleteMatchRequest"> & {
  * Use `create(DeleteMatchRequestSchema)` to create a new message.
  */
 export const DeleteMatchRequestSchema: GenMessage<DeleteMatchRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 4);
+  messageDesc(file_schema, 5);
 
 /**
  * @generated from message entlite.ListAllMatchRequest
@@ -219,7 +262,7 @@ export type ListAllMatchRequest = Message<"entlite.ListAllMatchRequest"> & {
  * Use `create(ListAllMatchRequestSchema)` to create a new message.
  */
 export const ListAllMatchRequestSchema: GenMessage<ListAllMatchRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 5);
+  messageDesc(file_schema, 6);
 
 /**
  * @generated from message entlite.ListAllMatchResponse
@@ -236,7 +279,54 @@ export type ListAllMatchResponse = Message<"entlite.ListAllMatchResponse"> & {
  * Use `create(ListAllMatchResponseSchema)` to create a new message.
  */
 export const ListAllMatchResponseSchema: GenMessage<ListAllMatchResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 6);
+  messageDesc(file_schema, 7);
+
+/**
+ * @generated from message entlite.GetPlayerByIDRequest
+ */
+export type GetPlayerByIDRequest = Message<"entlite.GetPlayerByIDRequest"> & {
+  /**
+   * @generated from field: int32 ID = 1;
+   */
+  ID: number;
+};
+
+/**
+ * Describes the message entlite.GetPlayerByIDRequest.
+ * Use `create(GetPlayerByIDRequestSchema)` to create a new message.
+ */
+export const GetPlayerByIDRequestSchema: GenMessage<GetPlayerByIDRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 8);
+
+/**
+ * @generated from message entlite.ListAllPlayerRequest
+ */
+export type ListAllPlayerRequest = Message<"entlite.ListAllPlayerRequest"> & {
+};
+
+/**
+ * Describes the message entlite.ListAllPlayerRequest.
+ * Use `create(ListAllPlayerRequestSchema)` to create a new message.
+ */
+export const ListAllPlayerRequestSchema: GenMessage<ListAllPlayerRequest> = /*@__PURE__*/
+  messageDesc(file_schema, 9);
+
+/**
+ * @generated from message entlite.ListAllPlayerResponse
+ */
+export type ListAllPlayerResponse = Message<"entlite.ListAllPlayerResponse"> & {
+  /**
+   * @generated from field: repeated entlite.Player players = 1;
+   */
+  players: Player[];
+};
+
+/**
+ * Describes the message entlite.ListAllPlayerResponse.
+ * Use `create(ListAllPlayerResponseSchema)` to create a new message.
+ */
+export const ListAllPlayerResponseSchema: GenMessage<ListAllPlayerResponse> = /*@__PURE__*/
+  messageDesc(file_schema, 10);
 
 /**
  * @generated from message entlite.ListAllStandingRequest
@@ -249,7 +339,7 @@ export type ListAllStandingRequest = Message<"entlite.ListAllStandingRequest"> &
  * Use `create(ListAllStandingRequestSchema)` to create a new message.
  */
 export const ListAllStandingRequestSchema: GenMessage<ListAllStandingRequest> = /*@__PURE__*/
-  messageDesc(file_schema, 7);
+  messageDesc(file_schema, 11);
 
 /**
  * @generated from message entlite.ListAllStandingResponse
@@ -266,7 +356,7 @@ export type ListAllStandingResponse = Message<"entlite.ListAllStandingResponse">
  * Use `create(ListAllStandingResponseSchema)` to create a new message.
  */
 export const ListAllStandingResponseSchema: GenMessage<ListAllStandingResponse> = /*@__PURE__*/
-  messageDesc(file_schema, 8);
+  messageDesc(file_schema, 12);
 
 /**
  * MatchService provides CRUD opertions for Match entities
@@ -310,6 +400,31 @@ export const MatchService: GenService<{
   serviceDesc(file_schema, 0);
 
 /**
+ * PlayerService provides CRUD opertions for Player entities
+ *
+ * @generated from service entlite.PlayerService
+ */
+export const PlayerService: GenService<{
+  /**
+   * @generated from rpc entlite.PlayerService.GetByID
+   */
+  getByID: {
+    methodKind: "unary";
+    input: typeof GetPlayerByIDRequestSchema;
+    output: typeof PlayerSchema;
+  },
+  /**
+   * @generated from rpc entlite.PlayerService.ListAll
+   */
+  listAll: {
+    methodKind: "unary";
+    input: typeof ListAllPlayerRequestSchema;
+    output: typeof ListAllPlayerResponseSchema;
+  },
+}> = /*@__PURE__*/
+  serviceDesc(file_schema, 1);
+
+/**
  * StandingService provides CRUD opertions for Standing entities
  *
  * @generated from service entlite.StandingService
@@ -324,5 +439,5 @@ export const StandingService: GenService<{
     output: typeof ListAllStandingResponseSchema;
   },
 }> = /*@__PURE__*/
-  serviceDesc(file_schema, 1);
+  serviceDesc(file_schema, 2);
 

@@ -35,7 +35,11 @@ func (Reading) Fields() []entlite.Field {
 
 func (Reading) Queries() []entlite.Query {
 	return []entlite.Query{
-		query.DefaultCRUD(),
+		query.Create(),
+		query.Get(),
+		// a measurement is a recorded fact, clients never edit it, disabled in proto level
+		query.Update().Contracts(entlite.SQLC()),
+		query.Delete(),
 		query.ListBy("sensor_id"),
 		query.ListBy(
 			filter.Eq("sensor_id"),

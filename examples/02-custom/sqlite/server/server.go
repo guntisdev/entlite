@@ -230,32 +230,6 @@ func (s *ReadingServer) GetByID(
 	return connect.NewResponse(reading.ToProto()), nil
 }
 
-func (s *ReadingServer) Update(
-	ctx context.Context,
-	req *connect.Request[pb.UpdateReadingRequest],
-) (*connect.Response[pb.Reading], error) {
-	log.Printf("Update reading: ID=%d, %+v", req.Msg.ID, req.Msg)
-
-	queries := db.New(s.db)
-
-	reading, err := queries.UpdateReading(ctx, db.UpdateReadingParams{
-		ID:         req.Msg.ID,
-		SensorID:   req.Msg.SensorId,
-		Value:      req.Msg.Value,
-		Quality:    req.Msg.Quality,
-		Flagged:    req.Msg.Flagged,
-		RecordedAt: req.Msg.RecordedAt.AsTime(),
-	})
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("reading not found"))
-		}
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to update reading: %w", err))
-	}
-
-	return connect.NewResponse(reading.ToProto()), nil
-}
-
 func (s *ReadingServer) Delete(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteReadingRequest],

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -34,6 +35,10 @@ func main() {
 		log.Fatalf("Failed to initialize schema: %v", err)
 	}
 
+	if err := server.SeedRoster(context.Background(), database); err != nil {
+		log.Fatalf("Failed to seed roster: %v", err)
+	}
+
 	mux := http.NewServeMux()
 
 	interceptors := connect.WithInterceptors(
@@ -54,6 +59,14 @@ func main() {
 		interceptors,
 	)
 	mux.Handle(standingPath, standingHandler)
+
+	// Player has both contracts, but proto is read only: the roster is
+	// written by SeedRoster on the server and clients can only read it
+	playerPath, playerHandler := pb.NewPlayerServiceHandler(
+		server.NewPlayerServiceServer(database),
+		interceptors,
+	)
+	mux.Handle(playerPath, playerHandler)
 
 	// AuditEntry has only the sqlc contract, so it has no service at all.
 	// This plain endpoint proves the rows exist without exposing them.
@@ -76,7 +89,7 @@ func main() {
 
 	addr := fmt.Sprintf(":%s", *port)
 	log.Printf("Starting gRPC server on %s", addr)
-	log.Printf("Services: %s %s", matchPath, standingPath)
+	log.Printf("Services: %s %s %s", matchPath, standingPath, playerPath)
 	log.Printf("Web UI available at http://localhost%s", addr)
 	log.Printf("Health check available at http://localhost%s/health", addr)
 

@@ -279,7 +279,9 @@ func applyFieldContracts(entity schema.Entity) ([]schema.Field, error) {
 
 	for _, field := range entity.Fields {
 		if len(field.Contracts) == 0 {
-			field.Contracts = append(field.Contracts, entity.Contracts...)
+			for _, contract := range entity.Contracts {
+				field.Contracts = append(field.Contracts, schema.Contract{Type: contract.Type})
+			}
 			fields = append(fields, field)
 			continue
 		}

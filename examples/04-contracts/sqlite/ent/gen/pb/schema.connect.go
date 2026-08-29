@@ -25,6 +25,8 @@ const _ = connect.IsAtLeastVersion1_13_0
 const (
 	// MatchServiceName is the fully-qualified name of the MatchService service.
 	MatchServiceName = "entlite.MatchService"
+	// PlayerServiceName is the fully-qualified name of the PlayerService service.
+	PlayerServiceName = "entlite.PlayerService"
 	// StandingServiceName is the fully-qualified name of the StandingService service.
 	StandingServiceName = "entlite.StandingService"
 )
@@ -45,6 +47,10 @@ const (
 	MatchServiceDeleteProcedure = "/entlite.MatchService/Delete"
 	// MatchServiceListAllProcedure is the fully-qualified name of the MatchService's ListAll RPC.
 	MatchServiceListAllProcedure = "/entlite.MatchService/ListAll"
+	// PlayerServiceGetByIDProcedure is the fully-qualified name of the PlayerService's GetByID RPC.
+	PlayerServiceGetByIDProcedure = "/entlite.PlayerService/GetByID"
+	// PlayerServiceListAllProcedure is the fully-qualified name of the PlayerService's ListAll RPC.
+	PlayerServiceListAllProcedure = "/entlite.PlayerService/ListAll"
 	// StandingServiceListAllProcedure is the fully-qualified name of the StandingService's ListAll RPC.
 	StandingServiceListAllProcedure = "/entlite.StandingService/ListAll"
 )
@@ -195,6 +201,102 @@ func (UnimplementedMatchServiceHandler) Delete(context.Context, *connect.Request
 
 func (UnimplementedMatchServiceHandler) ListAll(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.MatchService.ListAll is not implemented"))
+}
+
+// PlayerServiceClient is a client for the entlite.PlayerService service.
+type PlayerServiceClient interface {
+	GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error)
+	ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
+}
+
+// NewPlayerServiceClient constructs a client for the entlite.PlayerService service. By default, it
+// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
+// connect.WithGRPCWeb() options.
+//
+// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
+// http://api.acme.com or https://acme.com/grpc).
+func NewPlayerServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) PlayerServiceClient {
+	baseURL = strings.TrimRight(baseURL, "/")
+	playerServiceMethods := File_schema_proto.Services().ByName("PlayerService").Methods()
+	return &playerServiceClient{
+		getByID: connect.NewClient[GetPlayerByIDRequest, Player](
+			httpClient,
+			baseURL+PlayerServiceGetByIDProcedure,
+			connect.WithSchema(playerServiceMethods.ByName("GetByID")),
+			connect.WithClientOptions(opts...),
+		),
+		listAll: connect.NewClient[ListAllPlayerRequest, ListAllPlayerResponse](
+			httpClient,
+			baseURL+PlayerServiceListAllProcedure,
+			connect.WithSchema(playerServiceMethods.ByName("ListAll")),
+			connect.WithClientOptions(opts...),
+		),
+	}
+}
+
+// playerServiceClient implements PlayerServiceClient.
+type playerServiceClient struct {
+	getByID *connect.Client[GetPlayerByIDRequest, Player]
+	listAll *connect.Client[ListAllPlayerRequest, ListAllPlayerResponse]
+}
+
+// GetByID calls entlite.PlayerService.GetByID.
+func (c *playerServiceClient) GetByID(ctx context.Context, req *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error) {
+	return c.getByID.CallUnary(ctx, req)
+}
+
+// ListAll calls entlite.PlayerService.ListAll.
+func (c *playerServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
+	return c.listAll.CallUnary(ctx, req)
+}
+
+// PlayerServiceHandler is an implementation of the entlite.PlayerService service.
+type PlayerServiceHandler interface {
+	GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error)
+	ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
+}
+
+// NewPlayerServiceHandler builds an HTTP handler from the service implementation. It returns the
+// path on which to mount the handler and the handler itself.
+//
+// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
+// and JSON codecs. They also support gzip compression.
+func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	playerServiceMethods := File_schema_proto.Services().ByName("PlayerService").Methods()
+	playerServiceGetByIDHandler := connect.NewUnaryHandler(
+		PlayerServiceGetByIDProcedure,
+		svc.GetByID,
+		connect.WithSchema(playerServiceMethods.ByName("GetByID")),
+		connect.WithHandlerOptions(opts...),
+	)
+	playerServiceListAllHandler := connect.NewUnaryHandler(
+		PlayerServiceListAllProcedure,
+		svc.ListAll,
+		connect.WithSchema(playerServiceMethods.ByName("ListAll")),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/entlite.PlayerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case PlayerServiceGetByIDProcedure:
+			playerServiceGetByIDHandler.ServeHTTP(w, r)
+		case PlayerServiceListAllProcedure:
+			playerServiceListAllHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+}
+
+// UnimplementedPlayerServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedPlayerServiceHandler struct{}
+
+func (UnimplementedPlayerServiceHandler) GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.PlayerService.GetByID is not implemented"))
+}
+
+func (UnimplementedPlayerServiceHandler) ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.PlayerService.ListAll is not implemented"))
 }
 
 // StandingServiceClient is a client for the entlite.StandingService service.
