@@ -25,8 +25,10 @@ func (Match) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("white").Validate(logic.NotBlank),
 		field.String("black").Validate(logic.NotBlank),
-		field.String("result").Validate(logic.IsKnownResult).Comment("1-0 | 0-1 | 1/2-1/2"),
-		field.String("opening").Optional().Comment("e.g. Sicilian Defence"),
+		// 1-0 | 0-1 | 1/2-1/2
+		field.String("result").Validate(logic.IsKnownResult),
+		// e.g. Sicilian Defence
+		field.String("opening").Optional(),
 		field.Int("moves"),
 		field.Time("played_at").DefaultFunc(time.Now),
 		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),

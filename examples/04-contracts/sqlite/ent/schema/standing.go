@@ -20,13 +20,16 @@ func (Standing) Contracts() []entlite.Contract {
 func (Standing) Fields() []entlite.Field {
 	return []entlite.Field{
 		// entlite always adds an id field, here it carries the rank
-		field.Int("id").Comment("Place in the table, 1 is best"),
+
+		// Place in the table, 1 is best
+		field.Int("id"),
 		field.String("player"),
 		field.Int("played"),
 		field.Int("wins"),
 		field.Int("draws"),
 		field.Int("losses"),
-		field.Float("points").Comment("Win 1, draw 0.5"),
+		// Win 1, draw 0.5
+		field.Float("points"),
 	}
 }
 

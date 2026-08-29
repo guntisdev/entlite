@@ -21,7 +21,8 @@ func (Audit) Contracts() []entlite.Contract {
 
 func (Audit) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.String("action").Comment("created | deleted"),
+		// created | deleted
+		field.String("action"),
 		field.Int("match_id"),
 		field.String("detail"),
 		field.Time("created_at").DefaultFunc(time.Now),

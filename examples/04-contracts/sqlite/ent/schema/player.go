@@ -25,8 +25,10 @@ func (Player) Contracts() []entlite.Contract {
 func (Player) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("name").Unique(),
-		field.Int("rating").Comment("Elo rating, kept by the secretary"),
-		field.String("title").Optional().Comment("e.g. GM, IM, FM"),
+		// Elo rating, kept by the secretary
+		field.Int("rating"),
+		// e.g. GM, IM, FM
+		field.String("title").Optional(),
 		field.Time("joined_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
 	}
 }

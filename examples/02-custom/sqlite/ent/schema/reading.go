@@ -24,11 +24,15 @@ func (Reading) Contracts() []entlite.Contract {
 
 func (Reading) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.Int("sensor_id").Comment("References sensor.ID"),
+		// References sensor.ID
+		field.Int("sensor_id"),
 		field.Float("value"),
-		field.Int("quality").Validate(logic.IsPercentage).Comment("Signal quality 0-100"),
-		field.Bool("flagged").Default(false).Comment("Marked as anomalous by ingestion"),
-		field.Time("recorded_at").Comment("Device measurement time (client-supplied)"),
+		// Signal quality 0-100
+		field.Int("quality").Validate(logic.IsPercentage),
+		// Marked as anomalous by ingestion
+		field.Bool("flagged").Default(false),
+		// Device measurement time (client-supplied)
+		field.Time("recorded_at"),
 		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
 	}
 }

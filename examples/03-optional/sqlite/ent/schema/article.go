@@ -27,11 +27,14 @@ func (Article) Fields() []entlite.Field {
 		field.String("id").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).Immutable().DefaultFunc(logic.NewUUID),
 
 		// --- required fields ---
-		field.String("slug").Unique().Comment("Human/URL identifier, e.g. hello-world"),
+
+		// Human/URL identifier, e.g. hello-world
+		field.String("slug").Unique(),
 		field.String("title").Validate(logic.NotBlank),
 		field.String("author"),
 
 		// --- optional fields, one per optional type ---
+
 		field.String("subtitle").Optional(),      // string
 		field.Int("reading_minutes").Optional(),  // int32, estimated read time
 		field.Int64("last_viewed_ms").Optional(), // int64, epoch millis
@@ -39,10 +42,11 @@ func (Article) Fields() []entlite.Field {
 		field.Byte("cover_image").Optional(),     // bytes, raw image
 		field.Time("published_at").Optional(),    // time, null means draft
 
-		field.JSON("metadata").Optional().
-			Comment("Free-form metadata, e.g. {\"og_image\":\"/cover.png\"}"),
+		// Free-form metadata, e.g. {"og_image":"/cover.png"}
+		field.JSON("metadata").Optional(),
 
 		// --- required flag and server managed timestamps ---
+
 		field.Bool("is_featured").Default(false), // bool cannot be optional, use a default
 		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
 		field.Time("updated_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now),

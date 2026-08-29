@@ -24,21 +24,28 @@ func (Sensor) Contracts() []entlite.Contract {
 
 func (Sensor) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.String("code").Unique().Comment("External hardware identifier, e.g. TEMP-A1"),
-		field.String("label").Comment("Human friendly name"),
-		field.String("kind").Validate(logic.IsKnownSensorKind).Comment("temperature | humidity | pressure | motion"),
-		field.String("unit").Comment("Measurement unit, e.g. celsius"),
+		// External hardware identifier, e.g. TEMP-A1
+		field.String("code").Unique(),
+		// Human friendly name
+		field.String("label"),
+		// temperature | humidity | pressure | motion
+		field.String("kind").Validate(logic.IsKnownSensorKind),
+		// Measurement unit, e.g. celsius
+		field.String("unit"),
 		field.String("location").Optional(),
 		field.Bool("active").Default(true),
 		field.String("firmware").Default("1.0.0"),
-		field.Int("sample_rate_ms").Default(1000).Comment("Sampling interval in milliseconds"),
-		field.Time("installed_at").Immutable().Comment("When the device was physically installed (client-supplied)"),
+		// Sampling interval in milliseconds
+		field.Int("sample_rate_ms").Default(1000),
+		// When the device was physically installed (client-supplied)
+		field.Time("installed_at").Immutable(),
 		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
 		field.Time("updated_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now),
 
 		// Virtual: proto only, no column and no place in any generated SQL
-		field.Float("latest_value").Contracts(entlite.PROTO()).Optional().
-			Comment("Most recent reading value, joined in at the API layer - not stored"),
+
+		// Most recent reading value, joined in at the API layer - not stored
+		field.Float("latest_value").Contracts(entlite.PROTO()).Optional(),
 	}
 }
 

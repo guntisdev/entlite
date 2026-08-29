@@ -51,6 +51,16 @@ func (g *Generator) generateSchema(entities []schema.Entity, dir string) error {
 	return nil
 }
 
+func writeTableComment(content *strings.Builder, entity schema.Entity, tableName string) {
+	if entity.Comment == "" {
+		fmt.Fprintf(content, "-- %s table\n", tableName)
+		return
+	}
+	for line := range strings.SplitSeq(entity.Comment, "\n") {
+		fmt.Fprintf(content, "-- %s\n", strings.TrimRight(line, "\r"))
+	}
+}
+
 func writeColumnComment(content *strings.Builder, comment string) {
 	if comment == "" {
 		return
@@ -64,7 +74,7 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	var content strings.Builder
 
 	tableName := strings.ToLower(entity.Name)
-	content.WriteString(fmt.Sprintf("-- %s table\n", tableName))
+	writeTableComment(&content, entity, tableName)
 	content.WriteString(fmt.Sprintf("CREATE TABLE %s(\n", g.quote(tableName)))
 
 	idField := entity.GetIdField()

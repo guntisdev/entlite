@@ -112,6 +112,7 @@ func FilterPROTO(entities []Entity) []Entity {
 
 type Entity struct {
 	Name      string
+	Comment   string
 	Fields    []Field
 	Contracts []Contract
 	Queries   []Query

@@ -47,7 +47,8 @@ func (User) Contracts() []entlite.Contract {
 func (User) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.String("email").Unique().ProtoField(2),
-		field.String("name").Validate(logic.StartsWithCapital).Comment("First name and surname, e.g. \"Jane Doe\""),
+		// First name and surname, e.g. "Jane Doe"
+		field.String("name").Validate(logic.StartsWithCapital),
 		field.Int("age").Optional(),
 		field.String("password").Contracts(entlite.SQLC(), entlite.PROTO().WriteOnly()),
 		field.Float("score").Default(4.2),

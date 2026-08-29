@@ -12,7 +12,6 @@ type StringFieldBuilder interface {
 	Default(string) StringFieldBuilder
 	DefaultFunc(func() string) StringFieldBuilder
 	ProtoField(int) StringFieldBuilder
-	Comment(string) StringFieldBuilder
 	Contracts(contracts ...entlite.Contract) StringFieldBuilder
 	Immutable() StringFieldBuilder
 	Optional() StringFieldBuilder
@@ -28,7 +27,6 @@ type StringField struct {
 	defaultVal  *string
 	defaultFunc func() string
 	protoField  *int
-	comment     *string
 	contracts   []entlite.Contract
 	immutable   bool
 	optional    bool
@@ -57,10 +55,6 @@ func (f *StringField) GetDefaultFunc() func() string {
 
 func (f *StringField) GetProtoField() *int {
 	return f.protoField
-}
-
-func (f *StringField) GetComment() *string {
-	return f.comment
 }
 
 func (f *StringField) GetContracts() []entlite.Contract {
@@ -102,11 +96,6 @@ func (f *StringField) ProtoField(num int) StringFieldBuilder {
 	return f
 }
 
-func (f *StringField) Comment(text string) StringFieldBuilder {
-	f.comment = &text
-	return f
-}
-
 func (f *StringField) Contracts(contracts ...entlite.Contract) StringFieldBuilder {
 	f.contracts = contracts
 	return f
@@ -131,7 +120,6 @@ func (f *StringField) Validate(fn func(string) bool) StringFieldBuilder {
 type BoolFieldBuilder interface {
 	Default(bool) BoolFieldBuilder
 	ProtoField(int) BoolFieldBuilder
-	Comment(string) BoolFieldBuilder
 	Contracts(contracts ...entlite.Contract) BoolFieldBuilder
 	Validate(func(bool) bool) BoolFieldBuilder
 
@@ -143,7 +131,6 @@ type BoolField struct {
 	name       string
 	defaultVal *bool
 	protoField *int
-	comment    *string
 	contracts  []entlite.Contract
 	validate   func(bool) bool
 }
@@ -160,10 +147,6 @@ func (f *BoolField) GetDefault() *bool {
 
 func (f *BoolField) GetProtoField() *int {
 	return f.protoField
-}
-
-func (f *BoolField) GetComment() *string {
-	return f.comment
 }
 
 func (f *BoolField) GetContracts() []entlite.Contract {
@@ -184,11 +167,6 @@ func (f *BoolField) ProtoField(num int) BoolFieldBuilder {
 	return f
 }
 
-func (f *BoolField) Comment(text string) BoolFieldBuilder {
-	f.comment = &text
-	return f
-}
-
 func (f *BoolField) Contracts(contracts ...entlite.Contract) BoolFieldBuilder {
 	f.contracts = contracts
 	return f
@@ -204,7 +182,6 @@ func (f *BoolField) Validate(fn func(bool) bool) BoolFieldBuilder {
 type IntFieldBuilder interface {
 	Default(int32) IntFieldBuilder
 	ProtoField(int) IntFieldBuilder
-	Comment(string) IntFieldBuilder
 	Contracts(contracts ...entlite.Contract) IntFieldBuilder
 	Optional() IntFieldBuilder
 	Validate(func(int32) bool) IntFieldBuilder
@@ -217,7 +194,6 @@ type IntField struct {
 	name       string
 	defaultVal *int32
 	protoField *int
-	comment    *string
 	contracts  []entlite.Contract
 	optional   bool
 	validate   func(int32) bool
@@ -235,10 +211,6 @@ func (f *IntField) GetDefault() *int32 {
 
 func (f *IntField) GetProtoField() *int {
 	return f.protoField
-}
-
-func (f *IntField) GetComment() *string {
-	return f.comment
 }
 
 func (f *IntField) GetContracts() []entlite.Contract {
@@ -263,11 +235,6 @@ func (f *IntField) ProtoField(num int) IntFieldBuilder {
 	return f
 }
 
-func (f *IntField) Comment(text string) IntFieldBuilder {
-	f.comment = &text
-	return f
-}
-
 func (f *IntField) Contracts(contracts ...entlite.Contract) IntFieldBuilder {
 	f.contracts = contracts
 	return f
@@ -287,7 +254,6 @@ func (f *IntField) Validate(fn func(int32) bool) IntFieldBuilder {
 type Int64FieldBuilder interface {
 	Default(int64) Int64FieldBuilder
 	ProtoField(int) Int64FieldBuilder
-	Comment(string) Int64FieldBuilder
 	Contracts(contracts ...entlite.Contract) Int64FieldBuilder
 	Optional() Int64FieldBuilder
 	Validate(func(int64) bool) Int64FieldBuilder
@@ -300,7 +266,6 @@ type Int64Field struct {
 	name       string
 	defaultVal *int64
 	protoField *int
-	comment    *string
 	contracts  []entlite.Contract
 	optional   bool
 	validate   func(int64) bool
@@ -318,10 +283,6 @@ func (f *Int64Field) GetDefault() *int64 {
 
 func (f *Int64Field) GetProtoField() *int {
 	return f.protoField
-}
-
-func (f *Int64Field) GetComment() *string {
-	return f.comment
 }
 
 func (f *Int64Field) GetContracts() []entlite.Contract {
@@ -346,11 +307,6 @@ func (f *Int64Field) ProtoField(num int) Int64FieldBuilder {
 	return f
 }
 
-func (f *Int64Field) Comment(text string) Int64FieldBuilder {
-	f.comment = &text
-	return f
-}
-
 func (f *Int64Field) Contracts(contracts ...entlite.Contract) Int64FieldBuilder {
 	f.contracts = contracts
 	return f
@@ -370,7 +326,6 @@ func (f *Int64Field) Validate(fn func(int64) bool) Int64FieldBuilder {
 type FloatFieldBuilder interface {
 	Default(float64) FloatFieldBuilder
 	ProtoField(int) FloatFieldBuilder
-	Comment(string) FloatFieldBuilder
 	Contracts(contracts ...entlite.Contract) FloatFieldBuilder
 	Optional() FloatFieldBuilder
 	Validate(func(float64) bool) FloatFieldBuilder
@@ -382,7 +337,6 @@ type FloatField struct {
 	name       string
 	defaultVal *float64
 	protoField *int
-	comment    *string
 	contracts  []entlite.Contract
 	optional   bool
 	validate   func(float64) bool
@@ -400,10 +354,6 @@ func (f *FloatField) GetDefault() *float64 {
 
 func (f *FloatField) GetProtoField() *int {
 	return f.protoField
-}
-
-func (f *FloatField) GetComment() *string {
-	return f.comment
 }
 
 func (f *FloatField) GetContracts() []entlite.Contract {
@@ -428,11 +378,6 @@ func (f *FloatField) ProtoField(num int) FloatFieldBuilder {
 	return f
 }
 
-func (f *FloatField) Comment(text string) FloatFieldBuilder {
-	f.comment = &text
-	return f
-}
-
 func (f *FloatField) Contracts(contracts ...entlite.Contract) FloatFieldBuilder {
 	f.contracts = contracts
 	return f
@@ -453,7 +398,6 @@ type TimeFieldBuilder interface {
 	Default(time.Time) TimeFieldBuilder
 	DefaultFunc(func() time.Time) TimeFieldBuilder
 	ProtoField(int) TimeFieldBuilder
-	Comment(string) TimeFieldBuilder
 	Contracts(contracts ...entlite.Contract) TimeFieldBuilder
 	Immutable() TimeFieldBuilder
 	Optional() TimeFieldBuilder
@@ -467,7 +411,6 @@ type TimeField struct {
 	defaultVal  *time.Time
 	defaultFunc func() time.Time
 	protoField  *int
-	comment     *string
 	contracts   []entlite.Contract
 	immutable   bool
 	optional    bool
@@ -490,10 +433,6 @@ func (f *TimeField) GetDefaultFunc() func() time.Time {
 
 func (f *TimeField) GetProtoField() *int {
 	return f.protoField
-}
-
-func (f *TimeField) GetComment() *string {
-	return f.comment
 }
 
 func (f *TimeField) GetContracts() []entlite.Contract {
@@ -529,11 +468,6 @@ func (f *TimeField) ProtoField(num int) TimeFieldBuilder {
 	return f
 }
 
-func (f *TimeField) Comment(text string) TimeFieldBuilder {
-	f.comment = &text
-	return f
-}
-
 func (f *TimeField) Contracts(contracts ...entlite.Contract) TimeFieldBuilder {
 	f.contracts = contracts
 	return f
@@ -560,7 +494,6 @@ type ByteFieldBuilder interface {
 	Optional() ByteFieldBuilder
 	Immutable() ByteFieldBuilder
 	ProtoField(int) ByteFieldBuilder
-	Comment(string) ByteFieldBuilder
 	Contracts(contracts ...entlite.Contract) ByteFieldBuilder
 	DefaultFunc(func() []byte) ByteFieldBuilder
 	Validate(func([]byte) bool) ByteFieldBuilder
@@ -574,7 +507,6 @@ type ByteField struct {
 	optional    bool
 	immutable   bool
 	protoField  *int
-	comment     *string
 	contracts   []entlite.Contract
 	defaultFunc func() []byte
 	validate    func([]byte) bool
@@ -600,10 +532,6 @@ func (f *ByteField) GetImmutable() bool {
 
 func (f *ByteField) GetProtoField() *int {
 	return f.protoField
-}
-
-func (f *ByteField) GetComment() *string {
-	return f.comment
 }
 
 func (f *ByteField) GetContracts() []entlite.Contract {
@@ -638,11 +566,6 @@ func (f *ByteField) ProtoField(num int) ByteFieldBuilder {
 	return f
 }
 
-func (f *ByteField) Comment(text string) ByteFieldBuilder {
-	f.comment = &text
-	return f
-}
-
 func (f *ByteField) Contracts(contracts ...entlite.Contract) ByteFieldBuilder {
 	f.contracts = contracts
 	return f
@@ -663,7 +586,6 @@ type JSONFieldBuilder interface {
 	Optional() JSONFieldBuilder
 	Immutable() JSONFieldBuilder
 	ProtoField(int) JSONFieldBuilder
-	Comment(string) JSONFieldBuilder
 	Contracts(contracts ...entlite.Contract) JSONFieldBuilder
 	// Default takes raw json text, e.g. `{}` or `{"theme":"dark"}`
 	Default(string) JSONFieldBuilder
@@ -678,7 +600,6 @@ type JSONField struct {
 	optional    bool
 	immutable   bool
 	protoField  *int
-	comment     *string
 	contracts   []entlite.Contract
 	defaultVal  *string
 	defaultFunc func() string
@@ -701,10 +622,6 @@ func (f *JSONField) GetImmutable() bool {
 
 func (f *JSONField) GetProtoField() *int {
 	return f.protoField
-}
-
-func (f *JSONField) GetComment() *string {
-	return f.comment
 }
 
 func (f *JSONField) GetContracts() []entlite.Contract {
@@ -735,11 +652,6 @@ func (f *JSONField) Immutable() JSONFieldBuilder {
 
 func (f *JSONField) ProtoField(num int) JSONFieldBuilder {
 	f.protoField = &num
-	return f
-}
-
-func (f *JSONField) Comment(text string) JSONFieldBuilder {
-	f.comment = &text
 	return f
 }
 
