@@ -24,7 +24,7 @@ func (Article) Contracts() []entlite.Contract {
 func (Article) Fields() []entlite.Field {
 	return []entlite.Field{
 		// uuid primary key, generated on the server and not part of requests
-		field.String("id").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).Immutable().DefaultFunc(logic.NewUUID),
+		field.String("id").Immutable().DefaultFunc(logic.NewUUID).Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()),
 
 		// --- required fields ---
 
