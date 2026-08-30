@@ -58,16 +58,16 @@ func (User) Queries() []entlite.Query {
 
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
-		// 1. Primary Key (Compound)
+		// compound primary key
 		// index.Primary("email", "created_at"),
-		// 2. Simple Single/Multi-Column Index
+		// index on two columns
 		index.Fields("age", "is_active"),
-		// 3. Composite Index with Sort Ordering (ASC / DESC)
+		// descending sort
 		index.Fields("is_active").
-			Desc("created_at"), // Sorting timestamp DESC for fast time-series queries
-		// 4. Multi-Column Unique Constraint
+			Desc("created_at"),
+		// unique across two columns
 		index.Fields("name", "email").Unique(),
-		// 5. Named Index (Useful to avoid DB auto-generated name conflicts)
+		// explicit index name
 		index.Fields("login_count", "rating").
 			Name("idx_users_stats"),
 	}

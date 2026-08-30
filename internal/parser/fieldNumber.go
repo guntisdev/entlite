@@ -52,7 +52,7 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 	return fields
 }
 
-// if {1, 2, 4, 6] - it will find 3 as smallest available number
+// for {1, 2, 4, 6} it returns 3
 func getNextAvailable(usedNumbers []int) int {
 	sort.Ints(usedNumbers)
 

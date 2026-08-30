@@ -4,13 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"unicode"
-
-	"github.com/google/uuid"
 )
-
-func GetUuidStr() string {
-	return uuid.New().String()
-}
 
 func StartsWithCapital(s string) bool {
 	if len(s) == 0 {

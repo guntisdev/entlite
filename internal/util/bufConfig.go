@@ -9,8 +9,7 @@ import (
 )
 
 type BufGenConfig struct {
-	// ProtoTypesDir is the output directory for the generated Go proto types
-	// (the buf.build/protocolbuffers/go plugin).
+	// ProtoTypesDir is where the buf.build/protocolbuffers/go plugin writes Go types
 	ProtoTypesDir string
 }
 

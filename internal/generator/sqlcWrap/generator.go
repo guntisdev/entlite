@@ -120,8 +120,8 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 	return sb.String(), nil
 }
 
-// dslQuery ties a generated sqlc query name back to the schema query it came
-// from, so wrappers keep working when a query carries a custom Name().
+// dslQuery ties a sqlc query name back to its schema query, so wrappers survive a
+// custom Name().
 type dslQuery struct {
 	entity schema.Entity
 	query  schema.Query
@@ -206,11 +206,8 @@ func (ctx *generationContext) paramsQuery(structName string) (dslQuery, bool) {
 	return target, ok
 }
 
-// generateImports emits only the imports actually referenced by body. Candidates
-// come from the sqlc-generated source file's own imports (so passthrough
-// forwarders can name any type the source used), the schema/entity imports
-// (validation and default-func helpers), and the proto packages used by model
-// converters. The internal package is always imported.
+// generateImports emits only the imports body references, taken from the sqlc source,
+// the schema and the proto packages. The internal package is always imported.
 func (ctx *generationContext) generateImports(body string) string {
 	type importSpec struct {
 		name  string // selector used in code, e.g. "time", "sql", "logic"
@@ -500,8 +497,7 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 	}
 
 	if funcDecl.Recv != nil {
-		// DSL queries are matched by their generated name, which honors a custom
-		// Name() from the schema.
+		// DSL queries are matched by generated name, which honors a custom Name()
 		if target, ok := ctx.dslQueries[funcDecl.Name.Name]; ok {
 			if wrapped := ctx.generateDslQuery(funcDecl, target); wrapped != "" {
 				sb.WriteString(wrapped)
@@ -558,18 +554,16 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 			}
 		}
 
-		// Baseline: any exported method that isn't a recognized DSL query (custom
-		// hand-written queries, or a DSL query whose entity lookup failed) is
-		// re-exposed as a thin passthrough so the wrapped Queries type keeps the
-		// full API surface of the underlying sqlc Queries.
+		// anything else, custom queries included, is forwarded so the wrapper keeps
+		// every method sqlc has
 		if funcDecl.Name.IsExported() {
 			sb.WriteString(ctx.generateForwarder(funcDecl))
 		}
 	}
 }
 
-// generateDslQuery wraps a sqlc method that came from a DSL query, returning ""
-// when the query type has no dedicated wrapper.
+// generateDslQuery wraps a sqlc method from a DSL query, "" when the query type has
+// no wrapper.
 func (ctx *generationContext) generateDslQuery(funcDecl *ast.FuncDecl, target dslQuery) string {
 	switch target.query.Type {
 	case schema.QueryCreate:
@@ -591,8 +585,8 @@ func (ctx *generationContext) generateDslQuery(funcDecl *ast.FuncDecl, target ds
 	}
 }
 
-// generateForwarder emits a thin method that forwards to the underlying sqlc
-// Queries verbatim, qualifying any package-local types with the internal package.
+// generateForwarder forwards to the sqlc Queries verbatim, qualifying package-local
+// types with the internal package.
 func (ctx *generationContext) generateForwarder(funcDecl *ast.FuncDecl) string {
 	pkg := ctx.inputPackageName
 
@@ -640,8 +634,8 @@ func (ctx *generationContext) generateForwarder(funcDecl *ast.FuncDecl) string {
 	}
 
 	call := fmt.Sprintf("(*%s.Queries)(q).%s(%s)", pkg, funcDecl.Name.Name, strings.Join(args, ", "))
-	// A method returning the underlying *Queries (e.g. WithTx) must hand back the
-	// wrapped type, not the internal one, or the wrapper is lost mid-chain.
+	// a method returning *Queries, e.g. WithTx, must hand back the wrapped type or
+	// the wrapper is lost mid-chain
 	if len(results) == 1 && results[0] == "*Queries" {
 		call = fmt.Sprintf("(*Queries)(%s)", call)
 	}

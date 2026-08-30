@@ -5,8 +5,7 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Create /internal/naming/ to have in one place consistant naming
 * Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/
-* Add edge cases to examples - uuid as id, everything as optional, custom proto and queries files etc
-* Split get/list/delete sqlc wraps in separate files
+* Add a uuid foreign key example - uuid as id, all optional and custom files are covered
 * Move query name to parser instead of generator
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 * Comment out in examples Queries use case for: Count, GroupBy, Having, OrderBy
@@ -41,6 +40,16 @@ arguments: entity names
 ```bash
 go run github.com/guntisdev/entlite/cmd/entlite new --dialect sqlite User Post
 ```
+
+## Examples
+| Example | Teaches |
+|---|---|
+| [01-basic-entity](examples/01-basic-entity) | every field type, every query type, indexes, three dialects |
+| [02-custom](examples/02-custom) | hand-written SQL and proto next to the generated files |
+| [03-optional](examples/03-optional) | `Optional()` per type, optional filters, a uuid key |
+| [04-contracts](examples/04-contracts) | `Contracts()` on an entity, a field and a query |
+
+`make teaches` prints every list, for pulling into documentation.
 
 ## Launch example
 Each example has a Makefile that generates types, bundles the JavaScript and starts the web server

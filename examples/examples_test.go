@@ -1,8 +1,7 @@
 //go:build integration
 // +build integration
 
-// Integration tests that generate each example in place and check the result
-// against what is committed.
+// Integration tests that generate each example in place and diff against git.
 package examples
 
 import (
@@ -55,8 +54,8 @@ func TestExamples(t *testing.T) {
 	}
 }
 
-// findExamples returns every directory below root that holds an ent/generate.go.
-// Examples are not searched for nested examples.
+// findExamples returns every directory below root holding an ent/generate.go.
+// Nested examples are not searched for.
 func findExamples(root string) ([]example, error) {
 	var found []example
 
@@ -130,8 +129,7 @@ func testBuild(t *testing.T, ex example, binDir string) string {
 	return filepath.Join(binDir, entries[0].Name())
 }
 
-// testWeb bundles the frontend, which fails when the generated client no longer
-// fits the example code.
+// testWeb bundles the frontend, which fails when the generated client drifts.
 func testWeb(t *testing.T, ex example) {
 	webDir := filepath.Join(filepath.FromSlash(ex.dir), "web")
 	if _, err := os.Stat(filepath.Join(webDir, "package.json")); err != nil {
@@ -211,8 +209,7 @@ func testRun(t *testing.T, ex example, bin string) {
 	}
 }
 
-// requireClean fails on local changes, which would make the diff after
-// generating meaningless.
+// requireClean fails on local changes, they would make the diff meaningless.
 func requireClean(t *testing.T, ex example) {
 	if dirty := status(t, ex, generated...); dirty != "" {
 		t.Fatalf("Generated files have uncommitted changes, commit or stash "+
@@ -230,8 +227,8 @@ func status(t *testing.T, ex example, dirs ...string) string {
 	return out
 }
 
-// keep writes a file's content back when the test ends. Restoring by hand
-// instead of by git, so the test can never throw away local work.
+// keep writes a file back when the test ends, by hand rather than by git so the
+// test can never throw away local work.
 func keep(t *testing.T, path string) {
 	before, err := os.ReadFile(path)
 	if err != nil {

@@ -132,7 +132,7 @@ func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) st
 		content.WriteString("\t}\n")
 	}
 
-	// TODO fix Optional() with Validate() - a pointer is passed to a value func and does not compile
+	// TODO fix Optional() with Validate(), see README
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue
@@ -164,7 +164,7 @@ func isPointerField(field schema.Field, queryType schema.QueryType) bool {
 	if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
 		return true
 	}
-	// update makes write-only fields optional so they can be left alone
+	// write-only fields, e.g. a password, are optional in update
 	return queryType == schema.QueryUpdate && !field.CanApiRead()
 }
 

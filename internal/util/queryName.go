@@ -7,9 +7,8 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-// GenQueryName returns the entity qualified name of a query, used both as the
-// sqlc query name and as the base name of its proto messages.
-// A custom Name() from the schema replaces the generated name.
+// GenQueryName returns the entity qualified query name, used as the sqlc query name
+// and the base name of its proto messages. A custom Name() replaces it.
 func GenQueryName(query schema.Query, entityName string) string {
 	if query.Name != "" {
 		return query.Name
@@ -35,8 +34,8 @@ func GenQueryName(query schema.Query, entityName string) string {
 	}
 }
 
-// GenQueryRpcName returns the rpc name of a query inside its entity service.
-// A custom Name() from the schema replaces the generated name.
+// GenQueryRpcName returns the rpc name inside the entity service. A custom Name()
+// replaces it.
 func GenQueryRpcName(query schema.Query, entityName string) string {
 	if query.Name != "" {
 		return query.Name
@@ -62,9 +61,8 @@ func GenQueryRpcName(query schema.Query, entityName string) string {
 	}
 }
 
-// GenEntityQueryName returns the name of the entity's first query of the given
-// type, falling back to the generated name when the entity has no such query.
-// Meant for the single-per-entity query types (create, update, delete).
+// GenEntityQueryName returns the entity's first query of the given type, falling back
+// to the generated name. For the single-per-entity types: create, update, delete.
 func GenEntityQueryName(entity schema.Entity, queryType schema.QueryType) string {
 	for _, query := range entity.Queries {
 		if query.Type == queryType {

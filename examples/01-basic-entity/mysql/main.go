@@ -69,8 +69,7 @@ func main() {
 	}
 }
 
-// noStore keeps the browser from caching the frontend, so switching between the
-// examples on this port always serves the current one rather than a stale copy
+// noStore disables browser cache, so the port serves the current example
 func noStore(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")

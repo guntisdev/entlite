@@ -103,7 +103,7 @@ export const ListSensorsWithLatestReadingRequestSchema: GenMessage<ListSensorsWi
  */
 export type SensorWithLatestReading = Message<"entlite.SensorWithLatestReading"> & {
   /**
-   * Reuses the generated Sensor message (from schema.proto).
+   * the generated message from schema.proto
    *
    * @generated from field: entlite.Sensor sensor = 1;
    */
@@ -179,9 +179,7 @@ export const PruneReadingsResponseSchema: GenMessage<PruneReadingsResponse> = /*
   messageDesc(file_custom, 6);
 
 /**
- * SensorAnalyticsService is entirely hand-written. It sits next to the
- * DSL-generated SensorService / ReadingService in the same package and is
- * wired to the custom.sql queries in server code.
+ * Sits in the same package as the generated services, backed by custom.sql.
  *
  * @generated from service entlite.SensorAnalyticsService
  */

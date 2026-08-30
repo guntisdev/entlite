@@ -93,8 +93,7 @@ func (q listByQuery) OrderBy(field string) ListByOperations {
 	return q
 }
 
-// GetBy creates a query to get a record by one or more fields
-// Example: GetBy("id") or GetBy("org_id", "email")
+// GetBy gets a record by one or more fields, e.g. GetBy("id") or GetBy("org_id", "email")
 func GetBy(fields ...string) QueryOperations {
 	return Query{typeName: TypeGetBy, fields: fields}
 }
@@ -132,9 +131,8 @@ func ListAll() QueryOperations {
 	return Query{typeName: TypeListAll}
 }
 
-// ListBy creates a query to list records with filters
-// Can accept either string field names (defaulting to Eq filter) or Filter objects
-// Example: ListBy("org_id") or ListBy(filter.Range("age"), filter.Search("name"))
+// ListBy lists records with filters. Takes field names, which default to Eq, or Filter
+// values, e.g. ListBy("org_id") or ListBy(filter.Range("age"), filter.Search("name"))
 func ListBy(args ...interface{}) ListByOperations {
 	q := Query{typeName: TypeListBy}
 

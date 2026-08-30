@@ -12,7 +12,7 @@ type Audit struct {
 	entlite.Schema
 }
 
-// sqlc only: the club keeps this table for itself, no proto message, no rpc
+// sqlc only: no proto message, no rpc
 func (Audit) Contracts() []entlite.Contract {
 	return []entlite.Contract{
 		entlite.SQLC(),

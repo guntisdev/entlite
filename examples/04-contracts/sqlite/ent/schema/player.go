@@ -8,8 +8,7 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
-// Player is the club roster. The secretary maintains it on the server,
-// members only read it.
+// Player is the club roster, written on the server and read by members.
 type Player struct {
 	entlite.Schema
 }

@@ -169,8 +169,7 @@ func NewPlayerServiceServer(db *sql.DB) *PlayerServer {
 	}
 }
 
-// GetByID reads one roster entry. Player has a read only proto contract,
-// so there is no create, update or delete rpc to implement here
+// GetByID reads one roster entry, the read only contract gives no write rpc
 func (s *PlayerServer) GetByID(
 	ctx context.Context,
 	req *connect.Request[pb.GetPlayerByIDRequest],
@@ -209,8 +208,7 @@ func (s *PlayerServer) ListAll(
 	}), nil
 }
 
-// SeedRoster fills the roster once. CreatePlayer lives only on the sqlc side,
-// so the server is the only writer there is
+// SeedRoster fills the roster once, CreatePlayer is sqlc only
 func SeedRoster(ctx context.Context, database *sql.DB) error {
 	queries := db.New(database)
 

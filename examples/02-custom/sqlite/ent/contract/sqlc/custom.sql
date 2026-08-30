@@ -1,11 +1,5 @@
--- custom.sql
---
--- Hand-written queries that live ALONGSIDE the DSL-generated queries.sql.
--- entlite never touches this file, so anything here survives regeneration.
--- These are queries the DSL query builder cannot express: cross-table JOINs,
--- aggregates, and bulk maintenance operations.
---
--- The tables ("sensor", "reading") are defined in the generated schema.sql.
+-- Hand-written queries the DSL cannot express. entlite never writes this file.
+-- The tables are defined in the generated schema.sql.
 
 -- Aggregate value statistics for a single sensor over a time window.
 -- name: GetSensorReadingStats :one
@@ -15,15 +9,14 @@ SELECT
   MIN(value) AS min_value,
   MAX(value) AS max_value
 FROM "reading"
--- Note: written as >= / <= rather than BETWEEN, because sqlc cannot infer the
--- type of a DATETIME placeholder inside BETWEEN and silently drops it from the
--- generated params struct.
+-- >= / <= instead of BETWEEN: sqlc cannot infer a DATETIME type inside BETWEEN
+-- and drops the bounds from the params struct.
 WHERE sensor_id = :sensor_id
   AND recorded_at >= :from_ts AND recorded_at <= :to_ts;
 
--- Every active sensor together with its most recent reading (LEFT JOIN, so
--- sensors that have never reported still show up with NULL latest values).
--- sqlc.embed(s) maps the joined sensor columns back to the full Sensor struct.
+-- Every active sensor with its most recent reading. LEFT JOIN, so a sensor that
+-- never reported comes back with NULL latest values.
+-- sqlc.embed(s) maps the joined columns back to the Sensor struct.
 -- name: ListSensorsWithLatestReading :many
 SELECT
   sqlc.embed(s),
@@ -42,6 +35,6 @@ WHERE s.active = 1
 ORDER BY s.code
 LIMIT :limit OFFSET :offset;
 
--- Retention: drop readings older than a cutoff. Returns nothing.
+-- Drops readings older than a cutoff.
 -- name: PruneReadingsOlderThan :execrows
 DELETE FROM "reading" WHERE recorded_at < :cutoff;

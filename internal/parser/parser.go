@@ -117,9 +117,8 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 		return entity, err
 	}
 
-	// An explicit index.Primary overrides the auto-assigned primary key on the
-	// id field: the compound key declared in Indexes() becomes the table's only
-	// PRIMARY KEY.
+	// an explicit index.Primary overrides the id field, the compound key becomes the
+	// table's only PRIMARY KEY
 	applyPrimaryIndexOverride(&entity)
 
 	fields, err := applyFieldContracts(entity)

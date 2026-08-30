@@ -26,8 +26,7 @@ CREATE TABLE "match"(
   created_at DATETIME NOT NULL
 );
 
--- Player is the club roster. The secretary maintains it on the server,
--- members only read it.
+-- Player is the club roster, written on the server and read by members.
 CREATE TABLE "player"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT UNIQUE NOT NULL,

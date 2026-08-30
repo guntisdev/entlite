@@ -69,8 +69,7 @@ function createSensor() {
         location: randomLocation(),
         sampleRateMs: 1000 * Math.ceil(Math.random() * 5),
         installedAt: timestampFromDate(daysAgo(Math.ceil(Math.random() * 90))),
-        // active and firmware are left unset on purpose: the DSL defaults
-        // (true / "1.0.0") are applied by the generated create query
+        // active and firmware left unset, the DSL defaults are applied on create
     };
     sensorClient.create(request)
         .then((response) => {
@@ -151,8 +150,7 @@ function updateSensor() {
                 active: !sensor.active,
                 firmware: `1.0.${Math.ceil(Math.random() * 9)}`,
                 sampleRateMs: 1000 * Math.ceil(Math.random() * 5),
-                // installed_at and created_at are Immutable / ReadOnly in the
-                // DSL, so they are not part of the update request at all
+                // installed_at and created_at are Immutable / ReadOnly, so update omits them
             };
             return sensorClient.update(request);
         })
@@ -321,8 +319,7 @@ function filterReadings() {
             log(`✓ Readings filtered (${response.readings.length} readings):`, response);
         })
         .catch((error) => {
-            // Known gap: sqlc drops both bounds of a DATETIME BETWEEN from the
-            // generated params, so the query is called with too few arguments
+            // known gap: sqlc drops both DATETIME BETWEEN bounds, so the query gets too few args
             log("✗ Error filtering readings (known filter.Range gap):", error);
         });
 }

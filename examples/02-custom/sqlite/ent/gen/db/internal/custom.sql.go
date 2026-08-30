@@ -35,18 +35,11 @@ type GetSensorReadingStatsRow struct {
 	MaxValue     interface{} `json:"max_value"`
 }
 
-// custom.sql
-//
-// Hand-written queries that live ALONGSIDE the DSL-generated queries.sql.
-// entlite never touches this file, so anything here survives regeneration.
-// These are queries the DSL query builder cannot express: cross-table JOINs,
-// aggregates, and bulk maintenance operations.
-//
-// The tables ("sensor", "reading") are defined in the generated schema.sql.
+// Hand-written queries the DSL cannot express. entlite never writes this file.
+// The tables are defined in the generated schema.sql.
 // Aggregate value statistics for a single sensor over a time window.
-// Note: written as >= / <= rather than BETWEEN, because sqlc cannot infer the
-// type of a DATETIME placeholder inside BETWEEN and silently drops it from the
-// generated params struct.
+// >= / <= instead of BETWEEN: sqlc cannot infer a DATETIME type inside BETWEEN
+// and drops the bounds from the params struct.
 func (q *Queries) GetSensorReadingStats(ctx context.Context, arg GetSensorReadingStatsParams) (GetSensorReadingStatsRow, error) {
 	row := q.db.QueryRowContext(ctx, getSensorReadingStats, arg.SensorID, arg.FromTs, arg.ToTs)
 	var i GetSensorReadingStatsRow
@@ -89,9 +82,9 @@ type ListSensorsWithLatestReadingRow struct {
 	LatestRecordedAt *time.Time `json:"latest_recorded_at"`
 }
 
-// Every active sensor together with its most recent reading (LEFT JOIN, so
-// sensors that have never reported still show up with NULL latest values).
-// sqlc.embed(s) maps the joined sensor columns back to the full Sensor struct.
+// Every active sensor with its most recent reading. LEFT JOIN, so a sensor that
+// never reported comes back with NULL latest values.
+// sqlc.embed(s) maps the joined columns back to the Sensor struct.
 func (q *Queries) ListSensorsWithLatestReading(ctx context.Context, arg ListSensorsWithLatestReadingParams) ([]ListSensorsWithLatestReadingRow, error) {
 	rows, err := q.db.QueryContext(ctx, listSensorsWithLatestReading, arg.Offset, arg.Limit)
 	if err != nil {
@@ -134,7 +127,7 @@ const pruneReadingsOlderThan = `-- name: PruneReadingsOlderThan :execrows
 DELETE FROM "reading" WHERE recorded_at < ?1
 `
 
-// Retention: drop readings older than a cutoff. Returns nothing.
+// Drops readings older than a cutoff.
 func (q *Queries) PruneReadingsOlderThan(ctx context.Context, cutoff time.Time) (int64, error) {
 	result, err := q.db.ExecContext(ctx, pruneReadingsOlderThan, cutoff)
 	if err != nil {

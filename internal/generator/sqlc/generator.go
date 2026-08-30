@@ -124,8 +124,8 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 		// TODO write logic for DefaultFunc etc
 	}
 
-	// Compound primary key declared via index.Primary(...). When present the
-	// parser clears the id field's primary flag, so this becomes the table's only PRIMARY KEY.
+	// compound primary key from index.Primary, the parser clears the id flag so this
+	// is the table's only PRIMARY KEY
 	for _, idx := range entity.Indexes {
 		if idx.Type != schema.IndexPrimary {
 			continue
@@ -141,8 +141,8 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	return content.String()
 }
 
-// generateIndexSQL emits CREATE INDEX statements for secondary indexes declared
-// via index.Fields(...). Primary keys are handled inline in the CREATE TABLE.
+// generateIndexSQL emits CREATE INDEX for index.Fields. Primary keys are inline
+// in the CREATE TABLE.
 func (g *Generator) generateIndexSQL(entity schema.Entity) string {
 	var content strings.Builder
 
@@ -174,8 +174,8 @@ func (g *Generator) generateIndexSQL(entity schema.Entity) string {
 	return content.String()
 }
 
-// indexColumns renders each indexed column, appending DESC for descending
-// columns (ASC is the SQL default and left implicit).
+// indexColumns renders each indexed column, appending DESC where asked. ASC is
+// the SQL default and left implicit.
 func (g *Generator) indexColumns(idx schema.Index) []string {
 	cols := make([]string, len(idx.Columns))
 	for i, c := range idx.Columns {
@@ -188,8 +188,7 @@ func (g *Generator) indexColumns(idx schema.Index) []string {
 	return cols
 }
 
-// defaultIndexName builds index name from the table and its
-// column names, e.g. idx_user_env_is_active.
+// defaultIndexName builds the name from the table and columns, e.g. idx_user_env_is_active
 func (g *Generator) defaultIndexName(tableName string, idx schema.Index) string {
 	parts := append([]string{"idx", tableName}, idx.FieldNames()...)
 	return strings.Join(parts, "_")

@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// startDir accepts both relative and absolute path
-// rootDir is absolute path for go.mod
+// FindModuleInfo walks up from startDir and returns the module name with the
+// absolute directory holding go.mod. startDir may be relative or absolute.
 func FindModuleInfo(startDir string) (moduleName string, rootDir string, err error) {
 	dir, err := filepath.Abs(startDir)
 	if err != nil {

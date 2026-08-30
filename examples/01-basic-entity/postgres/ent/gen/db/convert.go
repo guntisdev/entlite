@@ -16,7 +16,7 @@ func TimeToProto(t time.Time) *timestamppb.Timestamp {
 	return timestamppb.New(t)
 }
 
-// Note: If the pointer is nil, it returns a zero time.Time{}
+// A nil pointer returns a zero time.Time{}
 func ProtoToTime(t *timestamppb.Timestamp) time.Time {
 	if t == nil {
 		return time.Time{}
@@ -42,9 +42,8 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 	}
 }
 
-// txBeginner is satisfied by *sql.DB and *sql.Conn, but deliberately not by
-// *sql.Tx: a Queries already bound to a transaction runs inside the caller's
-// one rather than opening a nested one.
+// txBeginner is satisfied by *sql.DB and *sql.Conn but not *sql.Tx: a Queries already
+// in a transaction runs inside the caller's one instead of nesting.
 type txBeginner interface {
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 }
@@ -55,8 +54,7 @@ func OptionalWithFallback[T any](val *T, fallback T) T {
 		return fallback
 	}
 
-	// For nil-able types like []byte, check if the dereferenced value is nil.
-	// IsNil panics on every other kind, so ask for the kind first
+	// nil-able types like []byte need a nil check, and IsNil panics on other kinds
 	switch value := reflect.ValueOf(any(*val)); value.Kind() {
 	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
 		if value.IsNil() {
@@ -183,8 +181,7 @@ func SQLiteBoolToInt(b bool) int64 {
     }
 }
 
-// SQLiteBoolPtrToInt64Ptr converts an optional bool to an optional SQLite int64
-// (used for nullable columns via sqlc.narg, e.g. *bool -> *int64).
+// SQLiteBoolPtrToInt64Ptr converts *bool to *int64 for nullable columns via sqlc.narg
 func SQLiteBoolPtrToInt64Ptr(b *bool) *int64 {
     if b == nil {
         return nil
