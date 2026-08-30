@@ -12,7 +12,7 @@ import "buf/validate/validate.proto";
 
 // Reading is a single measurement captured by a Sensor.
 message Reading {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int64 ID = 1 [(buf.validate.field).required = true];
   // References sensor.ID
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
@@ -61,10 +61,10 @@ message CreateReadingRequest {
   google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
 }
 message GetReadingByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int64 ID = 1 [(buf.validate.field).required = true];
 }
 message DeleteReadingRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int64 ID = 1 [(buf.validate.field).required = true];
 }
 message ListReadingBySensorIdRequest {
   int32 limit = 1 [(buf.validate.field).required = true];

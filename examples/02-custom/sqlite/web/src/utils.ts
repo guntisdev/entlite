@@ -106,6 +106,16 @@ export function numberInput(id: string): number {
     return parseInt(input.value);
 }
 
+// int64 fields are bigint in TS, so their ID inputs parse to bigint, not number
+export function bigIntInput(id: string): bigint {
+    const input = document.getElementById(id) as HTMLInputElement;
+    try {
+        return BigInt(input.value);
+    } catch {
+        return 0n;
+    }
+}
+
 export function textInput(id: string): string {
     const input = document.getElementById(id) as HTMLInputElement;
     return input.value;

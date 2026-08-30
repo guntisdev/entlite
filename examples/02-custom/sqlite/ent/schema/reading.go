@@ -24,6 +24,7 @@ func (Reading) Contracts() []entlite.Contract {
 
 func (Reading) Fields() []entlite.Field {
 	return []entlite.Field{
+		field.Int64("ID"),
 		// References sensor.ID
 		field.Int("sensor_id"),
 		field.Float("value"),

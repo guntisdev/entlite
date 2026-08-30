@@ -12,7 +12,11 @@ Defined in [`ent/schema`](ent/schema):
   `permissions.Virtual`: a proto-only field with no column, filled at the API
   layer from the custom `ListSensorsWithLatestReading` query below.
 - **Reading** — a measurement emitted by a sensor (`sensor_id`, `value`,
-  `quality`, `flagged`, `recorded_at`).
+  `quality`, `flagged`, `recorded_at`). Declares its own key as
+  `field.Int64("ID")` instead of letting entlite add the default int32 one:
+  readings are high volume and int32 runs out at 2.1B rows. `sensor_id` stays
+  `field.Int` because it points at Sensor's int32 `ID` — the key type is chosen
+  per entity, and a foreign key follows the entity it references.
 
 ## Custom additions (hand-written)
 
@@ -36,6 +40,18 @@ hand-written `SensorAnalyticsService` on top of `custom.sql`. `ListWithLatestRea
 is where both halves meet — the custom `LEFT JOIN` returns an embedded sensor row,
 the generated converter turns it into the same `pb.Sensor` the CRUD service returns,
 and the `permissions.Virtual` `latest_value` field is filled from the joined reading.
+
+## int64 ID, end to end
+
+The declared key type travels the whole stack. Proto gets `int64 ID`, and since
+SQLite columns are already 64-bit the generated wrapper drops the narrowing
+`IntConvert[int32, int64]` it emits for int32 keys — compare `GetReadingByID`
+with `GetSensorByID` in [`gen/db/queries.sql.go`](ent/gen/db/queries.sql.go).
+
+On the wire an int64 is JSON-encoded as a string, so a reading comes back as
+`{"ID":"2", ...}` while a sensor is `{"ID":2, ...}`. In TypeScript protobuf-es
+maps it to `bigint`, which is why reading IDs in the frontend go through
+`bigIntInput()` rather than `numberInput()`.
 
 ## Run
 

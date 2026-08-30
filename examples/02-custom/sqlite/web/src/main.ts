@@ -18,6 +18,7 @@ import type {
     PruneReadingsRequest,
 } from "../../ent/gen/ts/custom_pb.js";
 import {
+    bigIntInput,
     checkboxInput,
     createHash,
     daysAgo,
@@ -249,8 +250,8 @@ function createInvalidReading() {
 }
 
 function getReadingByID() {
-    const id = numberInput("getReadingId");
-    if (isNaN(id) || id <= 0) {
+    const id = bigIntInput("getReadingId");
+    if (id <= 0n) {
         log("✗ Invalid reading ID");
         return;
     }
@@ -265,8 +266,8 @@ function getReadingByID() {
 }
 
 function deleteReading() {
-    const id = numberInput("deleteReadingId");
-    if (isNaN(id) || id <= 0) {
+    const id = bigIntInput("deleteReadingId");
+    if (id <= 0n) {
         log("✗ Invalid reading ID");
         return;
     }
