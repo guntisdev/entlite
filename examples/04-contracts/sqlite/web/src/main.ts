@@ -2,8 +2,8 @@ import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import * as schema from "../../ent/gen/ts/schema_pb.js";
-import { MatchService, StandingService } from "../../ent/gen/ts/schema_pb.js";
-import type { CreateMatchRequest, Match, Standing } from "../../ent/gen/ts/schema_pb.js";
+import { MatchService, PlayerService, StandingService } from "../../ent/gen/ts/schema_pb.js";
+import type { CreateMatchRequest, Match, Player, Standing } from "../../ent/gen/ts/schema_pb.js";
 import {
     daysAgo,
     numberInput,
@@ -21,6 +21,7 @@ const transport = createConnectTransport({
 });
 
 const matchClient = createClient(MatchService, transport);
+const playerClient = createClient(PlayerService, transport);
 const standingClient = createClient(StandingService, transport);
 
 function log(message: string, data?: any) {
@@ -43,6 +44,12 @@ function describeMatch(match: Match): string {
     const playedAt = match.playedAt ? timestampDate(match.playedAt).toISOString().slice(0, 10) : "?";
     return `#${match.ID} ${match.white} vs ${match.black} ${match.result} `
         + `(${match.moves} moves, ${match.opening ?? "no opening"}, ${playedAt})`;
+}
+
+function describePlayer(player: Player): string {
+    const joinedAt = player.joinedAt ? timestampDate(player.joinedAt).toISOString().slice(0, 10) : "?";
+    return `#${player.ID} ${player.name} ${player.rating} `
+        + `(${player.title ?? "no title"}, joined ${joinedAt})`;
 }
 
 function describeStanding(standing: Standing): string {
@@ -131,6 +138,43 @@ function listMatches() {
         });
 }
 
+// --- Player: both contracts, proto is read only ----------------------------
+
+function getPlayer() {
+    const id = numberInput("getPlayerId");
+    log(`Getting player #${id}...`);
+    playerClient.getByID({ ID: id })
+        .then((response) => {
+            log("✓ Player:", response);
+            log(describePlayer(response));
+        })
+        .catch((error) => {
+            log("✗ Error getting player:", error);
+        });
+}
+
+function listPlayers() {
+    log("Listing the roster, seeded by the server on startup...");
+    playerClient.listAll({})
+        .then((response) => {
+            log(`✓ ${response.players.length} players:`);
+            for (const player of response.players) {
+                log(describePlayer(player));
+            }
+        })
+        .catch((error) => {
+            log("✗ Error listing players:", error);
+        });
+}
+
+// the read only contract leaves create, update and delete off the client
+function listPlayerRpcs() {
+    const rpcs = Object.keys(PlayerService.method);
+    log("Rpcs on PlayerService:", rpcs);
+    log("Match has create and delete, Player does not. PROTO().ReadOnly() dropped them.");
+    log("CreatePlayer is still a generated query, the server calls it in SeedRoster.");
+}
+
 // --- Standing: proto only --------------------------------------------------
 
 function listStandings() {
@@ -175,6 +219,9 @@ document.getElementById("createInvalidBtn")!.addEventListener("click", createInv
 document.getElementById("getMatchBtn")!.addEventListener("click", getMatch);
 document.getElementById("deleteMatchBtn")!.addEventListener("click", deleteMatch);
 document.getElementById("listMatchesBtn")!.addEventListener("click", listMatches);
+document.getElementById("getPlayerBtn")!.addEventListener("click", getPlayer);
+document.getElementById("listPlayersBtn")!.addEventListener("click", listPlayers);
+document.getElementById("playerRpcsBtn")!.addEventListener("click", listPlayerRpcs);
 document.getElementById("listStandingsBtn")!.addEventListener("click", listStandings);
 document.getElementById("auditCountBtn")!.addEventListener("click", auditCount);
 document.getElementById("listServicesBtn")!.addEventListener("click", listServices);
@@ -182,4 +229,4 @@ document.getElementById("clearBtn")!.addEventListener("click", () => {
     document.getElementById("output")!.innerHTML = "";
 });
 
-log("Ready. Match has both contracts, Standing only proto, Audit only sqlc.");
+log("Ready. Match both contracts, Player read only proto, Standing only proto, Audit only sqlc.");

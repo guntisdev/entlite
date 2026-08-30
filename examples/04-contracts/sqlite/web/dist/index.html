@@ -198,7 +198,7 @@
 <body>
   <div class="container">
     <h1>Contracts sqlite</h1>
-    <p class="subtitle">One schema folder, three entities, each picking which contracts it generates</p>
+    <p class="subtitle">One schema folder, four entities, each picking which contracts it generates</p>
 
     <div class="section">
       <h2>Match — entlite.SQLC() and entlite.PROTO()
@@ -216,6 +216,20 @@
           <button id="deleteMatchBtn" class="delete">Delete</button>
         </div>
         <button id="listMatchesBtn" class="list">List Matches</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Player — entlite.SQLC() and entlite.PROTO().ReadOnly()
+        <small>A player table and a PlayerService with read rpc only, seeded by the server</small>
+      </h2>
+      <div class="controls">
+        <div class="button-group">
+          <input type="number" id="getPlayerId" placeholder="ID" value="1">
+          <button id="getPlayerBtn" class="read">Get</button>
+        </div>
+        <button id="listPlayersBtn" class="list">List Players</button>
+        <button id="playerRpcsBtn" class="invalid">Show Player Rpcs</button>
       </div>
     </div>
 
@@ -246,7 +260,12 @@
         Every entity declares its own <code>Contracts()</code>.
         <code>Match</code> declares both, so it gets a table in
         <code>ent/contract/sqlc</code> and a service in
-        <code>ent/contract/proto</code>. <code>Standing</code> declares only
+        <code>ent/contract/proto</code>. <code>Player</code> declares both too,
+        but its proto contract is <code>ReadOnly()</code>, so the table and the
+        queries are there while the service has only
+        <code>GetByID</code> and <code>ListAll</code> — the server seeds the
+        roster with the generated <code>CreatePlayer</code> query, which never
+        became an rpc. <code>Standing</code> declares only
         <code>entlite.PROTO()</code>, so it is a message and a service with no
         table behind it — the rank arrives in its <code>id</code> field.
         <code>Audit</code> declares only <code>entlite.SQLC()</code>, so it has

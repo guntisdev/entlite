@@ -1,66 +1,73 @@
-# 02-custom 
+# 02-custom
 
-Demonstrates that a developer can add functionality **outside** the entlite DSL
-and still have it compile into typed Go/TS alongside the generated code.
+The DSL cannot express every query. This example adds hand-written SQL and proto
+next to the generated files, and both halves compile into one typed API.
 
-## Entities (DSL)
+<!-- teaches:start -->
+- Hand-written `custom.sql` and `custom.proto` live beside the generated files and survive regeneration
+- A hand-written service that reuses a generated proto message
+- Virtual fields: `Contracts(entlite.PROTO())` gives a field with no column, filled in by the server
+- Choosing the key type per entity: `field.Int64("ID")` on a high volume table
+- A foreign key follows the type of the entity it points at
+- Query level `Contracts()`: a query that stays in the database layer and gets no rpc
+- Two entities in one schema
+<!-- teaches:end -->
 
-Defined in [`ent/schema`](ent/schema):
+## Entities
 
-- **Sensor** — a physical device in the field (`code`, `label`, `kind`, `unit`,
-  `active`, `firmware`, `sample_rate_ms`, timestamps), plus `latest_value` with
-  `permissions.Virtual`: a proto-only field with no column, filled at the API
-  layer from the custom `ListSensorsWithLatestReading` query below.
-- **Reading** — a measurement emitted by a sensor (`sensor_id`, `value`,
-  `quality`, `flagged`, `recorded_at`). Declares its own key as
-  `field.Int64("ID")` instead of letting entlite add the default int32 one:
-  readings are high volume and int32 runs out at 2.1B rows. `sensor_id` stays
-  `field.Int` because it points at Sensor's int32 `ID` — the key type is chosen
-  per entity, and a foreign key follows the entity it references.
+[`sqlite/ent/schema`](sqlite/ent/schema) has two:
 
-## Custom additions (hand-written)
+- **Sensor** — a device in the field. Also declares `latest_value` as
+  `Contracts(entlite.PROTO())`. That is a virtual field: no column, no place in
+  any generated SQL, but it is in the proto message. The server fills it in.
+- **Reading** — a measurement from a sensor. Declares its own key as
+  `field.Int64("ID")` instead of taking the default int32. Readings are high
+  volume and int32 stops at 2.1B rows. `sensor_id` stays `field.Int` because it
+  points at Sensor's int32 key.
 
-These files live next to the generated ones. entlite only ever writes the fixed
-filenames above, so these survive regeneration:
+Reading's `Update()` is `Contracts(entlite.SQLC())`. A reading is a recorded
+fact, so clients never edit it. The database query exists, the rpc does not.
 
-- [`contract/sqlc/custom.sql`](ent/contract/sqlc/custom.sql) — queries the DSL
-  cannot express: a cross-table `LEFT JOIN` with a correlated subquery
-  (`ListSensorsWithLatestReading`, using `sqlc.embed`), an aggregate
-  (`GetSensorReadingStats`), and a bulk retention delete
-  (`PruneReadingsOlderThan`).
-- [`contract/proto/custom.proto`](ent/contract/proto/custom.proto) — a
-  hand-written `SensorAnalyticsService` in the same `entlite` package that
-  imports `schema.proto` and reuses the generated `Sensor` message.
+## Hand-written files
+
+entlite only writes fixed filenames, so anything else in these folders stays.
+
+- [`sqlite/ent/contract/sqlc/custom.sql`](sqlite/ent/contract/sqlc/custom.sql) —
+  a `LEFT JOIN` with a subquery using `sqlc.embed`, an aggregate, and a bulk
+  delete.
+- [`sqlite/ent/contract/proto/custom.proto`](sqlite/ent/contract/proto/custom.proto) —
+  a `SensorAnalyticsService` in the same package. It imports `schema.proto` and
+  reuses the generated `Sensor` message.
 
 ## Server
 
-[`server/server.go`](server/server.go) implements all three services against the
-same generated types: `SensorService` and `ReadingService` from the DSL, and the
-hand-written `SensorAnalyticsService` on top of `custom.sql`. `ListWithLatestReading`
-is where both halves meet — the custom `LEFT JOIN` returns an embedded sensor row,
-the generated converter turns it into the same `pb.Sensor` the CRUD service returns,
-and the `permissions.Virtual` `latest_value` field is filled from the joined reading.
+[`sqlite/server/server.go`](sqlite/server/server.go) serves all three services
+from the same generated types. `ListWithLatestReading` is where the two halves
+meet: the custom `LEFT JOIN` returns an embedded sensor row, the generated
+converter turns it into the same `pb.Sensor` the CRUD service returns, and
+`latest_value` is filled from the joined reading.
 
-## int64 ID, end to end
+## int64 key, end to end
 
-The declared key type travels the whole stack. Proto gets `int64 ID`, and since
-SQLite columns are already 64-bit the generated wrapper drops the narrowing
-`IntConvert[int32, int64]` it emits for int32 keys — compare `GetReadingByID`
-with `GetSensorByID` in [`gen/db/queries.sql.go`](ent/gen/db/queries.sql.go).
+The key type travels the whole stack. Proto gets `int64 ID`. SQLite columns are
+already 64-bit, so the wrapper drops the narrowing convert it emits for int32
+keys — compare `GetReadingByID` with `GetSensorByID` in
+[`sqlite/ent/gen/db/queries.sql.go`](sqlite/ent/gen/db/queries.sql.go).
 
-On the wire an int64 is JSON-encoded as a string, so a reading comes back as
-`{"ID":"2", ...}` while a sensor is `{"ID":2, ...}`. In TypeScript protobuf-es
-maps it to `bigint`, which is why reading IDs in the frontend go through
-`bigIntInput()` rather than `numberInput()`.
+On the wire an int64 is JSON encoded as a string, so a reading is
+`{"ID":"2", ...}` and a sensor is `{"ID":2, ...}`. In TypeScript it is a
+`bigint`, which is why reading IDs in the frontend use `bigIntInput()` and not
+`numberInput()`.
 
 ## Run
 
 ```bash
-make run   # generates, bundles the frontend, then serves on :8080
+cd sqlite
+make run     # serves on :8080
 ```
 
 Known gap: `ReadingService.FilterBySensorIdRecordedAtFlagged` fails at runtime.
-The DSL's `filter.Range("recorded_at")` emits `recorded_at BETWEEN @min AND @max`,
-and sqlc cannot infer the type of a DATETIME placeholder inside `BETWEEN`, so it
-drops both bounds from the params struct while the query still binds them.
-`custom.sql` works around this by spelling the same range as `>= AND <=`.
+`filter.Range("recorded_at")` emits `recorded_at BETWEEN @min AND @max`, and
+sqlc cannot infer the type of a DATETIME placeholder inside `BETWEEN`. It drops
+both bounds from the params struct while the query still binds them.
+`custom.sql` works around this by writing the range as `>=` and `<=`.
