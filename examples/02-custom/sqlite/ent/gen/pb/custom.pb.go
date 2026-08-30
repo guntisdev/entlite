@@ -216,7 +216,7 @@ type SensorWithLatestReading struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Reuses the generated Sensor message (from schema.proto).
+	// the generated message from schema.proto
 	Sensor           *Sensor                `protobuf:"bytes,1,opt,name=sensor,proto3" json:"sensor,omitempty"`
 	LatestValue      *float64               `protobuf:"fixed64,2,opt,name=latest_value,json=latestValue,proto3,oneof" json:"latest_value,omitempty"`
 	LatestRecordedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=latest_recorded_at,json=latestRecordedAt,proto3,oneof" json:"latest_recorded_at,omitempty"`

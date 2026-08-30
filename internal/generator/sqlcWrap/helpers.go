@@ -70,7 +70,8 @@ func filterParamField(entity schema.Entity, paramName string) (schema.Field, boo
 	return schema.Field{}, false
 }
 
-// restates sqlc "<Query>Params" struct in wrapper's own types, keeping sqlc's field names and json tags.
+// generateFilterParamsStruct restates sqlc's "<Query>Params" in the wrapper's types,
+// keeping sqlc's field names and json tags.
 func generateFilterParamsStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("type %s struct {\n", structName))
@@ -97,7 +98,8 @@ func generateFilterParamsStruct(structName string, structType *ast.StructType, e
 	return sb.String()
 }
 
-// builds internal params literal handed to sqlc, converting each field back to its dialect type.
+// generateFilterParamsArg builds the params literal for sqlc, converting each field
+// back to its dialect type.
 func generateFilterParamsArg(structName string, structType *ast.StructType, entity schema.Entity, inputPkg, argVar string, sqlDialect schema.SQLDialect) string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%s{\n", inputPkg, structName))
@@ -120,8 +122,8 @@ func generateFilterParamsArg(structName string, structType *ast.StructType, enti
 	return sb.String()
 }
 
-// renders a get/list wrapper's signature params, the arguments
-// forwarded to the sqlc method, and any statements needed before the call.
+// wrapFilterParams renders a get/list wrapper's params, the forwarded args and any
+// statements needed before the call.
 func (ctx *generationContext) wrapFilterParams(funcDecl *ast.FuncDecl, entity schema.Entity) (params, args, prelude string) {
 	if funcDecl.Type.Params == nil {
 		return "", "", ""
@@ -208,7 +210,7 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}
 
-	// TODO fix Optional() with Validate() - a pointer is passed to a value func and does not compile
+	// TODO fix Optional() with Validate(), see README
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue
@@ -251,13 +253,14 @@ func snakeToCamelCase(s string) string {
 	return result
 }
 
-// toProtoFieldName matches protoc-gen-go's Go struct field naming, which does
-// NOT apply Go initialisms (e.g. sensor_id -> SensorId, not SensorID).
+// toProtoFieldName matches protoc-gen-go, which applies no Go initialisms:
+// sensor_id becomes SensorId, not SensorID.
 func toProtoFieldName(field schema.Field) string {
 	return protoGoCamelCase(field.Name)
 }
 
-// protoGoCamelCase is a copy of google.golang.org/protobuf/internal/strs.GoCamelCase,
+// protoGoCamelCase is google.golang.org/protobuf/internal/strs.GoCamelCase, copied
+// verbatim with its comments so the naming cannot drift.
 func protoGoCamelCase(s string) string {
 	var b []byte
 	for i := 0; i < len(s); i++ {
@@ -299,7 +302,7 @@ func isPointerParam(entity schema.Entity, field schema.Field, sqlQuery string) b
 	if field.Optional || field.DefaultValue != nil || field.DefaultFunc != nil {
 		return true
 	}
-	// update makes write-only fields optional so they can be left alone
+	// write-only fields, e.g. a password, are optional in update
 	return sqlQuery == "update" && !entity.CanFieldRead(field)
 }
 
@@ -355,9 +358,8 @@ func qualifyType(expr ast.Expr, pkg string) string {
 	}
 }
 
-// usesPackage reports whether body references the package selector name (as
-// "name."), matching only at an identifier boundary so "time" does not match
-// inside "runtime.".
+// usesPackage reports whether body references "name.", matching only at an identifier
+// boundary so "time" does not match inside "runtime.".
 func usesPackage(body, name string) bool {
 	sel := name + "."
 	from := 0
@@ -400,15 +402,15 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect
 
 	if sqlDialect == schema.MySQL && field.Optional {
 		if field.Type == schema.FieldTypeByte {
-			// Special case: some generated refs may be dereferenced (e.g. *arg.ApiKey),
-			// but PtrBytesToNullString expects a pointer, so strip a leading '*'.
+			// a generated ref may be dereferenced, e.g. *arg.ApiKey, but PtrBytesToNullString
+			// wants a pointer, so strip a leading '*'
 			normalizedRef := strings.TrimPrefix(pbFieldRef, "*")
 			return fmt.Sprintf("PtrBytesToNullString(%s)", normalizedRef)
 		}
 	}
 
-	// SQLite/Postgres store bytes as []byte, which is already nilable, but the
-	// wrapper keeps optional bytes as *[]byte for cross-dialect consistency.
+	// SQLite and Postgres store bytes as []byte, already nilable, but the wrapper keeps
+	// optional bytes as *[]byte across dialects
 	if field.Optional && field.Type == schema.FieldTypeByte &&
 		(sqlDialect == schema.SQLite || sqlDialect == schema.PostgreSQL) {
 		return fmt.Sprintf("PtrToNullBytes(%s)", pbFieldRef)

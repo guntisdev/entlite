@@ -98,12 +98,12 @@ func writeCreateParamsFields(sb *strings.Builder, entity schema.Entity, argVar, 
 		if field.IsID() && field.DefaultFunc == nil && field.DefaultValue == nil {
 			continue
 		}
+		// a default, func or value, is a fallback: resolve the optional arg against it
+		// first, then convert for the dialect
 		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			funcName := field.DefaultFunc().(string)
 			canApiWrite := entity.CanFieldWrite(field)
 			if canApiWrite {
-				// Resolve the optional arg against the fallback first, then apply
-				// any dialect conversion around the resulting non-pointer value.
 				fallbackRef := fmt.Sprintf("OptionalWithFallback(%s.%s, %s())", argVar, exportedName, funcName)
 				sb.WriteString(fmt.Sprintf("%s%s: %s,\n", indent, exportedName, sqlToGo(field, fallbackRef, sqlDialect)))
 			} else {
@@ -113,8 +113,6 @@ func writeCreateParamsFields(sb *strings.Builder, entity schema.Entity, argVar, 
 			valueLiteral := formatDefaultValue(defValField)
 			canApiWrite := entity.CanFieldWrite(defValField)
 			if canApiWrite {
-				// Resolve the optional arg against the fallback first, then apply
-				// any dialect conversion around the resulting non-pointer value.
 				fallbackRef := fmt.Sprintf("OptionalWithFallback(%s.%s, %s)", argVar, exportedName, valueLiteral)
 				sb.WriteString(fmt.Sprintf("%s%s: %s,\n", indent, exportedName, sqlToGo(defValField, fallbackRef, sqlDialect)))
 			} else {

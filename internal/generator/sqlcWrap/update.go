@@ -27,7 +27,7 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 				continue
 			}
 
-			// special case for psw etc - if not readable then no obligatory to update
+			// write-only fields, e.g. a password, are optional in update
 			canApiRead := entity.CanFieldRead(field)
 			if field.DefaultFunc != nil || field.DefaultValue != nil || !canApiRead {
 				field.Optional = true
@@ -79,14 +79,14 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 		}
 
 		canApiWrite := entity.CanFieldWrite(field)
-		// special case for psw etc - if not readable then no obligatory to update
+		// write-only fields, e.g. a password, are optional in update
 		canApiRead := entity.CanFieldRead(field)
 		if !canApiRead {
 			field.Optional = true
 		}
 		pointerStr := ""
-		// Only MySQL's PtrBytesToNullString consumes a pointer ref (it strips the
-		// leading '*' back off); SQLite/Postgres take the *[]byte arg as-is.
+		// only MySQL's PtrBytesToNullString takes a pointer ref, it strips the '*' back
+		// off; SQLite and Postgres take the *[]byte as-is
 		if field.Type == schema.FieldTypeByte && sqlDialect == schema.MySQL {
 			pointerStr = "*"
 		}

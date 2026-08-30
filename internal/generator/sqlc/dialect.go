@@ -102,7 +102,7 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 	case schema.FieldTypeByte:
 		return "BYTEA"
 	case schema.FieldTypeJSON:
-		// TODO consider JSONB once json indexing/querying is supported, it needs sqlc overrides to stay a Go string
+		// TODO consider JSONB, it needs sqlc overrides to stay a Go string
 		return "TEXT"
 	default:
 		return "TEXT"
@@ -135,8 +135,7 @@ func (g *Generator) getSQLiteType(fieldType schema.FieldType) string {
 func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:
-		// VARCHAR rather than TEXT: MySQL refuses to index a TEXT column without
-		// an explicit key length, which breaks Unique() and index.Fields().
+		// VARCHAR not TEXT: MySQL cannot index TEXT without a key length, which breaks Unique()
 		return "VARCHAR(255)"
 	case schema.FieldTypeInt:
 		return "INT"
@@ -151,7 +150,7 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	case schema.FieldTypeByte:
 		return "BLOB"
 	case schema.FieldTypeJSON:
-		// TODO consider native JSON once json indexing/querying is supported, it needs sqlc overrides to stay a Go string
+		// TODO consider native JSON, it needs sqlc overrides to stay a Go string
 		return "TEXT"
 	default:
 		return "TEXT"
@@ -190,8 +189,7 @@ func (g *Generator) supportsReturning() bool {
 func (g *Generator) namedArg(name string) string {
 	switch g.sqlDialect {
 	case schema.MySQL:
-		// sqlc's MySQL parser reads @name as a MySQL user variable and drops the
-		// parameter, so named args have to be spelled out as sqlc.arg().
+		// sqlc's MySQL parser reads @name as a user variable and drops it, so use sqlc.arg()
 		return fmt.Sprintf("sqlc.arg('%s')", name)
 	case schema.PostgreSQL, schema.SQLite:
 		return fmt.Sprintf("@%s", name)

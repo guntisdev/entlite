@@ -178,7 +178,7 @@ func (f *BoolField) Validate(fn func(bool) bool) BoolFieldBuilder {
 }
 
 // --------------------------------- int ---------------------------------
-// int uses int32 as type under the hood - for DX experience with JS number
+// int is int32, to match a JS number
 type IntFieldBuilder interface {
 	Default(int32) IntFieldBuilder
 	ProtoField(int) IntFieldBuilder

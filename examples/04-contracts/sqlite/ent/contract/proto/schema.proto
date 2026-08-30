@@ -24,8 +24,7 @@ message Match {
   google.protobuf.Timestamp created_at = 8 [(buf.validate.field).required = true];
 }
 
-// Player is the club roster. The secretary maintains it on the server,
-// members only read it.
+// Player is the club roster, written on the server and read by members.
 message Player {
   int32 ID = 1 [(buf.validate.field).required = true];
   string name = 2 [(buf.validate.field).required = true];

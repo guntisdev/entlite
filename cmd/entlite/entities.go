@@ -59,7 +59,7 @@ func getEntityImports(entityDir string) (map[string]parser.ImportInfo, error) {
 		return nil, fmt.Errorf("extracting imports: %w", err)
 	}
 
-	// Filter out entlite DSL imports - we only need actual dependencies like time, custom logic, etc.
+	// keep only real dependencies, e.g. time and the logic package
 	filteredImports := make(map[string]parser.ImportInfo)
 	for pkgName, importInfo := range entityImports {
 		if !strings.HasPrefix(importInfo.Path, "github.com/guntisdev/entlite/pkg/entlite") {

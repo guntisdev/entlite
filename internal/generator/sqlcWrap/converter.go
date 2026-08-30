@@ -12,14 +12,12 @@ import (
 	"github.com/guntisdev/entlite/internal/util"
 )
 
-// EntliteAccessFileName is the file entlite adds to sqlc's generated package to
-// expose the connection handle that sqlc keeps in an unexported field. sqlc only
-// rewrites the files it generates itself, so this one survives regeneration.
+// EntliteAccessFileName exposes the connection handle sqlc keeps unexported. sqlc
+// only rewrites its own files, so this one survives regeneration.
 const EntliteAccessFileName = "entlite_access.go"
 
-// GenerateAccessFile emits the sqlc-package addition described above. The
-// wrapper package needs the handle to open a transaction around multi-row
-// operations; without it the unexported field is unreachable.
+// GenerateAccessFile emits EntliteAccessFileName. The wrapper needs the handle
+// to open a transaction around multi-row operations.
 func GenerateAccessFile(packageName string) string {
 	return util.GeneratedGo + fmt.Sprintf(`package %s
 
@@ -28,9 +26,8 @@ func (q *Queries) DB() DBTX { return q.db }
 `, packageName)
 }
 
-// PackageNameOf reads the package clause of the first Go file in dir. sqlc's
-// package name comes from sqlc.yaml and need not match the directory name, so
-// it has to be read from the generated source rather than guessed.
+// PackageNameOf reads the package clause of the first Go file in dir. sqlc takes
+// the name from sqlc.yaml, so it cannot be guessed from the directory.
 func PackageNameOf(dir string) (string, error) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
@@ -120,9 +117,8 @@ func generateConverterFunctions(hasTimeField bool, hasCreateBulk bool) string {
 }
 
 const txBeginner = `
-// txBeginner is satisfied by *sql.DB and *sql.Conn, but deliberately not by
-// *sql.Tx: a Queries already bound to a transaction runs inside the caller's
-// one rather than opening a nested one.
+// txBeginner is satisfied by *sql.DB and *sql.Conn but not *sql.Tx: a Queries already
+// in a transaction runs inside the caller's one instead of nesting.
 type txBeginner interface {
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 }
@@ -135,8 +131,7 @@ func OptionalWithFallback[T any](val *T, fallback T) T {
 		return fallback
 	}
 
-	// For nil-able types like []byte, check if the dereferenced value is nil.
-	// IsNil panics on every other kind, so ask for the kind first
+	// nil-able types like []byte need a nil check, and IsNil panics on other kinds
 	switch value := reflect.ValueOf(any(*val)); value.Kind() {
 	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
 		if value.IsNil() {
@@ -153,7 +148,7 @@ func TimeToProto(t time.Time) *timestamppb.Timestamp {
 	return timestamppb.New(t)
 }
 
-// Note: If the pointer is nil, it returns a zero time.Time{}
+// A nil pointer returns a zero time.Time{}
 func ProtoToTime(t *timestamppb.Timestamp) time.Time {
 	if t == nil {
 		return time.Time{}
@@ -304,8 +299,7 @@ func SQLiteBoolToInt(b bool) int64 {
     }
 }
 
-// SQLiteBoolPtrToInt64Ptr converts an optional bool to an optional SQLite int64
-// (used for nullable columns via sqlc.narg, e.g. *bool -> *int64).
+// SQLiteBoolPtrToInt64Ptr converts *bool to *int64 for nullable columns via sqlc.narg
 func SQLiteBoolPtrToInt64Ptr(b *bool) *int64 {
     if b == nil {
         return nil

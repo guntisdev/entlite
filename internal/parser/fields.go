@@ -269,8 +269,8 @@ func parseValidateFuncValue(expr ast.Expr) (func() any, error) {
 	return nil, fmt.Errorf("validate must be a function reference")
 }
 
-// applyFieldContracts fills in the entity contracts where a field declares none
-// and checks the declared ones against the entity
+// applyFieldContracts fills in the entity contracts where a field declares none,
+// and checks declared ones against the entity.
 func applyFieldContracts(entity schema.Entity) ([]schema.Field, error) {
 	fields := make([]schema.Field, 0, len(entity.Fields))
 

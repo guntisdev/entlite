@@ -48,8 +48,7 @@ export function createHash(length: number = 4): string {
     return result;
 }
 
-// The kinds accepted by logic.IsKnownSensorKind - anything else is rejected by
-// the generated Validate() interceptor before it reaches the database
+// the kinds logic.IsKnownSensorKind accepts, anything else fails Validate()
 export const SENSOR_KINDS = ["temperature", "humidity", "pressure", "motion"] as const;
 
 export type SensorKind = typeof SENSOR_KINDS[number];

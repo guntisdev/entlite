@@ -178,7 +178,7 @@ func generateResponseMessages(entity schema.Entity) string {
 				protoType := getProtoType(field.Type)
 				var optional string
 				var required string
-				// special case for psw etc - if not readable then no obligatory to update
+				// write-only fields, e.g. a password, are optional in update
 				canRead := field.CanApiRead()
 				if field.Optional || !canRead || field.DefaultValue != nil || field.DefaultFunc != nil {
 					optional = "optional "
