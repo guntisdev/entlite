@@ -49,8 +49,6 @@ go run github.com/guntisdev/entlite/cmd/entlite new --dialect sqlite User Post
 | [03-optional](examples/03-optional) | `Optional()` per type, optional filters, a uuid key |
 | [04-contracts](examples/04-contracts) | `Contracts()` on an entity, a field and a query |
 
-`make teaches` prints every list, for pulling into documentation.
-
 ## Launch example
 Each example has a Makefile that generates types, bundles the JavaScript and starts the web server
 ```bash
