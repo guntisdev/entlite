@@ -12,18 +12,18 @@ docs/**.md      committed, readable on github, drift checked in CI
 dist/**.html    gitignored, built in CI, deployed to cloudflare pages
 ```
 
-## 1. Doc comments, do this first
-- [ ] one line comment on every exported method in `pkg/entlite/field/field.go`
-- [ ] fill the gaps in `query.go`, `index.go`, `filter.go`, `schema.go`
-- [ ] they feed pkg.go.dev and the generated reference, everything below depends on them
+## ~~1. Doc comments, do this first~~
+- [x] ~~one line comment on every exported method in `pkg/entlite/field/field.go`~~
+- [x] ~~fill the gaps in `query.go`, `index.go`, `filter.go`, `schema.go`~~
+- [x] ~~they feed pkg.go.dev and the generated reference, everything below depends on them~~
 
-## 2. Generator skeleton
-- [ ] `internal/docs/` package, the steps are a pipeline in go, not targets in the makefile
-- [ ] steps: reference, examples, readme injection, site
-- [ ] one thin `package main` in `internal/docs/cmd`, flags `-out`, `-html`, `-check`
-- [ ] under internal/ not cmd/, so it stays out of the published CLI surface
-- [ ] `make docs` and `make site` are one line entry points, they hold no logic
-- [ ] not `go generate ./...` at the root, it would walk into every example `ent/generate.go`, which needs sqlc, buf and network
+## ~~2. Generator skeleton~~
+- [x] ~~`internal/docs/` package, the steps are a pipeline in go, not targets in the makefile~~
+- [x] ~~steps: reference, examples, readme injection, site~~
+- [x] ~~one thin `package main` in `internal/docs/cmd`, flags `-out`, `-html`, `-check`~~
+- [x] ~~under internal/ not cmd/, so it stays out of the published CLI surface~~
+- [x] ~~`make docs` and `make site` are one line entry points, they hold no logic~~
+- [x] ~~not `go generate ./...` at the root, it would walk into every example `ent/generate.go`, which needs sqlc, buf and network~~
 
 ## 3. Reference pages, generated
 - [ ] ast walk over `pkg/entlite` for method tables per builder interface
