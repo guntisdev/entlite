@@ -1,5 +1,7 @@
+// Package index holds the index builders used in an entity schema.
 package index
 
+// Type tells which kind of index is described.
 type Type string
 
 const (
@@ -15,9 +17,13 @@ type Column struct {
 	desc bool // false = ASC (default), true = DESC
 }
 
+// GetName returns the column name.
 func (c Column) GetName() string { return c.name }
-func (c Column) IsDesc() bool    { return c.desc }
 
+// IsDesc reports if the column is sorted descending.
+func (c Column) IsDesc() bool { return c.desc }
+
+// IndexBuilder is implemented by every index.
 type IndexBuilder interface {
 	Index()
 }
@@ -25,13 +31,17 @@ type IndexBuilder interface {
 // IndexOperations exposes the fluent modifiers available on a Fields() index.
 type IndexOperations interface {
 	IndexBuilder
+	// Unique turns the index into a unique constraint.
 	Unique() IndexOperations
 	// Name overrides the auto-generated index name
 	Name(name string) IndexOperations
+	// Asc appends a column sorted ascending.
 	Asc(field string) IndexOperations
+	// Desc appends a column sorted descending.
 	Desc(field string) IndexOperations
 }
 
+// Index holds the state of one index.
 type Index struct {
 	typeName Type
 	columns  []Column
@@ -42,10 +52,12 @@ type Index struct {
 // marker method for sealed interface
 func (Index) Index() {}
 
+// Primary declares the primary key over the given fields.
 func Primary(fields ...string) IndexBuilder {
 	return Index{typeName: TypePrimary, columns: columnsFromFields(fields)}
 }
 
+// Fields declares a secondary index over the given fields.
 func Fields(fields ...string) IndexOperations {
 	return Index{typeName: TypeIndex, columns: columnsFromFields(fields)}
 }
@@ -82,10 +94,12 @@ func (i Index) Desc(field string) IndexOperations {
 	return i
 }
 
+// GetType returns the index kind, primary or index.
 func (i Index) GetType() Type {
 	return i.typeName
 }
 
+// GetColumns returns the columns with their sort direction, in order.
 func (i Index) GetColumns() []Column {
 	return i.columns
 }
@@ -99,10 +113,12 @@ func (i Index) GetFields() []string {
 	return fields
 }
 
+// IsUnique reports if the index is a unique constraint.
 func (i Index) IsUnique() bool {
 	return i.unique
 }
 
+// GetName returns the custom index name, or "" when auto-generated.
 func (i Index) GetName() string {
 	return i.name
 }
