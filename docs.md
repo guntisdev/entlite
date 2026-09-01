@@ -50,12 +50,12 @@ dist/**.html    gitignored, built in CI, deployed to cloudflare pages
 - [x] ~~`internal/docs/docs_test.go` runs the pipeline with `-check` and diffs against the tree~~
 - [x] ~~picked up by `make test`, so `make all` and CI fail on stale docs~~
 
-## 7. Guide pages, hand written
-- [ ] `docs/guide/01-getting-started.md` from the readme get started section
-- [ ] `02-project-layout.md`, what each folder in `ent/` is
-- [ ] `03-pipeline.md`, dsl -> contract -> sqlc / buf -> gen
-- [ ] `04-writing-a-schema.md`, snippets pulled from examples/01
-- [ ] `docs/README.md` as the index
+## ~~7. Guide pages, hand written~~
+- [x] ~~`docs/guide/01-getting-started.md` from the readme get started section~~
+- [x] ~~`02-project-layout.md`, what each folder in `ent/` is~~
+- [x] ~~`03-pipeline.md`, dsl -> contract -> sqlc / buf -> gen~~
+- [x] ~~`04-writing-a-schema.md`, snippets pulled from examples/01~~
+- [x] ~~`docs/README.md` as the index~~
 
 ## 8. Html layer
 - [ ] goldmark + html/template in `internal/docs`, `make site` writes `dist/`

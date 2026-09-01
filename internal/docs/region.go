@@ -10,6 +10,10 @@ const (
 	markerEnd   = "<!-- %s:end -->"
 )
 
+func hasRegion(content, marker string) bool {
+	return strings.Contains(content, fmt.Sprintf(markerStart, marker))
+}
+
 func region(content, marker string) (string, error) {
 	start := strings.Index(content, fmt.Sprintf(markerStart, marker))
 	end := strings.Index(content, fmt.Sprintf(markerEnd, marker))

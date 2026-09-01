@@ -1,6 +1,8 @@
 # Entlite
 Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types automatically to maintain a single source of truth in Go services.
 
+Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getting-started.md), [reference](docs/README.md#reference), [examples](docs/README.md#examples).
+
 ## TODO
 * Create /internal/naming/ to have in one place consistant naming
 * Implement DefaultFunc for sql generation
@@ -16,23 +18,26 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 * Figure out migration
 
 ## Folder structure
+<!-- tree:start -->
 ```
-└── ent/
-    ├── schema/             # DSL entities
-    ├── contract/
-    │   ├── proto/          # generated from DSL: schema.proto. Custom proto could be added here
-    │   └── sqlc/           # generated from DSL: schema.sql, queries.sql. Custom sql could be added here
-    ├── gen/
-    │   ├── db/             # small wrapper for type convertions - nullptr etc
-    │   |   └── internal/   # generated from sqlc contract
-    │   ├── pb/             # generated from proto contract
-    │   └── ts/             # generated from proto contract
-    ├── logic/              # optional, custom functions for DSL entities
-    ├── buf.yaml
-    ├── buf.gen.yaml
-    ├── sqlc.yaml
-    └── generate.go     # go generate - creates contracts, launches sqlc, buf, light db wrapper and convert
+ent/
+├── schema/            # you write: one file per entity
+├── logic/             # you write: Go funcs for DefaultFunc and Validate
+├── contract/          # the input for sqlc and buf
+│   ├── proto/         # generated: schema.proto, plus your custom .proto
+│   └── sqlc/          # generated: schema.sql, queries.sql, plus your custom .sql
+├── gen/               # the output, rewritten on every run
+│   ├── db/            # generated: typed wrapper, pointers instead of null types
+│   │   └── internal/  # generated: raw sqlc output, never import it
+│   ├── pb/            # generated: proto messages and the connect service
+│   └── ts/            # generated: TypeScript client
+├── buf.yaml
+├── buf.gen.yaml
+├── buf.lock
+├── sqlc.yaml          # dialect and sqlc settings
+└── generate.go        # the go:generate lines that run the pipeline
 ```
+<!-- tree:end -->
 
 ## Get started
 sql dialect flag: postgresql (default) or sqlite or mysql
