@@ -16,8 +16,8 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/gen/pb"
-	"github.com/guntisdev/entlite/examples/01-basic-entity/postgres/server"
+	"github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/gen/pb"
+	"github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/server"
 )
 
 // Credentials match docker-compose.yml, see `make db`

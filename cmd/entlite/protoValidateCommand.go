@@ -10,6 +10,8 @@ import (
 	"github.com/guntisdev/entlite/internal/util"
 )
 
+// protoValidate writes the Validate methods for the generated proto types, run it from the ent directory.
+// usage: entlite proto-validate
 func protoValidate() {
 	entityDir := "./schema"
 	parsedEntities, err := loadEntities(entityDir)

@@ -22,7 +22,7 @@ grouped into four blocks.
 send it. Look at `CreateArticleRequest` in the generated
 `schema.proto` — the field is not there.
 
-The column is `TEXT PRIMARY KEY` on sqlite and postgres, and
+The column is `TEXT PRIMARY KEY` on sqlite and postgresql, and
 `VARCHAR(36) PRIMARY KEY` on mysql. The uuid is generated in Go, not by the
 database.
 

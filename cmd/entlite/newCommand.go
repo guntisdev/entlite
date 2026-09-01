@@ -11,6 +11,8 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
+// newCommand scaffolds an ent directory, one schema file per entity.
+// usage: entlite new [-dialect postgresql|sqlite|mysql] <Entity>...
 func newCommand(args []string) {
 	fs := flag.NewFlagSet("new", flag.ExitOnError)
 	dialect := fs.String("dialect", "postgresql", "SQL dialect: postgresql, sqlite, or mysql")

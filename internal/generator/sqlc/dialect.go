@@ -72,6 +72,11 @@ func (g *Generator) getIdFieldType(fieldType schema.FieldType, primary bool) str
 	panic("unreachable: invalid SQL dialect")
 }
 
+// returns the column type used for a field in the given dialect.
+func SQLTypeFor(dialect schema.SQLDialect, fieldType schema.FieldType) string {
+	return NewGenerator(dialect).getSQLType(fieldType)
+}
+
 func (g *Generator) getSQLType(fieldType schema.FieldType) string {
 	switch g.sqlDialect {
 	case schema.PostgreSQL:

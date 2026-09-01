@@ -11,6 +11,8 @@ import (
 	"github.com/guntisdev/entlite/internal/util"
 )
 
+// sqlcWrapCommand writes the typed wrappers around the code sqlc generated, run it from the ent directory.
+// usage: entlite sqlc-wrap
 func sqlcWrapCommand() {
 	entityDir := "./schema"
 	parsedEntities, err := loadEntities(entityDir)

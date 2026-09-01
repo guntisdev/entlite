@@ -1,3 +1,5 @@
+.PHONY: all tidy build lint test gen docs site integration bin
+
 all: tidy lint build test
 
 tidy:
@@ -19,6 +21,14 @@ gen:
 		echo "==> $$dir"; \
 		(cd $$dir && go generate .) || exit 1; \
 	done
+
+# regenerates docs/ from the source tree
+docs:
+	go run ./internal/docs/cmd -out docs
+
+# builds the html site into dist/, it regenerates docs/ on the way
+site:
+	go run ./internal/docs/cmd -out docs -html dist
 
 # runs through each example and checks if nothing is broken
 integration:
