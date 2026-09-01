@@ -60,6 +60,12 @@ func escapePipe(text string) string {
 	return strings.ReplaceAll(text, "|", "\\|")
 }
 
+func (p *page) Details(summary, lang, content string) {
+	p.buf.WriteString("\n<details>\n<summary>" + summary + "</summary>\n")
+	p.Code(lang, content)
+	p.buf.WriteString("\n</details>\n")
+}
+
 func (p *page) MethodTable(methods []apiMethod) {
 	rows := make([][]string, 0, len(methods))
 	for _, m := range methods {

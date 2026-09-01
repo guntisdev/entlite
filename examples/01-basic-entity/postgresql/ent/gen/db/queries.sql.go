@@ -6,9 +6,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/logic"
+	"github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/logic"
 	"time"
-	internal "github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/gen/db/internal"
+	internal "github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/gen/db/internal"
 )
 
 type CreateBulkUserParams struct {

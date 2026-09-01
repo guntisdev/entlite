@@ -3,7 +3,7 @@ package schema
 import (
 	"time"
 
-	"github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/logic"
+	"github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/logic"
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
 	"github.com/guntisdev/entlite/pkg/entlite/filter"

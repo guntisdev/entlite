@@ -3,10 +3,10 @@
 package db
 
 import (
-	pb "github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/gen/pb"
+	pb "github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/gen/pb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
-	internal "github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/gen/db/internal"
+	internal "github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/gen/db/internal"
 )
 
 

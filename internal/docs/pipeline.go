@@ -32,12 +32,12 @@ func (p *Pipeline) Abs(path string) string {
 
 // Out returns the path of a markdown file inside the output directory.
 func (p *Pipeline) Out(parts ...string) string {
-	return path(append([]string{p.cfg.OutDir}, parts...)...)
+	return joinPath(append([]string{p.cfg.OutDir}, parts...)...)
 }
 
 // HTML returns the path of a file inside the html directory.
 func (p *Pipeline) HTML(parts ...string) string {
-	return path(append([]string{p.cfg.HTMLDir}, parts...)...)
+	return joinPath(append([]string{p.cfg.HTMLDir}, parts...)...)
 }
 
 // Read returns a file, an earlier step's output wins over the one on disk.
@@ -111,7 +111,7 @@ func (p *Pipeline) check() (Result, error) {
 }
 
 // path joins parts into a slash path, empty parts are dropped.
-func path(parts ...string) string {
+func joinPath(parts ...string) string {
 	kept := make([]string, 0, len(parts))
 	for _, part := range parts {
 		if part != "" {

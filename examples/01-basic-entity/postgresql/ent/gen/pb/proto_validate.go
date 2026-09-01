@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"connectrpc.com/connect"
-	"github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/logic"
+	"github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/logic"
 )
 
 func (r *CreateUserRequest) Validate() error {

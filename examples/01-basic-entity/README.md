@@ -11,7 +11,7 @@ One `User` entity, written out in every field type and every query type. Start h
 - Queries by field: `GetBy("email")`, `ListBy("is_active")`, and `Name()` to rename one
 - Filters: `filter.Range()` and `filter.Search()`
 - Indexes: multi column, `Desc()` sort order, `Unique()`, `Name()`, and a commented out `index.Primary()`
-- The same schema on three dialects: sqlite, postgres, mysql
+- The same schema on three dialects: sqlite, postgresql, mysql
 <!-- teaches:end -->
 
 ## Entity
@@ -35,11 +35,11 @@ database.
 | Folder | Database | Notes |
 |---|---|---|
 | [`sqlite`](sqlite) | file on disk | nothing to start, fastest way to try it |
-| [`postgres`](postgres) | docker | `make run` starts it and waits |
+| [`postgresql`](postgresql) | docker | `make run` starts it and waits |
 | [`mysql`](mysql) | docker | `make run` starts it and waits |
 
 Compare the three `ent/contract/sqlc/schema.sql` files to see how types map. For
-example `field.Float` becomes `REAL` on sqlite, `DOUBLE PRECISION` on postgres
+example `field.Float` becomes `REAL` on sqlite, `DOUBLE PRECISION` on postgresql
 and `DOUBLE` on mysql.
 
 ## Run
@@ -49,4 +49,4 @@ cd sqlite
 make run     # generates types, bundles the frontend, serves on :8080
 ```
 
-For postgres and mysql, `make down` stops the database and drops its data.
+For postgresql and mysql, `make down` stops the database and drops its data.

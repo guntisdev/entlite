@@ -9,8 +9,8 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/gen/db"
-	"github.com/guntisdev/entlite/examples/01-basic-entity/postgres/ent/gen/pb"
+	"github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/gen/db"
+	"github.com/guntisdev/entlite/examples/01-basic-entity/postgresql/ent/gen/pb"
 )
 
 type UserServer struct {

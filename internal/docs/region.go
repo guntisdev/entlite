@@ -25,6 +25,15 @@ func region(content, marker string) (string, error) {
 	return strings.TrimSpace(content[start:end]), nil
 }
 
+func afterRegion(content, marker string) (string, error) {
+	end := strings.Index(content, fmt.Sprintf(markerEnd, marker))
+	if end < 0 {
+		return "", fmt.Errorf("missing %s markers", marker)
+	}
+
+	return strings.TrimSpace(content[end+len(fmt.Sprintf(markerEnd, marker)):]), nil
+}
+
 func replaceRegion(content, marker, body string) (string, error) {
 	if _, err := region(content, marker); err != nil {
 		return "", err

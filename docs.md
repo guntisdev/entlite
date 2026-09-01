@@ -40,11 +40,11 @@ dist/**.html    gitignored, built in CI, deployed to cloudflare pages
 - [x] ~~runs before the example pages, so they read the final readme not a stale table~~
 - [x] ~~never regenerate a whole readme, the prose and the teaches bullets are yours~~
 
-## 5. Example pages, generated
-- [ ] one `docs/examples/NN-name.md` per example
-- [ ] pull the readme body, the teaches block is already machine readable
-- [ ] embed `ent/schema/*.go` as input, `schema.proto`, `schema.sql`, `queries.sql` as output
-- [ ] read the files at build time, never copy `examples/` into `docs/`
+## ~~5. Example pages, generated~~
+- [x] ~~one `docs/examples/NN-name.md` per example~~
+- [x] ~~pull the readme body, the teaches block is already machine readable~~
+- [x] ~~embed `ent/schema/*.go` as input, `schema.proto`, `schema.sql`, `queries.sql` as output~~
+- [x] ~~read the files at build time, never copy `examples/` into `docs/`~~
 
 ## 6. Drift check
 - [ ] `internal/docs/docs_test.go` runs the pipeline with `-check` and diffs against the tree
