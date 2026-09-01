@@ -46,10 +46,9 @@ dist/**.html    gitignored, built in CI, deployed to cloudflare pages
 - [x] ~~embed `ent/schema/*.go` as input, `schema.proto`, `schema.sql`, `queries.sql` as output~~
 - [x] ~~read the files at build time, never copy `examples/` into `docs/`~~
 
-## 6. Drift check
-- [ ] `internal/docs/docs_test.go` runs the pipeline with `-check` and diffs against the tree
-- [ ] picked up by `make test`, so `make all` and CI fail on stale docs
-- [ ] fix the readme, it advertises `make teaches` and there is no such target
+## ~~6. Drift check~~
+- [x] ~~`internal/docs/docs_test.go` runs the pipeline with `-check` and diffs against the tree~~
+- [x] ~~picked up by `make test`, so `make all` and CI fail on stale docs~~
 
 ## 7. Guide pages, hand written
 - [ ] `docs/guide/01-getting-started.md` from the readme get started section
