@@ -41,12 +41,23 @@ func (p *page) Table(headers []string, rows [][]string) {
 	if len(rows) == 0 {
 		return
 	}
+	p.buf.WriteString("\n" + markdownTable(headers, rows))
+}
 
-	p.buf.WriteString("\n| " + strings.Join(headers, " | ") + " |\n")
-	p.buf.WriteString("|" + strings.Repeat(" --- |", len(headers)) + "\n")
+func markdownTable(headers []string, rows [][]string) string {
+	var buf strings.Builder
+
+	buf.WriteString("| " + strings.Join(headers, " | ") + " |\n")
+	buf.WriteString("|" + strings.Repeat(" --- |", len(headers)) + "\n")
 	for _, row := range rows {
-		p.buf.WriteString("| " + strings.Join(row, " | ") + " |\n")
+		buf.WriteString("| " + strings.Join(row, " | ") + " |\n")
 	}
+
+	return buf.String()
+}
+
+func escapePipe(text string) string {
+	return strings.ReplaceAll(text, "|", "\\|")
 }
 
 func (p *page) MethodTable(methods []apiMethod) {

@@ -33,12 +33,12 @@ dist/**.html    gitignored, built in CI, deployed to cloudflare pages
 - [x] ~~export a thin `SQLTypeFor(dialect, fieldType)` in `internal/generator/sqlc` so the table is called, not copied~~
 - [x] ~~`cli.md` from the `cmd/entlite` flags~~
 
-## 4. Readme injection
-- [ ] readmes stay hand written, only the region between markers is rewritten
-- [ ] same trick the repo already uses with `<!-- teaches:start -->`
-- [ ] root readme examples table generated from each example teaches block
-- [ ] runs before the example pages, so they read the final readme not a stale table
-- [ ] never regenerate a whole readme, the prose and the teaches bullets are yours
+## ~~4. Readme injection~~
+- [x] ~~readmes stay hand written, only the region between markers is rewritten~~
+- [x] ~~same trick the repo already uses with `<!-- teaches:start -->`~~
+- [x] ~~root readme examples table generated from each example teaches block~~
+- [x] ~~runs before the example pages, so they read the final readme not a stale table~~
+- [x] ~~never regenerate a whole readme, the prose and the teaches bullets are yours~~
 
 ## 5. Example pages, generated
 - [ ] one `docs/examples/NN-name.md` per example
