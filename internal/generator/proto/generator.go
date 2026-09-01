@@ -379,6 +379,11 @@ func needsEmptyImportForEntities(entities []schema.Entity) bool {
 	return false
 }
 
+// returns the proto type used for a field.
+func ProtoTypeFor(fieldType schema.FieldType) string {
+	return getProtoType(fieldType)
+}
+
 func getProtoType(fieldType schema.FieldType) string {
 	switch fieldType {
 	case schema.FieldTypeString:

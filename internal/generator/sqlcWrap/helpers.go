@@ -9,6 +9,10 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
+func GoTypeFor(fieldType schema.FieldType) string {
+	return fieldToGoType(schema.Field{Type: fieldType})
+}
+
 func fieldToGoType(field schema.Field) string {
 	optionalStr := ""
 	if field.Optional {

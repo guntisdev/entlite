@@ -11,6 +11,8 @@ import (
 	"github.com/guntisdev/entlite/internal/util"
 )
 
+// genCommand writes the sqlc and proto contracts from a schema directory.
+// usage: entlite gen <schema dir>
 func genCommand(args []string) {
 	if len(args) < 1 {
 		fmt.Fprintf(os.Stderr, "Error: entity directory is required")

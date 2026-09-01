@@ -25,13 +25,13 @@ dist/**.html    gitignored, built in CI, deployed to cloudflare pages
 - [x] ~~`make docs` and `make site` are one line entry points, they hold no logic~~
 - [x] ~~not `go generate ./...` at the root, it would walk into every example `ent/generate.go`, which needs sqlc, buf and network~~
 
-## 3. Reference pages, generated
-- [ ] ast walk over `pkg/entlite` for method tables per builder interface
-- [ ] `docs/reference/fields.md` with a field type x option matrix built from the interface methods
-- [ ] `queries.md`, `filters.md`, `indexes.md`, `contracts.md`, `entity.md`
-- [ ] `type-mapping.md`: go type -> sqlite / postgres / mysql -> proto -> ts
-- [ ] export a thin `SQLTypeFor(dialect, fieldType)` in `internal/generator/sqlc` so the table is called, not copied
-- [ ] `cli.md` from the `cmd/entlite` flags
+## ~~3. Reference pages, generated~~
+- [x] ~~ast walk over `pkg/entlite` for method tables per builder interface~~
+- [x] ~~`docs/reference/fields.md` with a field type x option matrix built from the interface methods~~
+- [x] ~~`queries.md`, `filters.md`, `indexes.md`, `contracts.md`, `entity.md`~~
+- [x] ~~`type-mapping.md`: go type -> sqlite / postgres / mysql -> proto -> ts~~
+- [x] ~~export a thin `SQLTypeFor(dialect, fieldType)` in `internal/generator/sqlc` so the table is called, not copied~~
+- [x] ~~`cli.md` from the `cmd/entlite` flags~~
 
 ## 4. Readme injection
 - [ ] readmes stay hand written, only the region between markers is rewritten

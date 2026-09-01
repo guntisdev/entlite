@@ -1,3 +1,5 @@
+.PHONY: all tidy build lint test gen docs site integration bin
+
 all: tidy lint build test
 
 tidy:
