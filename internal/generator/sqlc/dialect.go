@@ -191,6 +191,17 @@ func (g *Generator) supportsReturning() bool {
 	panic("unreachable: invalid SQL dialect")
 }
 
+func (g *Generator) indexIfNotExists() string {
+	switch g.sqlDialect {
+	case schema.MySQL:
+		return ""
+	case schema.PostgreSQL, schema.SQLite:
+		return "IF NOT EXISTS "
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}
+
 func (g *Generator) namedArg(name string) string {
 	switch g.sqlDialect {
 	case schema.MySQL:

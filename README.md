@@ -4,8 +4,8 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getting-started.md), [reference](docs/README.md#reference), [examples](docs/README.md#examples).
 
 ## TODO
-* Fix generated proto package name (currently hardcoded)
-* For indexes generate "IF NOT EXISTS" to "CREATE TABLE"
+* ~~fix generated proto package name (currently hardcoded)~~
+* ~~For indexes generate "IF NOT EXISTS" to "CREATE TABLE"~~
 * Wire LIMIT/OFFSET from proto to queries
 * Double check reserved word usage. Like "table" in sql
 * Implement DefaultFunc for sql generation

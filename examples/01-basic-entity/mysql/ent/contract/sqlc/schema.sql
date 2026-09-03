@@ -3,7 +3,7 @@
 -- Table definitions for all entities
 
 -- user table
-CREATE TABLE `user`(
+CREATE TABLE IF NOT EXISTS `user`(
   ID INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
   -- Full name, e.g. "Jane Doe"

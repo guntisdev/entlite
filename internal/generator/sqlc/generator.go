@@ -86,7 +86,7 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 
 	tableName := strings.ToLower(entity.Name)
 	writeTableComment(&content, entity, tableName)
-	content.WriteString(fmt.Sprintf("CREATE TABLE %s(\n", g.quote(tableName)))
+	content.WriteString(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s(\n", g.quote(tableName)))
 
 	idField := entity.GetIdField()
 
@@ -163,8 +163,9 @@ func (g *Generator) generateIndexSQL(entity schema.Entity) string {
 			unique = "UNIQUE "
 		}
 
-		content.WriteString(fmt.Sprintf("CREATE %sINDEX %s ON %s (%s);\n",
+		content.WriteString(fmt.Sprintf("CREATE %sINDEX %s%s ON %s (%s);\n",
 			unique,
+			g.indexIfNotExists(),
 			g.quote(name),
 			g.quote(tableName),
 			strings.Join(g.indexColumns(idx), ", "),

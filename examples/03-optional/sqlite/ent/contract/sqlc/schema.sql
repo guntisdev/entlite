@@ -3,7 +3,7 @@
 -- Table definitions for all entities
 
 -- article table
-CREATE TABLE "article"(
+CREATE TABLE IF NOT EXISTS "article"(
   -- uuid primary key, generated on the server and not part of requests
   ID TEXT PRIMARY KEY,
   -- Human/URL identifier, e.g. hello-world

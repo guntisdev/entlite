@@ -164,7 +164,7 @@ service UserService {
 	expectedSQLSchema := testutil.GeneratedSQL + `-- Table definitions for all entities
 
 -- user table
-CREATE TABLE "user"(
+CREATE TABLE IF NOT EXISTS "user"(
   ID SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   -- First name and surname, e.g. "Jane Doe"
