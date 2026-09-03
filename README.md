@@ -7,10 +7,9 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 * ~~fix generated proto package name (currently hardcoded)~~
 * ~~For indexes generate "IF NOT EXISTS" to "CREATE TABLE"~~
 * ~~Wire LIMIT/OFFSET from proto to queries~~
-* Double check reserved word usage. Like "table" in sql
+* ~~Double check reserved word usage. Like "table" in sql~~
 * Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/
-* Add a uuid foreign key example - uuid as id, all optional and custom files are covered
 * Move query name to parser instead of generator
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 

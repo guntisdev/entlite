@@ -105,7 +105,7 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 		writeColumnComment(&content, field.Comment)
 		sqlType := g.getSQLType(field.Type)
 
-		content.WriteString(fmt.Sprintf("  %s %s", field.Name, sqlType))
+		content.WriteString(fmt.Sprintf("  %s %s", g.column(field.Name), sqlType))
 
 		if field.Unique {
 			content.WriteString(" UNIQUE")
@@ -181,9 +181,9 @@ func (g *Generator) indexColumns(idx schema.Index) []string {
 	cols := make([]string, len(idx.Columns))
 	for i, c := range idx.Columns {
 		if c.Desc {
-			cols[i] = c.Name + " DESC"
+			cols[i] = g.column(c.Name) + " DESC"
 		} else {
-			cols[i] = c.Name
+			cols[i] = g.column(c.Name)
 		}
 	}
 	return cols
@@ -269,7 +269,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		writeQueryHeader(&content, query, queryName, "one")
 		var whereParts []string
 		for i, fieldName := range query.Fields {
-			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.getParameterPlaceholder(i+1)))
+			whereParts = append(whereParts, fmt.Sprintf("%s = %s", g.column(fieldName), g.getParameterPlaceholder(i+1)))
 		}
 		content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
 	}
@@ -280,20 +280,20 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		writeQueryHeader(&content, query, queryName, "many")
 		var whereParts []string
 		for _, fieldName := range query.Fields {
-			whereParts = append(whereParts, fmt.Sprintf("%s = %s", fieldName, g.namedArg(fieldName)))
+			whereParts = append(whereParts, fmt.Sprintf("%s = %s", g.column(fieldName), g.namedArg(fieldName)))
 		}
 		for _, filter := range query.Filters {
 			switch filter.Type {
 			case schema.QueryFilterEq:
-				whereParts = append(whereParts, fmt.Sprintf("%s = %s", filter.Field, g.namedArg(filter.Field)))
+				whereParts = append(whereParts, fmt.Sprintf("%s = %s", g.column(filter.Field), g.namedArg(filter.Field)))
 
 			case schema.QueryFilterSearch:
-				whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", filter.Field, g.namedArg(filter.Field)))
+				whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", g.column(filter.Field), g.namedArg(filter.Field)))
 
 			case schema.QueryFilterRange:
 				minArg := g.namedArg("min_" + filter.Field)
 				maxArg := g.namedArg("max_" + filter.Field)
-				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", filter.Field, minArg, maxArg))
+				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", g.column(filter.Field), minArg, maxArg))
 			}
 		}
 		selectSQL := fmt.Sprintf("SELECT * FROM %s", g.quote(tableName))
@@ -339,15 +339,15 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			var fieldUpdate string
 			if !canApiRead || acceptOptional {
 				// This makes the field optional in updates - if NULL is passed, keep existing value
-				fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", field.Name, field.Name, field.Name)
+				fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", g.column(field.Name), field.Name, g.column(field.Name))
 			} else {
-				fieldUpdate = fmt.Sprintf("  %s = %s", field.Name, g.namedArg(field.Name))
+				fieldUpdate = fmt.Sprintf("  %s = %s", g.column(field.Name), g.namedArg(field.Name))
 			}
 			updateFields = append(updateFields, fieldUpdate)
 		}
 
 		content.WriteString(strings.Join(updateFields, ",\n"))
-		content.WriteString(fmt.Sprintf("\nWHERE %s = %s", idField.Name, g.namedArg(idField.Name)))
+		content.WriteString(fmt.Sprintf("\nWHERE %s = %s", g.column(idField.Name), g.namedArg(idField.Name)))
 		if g.supportsReturning() {
 			content.WriteString("\nRETURNING *;\n")
 		} else {
@@ -358,7 +358,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	// DELETE
 	if deleteQuery != nil {
 		writeQueryHeader(&content, *deleteQuery, util.GenQueryName(*deleteQuery, entity.Name), "exec")
-		content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), idField.Name, g.getParameterPlaceholder(1)))
+		content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), g.column(idField.Name), g.getParameterPlaceholder(1)))
 	}
 
 	// DELETE ALL
@@ -392,7 +392,7 @@ func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Ent
 		if field.IsID() && field.DefaultFunc == nil {
 			continue
 		}
-		insertFields = append(insertFields, " "+field.Name)
+		insertFields = append(insertFields, " "+g.column(field.Name))
 		parameterPlaceholder := g.getParameterPlaceholder(len(insertPlaceholders) + 1)
 		insertPlaceholders = append(insertPlaceholders, " "+parameterPlaceholder)
 	}
@@ -401,7 +401,7 @@ func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Ent
 	content.WriteString(") VALUES (\n")
 	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
 	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", idField.Name))
+		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", g.column(idField.Name)))
 	} else {
 		content.WriteString(");")
 	}

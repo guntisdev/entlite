@@ -68,6 +68,8 @@ Things to notice:
 - `password` is written by clients but never returned, `created_at` is the reverse
 - `Validate()` and `DefaultFunc()` take a Go func from your `logic` package
 - a comment above a field becomes a comment in the generated proto
+- a field named after a reserved word, e.g. `table` or `order`, is quoted in the
+  generated sql
 
 Every field type and option is in [fields](../reference/fields.md), the column
 types per dialect in [type mapping](../reference/type-mapping.md).

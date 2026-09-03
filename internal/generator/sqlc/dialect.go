@@ -24,7 +24,7 @@ func (g *Generator) quote(str string) string {
 
 func (g *Generator) getIdFieldSQL(field schema.Field) string {
 	idType := g.getIdFieldType(field.Type, field.Primary)
-	return fmt.Sprintf("  %s %s", field.Name, idType)
+	return fmt.Sprintf("  %s %s", g.column(field.Name), idType)
 }
 
 func (g *Generator) getIdFieldType(fieldType schema.FieldType, primary bool) string {
@@ -207,7 +207,8 @@ func (g *Generator) limitOffsetArgs() (limit, offset string) {
 	case schema.MySQL:
 		return "?", "?"
 	case schema.PostgreSQL, schema.SQLite:
-		return "sqlc.arg('limit')", "sqlc.arg('offset')"
+		// limit and offset are reserved, so namedArg gives the sqlc.arg() form
+		return g.namedArg("limit"), g.namedArg("offset")
 	}
 
 	panic("unreachable: invalid SQL dialect")
@@ -219,6 +220,10 @@ func (g *Generator) namedArg(name string) string {
 		// sqlc's MySQL parser reads @name as a user variable and drops it, so use sqlc.arg()
 		return fmt.Sprintf("sqlc.arg('%s')", name)
 	case schema.PostgreSQL, schema.SQLite:
+		// postgres parses @limit as the keyword, sqlc.arg() takes any name
+		if isReservedWord(name) {
+			return fmt.Sprintf("sqlc.arg('%s')", name)
+		}
 		return fmt.Sprintf("@%s", name)
 	}
 

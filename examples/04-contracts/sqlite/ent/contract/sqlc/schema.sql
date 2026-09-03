@@ -6,7 +6,7 @@
 CREATE TABLE IF NOT EXISTS "audit"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   -- created | deleted
-  action TEXT NOT NULL,
+  "action" TEXT NOT NULL,
   match_id INTEGER NOT NULL,
   detail TEXT NOT NULL,
   created_at DATETIME NOT NULL

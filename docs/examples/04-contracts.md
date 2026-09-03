@@ -282,7 +282,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 CREATE TABLE IF NOT EXISTS "audit"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   -- created | deleted
-  action TEXT NOT NULL,
+  "action" TEXT NOT NULL,
   match_id INTEGER NOT NULL,
   detail TEXT NOT NULL,
   created_at DATETIME NOT NULL
@@ -328,7 +328,7 @@ CREATE TABLE IF NOT EXISTS "player"(
 
 -- name: CreateAudit :one
 INSERT INTO "audit" (
-  action,
+  "action",
   match_id,
   detail,
   created_at
