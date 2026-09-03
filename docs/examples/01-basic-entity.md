@@ -286,7 +286,7 @@ DELETE FROM "user";
 
 syntax = "proto3";
 
-package entlite;
+package proto;
 
 option go_package = "./pb";
 

@@ -21,7 +21,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// SensorAnalyticsServiceName is the fully-qualified name of the SensorAnalyticsService service.
-	SensorAnalyticsServiceName = "entlite.SensorAnalyticsService"
+	SensorAnalyticsServiceName = "proto.SensorAnalyticsService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -34,26 +34,26 @@ const (
 const (
 	// SensorAnalyticsServiceGetReadingStatsProcedure is the fully-qualified name of the
 	// SensorAnalyticsService's GetReadingStats RPC.
-	SensorAnalyticsServiceGetReadingStatsProcedure = "/entlite.SensorAnalyticsService/GetReadingStats"
+	SensorAnalyticsServiceGetReadingStatsProcedure = "/proto.SensorAnalyticsService/GetReadingStats"
 	// SensorAnalyticsServiceListWithLatestReadingProcedure is the fully-qualified name of the
 	// SensorAnalyticsService's ListWithLatestReading RPC.
-	SensorAnalyticsServiceListWithLatestReadingProcedure = "/entlite.SensorAnalyticsService/ListWithLatestReading"
+	SensorAnalyticsServiceListWithLatestReadingProcedure = "/proto.SensorAnalyticsService/ListWithLatestReading"
 	// SensorAnalyticsServicePruneReadingsProcedure is the fully-qualified name of the
 	// SensorAnalyticsService's PruneReadings RPC.
-	SensorAnalyticsServicePruneReadingsProcedure = "/entlite.SensorAnalyticsService/PruneReadings"
+	SensorAnalyticsServicePruneReadingsProcedure = "/proto.SensorAnalyticsService/PruneReadings"
 )
 
-// SensorAnalyticsServiceClient is a client for the entlite.SensorAnalyticsService service.
+// SensorAnalyticsServiceClient is a client for the proto.SensorAnalyticsService service.
 type SensorAnalyticsServiceClient interface {
 	GetReadingStats(context.Context, *connect.Request[GetSensorReadingStatsRequest]) (*connect.Response[SensorReadingStats], error)
 	ListWithLatestReading(context.Context, *connect.Request[ListSensorsWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error)
 	PruneReadings(context.Context, *connect.Request[PruneReadingsRequest]) (*connect.Response[PruneReadingsResponse], error)
 }
 
-// NewSensorAnalyticsServiceClient constructs a client for the entlite.SensorAnalyticsService
-// service. By default, it uses the Connect protocol with the binary Protobuf Codec, asks for
-// gzipped responses, and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply
-// the connect.WithGRPC() or connect.WithGRPCWeb() options.
+// NewSensorAnalyticsServiceClient constructs a client for the proto.SensorAnalyticsService service.
+// By default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped
+// responses, and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -89,22 +89,22 @@ type sensorAnalyticsServiceClient struct {
 	pruneReadings         *connect.Client[PruneReadingsRequest, PruneReadingsResponse]
 }
 
-// GetReadingStats calls entlite.SensorAnalyticsService.GetReadingStats.
+// GetReadingStats calls proto.SensorAnalyticsService.GetReadingStats.
 func (c *sensorAnalyticsServiceClient) GetReadingStats(ctx context.Context, req *connect.Request[GetSensorReadingStatsRequest]) (*connect.Response[SensorReadingStats], error) {
 	return c.getReadingStats.CallUnary(ctx, req)
 }
 
-// ListWithLatestReading calls entlite.SensorAnalyticsService.ListWithLatestReading.
+// ListWithLatestReading calls proto.SensorAnalyticsService.ListWithLatestReading.
 func (c *sensorAnalyticsServiceClient) ListWithLatestReading(ctx context.Context, req *connect.Request[ListSensorsWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error) {
 	return c.listWithLatestReading.CallUnary(ctx, req)
 }
 
-// PruneReadings calls entlite.SensorAnalyticsService.PruneReadings.
+// PruneReadings calls proto.SensorAnalyticsService.PruneReadings.
 func (c *sensorAnalyticsServiceClient) PruneReadings(ctx context.Context, req *connect.Request[PruneReadingsRequest]) (*connect.Response[PruneReadingsResponse], error) {
 	return c.pruneReadings.CallUnary(ctx, req)
 }
 
-// SensorAnalyticsServiceHandler is an implementation of the entlite.SensorAnalyticsService service.
+// SensorAnalyticsServiceHandler is an implementation of the proto.SensorAnalyticsService service.
 type SensorAnalyticsServiceHandler interface {
 	GetReadingStats(context.Context, *connect.Request[GetSensorReadingStatsRequest]) (*connect.Response[SensorReadingStats], error)
 	ListWithLatestReading(context.Context, *connect.Request[ListSensorsWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error)
@@ -136,7 +136,7 @@ func NewSensorAnalyticsServiceHandler(svc SensorAnalyticsServiceHandler, opts ..
 		connect.WithSchema(sensorAnalyticsServiceMethods.ByName("PruneReadings")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/entlite.SensorAnalyticsService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.SensorAnalyticsService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case SensorAnalyticsServiceGetReadingStatsProcedure:
 			sensorAnalyticsServiceGetReadingStatsHandler.ServeHTTP(w, r)
@@ -154,13 +154,13 @@ func NewSensorAnalyticsServiceHandler(svc SensorAnalyticsServiceHandler, opts ..
 type UnimplementedSensorAnalyticsServiceHandler struct{}
 
 func (UnimplementedSensorAnalyticsServiceHandler) GetReadingStats(context.Context, *connect.Request[GetSensorReadingStatsRequest]) (*connect.Response[SensorReadingStats], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorAnalyticsService.GetReadingStats is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorAnalyticsService.GetReadingStats is not implemented"))
 }
 
 func (UnimplementedSensorAnalyticsServiceHandler) ListWithLatestReading(context.Context, *connect.Request[ListSensorsWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorAnalyticsService.ListWithLatestReading is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorAnalyticsService.ListWithLatestReading is not implemented"))
 }
 
 func (UnimplementedSensorAnalyticsServiceHandler) PruneReadings(context.Context, *connect.Request[PruneReadingsRequest]) (*connect.Response[PruneReadingsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorAnalyticsService.PruneReadings is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorAnalyticsService.PruneReadings is not implemented"))
 }

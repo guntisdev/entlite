@@ -272,7 +272,7 @@ DELETE FROM "article" WHERE ID = ?;
 
 syntax = "proto3";
 
-package entlite;
+package proto;
 
 option go_package = "./pb";
 

@@ -76,7 +76,7 @@ sql:
 	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto")
 	expectedProtoContent := testutil.GeneratedGo + `syntax = "proto3";
 
-package entlite;
+package proto;
 
 option go_package = "./pb";
 

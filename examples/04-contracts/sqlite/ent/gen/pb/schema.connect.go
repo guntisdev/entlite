@@ -24,11 +24,11 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// MatchServiceName is the fully-qualified name of the MatchService service.
-	MatchServiceName = "entlite.MatchService"
+	MatchServiceName = "proto.MatchService"
 	// PlayerServiceName is the fully-qualified name of the PlayerService service.
-	PlayerServiceName = "entlite.PlayerService"
+	PlayerServiceName = "proto.PlayerService"
 	// StandingServiceName is the fully-qualified name of the StandingService service.
-	StandingServiceName = "entlite.StandingService"
+	StandingServiceName = "proto.StandingService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -40,22 +40,22 @@ const (
 // period.
 const (
 	// MatchServiceCreateProcedure is the fully-qualified name of the MatchService's Create RPC.
-	MatchServiceCreateProcedure = "/entlite.MatchService/Create"
+	MatchServiceCreateProcedure = "/proto.MatchService/Create"
 	// MatchServiceGetByIDProcedure is the fully-qualified name of the MatchService's GetByID RPC.
-	MatchServiceGetByIDProcedure = "/entlite.MatchService/GetByID"
+	MatchServiceGetByIDProcedure = "/proto.MatchService/GetByID"
 	// MatchServiceDeleteProcedure is the fully-qualified name of the MatchService's Delete RPC.
-	MatchServiceDeleteProcedure = "/entlite.MatchService/Delete"
+	MatchServiceDeleteProcedure = "/proto.MatchService/Delete"
 	// MatchServiceListAllProcedure is the fully-qualified name of the MatchService's ListAll RPC.
-	MatchServiceListAllProcedure = "/entlite.MatchService/ListAll"
+	MatchServiceListAllProcedure = "/proto.MatchService/ListAll"
 	// PlayerServiceGetByIDProcedure is the fully-qualified name of the PlayerService's GetByID RPC.
-	PlayerServiceGetByIDProcedure = "/entlite.PlayerService/GetByID"
+	PlayerServiceGetByIDProcedure = "/proto.PlayerService/GetByID"
 	// PlayerServiceListAllProcedure is the fully-qualified name of the PlayerService's ListAll RPC.
-	PlayerServiceListAllProcedure = "/entlite.PlayerService/ListAll"
+	PlayerServiceListAllProcedure = "/proto.PlayerService/ListAll"
 	// StandingServiceListAllProcedure is the fully-qualified name of the StandingService's ListAll RPC.
-	StandingServiceListAllProcedure = "/entlite.StandingService/ListAll"
+	StandingServiceListAllProcedure = "/proto.StandingService/ListAll"
 )
 
-// MatchServiceClient is a client for the entlite.MatchService service.
+// MatchServiceClient is a client for the proto.MatchService service.
 type MatchServiceClient interface {
 	Create(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
 	GetByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error)
@@ -63,8 +63,8 @@ type MatchServiceClient interface {
 	ListAll(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error)
 }
 
-// NewMatchServiceClient constructs a client for the entlite.MatchService service. By default, it
-// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewMatchServiceClient constructs a client for the proto.MatchService service. By default, it uses
+// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -109,27 +109,27 @@ type matchServiceClient struct {
 	listAll *connect.Client[ListAllMatchRequest, ListAllMatchResponse]
 }
 
-// Create calls entlite.MatchService.Create.
+// Create calls proto.MatchService.Create.
 func (c *matchServiceClient) Create(ctx context.Context, req *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error) {
 	return c.create.CallUnary(ctx, req)
 }
 
-// GetByID calls entlite.MatchService.GetByID.
+// GetByID calls proto.MatchService.GetByID.
 func (c *matchServiceClient) GetByID(ctx context.Context, req *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error) {
 	return c.getByID.CallUnary(ctx, req)
 }
 
-// Delete calls entlite.MatchService.Delete.
+// Delete calls proto.MatchService.Delete.
 func (c *matchServiceClient) Delete(ctx context.Context, req *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.delete.CallUnary(ctx, req)
 }
 
-// ListAll calls entlite.MatchService.ListAll.
+// ListAll calls proto.MatchService.ListAll.
 func (c *matchServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
 	return c.listAll.CallUnary(ctx, req)
 }
 
-// MatchServiceHandler is an implementation of the entlite.MatchService service.
+// MatchServiceHandler is an implementation of the proto.MatchService service.
 type MatchServiceHandler interface {
 	Create(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
 	GetByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error)
@@ -168,7 +168,7 @@ func NewMatchServiceHandler(svc MatchServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(matchServiceMethods.ByName("ListAll")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/entlite.MatchService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.MatchService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MatchServiceCreateProcedure:
 			matchServiceCreateHandler.ServeHTTP(w, r)
@@ -188,28 +188,28 @@ func NewMatchServiceHandler(svc MatchServiceHandler, opts ...connect.HandlerOpti
 type UnimplementedMatchServiceHandler struct{}
 
 func (UnimplementedMatchServiceHandler) Create(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.MatchService.Create is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.Create is not implemented"))
 }
 
 func (UnimplementedMatchServiceHandler) GetByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.MatchService.GetByID is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.GetByID is not implemented"))
 }
 
 func (UnimplementedMatchServiceHandler) Delete(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.MatchService.Delete is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.Delete is not implemented"))
 }
 
 func (UnimplementedMatchServiceHandler) ListAll(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.MatchService.ListAll is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.ListAll is not implemented"))
 }
 
-// PlayerServiceClient is a client for the entlite.PlayerService service.
+// PlayerServiceClient is a client for the proto.PlayerService service.
 type PlayerServiceClient interface {
 	GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error)
 	ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
 }
 
-// NewPlayerServiceClient constructs a client for the entlite.PlayerService service. By default, it
+// NewPlayerServiceClient constructs a client for the proto.PlayerService service. By default, it
 // uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
@@ -241,17 +241,17 @@ type playerServiceClient struct {
 	listAll *connect.Client[ListAllPlayerRequest, ListAllPlayerResponse]
 }
 
-// GetByID calls entlite.PlayerService.GetByID.
+// GetByID calls proto.PlayerService.GetByID.
 func (c *playerServiceClient) GetByID(ctx context.Context, req *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error) {
 	return c.getByID.CallUnary(ctx, req)
 }
 
-// ListAll calls entlite.PlayerService.ListAll.
+// ListAll calls proto.PlayerService.ListAll.
 func (c *playerServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
 	return c.listAll.CallUnary(ctx, req)
 }
 
-// PlayerServiceHandler is an implementation of the entlite.PlayerService service.
+// PlayerServiceHandler is an implementation of the proto.PlayerService service.
 type PlayerServiceHandler interface {
 	GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error)
 	ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
@@ -276,7 +276,7 @@ func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(playerServiceMethods.ByName("ListAll")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/entlite.PlayerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.PlayerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlayerServiceGetByIDProcedure:
 			playerServiceGetByIDHandler.ServeHTTP(w, r)
@@ -292,19 +292,19 @@ func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOp
 type UnimplementedPlayerServiceHandler struct{}
 
 func (UnimplementedPlayerServiceHandler) GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.PlayerService.GetByID is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.GetByID is not implemented"))
 }
 
 func (UnimplementedPlayerServiceHandler) ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.PlayerService.ListAll is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.ListAll is not implemented"))
 }
 
-// StandingServiceClient is a client for the entlite.StandingService service.
+// StandingServiceClient is a client for the proto.StandingService service.
 type StandingServiceClient interface {
 	ListAll(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error)
 }
 
-// NewStandingServiceClient constructs a client for the entlite.StandingService service. By default,
+// NewStandingServiceClient constructs a client for the proto.StandingService service. By default,
 // it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
 // sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
 // or connect.WithGRPCWeb() options.
@@ -329,12 +329,12 @@ type standingServiceClient struct {
 	listAll *connect.Client[ListAllStandingRequest, ListAllStandingResponse]
 }
 
-// ListAll calls entlite.StandingService.ListAll.
+// ListAll calls proto.StandingService.ListAll.
 func (c *standingServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error) {
 	return c.listAll.CallUnary(ctx, req)
 }
 
-// StandingServiceHandler is an implementation of the entlite.StandingService service.
+// StandingServiceHandler is an implementation of the proto.StandingService service.
 type StandingServiceHandler interface {
 	ListAll(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error)
 }
@@ -352,7 +352,7 @@ func NewStandingServiceHandler(svc StandingServiceHandler, opts ...connect.Handl
 		connect.WithSchema(standingServiceMethods.ByName("ListAll")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/entlite.StandingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.StandingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case StandingServiceListAllProcedure:
 			standingServiceListAllHandler.ServeHTTP(w, r)
@@ -366,5 +366,5 @@ func NewStandingServiceHandler(svc StandingServiceHandler, opts ...connect.Handl
 type UnimplementedStandingServiceHandler struct{}
 
 func (UnimplementedStandingServiceHandler) ListAll(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.StandingService.ListAll is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.StandingService.ListAll is not implemented"))
 }

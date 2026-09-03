@@ -24,7 +24,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// UserServiceName is the fully-qualified name of the UserService service.
-	UserServiceName = "entlite.UserService"
+	UserServiceName = "proto.UserService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -36,29 +36,29 @@ const (
 // period.
 const (
 	// UserServiceCreateProcedure is the fully-qualified name of the UserService's Create RPC.
-	UserServiceCreateProcedure = "/entlite.UserService/Create"
+	UserServiceCreateProcedure = "/proto.UserService/Create"
 	// UserServiceGetByIDProcedure is the fully-qualified name of the UserService's GetByID RPC.
-	UserServiceGetByIDProcedure = "/entlite.UserService/GetByID"
+	UserServiceGetByIDProcedure = "/proto.UserService/GetByID"
 	// UserServiceUpdateProcedure is the fully-qualified name of the UserService's Update RPC.
-	UserServiceUpdateProcedure = "/entlite.UserService/Update"
+	UserServiceUpdateProcedure = "/proto.UserService/Update"
 	// UserServiceDeleteProcedure is the fully-qualified name of the UserService's Delete RPC.
-	UserServiceDeleteProcedure = "/entlite.UserService/Delete"
+	UserServiceDeleteProcedure = "/proto.UserService/Delete"
 	// UserServiceCreateBulkProcedure is the fully-qualified name of the UserService's CreateBulk RPC.
-	UserServiceCreateBulkProcedure = "/entlite.UserService/CreateBulk"
+	UserServiceCreateBulkProcedure = "/proto.UserService/CreateBulk"
 	// UserServiceGetByEmailProcedure is the fully-qualified name of the UserService's GetByEmail RPC.
-	UserServiceGetByEmailProcedure = "/entlite.UserService/GetByEmail"
+	UserServiceGetByEmailProcedure = "/proto.UserService/GetByEmail"
 	// UserServiceListAllProcedure is the fully-qualified name of the UserService's ListAll RPC.
-	UserServiceListAllProcedure = "/entlite.UserService/ListAll"
+	UserServiceListAllProcedure = "/proto.UserService/ListAll"
 	// UserServiceDeleteAllProcedure is the fully-qualified name of the UserService's DeleteAll RPC.
-	UserServiceDeleteAllProcedure = "/entlite.UserService/DeleteAll"
+	UserServiceDeleteAllProcedure = "/proto.UserService/DeleteAll"
 	// UserServiceListActiveProcedure is the fully-qualified name of the UserService's ListActive RPC.
-	UserServiceListActiveProcedure = "/entlite.UserService/ListActive"
+	UserServiceListActiveProcedure = "/proto.UserService/ListActive"
 	// UserServiceFilterByAgeNameProcedure is the fully-qualified name of the UserService's
 	// FilterByAgeName RPC.
-	UserServiceFilterByAgeNameProcedure = "/entlite.UserService/FilterByAgeName"
+	UserServiceFilterByAgeNameProcedure = "/proto.UserService/FilterByAgeName"
 )
 
-// UserServiceClient is a client for the entlite.UserService service.
+// UserServiceClient is a client for the proto.UserService service.
 type UserServiceClient interface {
 	Create(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error)
 	GetByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error)
@@ -73,7 +73,7 @@ type UserServiceClient interface {
 	FilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error)
 }
 
-// NewUserServiceClient constructs a client for the entlite.UserService service. By default, it uses
+// NewUserServiceClient constructs a client for the proto.UserService service. By default, it uses
 // the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
@@ -161,57 +161,57 @@ type userServiceClient struct {
 	filterByAgeName *connect.Client[ListUserFilterByAgeNameRequest, ListUserFilterByAgeNameResponse]
 }
 
-// Create calls entlite.UserService.Create.
+// Create calls proto.UserService.Create.
 func (c *userServiceClient) Create(ctx context.Context, req *connect.Request[CreateUserRequest]) (*connect.Response[User], error) {
 	return c.create.CallUnary(ctx, req)
 }
 
-// GetByID calls entlite.UserService.GetByID.
+// GetByID calls proto.UserService.GetByID.
 func (c *userServiceClient) GetByID(ctx context.Context, req *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error) {
 	return c.getByID.CallUnary(ctx, req)
 }
 
-// Update calls entlite.UserService.Update.
+// Update calls proto.UserService.Update.
 func (c *userServiceClient) Update(ctx context.Context, req *connect.Request[UpdateUserRequest]) (*connect.Response[User], error) {
 	return c.update.CallUnary(ctx, req)
 }
 
-// Delete calls entlite.UserService.Delete.
+// Delete calls proto.UserService.Delete.
 func (c *userServiceClient) Delete(ctx context.Context, req *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.delete.CallUnary(ctx, req)
 }
 
-// CreateBulk calls entlite.UserService.CreateBulk.
+// CreateBulk calls proto.UserService.CreateBulk.
 func (c *userServiceClient) CreateBulk(ctx context.Context, req *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error) {
 	return c.createBulk.CallUnary(ctx, req)
 }
 
-// GetByEmail calls entlite.UserService.GetByEmail.
+// GetByEmail calls proto.UserService.GetByEmail.
 func (c *userServiceClient) GetByEmail(ctx context.Context, req *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error) {
 	return c.getByEmail.CallUnary(ctx, req)
 }
 
-// ListAll calls entlite.UserService.ListAll.
+// ListAll calls proto.UserService.ListAll.
 func (c *userServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error) {
 	return c.listAll.CallUnary(ctx, req)
 }
 
-// DeleteAll calls entlite.UserService.DeleteAll.
+// DeleteAll calls proto.UserService.DeleteAll.
 func (c *userServiceClient) DeleteAll(ctx context.Context, req *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteAll.CallUnary(ctx, req)
 }
 
-// ListActive calls entlite.UserService.ListActive.
+// ListActive calls proto.UserService.ListActive.
 func (c *userServiceClient) ListActive(ctx context.Context, req *connect.Request[ListActiveRequest]) (*connect.Response[ListActiveResponse], error) {
 	return c.listActive.CallUnary(ctx, req)
 }
 
-// FilterByAgeName calls entlite.UserService.FilterByAgeName.
+// FilterByAgeName calls proto.UserService.FilterByAgeName.
 func (c *userServiceClient) FilterByAgeName(ctx context.Context, req *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error) {
 	return c.filterByAgeName.CallUnary(ctx, req)
 }
 
-// UserServiceHandler is an implementation of the entlite.UserService service.
+// UserServiceHandler is an implementation of the proto.UserService service.
 type UserServiceHandler interface {
 	Create(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error)
 	GetByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error)
@@ -293,7 +293,7 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("FilterByAgeName")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/entlite.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserServiceCreateProcedure:
 			userServiceCreateHandler.ServeHTTP(w, r)
@@ -325,41 +325,41 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 type UnimplementedUserServiceHandler struct{}
 
 func (UnimplementedUserServiceHandler) Create(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.Create is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.Create is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.GetByID is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.GetByID is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) Update(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.Update is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.Update is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) Delete(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.Delete is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.Delete is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) CreateBulk(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.CreateBulk is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.CreateBulk is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.GetByEmail is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.GetByEmail is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListAll(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.ListAll is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.ListAll is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) DeleteAll(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.DeleteAll is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.DeleteAll is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListActive(context.Context, *connect.Request[ListActiveRequest]) (*connect.Response[ListActiveResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.ListActive is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.ListActive is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) FilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.UserService.FilterByAgeName is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.FilterByAgeName is not implemented"))
 }
