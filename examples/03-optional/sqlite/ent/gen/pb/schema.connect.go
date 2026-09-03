@@ -24,7 +24,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// ArticleServiceName is the fully-qualified name of the ArticleService service.
-	ArticleServiceName = "entlite.ArticleService"
+	ArticleServiceName = "proto.ArticleService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -36,27 +36,27 @@ const (
 // period.
 const (
 	// ArticleServiceCreateProcedure is the fully-qualified name of the ArticleService's Create RPC.
-	ArticleServiceCreateProcedure = "/entlite.ArticleService/Create"
+	ArticleServiceCreateProcedure = "/proto.ArticleService/Create"
 	// ArticleServiceGetByIDProcedure is the fully-qualified name of the ArticleService's GetByID RPC.
-	ArticleServiceGetByIDProcedure = "/entlite.ArticleService/GetByID"
+	ArticleServiceGetByIDProcedure = "/proto.ArticleService/GetByID"
 	// ArticleServiceUpdateProcedure is the fully-qualified name of the ArticleService's Update RPC.
-	ArticleServiceUpdateProcedure = "/entlite.ArticleService/Update"
+	ArticleServiceUpdateProcedure = "/proto.ArticleService/Update"
 	// ArticleServiceDeleteProcedure is the fully-qualified name of the ArticleService's Delete RPC.
-	ArticleServiceDeleteProcedure = "/entlite.ArticleService/Delete"
+	ArticleServiceDeleteProcedure = "/proto.ArticleService/Delete"
 	// ArticleServiceGetBySlugProcedure is the fully-qualified name of the ArticleService's GetBySlug
 	// RPC.
-	ArticleServiceGetBySlugProcedure = "/entlite.ArticleService/GetBySlug"
+	ArticleServiceGetBySlugProcedure = "/proto.ArticleService/GetBySlug"
 	// ArticleServiceListByAuthorProcedure is the fully-qualified name of the ArticleService's
 	// ListByAuthor RPC.
-	ArticleServiceListByAuthorProcedure = "/entlite.ArticleService/ListByAuthor"
+	ArticleServiceListByAuthorProcedure = "/proto.ArticleService/ListByAuthor"
 	// ArticleServiceListAllProcedure is the fully-qualified name of the ArticleService's ListAll RPC.
-	ArticleServiceListAllProcedure = "/entlite.ArticleService/ListAll"
+	ArticleServiceListAllProcedure = "/proto.ArticleService/ListAll"
 	// ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure is the fully-qualified name of
 	// the ArticleService's FilterByAuthorIsFeaturedPublishedAtTitle RPC.
-	ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure = "/entlite.ArticleService/FilterByAuthorIsFeaturedPublishedAtTitle"
+	ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure = "/proto.ArticleService/FilterByAuthorIsFeaturedPublishedAtTitle"
 )
 
-// ArticleServiceClient is a client for the entlite.ArticleService service.
+// ArticleServiceClient is a client for the proto.ArticleService service.
 type ArticleServiceClient interface {
 	Create(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
 	GetByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
@@ -68,10 +68,10 @@ type ArticleServiceClient interface {
 	FilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error)
 }
 
-// NewArticleServiceClient constructs a client for the entlite.ArticleService service. By default,
-// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
-// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
-// or connect.WithGRPCWeb() options.
+// NewArticleServiceClient constructs a client for the proto.ArticleService service. By default, it
+// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
+// connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -142,48 +142,48 @@ type articleServiceClient struct {
 	filterByAuthorIsFeaturedPublishedAtTitle *connect.Client[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest, ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse]
 }
 
-// Create calls entlite.ArticleService.Create.
+// Create calls proto.ArticleService.Create.
 func (c *articleServiceClient) Create(ctx context.Context, req *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error) {
 	return c.create.CallUnary(ctx, req)
 }
 
-// GetByID calls entlite.ArticleService.GetByID.
+// GetByID calls proto.ArticleService.GetByID.
 func (c *articleServiceClient) GetByID(ctx context.Context, req *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error) {
 	return c.getByID.CallUnary(ctx, req)
 }
 
-// Update calls entlite.ArticleService.Update.
+// Update calls proto.ArticleService.Update.
 func (c *articleServiceClient) Update(ctx context.Context, req *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {
 	return c.update.CallUnary(ctx, req)
 }
 
-// Delete calls entlite.ArticleService.Delete.
+// Delete calls proto.ArticleService.Delete.
 func (c *articleServiceClient) Delete(ctx context.Context, req *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.delete.CallUnary(ctx, req)
 }
 
-// GetBySlug calls entlite.ArticleService.GetBySlug.
+// GetBySlug calls proto.ArticleService.GetBySlug.
 func (c *articleServiceClient) GetBySlug(ctx context.Context, req *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error) {
 	return c.getBySlug.CallUnary(ctx, req)
 }
 
-// ListByAuthor calls entlite.ArticleService.ListByAuthor.
+// ListByAuthor calls proto.ArticleService.ListByAuthor.
 func (c *articleServiceClient) ListByAuthor(ctx context.Context, req *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
 	return c.listByAuthor.CallUnary(ctx, req)
 }
 
-// ListAll calls entlite.ArticleService.ListAll.
+// ListAll calls proto.ArticleService.ListAll.
 func (c *articleServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
 	return c.listAll.CallUnary(ctx, req)
 }
 
 // FilterByAuthorIsFeaturedPublishedAtTitle calls
-// entlite.ArticleService.FilterByAuthorIsFeaturedPublishedAtTitle.
+// proto.ArticleService.FilterByAuthorIsFeaturedPublishedAtTitle.
 func (c *articleServiceClient) FilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, req *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
 	return c.filterByAuthorIsFeaturedPublishedAtTitle.CallUnary(ctx, req)
 }
 
-// ArticleServiceHandler is an implementation of the entlite.ArticleService service.
+// ArticleServiceHandler is an implementation of the proto.ArticleService service.
 type ArticleServiceHandler interface {
 	Create(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
 	GetByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
@@ -250,7 +250,7 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 		connect.WithSchema(articleServiceMethods.ByName("FilterByAuthorIsFeaturedPublishedAtTitle")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/entlite.ArticleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.ArticleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ArticleServiceCreateProcedure:
 			articleServiceCreateHandler.ServeHTTP(w, r)
@@ -278,33 +278,33 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 type UnimplementedArticleServiceHandler struct{}
 
 func (UnimplementedArticleServiceHandler) Create(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.Create is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.Create is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) GetByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.GetByID is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetByID is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) Update(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.Update is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.Update is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) Delete(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.Delete is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.Delete is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) GetBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.GetBySlug is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetBySlug is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) ListByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.ListByAuthor is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListByAuthor is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) ListAll(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.ListAll is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListAll is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) FilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ArticleService.FilterByAuthorIsFeaturedPublishedAtTitle is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.FilterByAuthorIsFeaturedPublishedAtTitle is not implemented"))
 }

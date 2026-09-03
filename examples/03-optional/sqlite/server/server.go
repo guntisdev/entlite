@@ -174,7 +174,11 @@ func (s *ArticleServer) ListByAuthor(
 
 	queries := db.New(s.db)
 
-	dbArticles, err := queries.ListArticleByAuthor(ctx, req.Msg.Author)
+	dbArticles, err := queries.ListArticleByAuthor(ctx, db.ListArticleByAuthorParams{
+		Author: req.Msg.Author,
+		Limit:  req.Msg.GetLimit(),
+		Offset: req.Msg.GetOffset(),
+	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list articles: %w", err))
 	}
@@ -200,6 +204,8 @@ func (s *ArticleServer) FilterByAuthorIsFeaturedPublishedAtTitle(
 			Author:     req.Msg.Author,
 			IsFeatured: req.Msg.GetIsFeatured(),
 			Title:      req.Msg.GetTitle(),
+			Limit:      req.Msg.GetLimit(),
+			Offset:     req.Msg.GetOffset(),
 		},
 	)
 	if err != nil {

@@ -219,7 +219,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 -- Table definitions for all entities
 
 -- Reading is a single measurement captured by a Sensor.
-CREATE TABLE "reading"(
+CREATE TABLE IF NOT EXISTS "reading"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   -- References sensor.ID
   sensor_id INTEGER NOT NULL,
@@ -234,7 +234,7 @@ CREATE TABLE "reading"(
 );
 
 -- Sensor is a physical device deployed in the field that emits Readings.
-CREATE TABLE "sensor"(
+CREATE TABLE IF NOT EXISTS "sensor"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   -- External hardware identifier, e.g. TEMP-A1
   code TEXT UNIQUE NOT NULL,
@@ -289,10 +289,10 @@ INSERT INTO "reading" (
 SELECT * FROM "reading" WHERE ID = ?;
 
 -- name: ListReadingBySensorId :many
-SELECT * FROM "reading" WHERE sensor_id = @sensor_id;
+SELECT * FROM "reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT * FROM "reading" WHERE sensor_id = @sensor_id AND recorded_at BETWEEN @min_recorded_at AND @max_recorded_at AND flagged = @flagged;
+SELECT * FROM "reading" WHERE sensor_id = @sensor_id AND recorded_at BETWEEN @min_recorded_at AND @max_recorded_at AND flagged = @flagged LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateReading :one
 UPDATE "reading" SET
@@ -344,7 +344,7 @@ SELECT * FROM "sensor" WHERE ID = ?;
 SELECT * FROM "sensor" WHERE code = ?;
 
 -- name: ListSensorFilterByLabelKindActive :many
-SELECT * FROM "sensor" WHERE label LIKE @label AND kind = @kind AND active = @active;
+SELECT * FROM "sensor" WHERE label LIKE @label AND kind = @kind AND active = @active LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateSensor :one
 UPDATE "sensor" SET
@@ -374,7 +374,7 @@ DELETE FROM "sensor" WHERE ID = ?;
 
 syntax = "proto3";
 
-package entlite;
+package proto;
 
 option go_package = "./pb";
 

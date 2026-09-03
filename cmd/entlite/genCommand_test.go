@@ -76,7 +76,7 @@ sql:
 	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto")
 	expectedProtoContent := testutil.GeneratedGo + `syntax = "proto3";
 
-package entlite;
+package proto;
 
 option go_package = "./pb";
 
@@ -164,7 +164,7 @@ service UserService {
 	expectedSQLSchema := testutil.GeneratedSQL + `-- Table definitions for all entities
 
 -- user table
-CREATE TABLE "user"(
+CREATE TABLE IF NOT EXISTS "user"(
   ID SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   -- First name and surname, e.g. "Jane Doe"
@@ -226,7 +226,7 @@ INSERT INTO "user" (
 SELECT * FROM "user" WHERE ID = $1;
 
 -- name: ListUserByNameAge :many
-SELECT * FROM "user" WHERE name = @name AND age = @age;
+SELECT * FROM "user" WHERE name = @name AND age = @age LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateUser :one
 UPDATE "user" SET

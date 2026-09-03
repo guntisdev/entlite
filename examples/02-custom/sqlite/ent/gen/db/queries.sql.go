@@ -98,8 +98,19 @@ func (q *Queries) GetSensorByID(ctx context.Context, id int32) (*Sensor, error) 
 	return SensorFromSQL(&dbResult), nil
 }
 
-func (q *Queries) ListReadingBySensorId(ctx context.Context, sensorID int32) ([]*Reading, error) {
-	dbResults, err := (*internal.Queries)(q).ListReadingBySensorId(ctx, IntConvert[int32, int64](sensorID))
+type ListReadingBySensorIdParams struct {
+	SensorID int32 `json:"sensor_id"`
+	Offset int32 `json:"offset"`
+	Limit int32 `json:"limit"`
+}
+
+func (q *Queries) ListReadingBySensorId(ctx context.Context, arg ListReadingBySensorIdParams) ([]*Reading, error) {
+	internalArg := internal.ListReadingBySensorIdParams{
+		SensorID: IntConvert[int32, int64](arg.SensorID),
+		Offset: IntConvert[int32, int64](arg.Offset),
+		Limit: IntConvert[int32, int64](arg.Limit),
+	}
+	dbResults, err := (*internal.Queries)(q).ListReadingBySensorId(ctx, internalArg)
 	if err != nil {
 		return nil, err
 	}
@@ -113,12 +124,16 @@ func (q *Queries) ListReadingBySensorId(ctx context.Context, sensorID int32) ([]
 type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
 	SensorID int32 `json:"sensor_id"`
 	Flagged bool `json:"flagged"`
+	Offset int32 `json:"offset"`
+	Limit int32 `json:"limit"`
 }
 
 func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]*Reading, error) {
 	internalArg := internal.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
 		SensorID: IntConvert[int32, int64](arg.SensorID),
 		Flagged: SQLiteBoolToInt(arg.Flagged),
+		Offset: IntConvert[int32, int64](arg.Offset),
+		Limit: IntConvert[int32, int64](arg.Limit),
 	}
 	dbResults, err := (*internal.Queries)(q).ListReadingFilterBySensorIdRecordedAtFlagged(ctx, internalArg)
 	if err != nil {
@@ -135,6 +150,8 @@ type ListSensorFilterByLabelKindActiveParams struct {
 	Label string `json:"label"`
 	Kind string `json:"kind"`
 	Active bool `json:"active"`
+	Offset int32 `json:"offset"`
+	Limit int32 `json:"limit"`
 }
 
 func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg ListSensorFilterByLabelKindActiveParams) ([]*Sensor, error) {
@@ -142,6 +159,8 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 		Label: arg.Label,
 		Kind: arg.Kind,
 		Active: SQLiteBoolToInt(arg.Active),
+		Offset: IntConvert[int32, int64](arg.Offset),
+		Limit: IntConvert[int32, int64](arg.Limit),
 	}
 	dbResults, err := (*internal.Queries)(q).ListSensorFilterByLabelKindActive(ctx, internalArg)
 	if err != nil {

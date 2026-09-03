@@ -15,7 +15,7 @@ const createAudit = `-- name: CreateAudit :one
 
 
 INSERT INTO "audit" (
-  action,
+  "action",
   match_id,
   detail,
   created_at

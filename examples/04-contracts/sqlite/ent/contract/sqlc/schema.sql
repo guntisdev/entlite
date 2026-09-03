@@ -3,17 +3,17 @@
 -- Table definitions for all entities
 
 -- audit table
-CREATE TABLE "audit"(
+CREATE TABLE IF NOT EXISTS "audit"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   -- created | deleted
-  action TEXT NOT NULL,
+  "action" TEXT NOT NULL,
   match_id INTEGER NOT NULL,
   detail TEXT NOT NULL,
   created_at DATETIME NOT NULL
 );
 
 -- match table
-CREATE TABLE "match"(
+CREATE TABLE IF NOT EXISTS "match"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   white TEXT NOT NULL,
   black TEXT NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE "match"(
 );
 
 -- Player is the club roster, written on the server and read by members.
-CREATE TABLE "player"(
+CREATE TABLE IF NOT EXISTS "player"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT UNIQUE NOT NULL,
   -- Elo rating, kept by the secretary

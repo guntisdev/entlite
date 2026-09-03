@@ -193,11 +193,17 @@ func (q *Queries) ListAllArticle(ctx context.Context) ([]Article, error) {
 }
 
 const listArticleByAuthor = `-- name: ListArticleByAuthor :many
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1 LIMIT ?3 OFFSET ?2
 `
 
-func (q *Queries) ListArticleByAuthor(ctx context.Context, author string) ([]Article, error) {
-	rows, err := q.db.QueryContext(ctx, listArticleByAuthor, author)
+type ListArticleByAuthorParams struct {
+	Author string `json:"author"`
+	Offset int64  `json:"offset"`
+	Limit  int64  `json:"limit"`
+}
+
+func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuthorParams) ([]Article, error) {
+	rows, err := q.db.QueryContext(ctx, listArticleByAuthor, arg.Author, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -235,17 +241,25 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, author string) ([]Art
 }
 
 const listArticleFilterByAuthorIsFeaturedPublishedAtTitle = `-- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5 LIMIT ?7 OFFSET ?6
 `
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
 	Author     string `json:"author"`
 	IsFeatured int64  `json:"is_featured"`
 	Title      string `json:"title"`
+	Offset     int64  `json:"offset"`
+	Limit      int64  `json:"limit"`
 }
 
 func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, arg ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams) ([]Article, error) {
-	rows, err := q.db.QueryContext(ctx, listArticleFilterByAuthorIsFeaturedPublishedAtTitle, arg.Author, arg.IsFeatured, arg.Title)
+	rows, err := q.db.QueryContext(ctx, listArticleFilterByAuthorIsFeaturedPublishedAtTitle,
+		arg.Author,
+		arg.IsFeatured,
+		arg.Title,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}

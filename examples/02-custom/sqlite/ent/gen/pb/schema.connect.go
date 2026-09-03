@@ -24,9 +24,9 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// ReadingServiceName is the fully-qualified name of the ReadingService service.
-	ReadingServiceName = "entlite.ReadingService"
+	ReadingServiceName = "proto.ReadingService"
 	// SensorServiceName is the fully-qualified name of the SensorService service.
-	SensorServiceName = "entlite.SensorService"
+	SensorServiceName = "proto.SensorService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -38,33 +38,33 @@ const (
 // period.
 const (
 	// ReadingServiceCreateProcedure is the fully-qualified name of the ReadingService's Create RPC.
-	ReadingServiceCreateProcedure = "/entlite.ReadingService/Create"
+	ReadingServiceCreateProcedure = "/proto.ReadingService/Create"
 	// ReadingServiceGetByIDProcedure is the fully-qualified name of the ReadingService's GetByID RPC.
-	ReadingServiceGetByIDProcedure = "/entlite.ReadingService/GetByID"
+	ReadingServiceGetByIDProcedure = "/proto.ReadingService/GetByID"
 	// ReadingServiceDeleteProcedure is the fully-qualified name of the ReadingService's Delete RPC.
-	ReadingServiceDeleteProcedure = "/entlite.ReadingService/Delete"
+	ReadingServiceDeleteProcedure = "/proto.ReadingService/Delete"
 	// ReadingServiceListBySensorIdProcedure is the fully-qualified name of the ReadingService's
 	// ListBySensorId RPC.
-	ReadingServiceListBySensorIdProcedure = "/entlite.ReadingService/ListBySensorId"
+	ReadingServiceListBySensorIdProcedure = "/proto.ReadingService/ListBySensorId"
 	// ReadingServiceFilterBySensorIdRecordedAtFlaggedProcedure is the fully-qualified name of the
 	// ReadingService's FilterBySensorIdRecordedAtFlagged RPC.
-	ReadingServiceFilterBySensorIdRecordedAtFlaggedProcedure = "/entlite.ReadingService/FilterBySensorIdRecordedAtFlagged"
+	ReadingServiceFilterBySensorIdRecordedAtFlaggedProcedure = "/proto.ReadingService/FilterBySensorIdRecordedAtFlagged"
 	// SensorServiceCreateProcedure is the fully-qualified name of the SensorService's Create RPC.
-	SensorServiceCreateProcedure = "/entlite.SensorService/Create"
+	SensorServiceCreateProcedure = "/proto.SensorService/Create"
 	// SensorServiceGetByIDProcedure is the fully-qualified name of the SensorService's GetByID RPC.
-	SensorServiceGetByIDProcedure = "/entlite.SensorService/GetByID"
+	SensorServiceGetByIDProcedure = "/proto.SensorService/GetByID"
 	// SensorServiceUpdateProcedure is the fully-qualified name of the SensorService's Update RPC.
-	SensorServiceUpdateProcedure = "/entlite.SensorService/Update"
+	SensorServiceUpdateProcedure = "/proto.SensorService/Update"
 	// SensorServiceDeleteProcedure is the fully-qualified name of the SensorService's Delete RPC.
-	SensorServiceDeleteProcedure = "/entlite.SensorService/Delete"
+	SensorServiceDeleteProcedure = "/proto.SensorService/Delete"
 	// SensorServiceGetByCodeProcedure is the fully-qualified name of the SensorService's GetByCode RPC.
-	SensorServiceGetByCodeProcedure = "/entlite.SensorService/GetByCode"
+	SensorServiceGetByCodeProcedure = "/proto.SensorService/GetByCode"
 	// SensorServiceFilterByLabelKindActiveProcedure is the fully-qualified name of the SensorService's
 	// FilterByLabelKindActive RPC.
-	SensorServiceFilterByLabelKindActiveProcedure = "/entlite.SensorService/FilterByLabelKindActive"
+	SensorServiceFilterByLabelKindActiveProcedure = "/proto.SensorService/FilterByLabelKindActive"
 )
 
-// ReadingServiceClient is a client for the entlite.ReadingService service.
+// ReadingServiceClient is a client for the proto.ReadingService service.
 type ReadingServiceClient interface {
 	Create(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error)
 	GetByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error)
@@ -73,10 +73,10 @@ type ReadingServiceClient interface {
 	FilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
 }
 
-// NewReadingServiceClient constructs a client for the entlite.ReadingService service. By default,
-// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
-// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
-// or connect.WithGRPCWeb() options.
+// NewReadingServiceClient constructs a client for the proto.ReadingService service. By default, it
+// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
+// connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -126,32 +126,32 @@ type readingServiceClient struct {
 	filterBySensorIdRecordedAtFlagged *connect.Client[ListReadingFilterBySensorIdRecordedAtFlaggedRequest, ListReadingFilterBySensorIdRecordedAtFlaggedResponse]
 }
 
-// Create calls entlite.ReadingService.Create.
+// Create calls proto.ReadingService.Create.
 func (c *readingServiceClient) Create(ctx context.Context, req *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error) {
 	return c.create.CallUnary(ctx, req)
 }
 
-// GetByID calls entlite.ReadingService.GetByID.
+// GetByID calls proto.ReadingService.GetByID.
 func (c *readingServiceClient) GetByID(ctx context.Context, req *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error) {
 	return c.getByID.CallUnary(ctx, req)
 }
 
-// Delete calls entlite.ReadingService.Delete.
+// Delete calls proto.ReadingService.Delete.
 func (c *readingServiceClient) Delete(ctx context.Context, req *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.delete.CallUnary(ctx, req)
 }
 
-// ListBySensorId calls entlite.ReadingService.ListBySensorId.
+// ListBySensorId calls proto.ReadingService.ListBySensorId.
 func (c *readingServiceClient) ListBySensorId(ctx context.Context, req *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error) {
 	return c.listBySensorId.CallUnary(ctx, req)
 }
 
-// FilterBySensorIdRecordedAtFlagged calls entlite.ReadingService.FilterBySensorIdRecordedAtFlagged.
+// FilterBySensorIdRecordedAtFlagged calls proto.ReadingService.FilterBySensorIdRecordedAtFlagged.
 func (c *readingServiceClient) FilterBySensorIdRecordedAtFlagged(ctx context.Context, req *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {
 	return c.filterBySensorIdRecordedAtFlagged.CallUnary(ctx, req)
 }
 
-// ReadingServiceHandler is an implementation of the entlite.ReadingService service.
+// ReadingServiceHandler is an implementation of the proto.ReadingService service.
 type ReadingServiceHandler interface {
 	Create(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error)
 	GetByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error)
@@ -197,7 +197,7 @@ func NewReadingServiceHandler(svc ReadingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(readingServiceMethods.ByName("FilterBySensorIdRecordedAtFlagged")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/entlite.ReadingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.ReadingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ReadingServiceCreateProcedure:
 			readingServiceCreateHandler.ServeHTTP(w, r)
@@ -219,26 +219,26 @@ func NewReadingServiceHandler(svc ReadingServiceHandler, opts ...connect.Handler
 type UnimplementedReadingServiceHandler struct{}
 
 func (UnimplementedReadingServiceHandler) Create(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ReadingService.Create is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.Create is not implemented"))
 }
 
 func (UnimplementedReadingServiceHandler) GetByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ReadingService.GetByID is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.GetByID is not implemented"))
 }
 
 func (UnimplementedReadingServiceHandler) Delete(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ReadingService.Delete is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.Delete is not implemented"))
 }
 
 func (UnimplementedReadingServiceHandler) ListBySensorId(context.Context, *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ReadingService.ListBySensorId is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.ListBySensorId is not implemented"))
 }
 
 func (UnimplementedReadingServiceHandler) FilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.ReadingService.FilterBySensorIdRecordedAtFlagged is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.FilterBySensorIdRecordedAtFlagged is not implemented"))
 }
 
-// SensorServiceClient is a client for the entlite.SensorService service.
+// SensorServiceClient is a client for the proto.SensorService service.
 type SensorServiceClient interface {
 	Create(context.Context, *connect.Request[CreateSensorRequest]) (*connect.Response[Sensor], error)
 	GetByID(context.Context, *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error)
@@ -249,7 +249,7 @@ type SensorServiceClient interface {
 	FilterByLabelKindActive(context.Context, *connect.Request[ListSensorFilterByLabelKindActiveRequest]) (*connect.Response[ListSensorFilterByLabelKindActiveResponse], error)
 }
 
-// NewSensorServiceClient constructs a client for the entlite.SensorService service. By default, it
+// NewSensorServiceClient constructs a client for the proto.SensorService service. By default, it
 // uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
@@ -309,37 +309,37 @@ type sensorServiceClient struct {
 	filterByLabelKindActive *connect.Client[ListSensorFilterByLabelKindActiveRequest, ListSensorFilterByLabelKindActiveResponse]
 }
 
-// Create calls entlite.SensorService.Create.
+// Create calls proto.SensorService.Create.
 func (c *sensorServiceClient) Create(ctx context.Context, req *connect.Request[CreateSensorRequest]) (*connect.Response[Sensor], error) {
 	return c.create.CallUnary(ctx, req)
 }
 
-// GetByID calls entlite.SensorService.GetByID.
+// GetByID calls proto.SensorService.GetByID.
 func (c *sensorServiceClient) GetByID(ctx context.Context, req *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error) {
 	return c.getByID.CallUnary(ctx, req)
 }
 
-// Update calls entlite.SensorService.Update.
+// Update calls proto.SensorService.Update.
 func (c *sensorServiceClient) Update(ctx context.Context, req *connect.Request[UpdateSensorRequest]) (*connect.Response[Sensor], error) {
 	return c.update.CallUnary(ctx, req)
 }
 
-// Delete calls entlite.SensorService.Delete.
+// Delete calls proto.SensorService.Delete.
 func (c *sensorServiceClient) Delete(ctx context.Context, req *connect.Request[DeleteSensorRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.delete.CallUnary(ctx, req)
 }
 
-// GetByCode calls entlite.SensorService.GetByCode.
+// GetByCode calls proto.SensorService.GetByCode.
 func (c *sensorServiceClient) GetByCode(ctx context.Context, req *connect.Request[GetSensorByCodeRequest]) (*connect.Response[Sensor], error) {
 	return c.getByCode.CallUnary(ctx, req)
 }
 
-// FilterByLabelKindActive calls entlite.SensorService.FilterByLabelKindActive.
+// FilterByLabelKindActive calls proto.SensorService.FilterByLabelKindActive.
 func (c *sensorServiceClient) FilterByLabelKindActive(ctx context.Context, req *connect.Request[ListSensorFilterByLabelKindActiveRequest]) (*connect.Response[ListSensorFilterByLabelKindActiveResponse], error) {
 	return c.filterByLabelKindActive.CallUnary(ctx, req)
 }
 
-// SensorServiceHandler is an implementation of the entlite.SensorService service.
+// SensorServiceHandler is an implementation of the proto.SensorService service.
 type SensorServiceHandler interface {
 	Create(context.Context, *connect.Request[CreateSensorRequest]) (*connect.Response[Sensor], error)
 	GetByID(context.Context, *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error)
@@ -393,7 +393,7 @@ func NewSensorServiceHandler(svc SensorServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(sensorServiceMethods.ByName("FilterByLabelKindActive")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/entlite.SensorService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/proto.SensorService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case SensorServiceCreateProcedure:
 			sensorServiceCreateHandler.ServeHTTP(w, r)
@@ -417,25 +417,25 @@ func NewSensorServiceHandler(svc SensorServiceHandler, opts ...connect.HandlerOp
 type UnimplementedSensorServiceHandler struct{}
 
 func (UnimplementedSensorServiceHandler) Create(context.Context, *connect.Request[CreateSensorRequest]) (*connect.Response[Sensor], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorService.Create is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.Create is not implemented"))
 }
 
 func (UnimplementedSensorServiceHandler) GetByID(context.Context, *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorService.GetByID is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.GetByID is not implemented"))
 }
 
 func (UnimplementedSensorServiceHandler) Update(context.Context, *connect.Request[UpdateSensorRequest]) (*connect.Response[Sensor], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorService.Update is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.Update is not implemented"))
 }
 
 func (UnimplementedSensorServiceHandler) Delete(context.Context, *connect.Request[DeleteSensorRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorService.Delete is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.Delete is not implemented"))
 }
 
 func (UnimplementedSensorServiceHandler) GetByCode(context.Context, *connect.Request[GetSensorByCodeRequest]) (*connect.Response[Sensor], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorService.GetByCode is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.GetByCode is not implemented"))
 }
 
 func (UnimplementedSensorServiceHandler) FilterByLabelKindActive(context.Context, *connect.Request[ListSensorFilterByLabelKindActiveRequest]) (*connect.Response[ListSensorFilterByLabelKindActiveResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("entlite.SensorService.FilterByLabelKindActive is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.FilterByLabelKindActive is not implemented"))
 }

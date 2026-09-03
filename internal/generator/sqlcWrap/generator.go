@@ -152,6 +152,14 @@ func (ctx *generationContext) filterParamsEntity(structName string) (schema.Enti
 		return schema.Entity{}, false
 	}
 
+	// a custom Name() query does not follow the List<Entity>By... pattern
+	if target, ok := ctx.dslQueries[methodName]; ok {
+		switch target.query.Type {
+		case schema.QueryListBy, schema.QueryListAll, schema.QueryGetBy:
+			return target.entity, true
+		}
+	}
+
 	if strings.HasPrefix(methodName, "List") {
 		return ctx.findEntityForListMethod(methodName)
 	}

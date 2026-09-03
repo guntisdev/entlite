@@ -207,11 +207,17 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
 }
 
 const listActive = `-- name: ListActive :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE is_active = $1
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE is_active = $1 LIMIT $3 OFFSET $2
 `
 
-func (q *Queries) ListActive(ctx context.Context, isActive bool) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listActive, isActive)
+type ListActiveParams struct {
+	IsActive bool  `json:"is_active"`
+	Offset   int32 `json:"offset"`
+	Limit    int32 `json:"limit"`
+}
+
+func (q *Queries) ListActive(ctx context.Context, arg ListActiveParams) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, listActive, arg.IsActive, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -287,17 +293,25 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 }
 
 const listUserFilterByAgeName = `-- name: ListUserFilterByAgeName :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE age BETWEEN $1 AND $2 AND name LIKE $3
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE age BETWEEN $1 AND $2 AND name LIKE $3 LIMIT $5 OFFSET $4
 `
 
 type ListUserFilterByAgeNameParams struct {
 	MinAge sql.NullInt32 `json:"min_age"`
 	MaxAge sql.NullInt32 `json:"max_age"`
 	Name   string        `json:"name"`
+	Offset int32         `json:"offset"`
+	Limit  int32         `json:"limit"`
 }
 
 func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUserFilterByAgeName, arg.MinAge, arg.MaxAge, arg.Name)
+	rows, err := q.db.QueryContext(ctx, listUserFilterByAgeName,
+		arg.MinAge,
+		arg.MaxAge,
+		arg.Name,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}

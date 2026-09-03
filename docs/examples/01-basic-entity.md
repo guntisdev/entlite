@@ -151,7 +151,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 -- Table definitions for all entities
 
 -- user table
-CREATE TABLE "user"(
+CREATE TABLE IF NOT EXISTS "user"(
   ID INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL,
   -- Full name, e.g. "Jane Doe"
@@ -167,10 +167,10 @@ CREATE TABLE "user"(
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
 );
-CREATE INDEX "idx_user_age_is_active" ON "user" (age, is_active);
-CREATE INDEX "idx_user_is_active_created_at" ON "user" (is_active, created_at DESC);
-CREATE UNIQUE INDEX "idx_user_name_email" ON "user" (name, email);
-CREATE INDEX "idx_users_stats" ON "user" (login_count, rating);
+CREATE INDEX IF NOT EXISTS "idx_user_age_is_active" ON "user" (age, is_active);
+CREATE INDEX IF NOT EXISTS "idx_user_is_active_created_at" ON "user" (is_active, created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_user_name_email" ON "user" (name, email);
+CREATE INDEX IF NOT EXISTS "idx_users_stats" ON "user" (login_count, rating);
 ```
 
 </details>
@@ -250,10 +250,10 @@ SELECT * FROM "user" WHERE email = ?;
 SELECT * FROM "user";
 
 -- name: ListActive :many
-SELECT * FROM "user" WHERE is_active = @is_active;
+SELECT * FROM "user" WHERE is_active = @is_active LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListUserFilterByAgeName :many
-SELECT * FROM "user" WHERE age BETWEEN @min_age AND @max_age AND name LIKE @name;
+SELECT * FROM "user" WHERE age BETWEEN @min_age AND @max_age AND name LIKE @name LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateUser :one
 UPDATE "user" SET
@@ -286,7 +286,7 @@ DELETE FROM "user";
 
 syntax = "proto3";
 
-package entlite;
+package proto;
 
 option go_package = "./pb";
 

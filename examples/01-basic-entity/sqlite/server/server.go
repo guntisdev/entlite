@@ -229,7 +229,11 @@ func (s *UserServer) ListActive(
 
 	queries := db.New(s.db)
 
-	dbUsers, err := queries.ListActive(ctx, req.Msg.GetIsActive())
+	dbUsers, err := queries.ListActive(ctx, db.ListActiveParams{
+		IsActive: req.Msg.GetIsActive(),
+		Limit:    req.Msg.GetLimit(),
+		Offset:   req.Msg.GetOffset(),
+	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))
 	}
@@ -261,6 +265,8 @@ func (s *UserServer) FilterByAgeName(
 		MinAge: &minAge,
 		MaxAge: &maxAge,
 		Name:   req.Msg.GetName(),
+		Limit:  req.Msg.GetLimit(),
+		Offset: req.Msg.GetOffset(),
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list users: %w", err))

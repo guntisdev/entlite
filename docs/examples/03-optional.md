@@ -160,7 +160,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 -- Table definitions for all entities
 
 -- article table
-CREATE TABLE "article"(
+CREATE TABLE IF NOT EXISTS "article"(
   -- uuid primary key, generated on the server and not part of requests
   ID TEXT PRIMARY KEY,
   -- Human/URL identifier, e.g. hello-world
@@ -233,13 +233,13 @@ SELECT * FROM "article" WHERE ID = ?;
 SELECT * FROM "article" WHERE slug = ?;
 
 -- name: ListArticleByAuthor :many
-SELECT * FROM "article" WHERE author = @author;
+SELECT * FROM "article" WHERE author = @author LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListAllArticle :many
 SELECT * FROM "article";
 
 -- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT * FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at BETWEEN @min_published_at AND @max_published_at AND title LIKE @title;
+SELECT * FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at BETWEEN @min_published_at AND @max_published_at AND title LIKE @title LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateArticle :one
 UPDATE "article" SET
@@ -272,7 +272,7 @@ DELETE FROM "article" WHERE ID = ?;
 
 syntax = "proto3";
 
-package entlite;
+package proto;
 
 option go_package = "./pb";
 

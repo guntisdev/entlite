@@ -207,11 +207,17 @@ func (q *Queries) GetSensorByID(ctx context.Context, id int64) (Sensor, error) {
 }
 
 const listReadingBySensorId = `-- name: ListReadingBySensorId :many
-SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE sensor_id = ?1
+SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE sensor_id = ?1 LIMIT ?3 OFFSET ?2
 `
 
-func (q *Queries) ListReadingBySensorId(ctx context.Context, sensorID int64) ([]Reading, error) {
-	rows, err := q.db.QueryContext(ctx, listReadingBySensorId, sensorID)
+type ListReadingBySensorIdParams struct {
+	SensorID int64 `json:"sensor_id"`
+	Offset   int64 `json:"offset"`
+	Limit    int64 `json:"limit"`
+}
+
+func (q *Queries) ListReadingBySensorId(ctx context.Context, arg ListReadingBySensorIdParams) ([]Reading, error) {
+	rows, err := q.db.QueryContext(ctx, listReadingBySensorId, arg.SensorID, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -242,16 +248,23 @@ func (q *Queries) ListReadingBySensorId(ctx context.Context, sensorID int64) ([]
 }
 
 const listReadingFilterBySensorIdRecordedAtFlagged = `-- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4
+SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4 LIMIT ?6 OFFSET ?5
 `
 
 type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
 	SensorID int64 `json:"sensor_id"`
 	Flagged  int64 `json:"flagged"`
+	Offset   int64 `json:"offset"`
+	Limit    int64 `json:"limit"`
 }
 
 func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]Reading, error) {
-	rows, err := q.db.QueryContext(ctx, listReadingFilterBySensorIdRecordedAtFlagged, arg.SensorID, arg.Flagged)
+	rows, err := q.db.QueryContext(ctx, listReadingFilterBySensorIdRecordedAtFlagged,
+		arg.SensorID,
+		arg.Flagged,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -282,17 +295,25 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 }
 
 const listSensorFilterByLabelKindActive = `-- name: ListSensorFilterByLabelKindActive :many
-SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3
+SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3 LIMIT ?5 OFFSET ?4
 `
 
 type ListSensorFilterByLabelKindActiveParams struct {
 	Label  string `json:"label"`
 	Kind   string `json:"kind"`
 	Active int64  `json:"active"`
+	Offset int64  `json:"offset"`
+	Limit  int64  `json:"limit"`
 }
 
 func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg ListSensorFilterByLabelKindActiveParams) ([]Sensor, error) {
-	rows, err := q.db.QueryContext(ctx, listSensorFilterByLabelKindActive, arg.Label, arg.Kind, arg.Active)
+	rows, err := q.db.QueryContext(ctx, listSensorFilterByLabelKindActive,
+		arg.Label,
+		arg.Kind,
+		arg.Active,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}
