@@ -107,8 +107,7 @@ func (g *Generator) getPostgresSQLType(fieldType schema.FieldType) string {
 	case schema.FieldTypeByte:
 		return "BYTEA"
 	case schema.FieldTypeJSON:
-		// TODO consider JSONB, it needs sqlc overrides to stay a Go string
-		return "TEXT"
+		return "JSONB"
 	default:
 		return "TEXT"
 	}
@@ -131,7 +130,7 @@ func (g *Generator) getSQLiteType(fieldType schema.FieldType) string {
 	case schema.FieldTypeByte:
 		return "BLOB"
 	case schema.FieldTypeJSON:
-		return "TEXT" // sqlite has no json type, json1 functions work on TEXT
+		return "TEXT" // sqlite has no json type, generateTableSQL adds a json_valid CHECK
 	default:
 		return "TEXT"
 	}
@@ -155,11 +154,20 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	case schema.FieldTypeByte:
 		return "BLOB"
 	case schema.FieldTypeJSON:
-		// TODO consider native JSON, it needs sqlc overrides to stay a Go string
-		return "TEXT"
+		return "JSON"
 	default:
 		return "TEXT"
 	}
+}
+
+// returns the column constraint that keeps invalid json out on sqlite,
+// postgres and mysql validate a JSONB/JSON column themselves
+func (g *Generator) jsonCheck(field schema.Field) string {
+	if g.sqlDialect != schema.SQLite || field.Type != schema.FieldTypeJSON {
+		return ""
+	}
+
+	return fmt.Sprintf("CHECK (json_valid(%s))", g.column(field.Name))
 }
 
 func (g *Generator) formatDefaultValue(value any, fieldType schema.FieldType) string {

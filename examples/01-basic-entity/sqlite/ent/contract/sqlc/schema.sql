@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "user"(
   login_count INTEGER DEFAULT 0 NOT NULL,
   rating REAL DEFAULT 0 NOT NULL,
   -- UI preferences, e.g. {"theme":"dark"}
-  preferences TEXT NOT NULL,
+  preferences TEXT NOT NULL CHECK (json_valid(preferences)),
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
 );

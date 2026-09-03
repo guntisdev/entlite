@@ -13,8 +13,8 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 * Move query name to parser instead of generator
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 
-* improve JSON field -> postgres: JSONB, mysql: JSON, sqlite, TEXT CHECK (json_valid(col))
-* sqlc wrapper proly should return json.RawMessage instead of string
+* ~~improve JSON field -> postgres: JSONB, mysql: JSON, sqlite, TEXT CHECK (json_valid(col))~~
+* ~~sqlc wrapper proly should return json.RawMessage instead of string~~ - kept as `string`, proto has no json type and `json.RawMessage` marshals an empty value as invalid json
 
 * Comment out in examples Queries use case for: Count, GroupBy, Having, OrderBy
 * Implement Queries OrderBy()

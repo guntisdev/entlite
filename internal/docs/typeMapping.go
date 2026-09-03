@@ -56,7 +56,7 @@ func typeMappingPage() []byte {
 		{code("field.Int64"), "JSON encodes it as a string, in TypeScript it is a `bigint`."},
 		{code("field.Bool"), "SQLite has no boolean, the column is an INTEGER."},
 		{code("field.Time"), "Proto uses `google.protobuf.Timestamp`, the wrapper converts it."},
-		{code("field.JSON"), "Raw json text, it stays a Go `string` on every layer."},
+		{code("field.JSON"), "Raw json text, it stays a Go `string` on every layer. SQLite adds a `CHECK (json_valid(col))`."},
 		{code("field.String"), "MySQL uses VARCHAR, TEXT cannot be indexed without a key length."},
 	})
 

@@ -121,6 +121,10 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 			content.WriteString(" NOT NULL")
 		}
 
+		if check := g.jsonCheck(field); check != "" {
+			content.WriteString(" " + check)
+		}
+
 		// TODO write logic for DefaultFunc etc
 	}
 
