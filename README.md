@@ -4,17 +4,29 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getting-started.md), [reference](docs/README.md#reference), [examples](docs/README.md#examples).
 
 ## TODO
-* Create /internal/naming/ to have in one place consistant naming
+* Fix generated proto package name (currently hardcoded)
+* For indexes generate "IF NOT EXISTS" to "CREATE TABLE"
+* Wire LIMIT/OFFSET from proto to queries
+* Double check reserved word usage. Like "table" in sql
 * Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/
 * Add a uuid foreign key example - uuid as id, all optional and custom files are covered
 * Move query name to parser instead of generator
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
+
+* improve JSON field -> postgres: JSONB, mysql: JSON, sqlite, TEXT CHECK (json_valid(col))
+* sqlc wrapper proly should return json.RawMessage instead of string
+
 * Comment out in examples Queries use case for: Count, GroupBy, Having, OrderBy
+* Implement Queries OrderBy()
 * Implement Queries Count()
 * Implement Queries GroupBy()
 * Implement Queries Having()
-* Implement Queries OrderBy()
+* On queries Create() and CreateBulk() add .Upsert() with or without fields to generate query ON CONFLICET (....) DO UPDATE
+* DeleteBy(...) query
+* Create queries example with complicated edge case queries
+
+* Create /internal/naming/ to have in one place consistant naming
 * Figure out migration
 
 ## Folder structure
