@@ -67,10 +67,10 @@ SELECT * FROM `user` WHERE email = ?;
 SELECT * FROM `user`;
 
 -- name: ListActive :many
-SELECT * FROM `user` WHERE is_active = sqlc.arg('is_active');
+SELECT * FROM `user` WHERE is_active = sqlc.arg('is_active') LIMIT ? OFFSET ?;
 
 -- name: ListUserFilterByAgeName :many
-SELECT * FROM `user` WHERE age BETWEEN sqlc.arg('min_age') AND sqlc.arg('max_age') AND name LIKE sqlc.arg('name');
+SELECT * FROM `user` WHERE age BETWEEN sqlc.arg('min_age') AND sqlc.arg('max_age') AND name LIKE sqlc.arg('name') LIMIT ? OFFSET ?;
 
 -- name: UpdateUser :exec
 UPDATE `user` SET

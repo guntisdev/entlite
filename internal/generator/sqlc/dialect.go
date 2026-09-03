@@ -202,6 +202,17 @@ func (g *Generator) indexIfNotExists() string {
 	panic("unreachable: invalid SQL dialect")
 }
 
+func (g *Generator) limitOffsetArgs() (limit, offset string) {
+	switch g.sqlDialect {
+	case schema.MySQL:
+		return "?", "?"
+	case schema.PostgreSQL, schema.SQLite:
+		return "sqlc.arg('limit')", "sqlc.arg('offset')"
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}
+
 func (g *Generator) namedArg(name string) string {
 	switch g.sqlDialect {
 	case schema.MySQL:

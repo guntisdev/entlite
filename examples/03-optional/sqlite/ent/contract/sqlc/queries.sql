@@ -44,13 +44,13 @@ SELECT * FROM "article" WHERE ID = ?;
 SELECT * FROM "article" WHERE slug = ?;
 
 -- name: ListArticleByAuthor :many
-SELECT * FROM "article" WHERE author = @author;
+SELECT * FROM "article" WHERE author = @author LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListAllArticle :many
 SELECT * FROM "article";
 
 -- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT * FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at BETWEEN @min_published_at AND @max_published_at AND title LIKE @title;
+SELECT * FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at BETWEEN @min_published_at AND @max_published_at AND title LIKE @title LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateArticle :one
 UPDATE "article" SET

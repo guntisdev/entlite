@@ -147,8 +147,19 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
 	return UserFromSQL(&dbResult), nil
 }
 
-func (q *Queries) ListActive(ctx context.Context, isActive bool) ([]*User, error) {
-	dbResults, err := (*internal.Queries)(q).ListActive(ctx, SQLiteBoolToInt(isActive))
+type ListActiveParams struct {
+	IsActive bool `json:"is_active"`
+	Offset int32 `json:"offset"`
+	Limit int32 `json:"limit"`
+}
+
+func (q *Queries) ListActive(ctx context.Context, arg ListActiveParams) ([]*User, error) {
+	internalArg := internal.ListActiveParams{
+		IsActive: SQLiteBoolToInt(arg.IsActive),
+		Offset: IntConvert[int32, int64](arg.Offset),
+		Limit: IntConvert[int32, int64](arg.Limit),
+	}
+	dbResults, err := (*internal.Queries)(q).ListActive(ctx, internalArg)
 	if err != nil {
 		return nil, err
 	}
@@ -175,6 +186,8 @@ type ListUserFilterByAgeNameParams struct {
 	MinAge *int32 `json:"min_age"`
 	MaxAge *int32 `json:"max_age"`
 	Name string `json:"name"`
+	Offset int32 `json:"offset"`
+	Limit int32 `json:"limit"`
 }
 
 func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]*User, error) {
@@ -182,6 +195,8 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 		MinAge: IntPtrConvert[int32, int64](arg.MinAge),
 		MaxAge: IntPtrConvert[int32, int64](arg.MaxAge),
 		Name: arg.Name,
+		Offset: IntConvert[int32, int64](arg.Offset),
+		Limit: IntConvert[int32, int64](arg.Limit),
 	}
 	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeName(ctx, internalArg)
 	if err != nil {

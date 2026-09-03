@@ -156,6 +156,8 @@ func (s *SensorServer) FilterByLabelKindActive(
 		Label:  req.Msg.Label, // filter.Search: compared with LIKE, so the caller supplies the wildcards
 		Kind:   req.Msg.Kind,
 		Active: req.Msg.GetActive(),
+		Limit:  req.Msg.GetLimit(),
+		Offset: req.Msg.GetOffset(),
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list sensors: %w", err))
@@ -253,7 +255,11 @@ func (s *ReadingServer) ListBySensorId(
 
 	queries := db.New(s.db)
 
-	dbReadings, err := queries.ListReadingBySensorId(ctx, req.Msg.SensorId)
+	dbReadings, err := queries.ListReadingBySensorId(ctx, db.ListReadingBySensorIdParams{
+		SensorID: req.Msg.SensorId,
+		Limit:    req.Msg.GetLimit(),
+		Offset:   req.Msg.GetOffset(),
+	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list readings: %w", err))
 	}
@@ -275,6 +281,8 @@ func (s *ReadingServer) FilterBySensorIdRecordedAtFlagged(
 	dbReadings, err := queries.ListReadingFilterBySensorIdRecordedAtFlagged(ctx, db.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
 		SensorID: req.Msg.SensorId,
 		Flagged:  req.Msg.Flagged,
+		Limit:    req.Msg.GetLimit(),
+		Offset:   req.Msg.GetOffset(),
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list readings: %w", err))

@@ -6,7 +6,7 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 ## TODO
 * ~~fix generated proto package name (currently hardcoded)~~
 * ~~For indexes generate "IF NOT EXISTS" to "CREATE TABLE"~~
-* Wire LIMIT/OFFSET from proto to queries
+* ~~Wire LIMIT/OFFSET from proto to queries~~
 * Double check reserved word usage. Like "table" in sql
 * Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/

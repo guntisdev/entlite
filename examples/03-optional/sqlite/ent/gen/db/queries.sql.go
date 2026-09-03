@@ -83,8 +83,19 @@ func (q *Queries) ListAllArticle(ctx context.Context) ([]*Article, error) {
 	return result, nil
 }
 
-func (q *Queries) ListArticleByAuthor(ctx context.Context, author string) ([]*Article, error) {
-	dbResults, err := (*internal.Queries)(q).ListArticleByAuthor(ctx, author)
+type ListArticleByAuthorParams struct {
+	Author string `json:"author"`
+	Offset int32 `json:"offset"`
+	Limit int32 `json:"limit"`
+}
+
+func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuthorParams) ([]*Article, error) {
+	internalArg := internal.ListArticleByAuthorParams{
+		Author: arg.Author,
+		Offset: IntConvert[int32, int64](arg.Offset),
+		Limit: IntConvert[int32, int64](arg.Limit),
+	}
+	dbResults, err := (*internal.Queries)(q).ListArticleByAuthor(ctx, internalArg)
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +110,8 @@ type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
 	Author string `json:"author"`
 	IsFeatured bool `json:"is_featured"`
 	Title string `json:"title"`
+	Offset int32 `json:"offset"`
+	Limit int32 `json:"limit"`
 }
 
 func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, arg ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams) ([]*Article, error) {
@@ -106,6 +119,8 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 		Author: arg.Author,
 		IsFeatured: SQLiteBoolToInt(arg.IsFeatured),
 		Title: arg.Title,
+		Offset: IntConvert[int32, int64](arg.Offset),
+		Limit: IntConvert[int32, int64](arg.Limit),
 	}
 	dbResults, err := (*internal.Queries)(q).ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx, internalArg)
 	if err != nil {

@@ -74,6 +74,11 @@ func filterParamField(entity schema.Entity, paramName string) (schema.Field, boo
 	return schema.Field{}, false
 }
 
+// LIMIT/OFFSET are not entity fields; the wrapper keeps them int32, like the proto request
+func isPaginationParam(fieldName string) bool {
+	return fieldName == "Limit" || fieldName == "Offset"
+}
+
 // generateFilterParamsStruct restates sqlc's "<Query>Params" in the wrapper's types,
 // keeping sqlc's field names and json tags.
 func generateFilterParamsStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
@@ -89,6 +94,8 @@ func generateFilterParamsStruct(structName string, structType *ast.StructType, e
 		goType := formatType(astField.Type)
 		if field, ok := filterParamField(entity, fieldName); ok {
 			goType = fieldToGoType(field)
+		} else if isPaginationParam(fieldName) {
+			goType = "int32"
 		}
 
 		sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, goType))
@@ -117,6 +124,9 @@ func generateFilterParamsArg(structName string, structType *ast.StructType, enti
 		valueRef := fmt.Sprintf("%s.%s", argVar, fieldName)
 		if field, ok := filterParamField(entity, fieldName); ok {
 			valueRef = sqlToGo(field, valueRef, sqlDialect)
+		} else if isPaginationParam(fieldName) && formatType(astField.Type) == "int64" {
+			// sqlite widens LIMIT/OFFSET to int64
+			valueRef = fmt.Sprintf("IntConvert[int32, int64](%s)", valueRef)
 		}
 
 		sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", fieldName, valueRef))

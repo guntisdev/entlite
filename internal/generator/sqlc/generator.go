@@ -296,12 +296,17 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", filter.Field, minArg, maxArg))
 			}
 		}
-		if len(whereParts) == 0 {
-			// ListAll: no filters, no WHERE clause.
-			content.WriteString(fmt.Sprintf("SELECT * FROM %s;\n", g.quote(tableName)))
-		} else {
-			content.WriteString(fmt.Sprintf("SELECT * FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereParts, " AND ")))
+		selectSQL := fmt.Sprintf("SELECT * FROM %s", g.quote(tableName))
+		// ListAll has no filters, so no WHERE clause
+		if len(whereParts) > 0 {
+			selectSQL += " WHERE " + strings.Join(whereParts, " AND ")
 		}
+		// pagination comes from the proto request, ListAll has no limit/offset there
+		if query.Type == schema.QueryListBy {
+			limitArg, offsetArg := g.limitOffsetArgs()
+			selectSQL += fmt.Sprintf(" LIMIT %s OFFSET %s", limitArg, offsetArg)
+		}
+		content.WriteString(selectSQL + ";\n")
 	}
 
 	// UPDATE

@@ -226,7 +226,7 @@ INSERT INTO "user" (
 SELECT * FROM "user" WHERE ID = $1;
 
 -- name: ListUserByNameAge :many
-SELECT * FROM "user" WHERE name = @name AND age = @age;
+SELECT * FROM "user" WHERE name = @name AND age = @age LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateUser :one
 UPDATE "user" SET
