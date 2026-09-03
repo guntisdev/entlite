@@ -8,7 +8,7 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func addFieldNumbers(fields []schema.Field) []schema.Field {
+func addFieldNumbers(fields []schema.Field, addIdField bool) []schema.Field {
 	var usedNumbers []int
 	hasIdField := false
 
@@ -25,7 +25,7 @@ func addFieldNumbers(fields []schema.Field) []schema.Field {
 		}
 	}
 
-	if !hasIdField {
+	if !hasIdField && addIdField {
 		idNumber := getNextAvailable(usedNumbers)
 		usedNumbers = append(usedNumbers, idNumber)
 

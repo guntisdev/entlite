@@ -46,6 +46,19 @@ func generateCreateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
 	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, arg %sParams) ", receiverType, funcDecl.Name.Name, funcDecl.Name.Name))
 
+	// without an id field the db generates nothing, so the insert only returns an error
+	if !entity.HasIdField() {
+		sb.WriteString("error {\n")
+		sb.WriteString(addValidationChecks(entity, "create", errorOnlyReturn, "arg", "\t"))
+		sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
+		writeCreateParamsFields(&sb, entity, "arg", "\t\t", sqlDialect)
+		sb.WriteString("\t}\n")
+		sb.WriteString(fmt.Sprintf("\treturn (*%s.Queries)(q).%s(ctx, internalArg)\n", inputPkg, funcDecl.Name.Name))
+		sb.WriteString("}\n\n")
+
+		return sb.String()
+	}
+
 	var firstReturnType string
 	idField := entity.GetIdField()
 	firstReturnType = string(idField.Type)
@@ -133,36 +146,61 @@ func generateCreateBulkQuery(funcDecl *ast.FuncDecl, entity schema.Entity, input
 	queryName := funcDecl.Name.Name
 	paramsType := queryName + "Params"
 	internalParamsType := fmt.Sprintf("%s.%sParams", inputPkg, queryName)
-	idField := entity.GetIdField()
-	idType := fieldToGoType(idField)
 	rowsFunc := toUnexportedName(queryName) + "Rows"
 
-	// Handle return value conversion for SQLite/MySQL ID (int64 -> int32)
-	idExpr := "id"
-	if (sqlDialect == schema.SQLite || sqlDialect == schema.MySQL) && idField.Type == schema.FieldTypeInt {
-		idExpr = "IntConvert[int64, int32](id)"
+	// without an id field there is nothing to collect, every insert returns an error only
+	hasID := entity.HasIdField()
+	idType := ""
+	resultsType := "error"
+	nilResult := ""
+	if hasID {
+		idType = fieldToGoType(entity.GetIdField())
+		resultsType = fmt.Sprintf("([]%s, error)", idType)
+		nilResult = "nil, "
 	}
 
 	sb.WriteString(fmt.Sprintf("// %s inserts every row through q, which the caller binds to a transaction.\n", rowsFunc))
-	sb.WriteString(fmt.Sprintf("func %s(ctx context.Context, q *%s.Queries, args []%s) ([]%s, error) {\n", rowsFunc, inputPkg, internalParamsType, idType))
-	sb.WriteString(fmt.Sprintf("\tresults := make([]%s, 0, len(args))\n", idType))
-	sb.WriteString("\tfor _, internalArg := range args {\n")
-	sb.WriteString(fmt.Sprintf("\t\tid, err := q.%s(ctx, internalArg)\n", queryName))
-	sb.WriteString("\t\tif err != nil {\n")
-	sb.WriteString("\t\t\treturn nil, err\n")
-	sb.WriteString("\t\t}\n")
-	sb.WriteString(fmt.Sprintf("\t\tresults = append(results, %s)\n", idExpr))
-	sb.WriteString("\t}\n")
-	sb.WriteString("\treturn results, nil\n")
+	sb.WriteString(fmt.Sprintf("func %s(ctx context.Context, q *%s.Queries, args []%s) %s {\n", rowsFunc, inputPkg, internalParamsType, resultsType))
+	if hasID {
+		// Handle return value conversion for SQLite/MySQL ID (int64 -> int32)
+		idExpr := "id"
+		if (sqlDialect == schema.SQLite || sqlDialect == schema.MySQL) && entity.GetIdField().Type == schema.FieldTypeInt {
+			idExpr = "IntConvert[int64, int32](id)"
+		}
+		sb.WriteString(fmt.Sprintf("\tresults := make([]%s, 0, len(args))\n", idType))
+		sb.WriteString("\tfor _, internalArg := range args {\n")
+		sb.WriteString(fmt.Sprintf("\t\tid, err := q.%s(ctx, internalArg)\n", queryName))
+		sb.WriteString("\t\tif err != nil {\n")
+		sb.WriteString("\t\t\treturn nil, err\n")
+		sb.WriteString("\t\t}\n")
+		sb.WriteString(fmt.Sprintf("\t\tresults = append(results, %s)\n", idExpr))
+		sb.WriteString("\t}\n")
+		sb.WriteString("\treturn results, nil\n")
+	} else {
+		sb.WriteString("\tfor _, internalArg := range args {\n")
+		sb.WriteString(fmt.Sprintf("\t\tif err := q.%s(ctx, internalArg); err != nil {\n", queryName))
+		sb.WriteString("\t\t\treturn err\n")
+		sb.WriteString("\t\t}\n")
+		sb.WriteString("\t}\n")
+		sb.WriteString("\treturn nil\n")
+	}
 	sb.WriteString("}\n\n")
 
-	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, args []%s) ([]%s, error) {\n", receiverType, queryName, paramsType, idType))
+	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, args []%s) %s {\n", receiverType, queryName, paramsType, resultsType))
 	sb.WriteString("\tif len(args) == 0 {\n")
-	sb.WriteString(fmt.Sprintf("\t\treturn []%s{}, nil\n", idType))
+	if hasID {
+		sb.WriteString(fmt.Sprintf("\t\treturn []%s{}, nil\n", idType))
+	} else {
+		sb.WriteString("\t\treturn nil\n")
+	}
 	sb.WriteString("\t}\n\n")
 
 	indexVar := "_"
-	validation := addValidationChecksIndexed(entity, "create_bulk", "nil", "item", "\t\t", "i")
+	validationReturn := "nil"
+	if !hasID {
+		validationReturn = errorOnlyReturn
+	}
+	validation := addValidationChecksIndexed(entity, "create_bulk", validationReturn, "item", "\t\t", "i")
 	if validation != "" {
 		indexVar = "i"
 	}
@@ -183,17 +221,24 @@ func generateCreateBulkQuery(funcDecl *ast.FuncDecl, entity schema.Entity, input
 
 	sb.WriteString("\ttx, err := beginner.BeginTx(ctx, nil)\n")
 	sb.WriteString("\tif err != nil {\n")
-	sb.WriteString("\t\treturn nil, err\n")
+	sb.WriteString(fmt.Sprintf("\t\treturn %serr\n", nilResult))
 	sb.WriteString("\t}\n")
 	sb.WriteString("\tdefer func() { _ = tx.Rollback() }()\n\n")
-	sb.WriteString(fmt.Sprintf("\tresults, err := %s(ctx, internalQueries.WithTx(tx), internalArgs)\n", rowsFunc))
-	sb.WriteString("\tif err != nil {\n")
-	sb.WriteString("\t\treturn nil, err\n")
-	sb.WriteString("\t}\n")
-	sb.WriteString("\tif err := tx.Commit(); err != nil {\n")
-	sb.WriteString("\t\treturn nil, err\n")
-	sb.WriteString("\t}\n")
-	sb.WriteString("\treturn results, nil\n")
+	if hasID {
+		sb.WriteString(fmt.Sprintf("\tresults, err := %s(ctx, internalQueries.WithTx(tx), internalArgs)\n", rowsFunc))
+		sb.WriteString("\tif err != nil {\n")
+		sb.WriteString("\t\treturn nil, err\n")
+		sb.WriteString("\t}\n")
+		sb.WriteString("\tif err := tx.Commit(); err != nil {\n")
+		sb.WriteString("\t\treturn nil, err\n")
+		sb.WriteString("\t}\n")
+		sb.WriteString("\treturn results, nil\n")
+	} else {
+		sb.WriteString(fmt.Sprintf("\tif err := %s(ctx, internalQueries.WithTx(tx), internalArgs); err != nil {\n", rowsFunc))
+		sb.WriteString("\t\treturn err\n")
+		sb.WriteString("\t}\n")
+		sb.WriteString("\treturn tx.Commit()\n")
+	}
 	sb.WriteString("}\n\n")
 
 	return sb.String()

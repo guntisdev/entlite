@@ -155,7 +155,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
 			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
 			content.WriteString("}")
-		case schema.QueryGetBy:
+		case schema.QueryGetBy, schema.QueryDelete:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 
 			for _, fieldName := range query.Fields {
@@ -172,7 +172,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			for _, field := range entity.Fields {
 				canWrite := field.CanApiWrite()
-				if !field.IsID() {
+				if !entity.IsPrimaryKeyField(field) {
 					if field.Immutable || !canWrite {
 						continue
 					}
@@ -190,10 +190,6 @@ func generateResponseMessages(entity schema.Entity) string {
 				}
 				content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
 			}
-			content.WriteString("}")
-		case schema.QueryDelete:
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
-			content.WriteString(fmt.Sprintf("  %s %s;\n", getIdFieldAsStr(entity.Fields), requiredStr))
 			content.WriteString("}")
 		case schema.QueryDeleteAll:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
@@ -298,17 +294,6 @@ func writeCreateFields(content *strings.Builder, entity schema.Entity) {
 		}
 		content.WriteString(fmt.Sprintf("  %s%s %s = %d%s;\n", optional, protoType, field.Name, field.ProtoField, required))
 	}
-}
-
-func getIdFieldAsStr(fields []schema.Field) string {
-	for _, field := range fields {
-		if field.IsID() {
-			protoType := getProtoType(field.Type)
-			return fmt.Sprintf("%s %s = %d", protoType, field.Name, field.ProtoField)
-		}
-	}
-
-	return "int32 id = 1"
 }
 
 func generateRequests(entity schema.Entity, query schema.Query) string {

@@ -52,7 +52,8 @@ type Index struct {
 // marker method for sealed interface
 func (Index) Index() {}
 
-// Primary declares the primary key over the given fields.
+// Primary declares the primary key over the given fields. It replaces the generated
+// id column, which is left out of the table.
 func Primary(fields ...string) IndexBuilder {
 	return Index{typeName: TypePrimary, columns: columnsFromFields(fields)}
 }

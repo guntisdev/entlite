@@ -174,6 +174,8 @@ func (ctx *generationContext) wrapFilterParams(funcDecl *ast.FuncDecl, entity sc
 	return paramsSb.String(), argsSb.String(), preludeSb.String()
 }
 
+const errorOnlyReturn = "error"
+
 func addValidationChecks(entity schema.Entity, sqlQuery string, returnType, argVar, indent string) string {
 	return addValidationChecksIndexed(entity, sqlQuery, returnType, argVar, indent, "")
 }
@@ -193,6 +195,11 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		zeroValue = "\"\""
 	default:
 		zeroValue = "nil"
+	}
+
+	zeroPrefix := zeroValue + ", "
+	if returnType == errorOnlyReturn {
+		zeroPrefix = ""
 	}
 
 	itemPrefix, itemArgs := "", ""
@@ -220,7 +227,7 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 			cond = fmt.Sprintf("%s != nil && !json.Valid([]byte(*%s))", ref, ref)
 		}
 		sb.WriteString(fmt.Sprintf("%sif %s {\n", indent, cond))
-		sb.WriteString(fmt.Sprintf("%s\treturn %s, fmt.Errorf(\"Failed %s: %sinvalid json for '%s' in field '%s'\"%s)\n", indent, zeroValue, sqlQuery, itemPrefix, entity.Name, field.Name, itemArgs))
+		sb.WriteString(fmt.Sprintf("%s\treturn %sfmt.Errorf(\"Failed %s: %sinvalid json for '%s' in field '%s'\"%s)\n", indent, zeroPrefix, sqlQuery, itemPrefix, entity.Name, field.Name, itemArgs))
 		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}
 
@@ -236,7 +243,7 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		validateName := field.Validate().(string)
 		fieldName := toDBFieldName(field)
 		sb.WriteString(fmt.Sprintf("%sif !%s(%s.%s) {\n", indent, validateName, argVar, fieldName))
-		sb.WriteString(fmt.Sprintf("%s\treturn %s, fmt.Errorf(\"Failed %s: %sincorrect value for '%s' in field '%s', validated by '%s'\"%s)\n", indent, zeroValue, sqlQuery, itemPrefix, entity.Name, field.Name, validateName, itemArgs))
+		sb.WriteString(fmt.Sprintf("%s\treturn %sfmt.Errorf(\"Failed %s: %sincorrect value for '%s' in field '%s', validated by '%s'\"%s)\n", indent, zeroPrefix, sqlQuery, itemPrefix, entity.Name, field.Name, validateName, itemArgs))
 		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}
 	return sb.String()
