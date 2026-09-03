@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `user`(
   login_count BIGINT DEFAULT 0 NOT NULL,
   rating DOUBLE DEFAULT 0 NOT NULL,
   -- UI preferences, e.g. {"theme":"dark"}
-  preferences TEXT NOT NULL,
+  preferences JSON NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
 );

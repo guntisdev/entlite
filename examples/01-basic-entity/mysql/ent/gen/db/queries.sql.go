@@ -58,7 +58,7 @@ func (q *Queries) CreateBulkUser(ctx context.Context, args []CreateBulkUserParam
 			IsActive: OptionalWithFallback(item.IsActive, true),
 			LoginCount: OptionalWithFallback(item.LoginCount, 0),
 			Rating: OptionalWithFallback(item.Rating, 0),
-			Preferences: OptionalWithFallback(item.Preferences, "{}"),
+			Preferences: StringToRawMessage(OptionalWithFallback(item.Preferences, "{}")),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		})
@@ -115,7 +115,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int32, 
 		IsActive: OptionalWithFallback(arg.IsActive, true),
 		LoginCount: OptionalWithFallback(arg.LoginCount, 0),
 		Rating: OptionalWithFallback(arg.Rating, 0),
-		Preferences: OptionalWithFallback(arg.Preferences, "{}"),
+		Preferences: StringToRawMessage(OptionalWithFallback(arg.Preferences, "{}")),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -237,7 +237,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		IsActive: PtrToNullBool(arg.IsActive),
 		LoginCount: PtrToNullInt64(arg.LoginCount),
 		Rating: PtrToNullFloat64(arg.Rating),
-		Preferences: PtrToNullString(arg.Preferences),
+		Preferences: PtrToRawMessage(arg.Preferences),
 		UpdatedAt: time.Now(),
 	}
 

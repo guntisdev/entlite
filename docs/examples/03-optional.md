@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS "article"(
   cover_image BLOB,
   published_at DATETIME,
   -- Free-form metadata, e.g. {"og_image":"/cover.png"}
-  metadata TEXT,
+  metadata TEXT CHECK (json_valid(metadata)),
   is_featured INTEGER DEFAULT false NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL

@@ -40,7 +40,7 @@ func (m *User) UserToSQL() *internal.User {
 		IsActive: m.IsActive,
 		LoginCount: m.LoginCount,
 		Rating: m.Rating,
-		Preferences: m.Preferences,
+		Preferences: StringToRawMessage(m.Preferences),
 		CreatedAt: m.CreatedAt,
 		UpdatedAt: m.UpdatedAt,
 	}
@@ -61,7 +61,7 @@ func UserFromSQL(db *internal.User) *User {
 		IsActive: db.IsActive,
 		LoginCount: db.LoginCount,
 		Rating: db.Rating,
-		Preferences: db.Preferences,
+		Preferences: RawMessageToString(db.Preferences),
 		CreatedAt: db.CreatedAt,
 		UpdatedAt: db.UpdatedAt,
 	}

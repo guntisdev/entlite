@@ -5,10 +5,13 @@ package db
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"reflect"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/sqlc-dev/pqtype"
 )
 
 // TimeToProto converts time.Time to timestamppb.Timestamp pointer
@@ -222,4 +225,32 @@ func PtrBytesToNullString(p *[]byte) sql.NullString {
         String: string(*p),
         Valid:  true,
     }
+}
+// --- JSON Converters ---
+// postgres JSONB and mysql JSON come out of sqlc as json.RawMessage
+func StringToRawMessage(s string) json.RawMessage {
+    return json.RawMessage(s)
+}
+
+func RawMessageToString(r json.RawMessage) string {
+    return string(r)
+}
+
+// postgres keeps a nullable JSONB column as pqtype.NullRawMessage
+func PtrToNullRawMessage(p *string) pqtype.NullRawMessage {
+    if p == nil {
+        return pqtype.NullRawMessage{Valid: false}
+    }
+    return pqtype.NullRawMessage{
+        RawMessage: json.RawMessage(*p),
+        Valid:      true,
+    }
+}
+
+func NullRawMessageToPtr(n pqtype.NullRawMessage) *string {
+    if !n.Valid {
+        return nil
+    }
+    s := string(n.RawMessage)
+    return &s
 }

@@ -97,7 +97,7 @@ func sqlcWrapCommand() {
 
 	// Generate convert.go file with converter helper functions
 	convertFilePath := filepath.Join(outputDir, "convert.go")
-	convertContent := sqlcwrap.GenerateConvertFile("db", sqlcEntities)
+	convertContent := sqlcwrap.GenerateConvertFile("db", sqlcEntities, sqlcConfig.Dialect)
 	err = os.WriteFile(convertFilePath, []byte(convertContent), 0644)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing convert.go file: %v\n", err)

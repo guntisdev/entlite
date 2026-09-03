@@ -13,7 +13,7 @@ One field type, five outputs. Every column except TypeScript is read from the ge
 | `field.Float` | `float64` | `REAL` | `DOUBLE PRECISION` | `DOUBLE` | `double` | `number` |
 | `field.Time` | `time.Time` | `DATETIME` | `TIMESTAMPTZ` | `TIMESTAMP` | `google.protobuf.Timestamp` | `Timestamp` |
 | `field.Byte` | `[]byte` | `BLOB` | `BYTEA` | `BLOB` | `bytes` | `Uint8Array` |
-| `field.JSON` | `string` | `TEXT` | `TEXT` | `TEXT` | `string` | `string` |
+| `field.JSON` | `string` | `TEXT` | `JSONB` | `JSON` | `string` | `string` |
 
 ## Notes
 
@@ -23,7 +23,7 @@ One field type, five outputs. Every column except TypeScript is read from the ge
 | `field.Int64` | JSON encodes it as a string, in TypeScript it is a `bigint`. |
 | `field.Bool` | SQLite has no boolean, the column is an INTEGER. |
 | `field.Time` | Proto uses `google.protobuf.Timestamp`, the wrapper converts it. |
-| `field.JSON` | Raw json text, it stays a Go `string` on every layer. |
+| `field.JSON` | Raw json text, it stays a Go `string` on every layer. SQLite adds a `CHECK (json_valid(col))`. |
 | `field.String` | MySQL uses VARCHAR, TEXT cannot be indexed without a key length. |
 
 ## Optional fields

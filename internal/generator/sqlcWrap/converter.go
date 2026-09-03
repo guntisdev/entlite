@@ -50,11 +50,14 @@ func PackageNameOf(dir string) (string, error) {
 }
 
 // convertFileNeeds reports which optional parts of convert.go the entities call for
-func convertFileNeeds(entities []schema.Entity) (hasTimeField bool, hasCreateBulk bool) {
+func convertFileNeeds(entities []schema.Entity) (hasTimeField bool, hasCreateBulk bool, hasJSONField bool) {
 	for _, entity := range entities {
 		for _, field := range entity.Fields {
 			if field.Type == schema.FieldTypeTime {
 				hasTimeField = true
+			}
+			if field.Type == schema.FieldTypeJSON && !field.IsVirtual() {
+				hasJSONField = true
 			}
 		}
 		for _, query := range entity.SQLCQueries() {
@@ -64,11 +67,13 @@ func convertFileNeeds(entities []schema.Entity) (hasTimeField bool, hasCreateBul
 		}
 	}
 
-	return hasTimeField, hasCreateBulk
+	return hasTimeField, hasCreateBulk, hasJSONField
 }
 
-func GenerateConvertFile(packageName string, entities []schema.Entity) string {
-	hasTimeField, hasCreateBulk := convertFileNeeds(entities)
+func GenerateConvertFile(packageName string, entities []schema.Entity, sqlDialect schema.SQLDialect) string {
+	hasTimeField, hasCreateBulk, hasJSONField := convertFileNeeds(entities)
+	// sqlite keeps json as TEXT, only the native JSONB/JSON columns need converters
+	needsJSON := hasJSONField && sqlDialect != schema.SQLite
 
 	var content strings.Builder
 
@@ -82,19 +87,25 @@ func GenerateConvertFile(packageName string, entities []schema.Entity) string {
 		content.WriteString("\t\"context\"\n")
 	}
 	content.WriteString("\t\"database/sql\"\n")
+	if needsJSON {
+		content.WriteString("\t\"encoding/json\"\n")
+	}
 	content.WriteString("\t\"reflect\"\n")
 	if hasTimeField {
 		content.WriteString("\t\"time\"\n\n")
 		content.WriteString("\t\"google.golang.org/protobuf/types/known/timestamppb\"\n")
 	}
+	if needsJSON && sqlDialect == schema.PostgreSQL {
+		content.WriteString("\n\t\"github.com/sqlc-dev/pqtype\"\n")
+	}
 	content.WriteString(")\n")
 
-	content.WriteString(generateConverterFunctions(hasTimeField, hasCreateBulk))
+	content.WriteString(generateConverterFunctions(hasTimeField, hasCreateBulk, needsJSON, sqlDialect))
 
 	return content.String()
 }
 
-func generateConverterFunctions(hasTimeField bool, hasCreateBulk bool) string {
+func generateConverterFunctions(hasTimeField bool, hasCreateBulk bool, needsJSON bool, sqlDialect schema.SQLDialect) string {
 	var content strings.Builder
 
 	if hasTimeField {
@@ -112,6 +123,14 @@ func generateConverterFunctions(hasTimeField bool, hasCreateBulk bool) string {
 	content.WriteString(sqliteBools)
 	content.WriteString(sqlLiteInts)
 	content.WriteString(mysqlBytes)
+	if needsJSON {
+		content.WriteString(rawMessageTypes)
+		if sqlDialect == schema.PostgreSQL {
+			content.WriteString(nullRawMessageTypes)
+		} else {
+			content.WriteString(mysqlRawMessage)
+		}
+	}
 
 	return content.String()
 }
@@ -345,3 +364,54 @@ func PtrBytesToNullString(p *[]byte) sql.NullString {
         Valid:  true,
     }
 }`
+
+const rawMessageTypes = `
+// --- JSON Converters ---
+// postgres JSONB and mysql JSON come out of sqlc as json.RawMessage
+func StringToRawMessage(s string) json.RawMessage {
+    return json.RawMessage(s)
+}
+
+func RawMessageToString(r json.RawMessage) string {
+    return string(r)
+}
+`
+
+const mysqlRawMessage = `
+// mysql keeps a nullable JSON column as json.RawMessage, nil means NULL
+func PtrToRawMessage(p *string) json.RawMessage {
+    if p == nil {
+        return nil
+    }
+    return json.RawMessage(*p)
+}
+
+func RawMessageToPtr(r json.RawMessage) *string {
+    if r == nil {
+        return nil
+    }
+    s := string(r)
+    return &s
+}
+`
+
+const nullRawMessageTypes = `
+// postgres keeps a nullable JSONB column as pqtype.NullRawMessage
+func PtrToNullRawMessage(p *string) pqtype.NullRawMessage {
+    if p == nil {
+        return pqtype.NullRawMessage{Valid: false}
+    }
+    return pqtype.NullRawMessage{
+        RawMessage: json.RawMessage(*p),
+        Valid:      true,
+    }
+}
+
+func NullRawMessageToPtr(n pqtype.NullRawMessage) *string {
+    if !n.Valid {
+        return nil
+    }
+    s := string(n.RawMessage)
+    return &s
+}
+`

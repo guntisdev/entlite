@@ -5,6 +5,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"reflect"
 	"time"
 
@@ -222,4 +223,29 @@ func PtrBytesToNullString(p *[]byte) sql.NullString {
         String: string(*p),
         Valid:  true,
     }
+}
+// --- JSON Converters ---
+// postgres JSONB and mysql JSON come out of sqlc as json.RawMessage
+func StringToRawMessage(s string) json.RawMessage {
+    return json.RawMessage(s)
+}
+
+func RawMessageToString(r json.RawMessage) string {
+    return string(r)
+}
+
+// mysql keeps a nullable JSON column as json.RawMessage, nil means NULL
+func PtrToRawMessage(p *string) json.RawMessage {
+    if p == nil {
+        return nil
+    }
+    return json.RawMessage(*p)
+}
+
+func RawMessageToPtr(r json.RawMessage) *string {
+    if r == nil {
+        return nil
+    }
+    s := string(r)
+    return &s
 }

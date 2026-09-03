@@ -430,9 +430,19 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect
 		return fmt.Sprintf("PtrToNullBytes(%s)", pbFieldRef)
 	}
 
+	if field.Type == schema.FieldTypeJSON && sqlDialect != schema.SQLite {
+		if !field.Optional {
+			return fmt.Sprintf("StringToRawMessage(%s)", pbFieldRef)
+		}
+		if sqlDialect == schema.PostgreSQL {
+			return fmt.Sprintf("PtrToNullRawMessage(%s)", pbFieldRef)
+		}
+		return fmt.Sprintf("PtrToRawMessage(%s)", pbFieldRef)
+	}
+
 	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
 		switch field.Type {
-		case schema.FieldTypeString, schema.FieldTypeJSON:
+		case schema.FieldTypeString:
 			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
 		case schema.FieldTypeInt:
 			return fmt.Sprintf("PtrToNullInt32(%s)", pbFieldRef)
@@ -472,9 +482,19 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect schema.SQLDiale
 		return fmt.Sprintf("NullBytesToPtr(%s)", dbFieldRef)
 	}
 
+	if field.Type == schema.FieldTypeJSON && sqlDialect != schema.SQLite {
+		if !field.Optional {
+			return fmt.Sprintf("RawMessageToString(%s)", dbFieldRef)
+		}
+		if sqlDialect == schema.PostgreSQL {
+			return fmt.Sprintf("NullRawMessageToPtr(%s)", dbFieldRef)
+		}
+		return fmt.Sprintf("RawMessageToPtr(%s)", dbFieldRef)
+	}
+
 	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
 		switch field.Type {
-		case schema.FieldTypeString, schema.FieldTypeJSON:
+		case schema.FieldTypeString:
 			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeInt:
 			return fmt.Sprintf("NullInt32ToPtr(%s)", dbFieldRef)

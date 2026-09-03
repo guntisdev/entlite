@@ -6,20 +6,21 @@ package internal
 
 import (
 	"database/sql"
+	"encoding/json"
 	"time"
 )
 
 type User struct {
-	ID          int32         `json:"id"`
-	Email       string        `json:"email"`
-	Name        string        `json:"name"`
-	Age         sql.NullInt32 `json:"age"`
-	Password    string        `json:"password"`
-	ApiKey      []byte        `json:"api_key"`
-	IsActive    bool          `json:"is_active"`
-	LoginCount  int64         `json:"login_count"`
-	Rating      float64       `json:"rating"`
-	Preferences string        `json:"preferences"`
-	CreatedAt   time.Time     `json:"created_at"`
-	UpdatedAt   time.Time     `json:"updated_at"`
+	ID          int32           `json:"id"`
+	Email       string          `json:"email"`
+	Name        string          `json:"name"`
+	Age         sql.NullInt32   `json:"age"`
+	Password    string          `json:"password"`
+	ApiKey      []byte          `json:"api_key"`
+	IsActive    bool            `json:"is_active"`
+	LoginCount  int64           `json:"login_count"`
+	Rating      float64         `json:"rating"`
+	Preferences json.RawMessage `json:"preferences"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
 }
