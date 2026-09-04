@@ -169,7 +169,7 @@ func (s *SensorServer) FilterByLabelKindActive(
 	}
 
 	return connect.NewResponse(&pb.ListSensorFilterByLabelKindActiveResponse{
-		Sensors: pbSensors,
+		Rows: pbSensors,
 	}), nil
 }
 
@@ -265,7 +265,7 @@ func (s *ReadingServer) ListBySensorId(
 	}
 
 	return connect.NewResponse(&pb.ListReadingBySensorIdResponse{
-		Readings: toProtoReadings(dbReadings),
+		Rows: toProtoReadings(dbReadings),
 	}), nil
 }
 
@@ -289,7 +289,7 @@ func (s *ReadingServer) FilterBySensorIdRecordedAtFlagged(
 	}
 
 	return connect.NewResponse(&pb.ListReadingFilterBySensorIdRecordedAtFlaggedResponse{
-		Readings: toProtoReadings(dbReadings),
+		Rows: toProtoReadings(dbReadings),
 	}), nil
 }
 

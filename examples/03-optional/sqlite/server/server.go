@@ -162,7 +162,7 @@ func (s *ArticleServer) ListAll(
 	}
 
 	return connect.NewResponse(&pb.ListAllArticleResponse{
-		Articles: toProtoArticles(dbArticles),
+		Rows: toProtoArticles(dbArticles),
 	}), nil
 }
 
@@ -184,7 +184,7 @@ func (s *ArticleServer) ListByAuthor(
 	}
 
 	return connect.NewResponse(&pb.ListArticleByAuthorResponse{
-		Articles: toProtoArticles(dbArticles),
+		Rows: toProtoArticles(dbArticles),
 	}), nil
 }
 
@@ -213,7 +213,7 @@ func (s *ArticleServer) FilterByAuthorIsFeaturedPublishedAtTitle(
 	}
 
 	return connect.NewResponse(&pb.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse{
-		Articles: toProtoArticles(dbArticles),
+		Rows: toProtoArticles(dbArticles),
 	}), nil
 }
 

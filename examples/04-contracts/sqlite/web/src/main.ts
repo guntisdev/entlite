@@ -130,8 +130,8 @@ function listMatches() {
     log("Listing matches from the match table...");
     matchClient.listAll({})
         .then((response) => {
-            log(`✓ ${response.matchs.length} matches:`);
-            for (const match of response.matchs) {
+            log(`✓ ${response.rows.length} matches:`);
+            for (const match of response.rows) {
                 log(describeMatch(match));
             }
         })
@@ -159,8 +159,8 @@ function listPlayers() {
     log("Listing the roster, seeded by the server on startup...");
     playerClient.listAll({})
         .then((response) => {
-            log(`✓ ${response.players.length} players:`);
-            for (const player of response.players) {
+            log(`✓ ${response.rows.length} players:`);
+            for (const player of response.rows) {
                 log(describePlayer(player));
             }
         })
@@ -183,8 +183,8 @@ function listStandings() {
     log("Listing standings, counted from matches, there is no standings table...");
     standingClient.listAll({})
         .then((response) => {
-            log(`✓ ${response.standings.length} players:`);
-            for (const standing of response.standings) {
+            log(`✓ ${response.rows.length} players:`);
+            for (const standing of response.rows) {
                 log(describeStanding(standing));
             }
         })

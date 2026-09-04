@@ -138,7 +138,7 @@ message ListUserByNameAgeRequest {
 }
 
 message ListUserByNameAgeResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 
 // UserService provides CRUD opertions for User entities

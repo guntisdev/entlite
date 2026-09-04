@@ -349,13 +349,13 @@ message ListArticleByAuthorRequest {
 }
 
 message ListArticleByAuthorResponse {
-  repeated Article articles = 1;
+  repeated Article rows = 1;
 }
 message ListAllArticleRequest {
 }
 
 message ListAllArticleResponse {
-  repeated Article articles = 1;
+  repeated Article rows = 1;
 }
 message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
@@ -368,7 +368,7 @@ message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
 }
 
 message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse {
-  repeated Article articles = 1;
+  repeated Article rows = 1;
 }
 
 // ArticleService provides CRUD opertions for Article entities

@@ -116,7 +116,7 @@ func (s *MatchServer) ListAll(
 	}
 
 	return connect.NewResponse(&pb.ListAllMatchResponse{
-		Matchs: protoMatches,
+		Rows: protoMatches,
 	}), nil
 }
 
@@ -205,7 +205,7 @@ func (s *PlayerServer) ListAll(
 	}
 
 	return connect.NewResponse(&pb.ListAllPlayerResponse{
-		Players: protoPlayers,
+		Rows: protoPlayers,
 	}), nil
 }
 
@@ -268,7 +268,7 @@ func (s *StandingServer) ListAll(
 	}
 
 	return connect.NewResponse(&pb.ListAllStandingResponse{
-		Standings: countStandings(matches),
+		Rows: countStandings(matches),
 	}), nil
 }
 

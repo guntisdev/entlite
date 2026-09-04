@@ -57,7 +57,7 @@ function createBulkUsers() {
     const request: StrictMessageInput<CreateBulkUserRequest> = { items };
     client.createBulk(request)
     .then((response) => {
-        log(`✓ ${response.users.length} users created in bulk:`, response);
+        log(`✓ ${response.rows.length} users created in bulk:`, response);
     })
     .catch((error) => {
         log("✗ Error creating users in bulk:", error);
@@ -86,8 +86,8 @@ function listAllUsers() {
     const request: StrictMessageInput<ListAllUserRequest> = {};
     client.listAll(request)
     .then((response) => {
-        log(`✓ Users listed (${response.users.length} users):`);
-        response.users.forEach((user, index) => {
+        log(`✓ Users listed (${response.rows.length} users):`);
+        response.rows.forEach((user, index) => {
             log(`ID: ${user.ID} ${user.name} ${user.age} ${user.email}`);
         });
     })

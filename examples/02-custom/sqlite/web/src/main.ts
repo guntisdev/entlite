@@ -192,8 +192,8 @@ function filterSensors() {
     };
     sensorClient.filterByLabelKindActive(request)
         .then((response) => {
-            log(`✓ Sensors filtered (${response.sensors.length} sensors):`);
-            response.sensors.forEach((sensor) => log(describeSensor(sensor)));
+            log(`✓ Sensors filtered (${response.rows.length} sensors):`);
+            response.rows.forEach((sensor) => log(describeSensor(sensor)));
         })
         .catch((error) => {
             log("✗ Error filtering sensors:", error);
@@ -288,8 +288,8 @@ function listReadings() {
     log(`Listing readings of sensor ${sensorId}...`);
     readingClient.listBySensorId({ limit: 50, offset: 0, sensorId: sensorId })
         .then((response) => {
-            log(`✓ Readings listed (${response.readings.length} readings):`);
-            response.readings.forEach((reading) => {
+            log(`✓ Readings listed (${response.rows.length} readings):`);
+            response.rows.forEach((reading) => {
                 const recordedAt = reading.recordedAt ? timestampDate(reading.recordedAt).toISOString() : "-";
                 log(`ID: ${reading.ID} value=${reading.value} quality=${reading.quality} flagged=${reading.flagged} ${recordedAt}`);
             });
@@ -316,7 +316,7 @@ function filterReadings() {
     };
     readingClient.filterBySensorIdRecordedAtFlagged(request)
         .then((response) => {
-            log(`✓ Readings filtered (${response.readings.length} readings):`, response);
+            log(`✓ Readings filtered (${response.rows.length} readings):`, response);
         })
         .catch((error) => {
             // known gap: sqlc drops both DATETIME BETWEEN bounds, so the query gets too few args

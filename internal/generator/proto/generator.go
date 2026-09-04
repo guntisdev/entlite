@@ -153,7 +153,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			content.WriteString("}")
 		case schema.QueryGetBy, schema.QueryDelete:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
@@ -199,7 +199,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			content.WriteString("}")
 		case schema.QueryListBy:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
@@ -246,7 +246,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			content.WriteString("}")
 		}
 

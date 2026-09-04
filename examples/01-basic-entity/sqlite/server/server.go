@@ -94,7 +94,7 @@ func (s *UserServer) CreateBulk(
 		users = append(users, user.ToProto())
 	}
 
-	return connect.NewResponse(&pb.CreateBulkUserResponse{Users: users}), nil
+	return connect.NewResponse(&pb.CreateBulkUserResponse{Rows: users}), nil
 }
 
 func (s *UserServer) GetByID(
@@ -215,7 +215,7 @@ func (s *UserServer) ListAll(
 	}
 
 	response := &pb.ListAllUserResponse{
-		Users: pbUsers,
+		Rows: pbUsers,
 	}
 
 	return connect.NewResponse(response), nil
@@ -244,7 +244,7 @@ func (s *UserServer) ListActive(
 	}
 
 	response := &pb.ListActiveResponse{
-		Users: pbUsers,
+		Rows: pbUsers,
 	}
 
 	return connect.NewResponse(response), nil
@@ -278,7 +278,7 @@ func (s *UserServer) FilterByAgeName(
 	}
 
 	response := &pb.ListUserFilterByAgeNameResponse{
-		Users: pbUsers,
+		Rows: pbUsers,
 	}
 
 	return connect.NewResponse(response), nil

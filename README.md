@@ -4,27 +4,23 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getting-started.md), [reference](docs/README.md#reference), [examples](docs/README.md#examples).
 
 ## TODO
-* ~~fix generated proto package name (currently hardcoded)~~
-* ~~For indexes generate "IF NOT EXISTS" to "CREATE TABLE"~~
-* ~~Wire LIMIT/OFFSET from proto to queries~~
-* ~~Double check reserved word usage. Like "table" in sql~~
+* fix option go_package for proto files: should be full import path not relative path
 * Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/
 * Move query name to parser instead of generator
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 
-* ~~improve JSON field -> postgres: JSONB, mysql: JSON, sqlite, TEXT CHECK (json_valid(col))~~
-* ~~sqlc wrapper proly should return json.RawMessage instead of string~~ - kept as `string`, proto has no json type and `json.RawMessage` marshals an empty value as invalid json
+* Implement Queries OrderBy()
+* On queries Create() and CreateBulk() add .Upsert() with or without fields to generate query ON CONFLICET (....) DO UPDATE
+* Implement Queries Count(), Sum(), Avg()
 
 * Comment out in examples Queries use case for: Count, GroupBy, Having, OrderBy
-* Implement Queries OrderBy()
-* Implement Queries Count()
 * Implement Queries GroupBy()
 * Implement Queries Having()
-* On queries Create() and CreateBulk() add .Upsert() with or without fields to generate query ON CONFLICET (....) DO UPDATE
 * DeleteBy(...) query
 * Create queries example with complicated edge case queries
 
+* Figure out enums
 * Create /internal/naming/ to have in one place consistant naming
 * Figure out migration
 

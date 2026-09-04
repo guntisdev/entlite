@@ -445,7 +445,7 @@ message ListReadingBySensorIdRequest {
 }
 
 message ListReadingBySensorIdResponse {
-  repeated Reading readings = 1;
+  repeated Reading rows = 1;
 }
 message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
@@ -457,7 +457,7 @@ message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
 }
 
 message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
-  repeated Reading readings = 1;
+  repeated Reading rows = 1;
 }
 
 // ReadingService provides CRUD opertions for Reading entities
@@ -524,7 +524,7 @@ message ListSensorFilterByLabelKindActiveRequest {
 }
 
 message ListSensorFilterByLabelKindActiveResponse {
-  repeated Sensor sensors = 1;
+  repeated Sensor rows = 1;
 }
 
 // SensorService provides CRUD opertions for Sensor entities

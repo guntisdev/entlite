@@ -360,7 +360,7 @@ message CreateBulkUserRequest {
 }
 
 message CreateBulkUserResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 message GetUserByEmailRequest {
   string email = 2 [(buf.validate.field).required = true];
@@ -369,7 +369,7 @@ message ListAllUserRequest {
 }
 
 message ListAllUserResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 message DeleteAllUserRequest {
 }
@@ -380,7 +380,7 @@ message ListActiveRequest {
 }
 
 message ListActiveResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 message ListUserFilterByAgeNameRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
@@ -391,7 +391,7 @@ message ListUserFilterByAgeNameRequest {
 }
 
 message ListUserFilterByAgeNameResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 
 // UserService provides CRUD opertions for User entities

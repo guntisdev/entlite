@@ -498,7 +498,7 @@ message ListAllMatchRequest {
 }
 
 message ListAllMatchResponse {
-  repeated Match matchs = 1;
+  repeated Match rows = 1;
 }
 
 // MatchService provides CRUD opertions for Match entities
@@ -516,7 +516,7 @@ message ListAllPlayerRequest {
 }
 
 message ListAllPlayerResponse {
-  repeated Player players = 1;
+  repeated Player rows = 1;
 }
 
 // PlayerService provides CRUD opertions for Player entities
@@ -529,7 +529,7 @@ message ListAllStandingRequest {
 }
 
 message ListAllStandingResponse {
-  repeated Standing standings = 1;
+  repeated Standing rows = 1;
 }
 
 // StandingService provides CRUD opertions for Standing entities

@@ -288,8 +288,8 @@ function listAll() {
     log("Listing all articles...");
     articleClient.listAll({})
         .then((response) => {
-            log(`✓ Articles listed (${response.articles.length} articles):`);
-            response.articles.forEach((article) => log(describeArticle(article)));
+            log(`✓ Articles listed (${response.rows.length} articles):`);
+            response.rows.forEach((article) => log(describeArticle(article)));
         })
         .catch((error) => {
             log("✗ Error listing all articles:", error);
@@ -305,8 +305,8 @@ function listByAuthor() {
     log(`Listing articles of ${author}...`);
     articleClient.listByAuthor({ limit: 50, offset: 0, author: author })
         .then((response) => {
-            log(`✓ Articles listed (${response.articles.length} articles):`);
-            response.articles.forEach((article) => log(describeArticle(article)));
+            log(`✓ Articles listed (${response.rows.length} articles):`);
+            response.rows.forEach((article) => log(describeArticle(article)));
         })
         .catch((error) => {
             log("✗ Error listing articles:", error);
@@ -339,8 +339,8 @@ function filterArticles() {
     log("Filtering articles:", request);
     articleClient.filterByAuthorIsFeaturedPublishedAtTitle(request)
         .then((response) => {
-            log(`✓ Articles filtered (${response.articles.length} articles):`);
-            response.articles.forEach((article) => log(describeArticle(article)));
+            log(`✓ Articles filtered (${response.rows.length} articles):`);
+            response.rows.forEach((article) => log(describeArticle(article)));
         })
         .catch((error) => {
             // TODO the generated params miss the optional published_at range
