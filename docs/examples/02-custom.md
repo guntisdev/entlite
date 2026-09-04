@@ -376,7 +376,7 @@ syntax = "proto3";
 
 package proto;
 
-option go_package = "./pb";
+option go_package = "github.com/guntisdev/entlite/examples/02-custom/sqlite/ent/gen/pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
