@@ -58,8 +58,6 @@ func (User) Queries() []entlite.Query {
 
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
-		// compound primary key, it replaces the generated id column
-		// index.Primary("email", "created_at"),
 		// index on two columns
 		index.Fields("age", "is_active"),
 		// descending sort

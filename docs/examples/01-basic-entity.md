@@ -15,7 +15,7 @@ Source: [examples/01-basic-entity](../../examples/01-basic-entity)
 - Ready made queries: `DefaultCRUD()`, `CreateBulk()`, `ListAll()`, `DeleteAll()`
 - Queries by field: `GetBy("email")`, `ListBy("is_active")`, and `Name()` to rename one
 - Filters: `filter.Range()` and `filter.Search()`
-- Indexes: multi column, `Desc()` sort order, `Unique()`, `Name()`, and a commented out `index.Primary()`
+- Indexes: multi column, `Desc()` sort order, `Unique()`, `Name()`
 - The same schema on three dialects: sqlite, postgresql, mysql
 
 ## Entity
@@ -122,8 +122,6 @@ func (User) Queries() []entlite.Query {
 
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
-		// compound primary key, it replaces the generated id column
-		// index.Primary("email", "created_at"),
 		// index on two columns
 		index.Fields("age", "is_active"),
 		// descending sort
