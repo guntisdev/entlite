@@ -13,8 +13,8 @@ import (
 // proto package name for every generated schema.proto
 const PackageName = "proto"
 
-func Generate(entities []schema.Entity, dir string) error {
-	protoContent := generateSchemaProto(entities)
+func Generate(entities []schema.Entity, dir string, goPackage string) error {
+	protoContent := generateSchemaProto(entities, goPackage)
 
 	fileName := "schema.proto"
 	filePath := filepath.Join(dir, fileName)
@@ -26,13 +26,13 @@ func Generate(entities []schema.Entity, dir string) error {
 	return nil
 }
 
-func generateSchemaProto(entities []schema.Entity) string {
+func generateSchemaProto(entities []schema.Entity, goPackage string) string {
 	var content strings.Builder
 
 	content.WriteString(util.GeneratedGo)
 	content.WriteString("syntax = \"proto3\";\n\n")
 	content.WriteString(fmt.Sprintf("package %s;\n\n", PackageName))
-	content.WriteString("option go_package = \"./pb\";\n\n")
+	content.WriteString(fmt.Sprintf("option go_package = \"%s\";\n\n", goPackage))
 
 	imports := []string{}
 	if needsCommonImports(entities) {

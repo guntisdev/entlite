@@ -4,7 +4,6 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getting-started.md), [reference](docs/README.md#reference), [examples](docs/README.md#examples).
 
 ## TODO
-* fix option go_package for proto files: should be full import path not relative path
 * Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/
 * Move query name to parser instead of generator

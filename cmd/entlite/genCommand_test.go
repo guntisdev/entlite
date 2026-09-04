@@ -45,6 +45,17 @@ sql:
 		t.Fatalf("Failed to write sqlc.yaml: %v", err)
 	}
 
+	bufGenYamlContent := `version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/go:v1.34.2
+    out: gen/pb
+    opt: paths=source_relative`
+
+	bufGenYamlPath := filepath.Join(tmpDir, "ent", "buf.gen.yaml")
+	if err := os.WriteFile(bufGenYamlPath, []byte(bufGenYamlContent), 0644); err != nil {
+		t.Fatalf("Failed to write buf.gen.yaml: %v", err)
+	}
+
 	genCommand([]string{schemaDir})
 
 	expectedDirs := []string{
@@ -78,7 +89,7 @@ sql:
 
 package proto;
 
-option go_package = "./pb";
+option go_package = "github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
