@@ -29,7 +29,7 @@ func NewArticleServiceServer(db *sql.DB) *ArticleServer {
 	}
 }
 
-func (s *ArticleServer) Create(
+func (s *ArticleServer) CreateArticle(
 	ctx context.Context,
 	req *connect.Request[pb.CreateArticleRequest],
 ) (*connect.Response[pb.Article], error) {
@@ -63,7 +63,7 @@ func (s *ArticleServer) Create(
 	return connect.NewResponse(article.ToProto()), nil
 }
 
-func (s *ArticleServer) GetByID(
+func (s *ArticleServer) GetArticleByID(
 	ctx context.Context,
 	req *connect.Request[pb.GetArticleByIDRequest],
 ) (*connect.Response[pb.Article], error) {
@@ -82,7 +82,7 @@ func (s *ArticleServer) GetByID(
 	return connect.NewResponse(article.ToProto()), nil
 }
 
-func (s *ArticleServer) GetBySlug(
+func (s *ArticleServer) GetArticleBySlug(
 	ctx context.Context,
 	req *connect.Request[pb.GetArticleBySlugRequest],
 ) (*connect.Response[pb.Article], error) {
@@ -101,7 +101,7 @@ func (s *ArticleServer) GetBySlug(
 	return connect.NewResponse(article.ToProto()), nil
 }
 
-func (s *ArticleServer) Update(
+func (s *ArticleServer) UpdateArticle(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateArticleRequest],
 ) (*connect.Response[pb.Article], error) {
@@ -133,7 +133,7 @@ func (s *ArticleServer) Update(
 	return connect.NewResponse(article.ToProto()), nil
 }
 
-func (s *ArticleServer) Delete(
+func (s *ArticleServer) DeleteArticle(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteArticleRequest],
 ) (*connect.Response[emptypb.Empty], error) {
@@ -148,7 +148,7 @@ func (s *ArticleServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *ArticleServer) ListAll(
+func (s *ArticleServer) ListAllArticle(
 	ctx context.Context,
 	req *connect.Request[pb.ListAllArticleRequest],
 ) (*connect.Response[pb.ListAllArticleResponse], error) {
@@ -166,7 +166,7 @@ func (s *ArticleServer) ListAll(
 	}), nil
 }
 
-func (s *ArticleServer) ListByAuthor(
+func (s *ArticleServer) ListArticleByAuthor(
 	ctx context.Context,
 	req *connect.Request[pb.ListArticleByAuthorRequest],
 ) (*connect.Response[pb.ListArticleByAuthorResponse], error) {
@@ -188,7 +188,7 @@ func (s *ArticleServer) ListByAuthor(
 	}), nil
 }
 
-func (s *ArticleServer) FilterByAuthorIsFeaturedPublishedAtTitle(
+func (s *ArticleServer) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(
 	ctx context.Context,
 	req *connect.Request[pb.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest],
 ) (*connect.Response[pb.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {

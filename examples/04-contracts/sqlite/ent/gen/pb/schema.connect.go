@@ -39,28 +39,35 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// MatchServiceCreateProcedure is the fully-qualified name of the MatchService's Create RPC.
-	MatchServiceCreateProcedure = "/proto.MatchService/Create"
-	// MatchServiceGetByIDProcedure is the fully-qualified name of the MatchService's GetByID RPC.
-	MatchServiceGetByIDProcedure = "/proto.MatchService/GetByID"
-	// MatchServiceDeleteProcedure is the fully-qualified name of the MatchService's Delete RPC.
-	MatchServiceDeleteProcedure = "/proto.MatchService/Delete"
-	// MatchServiceListAllProcedure is the fully-qualified name of the MatchService's ListAll RPC.
-	MatchServiceListAllProcedure = "/proto.MatchService/ListAll"
-	// PlayerServiceGetByNameProcedure is the fully-qualified name of the PlayerService's GetByName RPC.
-	PlayerServiceGetByNameProcedure = "/proto.PlayerService/GetByName"
-	// PlayerServiceListAllProcedure is the fully-qualified name of the PlayerService's ListAll RPC.
-	PlayerServiceListAllProcedure = "/proto.PlayerService/ListAll"
-	// StandingServiceListAllProcedure is the fully-qualified name of the StandingService's ListAll RPC.
-	StandingServiceListAllProcedure = "/proto.StandingService/ListAll"
+	// MatchServiceCreateMatchProcedure is the fully-qualified name of the MatchService's CreateMatch
+	// RPC.
+	MatchServiceCreateMatchProcedure = "/proto.MatchService/CreateMatch"
+	// MatchServiceGetMatchByIDProcedure is the fully-qualified name of the MatchService's GetMatchByID
+	// RPC.
+	MatchServiceGetMatchByIDProcedure = "/proto.MatchService/GetMatchByID"
+	// MatchServiceDeleteMatchProcedure is the fully-qualified name of the MatchService's DeleteMatch
+	// RPC.
+	MatchServiceDeleteMatchProcedure = "/proto.MatchService/DeleteMatch"
+	// MatchServiceListAllMatchProcedure is the fully-qualified name of the MatchService's ListAllMatch
+	// RPC.
+	MatchServiceListAllMatchProcedure = "/proto.MatchService/ListAllMatch"
+	// PlayerServiceGetPlayerByNameProcedure is the fully-qualified name of the PlayerService's
+	// GetPlayerByName RPC.
+	PlayerServiceGetPlayerByNameProcedure = "/proto.PlayerService/GetPlayerByName"
+	// PlayerServiceListAllPlayerProcedure is the fully-qualified name of the PlayerService's
+	// ListAllPlayer RPC.
+	PlayerServiceListAllPlayerProcedure = "/proto.PlayerService/ListAllPlayer"
+	// StandingServiceListAllStandingProcedure is the fully-qualified name of the StandingService's
+	// ListAllStanding RPC.
+	StandingServiceListAllStandingProcedure = "/proto.StandingService/ListAllStanding"
 )
 
 // MatchServiceClient is a client for the proto.MatchService service.
 type MatchServiceClient interface {
-	Create(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
-	GetByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error)
-	Delete(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error)
-	ListAll(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error)
+	CreateMatch(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
+	GetMatchByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error)
+	DeleteMatch(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error)
+	ListAllMatch(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error)
 }
 
 // NewMatchServiceClient constructs a client for the proto.MatchService service. By default, it uses
@@ -74,28 +81,28 @@ func NewMatchServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 	baseURL = strings.TrimRight(baseURL, "/")
 	matchServiceMethods := File_schema_proto.Services().ByName("MatchService").Methods()
 	return &matchServiceClient{
-		create: connect.NewClient[CreateMatchRequest, Match](
+		createMatch: connect.NewClient[CreateMatchRequest, Match](
 			httpClient,
-			baseURL+MatchServiceCreateProcedure,
-			connect.WithSchema(matchServiceMethods.ByName("Create")),
+			baseURL+MatchServiceCreateMatchProcedure,
+			connect.WithSchema(matchServiceMethods.ByName("CreateMatch")),
 			connect.WithClientOptions(opts...),
 		),
-		getByID: connect.NewClient[GetMatchByIDRequest, Match](
+		getMatchByID: connect.NewClient[GetMatchByIDRequest, Match](
 			httpClient,
-			baseURL+MatchServiceGetByIDProcedure,
-			connect.WithSchema(matchServiceMethods.ByName("GetByID")),
+			baseURL+MatchServiceGetMatchByIDProcedure,
+			connect.WithSchema(matchServiceMethods.ByName("GetMatchByID")),
 			connect.WithClientOptions(opts...),
 		),
-		delete: connect.NewClient[DeleteMatchRequest, emptypb.Empty](
+		deleteMatch: connect.NewClient[DeleteMatchRequest, emptypb.Empty](
 			httpClient,
-			baseURL+MatchServiceDeleteProcedure,
-			connect.WithSchema(matchServiceMethods.ByName("Delete")),
+			baseURL+MatchServiceDeleteMatchProcedure,
+			connect.WithSchema(matchServiceMethods.ByName("DeleteMatch")),
 			connect.WithClientOptions(opts...),
 		),
-		listAll: connect.NewClient[ListAllMatchRequest, ListAllMatchResponse](
+		listAllMatch: connect.NewClient[ListAllMatchRequest, ListAllMatchResponse](
 			httpClient,
-			baseURL+MatchServiceListAllProcedure,
-			connect.WithSchema(matchServiceMethods.ByName("ListAll")),
+			baseURL+MatchServiceListAllMatchProcedure,
+			connect.WithSchema(matchServiceMethods.ByName("ListAllMatch")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -103,38 +110,38 @@ func NewMatchServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // matchServiceClient implements MatchServiceClient.
 type matchServiceClient struct {
-	create  *connect.Client[CreateMatchRequest, Match]
-	getByID *connect.Client[GetMatchByIDRequest, Match]
-	delete  *connect.Client[DeleteMatchRequest, emptypb.Empty]
-	listAll *connect.Client[ListAllMatchRequest, ListAllMatchResponse]
+	createMatch  *connect.Client[CreateMatchRequest, Match]
+	getMatchByID *connect.Client[GetMatchByIDRequest, Match]
+	deleteMatch  *connect.Client[DeleteMatchRequest, emptypb.Empty]
+	listAllMatch *connect.Client[ListAllMatchRequest, ListAllMatchResponse]
 }
 
-// Create calls proto.MatchService.Create.
-func (c *matchServiceClient) Create(ctx context.Context, req *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error) {
-	return c.create.CallUnary(ctx, req)
+// CreateMatch calls proto.MatchService.CreateMatch.
+func (c *matchServiceClient) CreateMatch(ctx context.Context, req *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error) {
+	return c.createMatch.CallUnary(ctx, req)
 }
 
-// GetByID calls proto.MatchService.GetByID.
-func (c *matchServiceClient) GetByID(ctx context.Context, req *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error) {
-	return c.getByID.CallUnary(ctx, req)
+// GetMatchByID calls proto.MatchService.GetMatchByID.
+func (c *matchServiceClient) GetMatchByID(ctx context.Context, req *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error) {
+	return c.getMatchByID.CallUnary(ctx, req)
 }
 
-// Delete calls proto.MatchService.Delete.
-func (c *matchServiceClient) Delete(ctx context.Context, req *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {
-	return c.delete.CallUnary(ctx, req)
+// DeleteMatch calls proto.MatchService.DeleteMatch.
+func (c *matchServiceClient) DeleteMatch(ctx context.Context, req *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteMatch.CallUnary(ctx, req)
 }
 
-// ListAll calls proto.MatchService.ListAll.
-func (c *matchServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
-	return c.listAll.CallUnary(ctx, req)
+// ListAllMatch calls proto.MatchService.ListAllMatch.
+func (c *matchServiceClient) ListAllMatch(ctx context.Context, req *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
+	return c.listAllMatch.CallUnary(ctx, req)
 }
 
 // MatchServiceHandler is an implementation of the proto.MatchService service.
 type MatchServiceHandler interface {
-	Create(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
-	GetByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error)
-	Delete(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error)
-	ListAll(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error)
+	CreateMatch(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
+	GetMatchByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error)
+	DeleteMatch(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error)
+	ListAllMatch(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error)
 }
 
 // NewMatchServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -144,40 +151,40 @@ type MatchServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewMatchServiceHandler(svc MatchServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	matchServiceMethods := File_schema_proto.Services().ByName("MatchService").Methods()
-	matchServiceCreateHandler := connect.NewUnaryHandler(
-		MatchServiceCreateProcedure,
-		svc.Create,
-		connect.WithSchema(matchServiceMethods.ByName("Create")),
+	matchServiceCreateMatchHandler := connect.NewUnaryHandler(
+		MatchServiceCreateMatchProcedure,
+		svc.CreateMatch,
+		connect.WithSchema(matchServiceMethods.ByName("CreateMatch")),
 		connect.WithHandlerOptions(opts...),
 	)
-	matchServiceGetByIDHandler := connect.NewUnaryHandler(
-		MatchServiceGetByIDProcedure,
-		svc.GetByID,
-		connect.WithSchema(matchServiceMethods.ByName("GetByID")),
+	matchServiceGetMatchByIDHandler := connect.NewUnaryHandler(
+		MatchServiceGetMatchByIDProcedure,
+		svc.GetMatchByID,
+		connect.WithSchema(matchServiceMethods.ByName("GetMatchByID")),
 		connect.WithHandlerOptions(opts...),
 	)
-	matchServiceDeleteHandler := connect.NewUnaryHandler(
-		MatchServiceDeleteProcedure,
-		svc.Delete,
-		connect.WithSchema(matchServiceMethods.ByName("Delete")),
+	matchServiceDeleteMatchHandler := connect.NewUnaryHandler(
+		MatchServiceDeleteMatchProcedure,
+		svc.DeleteMatch,
+		connect.WithSchema(matchServiceMethods.ByName("DeleteMatch")),
 		connect.WithHandlerOptions(opts...),
 	)
-	matchServiceListAllHandler := connect.NewUnaryHandler(
-		MatchServiceListAllProcedure,
-		svc.ListAll,
-		connect.WithSchema(matchServiceMethods.ByName("ListAll")),
+	matchServiceListAllMatchHandler := connect.NewUnaryHandler(
+		MatchServiceListAllMatchProcedure,
+		svc.ListAllMatch,
+		connect.WithSchema(matchServiceMethods.ByName("ListAllMatch")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/proto.MatchService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case MatchServiceCreateProcedure:
-			matchServiceCreateHandler.ServeHTTP(w, r)
-		case MatchServiceGetByIDProcedure:
-			matchServiceGetByIDHandler.ServeHTTP(w, r)
-		case MatchServiceDeleteProcedure:
-			matchServiceDeleteHandler.ServeHTTP(w, r)
-		case MatchServiceListAllProcedure:
-			matchServiceListAllHandler.ServeHTTP(w, r)
+		case MatchServiceCreateMatchProcedure:
+			matchServiceCreateMatchHandler.ServeHTTP(w, r)
+		case MatchServiceGetMatchByIDProcedure:
+			matchServiceGetMatchByIDHandler.ServeHTTP(w, r)
+		case MatchServiceDeleteMatchProcedure:
+			matchServiceDeleteMatchHandler.ServeHTTP(w, r)
+		case MatchServiceListAllMatchProcedure:
+			matchServiceListAllMatchHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -187,26 +194,26 @@ func NewMatchServiceHandler(svc MatchServiceHandler, opts ...connect.HandlerOpti
 // UnimplementedMatchServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedMatchServiceHandler struct{}
 
-func (UnimplementedMatchServiceHandler) Create(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.Create is not implemented"))
+func (UnimplementedMatchServiceHandler) CreateMatch(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.CreateMatch is not implemented"))
 }
 
-func (UnimplementedMatchServiceHandler) GetByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.GetByID is not implemented"))
+func (UnimplementedMatchServiceHandler) GetMatchByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.GetMatchByID is not implemented"))
 }
 
-func (UnimplementedMatchServiceHandler) Delete(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.Delete is not implemented"))
+func (UnimplementedMatchServiceHandler) DeleteMatch(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.DeleteMatch is not implemented"))
 }
 
-func (UnimplementedMatchServiceHandler) ListAll(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.ListAll is not implemented"))
+func (UnimplementedMatchServiceHandler) ListAllMatch(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.ListAllMatch is not implemented"))
 }
 
 // PlayerServiceClient is a client for the proto.PlayerService service.
 type PlayerServiceClient interface {
-	GetByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error)
-	ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
+	GetPlayerByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error)
+	ListAllPlayer(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
 }
 
 // NewPlayerServiceClient constructs a client for the proto.PlayerService service. By default, it
@@ -220,16 +227,16 @@ func NewPlayerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 	baseURL = strings.TrimRight(baseURL, "/")
 	playerServiceMethods := File_schema_proto.Services().ByName("PlayerService").Methods()
 	return &playerServiceClient{
-		getByName: connect.NewClient[GetPlayerByNameRequest, Player](
+		getPlayerByName: connect.NewClient[GetPlayerByNameRequest, Player](
 			httpClient,
-			baseURL+PlayerServiceGetByNameProcedure,
-			connect.WithSchema(playerServiceMethods.ByName("GetByName")),
+			baseURL+PlayerServiceGetPlayerByNameProcedure,
+			connect.WithSchema(playerServiceMethods.ByName("GetPlayerByName")),
 			connect.WithClientOptions(opts...),
 		),
-		listAll: connect.NewClient[ListAllPlayerRequest, ListAllPlayerResponse](
+		listAllPlayer: connect.NewClient[ListAllPlayerRequest, ListAllPlayerResponse](
 			httpClient,
-			baseURL+PlayerServiceListAllProcedure,
-			connect.WithSchema(playerServiceMethods.ByName("ListAll")),
+			baseURL+PlayerServiceListAllPlayerProcedure,
+			connect.WithSchema(playerServiceMethods.ByName("ListAllPlayer")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -237,24 +244,24 @@ func NewPlayerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 
 // playerServiceClient implements PlayerServiceClient.
 type playerServiceClient struct {
-	getByName *connect.Client[GetPlayerByNameRequest, Player]
-	listAll   *connect.Client[ListAllPlayerRequest, ListAllPlayerResponse]
+	getPlayerByName *connect.Client[GetPlayerByNameRequest, Player]
+	listAllPlayer   *connect.Client[ListAllPlayerRequest, ListAllPlayerResponse]
 }
 
-// GetByName calls proto.PlayerService.GetByName.
-func (c *playerServiceClient) GetByName(ctx context.Context, req *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error) {
-	return c.getByName.CallUnary(ctx, req)
+// GetPlayerByName calls proto.PlayerService.GetPlayerByName.
+func (c *playerServiceClient) GetPlayerByName(ctx context.Context, req *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error) {
+	return c.getPlayerByName.CallUnary(ctx, req)
 }
 
-// ListAll calls proto.PlayerService.ListAll.
-func (c *playerServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
-	return c.listAll.CallUnary(ctx, req)
+// ListAllPlayer calls proto.PlayerService.ListAllPlayer.
+func (c *playerServiceClient) ListAllPlayer(ctx context.Context, req *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
+	return c.listAllPlayer.CallUnary(ctx, req)
 }
 
 // PlayerServiceHandler is an implementation of the proto.PlayerService service.
 type PlayerServiceHandler interface {
-	GetByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error)
-	ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
+	GetPlayerByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error)
+	ListAllPlayer(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
 }
 
 // NewPlayerServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -264,24 +271,24 @@ type PlayerServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	playerServiceMethods := File_schema_proto.Services().ByName("PlayerService").Methods()
-	playerServiceGetByNameHandler := connect.NewUnaryHandler(
-		PlayerServiceGetByNameProcedure,
-		svc.GetByName,
-		connect.WithSchema(playerServiceMethods.ByName("GetByName")),
+	playerServiceGetPlayerByNameHandler := connect.NewUnaryHandler(
+		PlayerServiceGetPlayerByNameProcedure,
+		svc.GetPlayerByName,
+		connect.WithSchema(playerServiceMethods.ByName("GetPlayerByName")),
 		connect.WithHandlerOptions(opts...),
 	)
-	playerServiceListAllHandler := connect.NewUnaryHandler(
-		PlayerServiceListAllProcedure,
-		svc.ListAll,
-		connect.WithSchema(playerServiceMethods.ByName("ListAll")),
+	playerServiceListAllPlayerHandler := connect.NewUnaryHandler(
+		PlayerServiceListAllPlayerProcedure,
+		svc.ListAllPlayer,
+		connect.WithSchema(playerServiceMethods.ByName("ListAllPlayer")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/proto.PlayerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case PlayerServiceGetByNameProcedure:
-			playerServiceGetByNameHandler.ServeHTTP(w, r)
-		case PlayerServiceListAllProcedure:
-			playerServiceListAllHandler.ServeHTTP(w, r)
+		case PlayerServiceGetPlayerByNameProcedure:
+			playerServiceGetPlayerByNameHandler.ServeHTTP(w, r)
+		case PlayerServiceListAllPlayerProcedure:
+			playerServiceListAllPlayerHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -291,17 +298,17 @@ func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOp
 // UnimplementedPlayerServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedPlayerServiceHandler struct{}
 
-func (UnimplementedPlayerServiceHandler) GetByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.GetByName is not implemented"))
+func (UnimplementedPlayerServiceHandler) GetPlayerByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.GetPlayerByName is not implemented"))
 }
 
-func (UnimplementedPlayerServiceHandler) ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.ListAll is not implemented"))
+func (UnimplementedPlayerServiceHandler) ListAllPlayer(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.ListAllPlayer is not implemented"))
 }
 
 // StandingServiceClient is a client for the proto.StandingService service.
 type StandingServiceClient interface {
-	ListAll(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error)
+	ListAllStanding(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error)
 }
 
 // NewStandingServiceClient constructs a client for the proto.StandingService service. By default,
@@ -315,10 +322,10 @@ func NewStandingServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 	baseURL = strings.TrimRight(baseURL, "/")
 	standingServiceMethods := File_schema_proto.Services().ByName("StandingService").Methods()
 	return &standingServiceClient{
-		listAll: connect.NewClient[ListAllStandingRequest, ListAllStandingResponse](
+		listAllStanding: connect.NewClient[ListAllStandingRequest, ListAllStandingResponse](
 			httpClient,
-			baseURL+StandingServiceListAllProcedure,
-			connect.WithSchema(standingServiceMethods.ByName("ListAll")),
+			baseURL+StandingServiceListAllStandingProcedure,
+			connect.WithSchema(standingServiceMethods.ByName("ListAllStanding")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -326,17 +333,17 @@ func NewStandingServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 
 // standingServiceClient implements StandingServiceClient.
 type standingServiceClient struct {
-	listAll *connect.Client[ListAllStandingRequest, ListAllStandingResponse]
+	listAllStanding *connect.Client[ListAllStandingRequest, ListAllStandingResponse]
 }
 
-// ListAll calls proto.StandingService.ListAll.
-func (c *standingServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error) {
-	return c.listAll.CallUnary(ctx, req)
+// ListAllStanding calls proto.StandingService.ListAllStanding.
+func (c *standingServiceClient) ListAllStanding(ctx context.Context, req *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error) {
+	return c.listAllStanding.CallUnary(ctx, req)
 }
 
 // StandingServiceHandler is an implementation of the proto.StandingService service.
 type StandingServiceHandler interface {
-	ListAll(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error)
+	ListAllStanding(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error)
 }
 
 // NewStandingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -346,16 +353,16 @@ type StandingServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewStandingServiceHandler(svc StandingServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	standingServiceMethods := File_schema_proto.Services().ByName("StandingService").Methods()
-	standingServiceListAllHandler := connect.NewUnaryHandler(
-		StandingServiceListAllProcedure,
-		svc.ListAll,
-		connect.WithSchema(standingServiceMethods.ByName("ListAll")),
+	standingServiceListAllStandingHandler := connect.NewUnaryHandler(
+		StandingServiceListAllStandingProcedure,
+		svc.ListAllStanding,
+		connect.WithSchema(standingServiceMethods.ByName("ListAllStanding")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/proto.StandingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case StandingServiceListAllProcedure:
-			standingServiceListAllHandler.ServeHTTP(w, r)
+		case StandingServiceListAllStandingProcedure:
+			standingServiceListAllStandingHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -365,6 +372,6 @@ func NewStandingServiceHandler(svc StandingServiceHandler, opts ...connect.Handl
 // UnimplementedStandingServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedStandingServiceHandler struct{}
 
-func (UnimplementedStandingServiceHandler) ListAll(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.StandingService.ListAll is not implemented"))
+func (UnimplementedStandingServiceHandler) ListAllStanding(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.StandingService.ListAllStanding is not implemented"))
 }

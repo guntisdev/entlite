@@ -396,17 +396,17 @@ message ListUserFilterByAgeNameResponse {
 
 // UserService provides CRUD opertions for User entities
 service UserService {
-  rpc Create(CreateUserRequest) returns (User);
-  rpc GetByID(GetUserByIDRequest) returns (User);
-  rpc Update(UpdateUserRequest) returns (User);
-  rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
-  rpc CreateBulk(CreateBulkUserRequest) returns (CreateBulkUserResponse);
+  rpc CreateUser(CreateUserRequest) returns (User);
+  rpc GetUserByID(GetUserByIDRequest) returns (User);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  rpc CreateBulkUser(CreateBulkUserRequest) returns (CreateBulkUserResponse);
   // Look up a user by email address
-  rpc GetByEmail(GetUserByEmailRequest) returns (User);
-  rpc ListAll(ListAllUserRequest) returns (ListAllUserResponse);
-  rpc DeleteAll(DeleteAllUserRequest) returns (google.protobuf.Empty);
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (User);
+  rpc ListAllUser(ListAllUserRequest) returns (ListAllUserResponse);
+  rpc DeleteAllUser(DeleteAllUserRequest) returns (google.protobuf.Empty);
   rpc ListActive(ListActiveRequest) returns (ListActiveResponse);
-  rpc FilterByAgeName(ListUserFilterByAgeNameRequest) returns (ListUserFilterByAgeNameResponse);
+  rpc ListUserFilterByAgeName(ListUserFilterByAgeNameRequest) returns (ListUserFilterByAgeNameResponse);
 }
 ```
 

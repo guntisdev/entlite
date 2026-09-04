@@ -462,11 +462,11 @@ message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
 
 // ReadingService provides CRUD opertions for Reading entities
 service ReadingService {
-  rpc Create(CreateReadingRequest) returns (Reading);
-  rpc GetByID(GetReadingByIDRequest) returns (Reading);
-  rpc Delete(DeleteReadingRequest) returns (google.protobuf.Empty);
-  rpc ListBySensorId(ListReadingBySensorIdRequest) returns (ListReadingBySensorIdResponse);
-  rpc FilterBySensorIdRecordedAtFlagged(ListReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListReadingFilterBySensorIdRecordedAtFlaggedResponse);
+  rpc CreateReading(CreateReadingRequest) returns (Reading);
+  rpc GetReadingByID(GetReadingByIDRequest) returns (Reading);
+  rpc DeleteReading(DeleteReadingRequest) returns (google.protobuf.Empty);
+  rpc ListReadingBySensorId(ListReadingBySensorIdRequest) returns (ListReadingBySensorIdResponse);
+  rpc ListReadingFilterBySensorIdRecordedAtFlagged(ListReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListReadingFilterBySensorIdRecordedAtFlaggedResponse);
 }
 
 message CreateSensorRequest {
@@ -529,13 +529,13 @@ message ListSensorFilterByLabelKindActiveResponse {
 
 // SensorService provides CRUD opertions for Sensor entities
 service SensorService {
-  rpc Create(CreateSensorRequest) returns (Sensor);
-  rpc GetByID(GetSensorByIDRequest) returns (Sensor);
-  rpc Update(UpdateSensorRequest) returns (Sensor);
-  rpc Delete(DeleteSensorRequest) returns (google.protobuf.Empty);
+  rpc CreateSensor(CreateSensorRequest) returns (Sensor);
+  rpc GetSensorByID(GetSensorByIDRequest) returns (Sensor);
+  rpc UpdateSensor(UpdateSensorRequest) returns (Sensor);
+  rpc DeleteSensor(DeleteSensorRequest) returns (google.protobuf.Empty);
   // Look up a sensor by its hardware code
-  rpc GetByCode(GetSensorByCodeRequest) returns (Sensor);
-  rpc FilterByLabelKindActive(ListSensorFilterByLabelKindActiveRequest) returns (ListSensorFilterByLabelKindActiveResponse);
+  rpc GetSensorByCode(GetSensorByCodeRequest) returns (Sensor);
+  rpc ListSensorFilterByLabelKindActive(ListSensorFilterByLabelKindActiveRequest) returns (ListSensorFilterByLabelKindActiveResponse);
 }
 ```
 

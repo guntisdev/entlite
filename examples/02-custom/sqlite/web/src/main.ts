@@ -71,7 +71,7 @@ function createSensor() {
         installedAt: timestampFromDate(daysAgo(Math.ceil(Math.random() * 90))),
         // active and firmware left unset, the DSL defaults are applied on create
     };
-    sensorClient.create(request)
+    sensorClient.createSensor(request)
         .then((response) => {
             log("✓ Sensor created:", response);
         })
@@ -89,7 +89,7 @@ function createInvalidSensor() {
         unit: "kelvin",
         installedAt: timestampFromDate(new Date()),
     };
-    sensorClient.create(request)
+    sensorClient.createSensor(request)
         .then((response) => {
             log("✓ Sensor created (unexpected):", response);
         })
@@ -105,7 +105,7 @@ function getSensorByID() {
         return;
     }
     log(`Getting sensor ${id}...`);
-    sensorClient.getByID({ ID: id })
+    sensorClient.getSensorByID({ ID: id })
         .then((response) => {
             log("✓ Sensor retrieved:", response);
         })
@@ -121,7 +121,7 @@ function getSensorByCode() {
         return;
     }
     log(`Getting sensor by code ${code}...`);
-    sensorClient.getByCode({ code: code })
+    sensorClient.getSensorByCode({ code: code })
         .then((response) => {
             log("✓ Sensor retrieved:", response);
         })
@@ -138,7 +138,7 @@ function updateSensor() {
     }
     log(`Updating sensor ${id}...`);
     // Update needs the whole entity, so read it first and change a few fields
-    sensorClient.getByID({ ID: id })
+    sensorClient.getSensorByID({ ID: id })
         .then((sensor) => {
             const request: StrictMessageInput<UpdateSensorRequest> = {
                 ID: sensor.ID,
@@ -152,7 +152,7 @@ function updateSensor() {
                 sampleRateMs: 1000 * Math.ceil(Math.random() * 5),
                 // installed_at and created_at are Immutable / ReadOnly, so update omits them
             };
-            return sensorClient.update(request);
+            return sensorClient.updateSensor(request);
         })
         .then((response) => {
             log("✓ Sensor updated:", response);
@@ -169,7 +169,7 @@ function deleteSensor() {
         return;
     }
     log(`Deleting sensor ${id}...`);
-    sensorClient.delete({ ID: id })
+    sensorClient.deleteSensor({ ID: id })
         .then((response) => {
             log("✓ Sensor deleted:", response);
         })
@@ -190,7 +190,7 @@ function filterSensors() {
         kind: kind,
         active: active,
     };
-    sensorClient.filterByLabelKindActive(request)
+    sensorClient.listSensorFilterByLabelKindActive(request)
         .then((response) => {
             log(`✓ Sensors filtered (${response.rows.length} sensors):`);
             response.rows.forEach((sensor) => log(describeSensor(sensor)));
@@ -210,7 +210,7 @@ function createReading() {
     }
     log(`Creating reading for sensor ${sensorId}...`);
     // Look the sensor up first so the value matches its kind
-    sensorClient.getByID({ ID: sensorId })
+    sensorClient.getSensorByID({ ID: sensorId })
         .then((sensor) => {
             const request: StrictMessageInput<CreateReadingRequest> = {
                 sensorId: sensor.ID,
@@ -219,7 +219,7 @@ function createReading() {
                 flagged: Math.random() < 0.2,
                 recordedAt: timestampFromDate(daysAgo(Math.random() * 14)),
             };
-            return readingClient.create(request);
+            return readingClient.createReading(request);
         })
         .then((response) => {
             log("✓ Reading created:", response);
@@ -238,7 +238,7 @@ function createInvalidReading() {
         quality: 150,
         recordedAt: timestampFromDate(new Date()),
     };
-    readingClient.create(request)
+    readingClient.createReading(request)
         .then((response) => {
             log("✓ Reading created (unexpected):", response);
         })
@@ -254,7 +254,7 @@ function getReadingByID() {
         return;
     }
     log(`Getting reading ${id}...`);
-    readingClient.getByID({ ID: id })
+    readingClient.getReadingByID({ ID: id })
         .then((response) => {
             log("✓ Reading retrieved:", response);
         })
@@ -270,7 +270,7 @@ function deleteReading() {
         return;
     }
     log(`Deleting reading ${id}...`);
-    readingClient.delete({ ID: id })
+    readingClient.deleteReading({ ID: id })
         .then((response) => {
             log("✓ Reading deleted:", response);
         })
@@ -286,7 +286,7 @@ function listReadings() {
         return;
     }
     log(`Listing readings of sensor ${sensorId}...`);
-    readingClient.listBySensorId({ limit: 50, offset: 0, sensorId: sensorId })
+    readingClient.listReadingBySensorId({ limit: 50, offset: 0, sensorId: sensorId })
         .then((response) => {
             log(`✓ Readings listed (${response.rows.length} readings):`);
             response.rows.forEach((reading) => {
@@ -314,7 +314,7 @@ function filterReadings() {
         maxRecordedAt: timestampFromDate(new Date()),
         flagged: true,
     };
-    readingClient.filterBySensorIdRecordedAtFlagged(request)
+    readingClient.listReadingFilterBySensorIdRecordedAtFlagged(request)
         .then((response) => {
             log(`✓ Readings filtered (${response.rows.length} readings):`, response);
         })

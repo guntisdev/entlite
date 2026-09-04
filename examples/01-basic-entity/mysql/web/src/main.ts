@@ -32,7 +32,7 @@ function createUser() {
         isAdmin: false,
         lastLoginMs: BigInt(Date.now()),
     };
-    client.create(request)
+    client.createUser(request)
     .then((response) => {
         log("✓ User created:", response);
     })
@@ -55,7 +55,7 @@ function createBulkUsers() {
         };
     });
     const request: StrictMessageInput<CreateBulkUserRequest> = { rows };
-    client.createBulk(request)
+    client.createBulkUser(request)
     .then((response) => {
         log(`✓ ${response.rows.length} users created in bulk:`, response);
     })
@@ -72,7 +72,7 @@ function getUserByID() {
         return;
     }
     log(`Getting user ${id}...`);
-    client.getByID({ ID: id })
+    client.getUserByID({ ID: id })
     .then((response) => {
         log("✓ User retrieved:", response);
     })
@@ -84,7 +84,7 @@ function getUserByID() {
 function listAllUsers() {
     log("Listing all users...");
     const request: StrictMessageInput<ListAllUserRequest> = {};
-    client.listAll(request)
+    client.listAllUser(request)
     .then((response) => {
         log(`✓ Users listed (${response.rows.length} users):`);
         response.rows.forEach((user, index) => {
@@ -114,7 +114,7 @@ function updateUser() {
         isAdmin: true,
         lastLoginMs: BigInt(Date.now()),
     };
-    client.update(request)
+    client.updateUser(request)
     .then((response) => {
         log("✓ User updated:", response);
     })
@@ -131,7 +131,7 @@ function deleteUser() {
         return;
     }
     log(`Deleting user ${id}...`);
-    client.delete({ ID: id })
+    client.deleteUser({ ID: id })
     .then((response) => {
         log("✓ User deleted:", response);
     })
@@ -143,7 +143,7 @@ function deleteUser() {
 function deleteAllUsers() {
     log("Deleting all users...");
     const request: StrictMessageInput<DeleteAllUserRequest> = {};
-    client.deleteAll(request)
+    client.deleteAllUser(request)
     .then((response) => {
         log("✓ All users deleted:", response);
     })

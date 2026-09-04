@@ -318,22 +318,21 @@ func rpcComment(query schema.Query) string {
 }
 
 func generateRpc(entity schema.Entity, query schema.Query) string {
-	rpcName := util.GenQueryRpcName(query, entity.Name)
-	messageName := util.GenQueryName(query, entity.Name)
+	name := util.GenQueryName(query, entity.Name)
 
 	switch query.Type {
 	case schema.QueryCreate:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
 	case schema.QueryCreateBulk:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, messageName, messageName)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", name, name, name)
 	case schema.QueryGetBy:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
 	case schema.QueryUpdate:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
 	case schema.QueryDelete, schema.QueryDeleteAll:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (google.protobuf.Empty);\n", rpcName, messageName)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (google.protobuf.Empty);\n", name, name)
 	case schema.QueryListBy, schema.QueryListAll:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, messageName, messageName)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", name, name, name)
 	default:
 		return ""
 	}

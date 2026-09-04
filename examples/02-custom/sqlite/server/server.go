@@ -29,7 +29,7 @@ func NewSensorServiceServer(db *sql.DB) *SensorServer {
 	}
 }
 
-func (s *SensorServer) Create(
+func (s *SensorServer) CreateSensor(
 	ctx context.Context,
 	req *connect.Request[pb.CreateSensorRequest],
 ) (*connect.Response[pb.Sensor], error) {
@@ -61,7 +61,7 @@ func (s *SensorServer) Create(
 	return connect.NewResponse(sensor.ToProto()), nil
 }
 
-func (s *SensorServer) GetByID(
+func (s *SensorServer) GetSensorByID(
 	ctx context.Context,
 	req *connect.Request[pb.GetSensorByIDRequest],
 ) (*connect.Response[pb.Sensor], error) {
@@ -80,7 +80,7 @@ func (s *SensorServer) GetByID(
 	return connect.NewResponse(sensor.ToProto()), nil
 }
 
-func (s *SensorServer) GetByCode(
+func (s *SensorServer) GetSensorByCode(
 	ctx context.Context,
 	req *connect.Request[pb.GetSensorByCodeRequest],
 ) (*connect.Response[pb.Sensor], error) {
@@ -99,7 +99,7 @@ func (s *SensorServer) GetByCode(
 	return connect.NewResponse(sensor.ToProto()), nil
 }
 
-func (s *SensorServer) Update(
+func (s *SensorServer) UpdateSensor(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateSensorRequest],
 ) (*connect.Response[pb.Sensor], error) {
@@ -128,7 +128,7 @@ func (s *SensorServer) Update(
 	return connect.NewResponse(sensor.ToProto()), nil
 }
 
-func (s *SensorServer) Delete(
+func (s *SensorServer) DeleteSensor(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteSensorRequest],
 ) (*connect.Response[emptypb.Empty], error) {
@@ -143,7 +143,7 @@ func (s *SensorServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *SensorServer) FilterByLabelKindActive(
+func (s *SensorServer) ListSensorFilterByLabelKindActive(
 	ctx context.Context,
 	req *connect.Request[pb.ListSensorFilterByLabelKindActiveRequest],
 ) (*connect.Response[pb.ListSensorFilterByLabelKindActiveResponse], error) {
@@ -186,7 +186,7 @@ func NewReadingServiceServer(db *sql.DB) *ReadingServer {
 	}
 }
 
-func (s *ReadingServer) Create(
+func (s *ReadingServer) CreateReading(
 	ctx context.Context,
 	req *connect.Request[pb.CreateReadingRequest],
 ) (*connect.Response[pb.Reading], error) {
@@ -213,7 +213,7 @@ func (s *ReadingServer) Create(
 	return connect.NewResponse(reading.ToProto()), nil
 }
 
-func (s *ReadingServer) GetByID(
+func (s *ReadingServer) GetReadingByID(
 	ctx context.Context,
 	req *connect.Request[pb.GetReadingByIDRequest],
 ) (*connect.Response[pb.Reading], error) {
@@ -232,7 +232,7 @@ func (s *ReadingServer) GetByID(
 	return connect.NewResponse(reading.ToProto()), nil
 }
 
-func (s *ReadingServer) Delete(
+func (s *ReadingServer) DeleteReading(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteReadingRequest],
 ) (*connect.Response[emptypb.Empty], error) {
@@ -247,7 +247,7 @@ func (s *ReadingServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *ReadingServer) ListBySensorId(
+func (s *ReadingServer) ListReadingBySensorId(
 	ctx context.Context,
 	req *connect.Request[pb.ListReadingBySensorIdRequest],
 ) (*connect.Response[pb.ListReadingBySensorIdResponse], error) {
@@ -269,7 +269,7 @@ func (s *ReadingServer) ListBySensorId(
 	}), nil
 }
 
-func (s *ReadingServer) FilterBySensorIdRecordedAtFlagged(
+func (s *ReadingServer) ListReadingFilterBySensorIdRecordedAtFlagged(
 	ctx context.Context,
 	req *connect.Request[pb.ListReadingFilterBySensorIdRecordedAtFlaggedRequest],
 ) (*connect.Response[pb.ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {

@@ -26,7 +26,7 @@ func NewUserServiceServer(db *sql.DB) *UserServer {
 	}
 }
 
-func (s *UserServer) Create(
+func (s *UserServer) CreateUser(
 	ctx context.Context,
 	req *connect.Request[pb.CreateUserRequest],
 ) (*connect.Response[pb.User], error) {
@@ -57,7 +57,7 @@ func (s *UserServer) Create(
 	return connect.NewResponse(user.ToProto()), nil
 }
 
-func (s *UserServer) CreateBulk(
+func (s *UserServer) CreateBulkUser(
 	ctx context.Context,
 	req *connect.Request[pb.CreateBulkUserRequest],
 ) (*connect.Response[pb.CreateBulkUserResponse], error) {
@@ -97,7 +97,7 @@ func (s *UserServer) CreateBulk(
 	return connect.NewResponse(&pb.CreateBulkUserResponse{Rows: users}), nil
 }
 
-func (s *UserServer) GetByID(
+func (s *UserServer) GetUserByID(
 	ctx context.Context,
 	req *connect.Request[pb.GetUserByIDRequest],
 ) (*connect.Response[pb.User], error) {
@@ -116,7 +116,7 @@ func (s *UserServer) GetByID(
 	return connect.NewResponse(user.ToProto()), nil
 }
 
-func (s *UserServer) GetByEmail(
+func (s *UserServer) GetUserByEmail(
 	ctx context.Context,
 	req *connect.Request[pb.GetUserByEmailRequest],
 ) (*connect.Response[pb.User], error) {
@@ -135,7 +135,7 @@ func (s *UserServer) GetByEmail(
 	return connect.NewResponse(user.ToProto()), nil
 }
 
-func (s *UserServer) Update(
+func (s *UserServer) UpdateUser(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateUserRequest],
 ) (*connect.Response[pb.User], error) {
@@ -164,7 +164,7 @@ func (s *UserServer) Update(
 	return connect.NewResponse(dbUser.ToProto()), nil
 }
 
-func (s *UserServer) Delete(
+func (s *UserServer) DeleteUser(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteUserRequest],
 ) (*connect.Response[emptypb.Empty], error) {
@@ -180,7 +180,7 @@ func (s *UserServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *UserServer) DeleteAll(
+func (s *UserServer) DeleteAllUser(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteAllUserRequest],
 ) (*connect.Response[emptypb.Empty], error) {
@@ -196,7 +196,7 @@ func (s *UserServer) DeleteAll(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *UserServer) ListAll(
+func (s *UserServer) ListAllUser(
 	ctx context.Context,
 	req *connect.Request[pb.ListAllUserRequest],
 ) (*connect.Response[pb.ListAllUserResponse], error) {
@@ -250,7 +250,7 @@ func (s *UserServer) ListActive(
 	return connect.NewResponse(response), nil
 }
 
-func (s *UserServer) FilterByAgeName(
+func (s *UserServer) ListUserFilterByAgeName(
 	ctx context.Context,
 	req *connect.Request[pb.ListUserFilterByAgeNameRequest],
 ) (*connect.Response[pb.ListUserFilterByAgeNameResponse], error) {

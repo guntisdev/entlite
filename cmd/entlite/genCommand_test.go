@@ -154,11 +154,11 @@ message ListUserByNameAgeResponse {
 
 // UserService provides CRUD opertions for User entities
 service UserService {
-  rpc Create(CreateUserRequest) returns (User);
-  rpc GetByID(GetUserByIDRequest) returns (User);
-  rpc Update(UpdateUserRequest) returns (User);
-  rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
-  rpc ListByNameAge(ListUserByNameAgeRequest) returns (ListUserByNameAgeResponse);
+  rpc CreateUser(CreateUserRequest) returns (User);
+  rpc GetUserByID(GetUserByIDRequest) returns (User);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  rpc ListUserByNameAge(ListUserByNameAgeRequest) returns (ListUserByNameAgeResponse);
 }`
 
 	if content, err := os.ReadFile(protoPath); err != nil {

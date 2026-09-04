@@ -373,14 +373,14 @@ message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse {
 
 // ArticleService provides CRUD opertions for Article entities
 service ArticleService {
-  rpc Create(CreateArticleRequest) returns (Article);
-  rpc GetByID(GetArticleByIDRequest) returns (Article);
-  rpc Update(UpdateArticleRequest) returns (Article);
-  rpc Delete(DeleteArticleRequest) returns (google.protobuf.Empty);
-  rpc GetBySlug(GetArticleBySlugRequest) returns (Article);
-  rpc ListByAuthor(ListArticleByAuthorRequest) returns (ListArticleByAuthorResponse);
-  rpc ListAll(ListAllArticleRequest) returns (ListAllArticleResponse);
-  rpc FilterByAuthorIsFeaturedPublishedAtTitle(ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest) returns (ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse);
+  rpc CreateArticle(CreateArticleRequest) returns (Article);
+  rpc GetArticleByID(GetArticleByIDRequest) returns (Article);
+  rpc UpdateArticle(UpdateArticleRequest) returns (Article);
+  rpc DeleteArticle(DeleteArticleRequest) returns (google.protobuf.Empty);
+  rpc GetArticleBySlug(GetArticleBySlugRequest) returns (Article);
+  rpc ListArticleByAuthor(ListArticleByAuthorRequest) returns (ListArticleByAuthorResponse);
+  rpc ListAllArticle(ListAllArticleRequest) returns (ListAllArticleResponse);
+  rpc ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest) returns (ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse);
 }
 ```
 

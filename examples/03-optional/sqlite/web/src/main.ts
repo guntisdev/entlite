@@ -86,7 +86,7 @@ function createFull() {
         metadata: JSON.stringify({ og_image: "/cover.png", tags: ["entlite", "sqlite"] }),
         isFeatured: true,
     };
-    articleClient.create(request)
+    articleClient.createArticle(request)
         .then((response) => {
             logArticle("✓ Article created:", response);
         })
@@ -104,7 +104,7 @@ function createMinimal() {
         title: title,
         author: randomAuthor(),
     };
-    articleClient.create(request)
+    articleClient.createArticle(request)
         .then((response) => {
             logArticle("✓ Article created:", response);
         })
@@ -123,7 +123,7 @@ function createWithMetadata() {
         author: randomAuthor(),
         metadata: metadata,
     };
-    articleClient.create(request)
+    articleClient.createArticle(request)
         .then((response) => {
             logArticle("✓ Article created:", response);
         })
@@ -141,7 +141,7 @@ function createInvalidJSON() {
         author: randomAuthor(),
         metadata: "{not json",
     };
-    articleClient.create(request)
+    articleClient.createArticle(request)
         .then((response) => {
             logArticle("✓ Article created (unexpected):", response);
         })
@@ -157,7 +157,7 @@ function createBlankTitle() {
         title: "   ",
         author: randomAuthor(),
     };
-    articleClient.create(request)
+    articleClient.createArticle(request)
         .then((response) => {
             logArticle("✓ Article created (unexpected):", response);
         })
@@ -175,7 +175,7 @@ function getByID() {
         return;
     }
     log(`Getting article ${id}...`);
-    articleClient.getByID({ ID: id })
+    articleClient.getArticleByID({ ID: id })
         .then((response) => {
             logArticle("✓ Article retrieved:", response);
         })
@@ -191,7 +191,7 @@ function getBySlug() {
         return;
     }
     log(`Getting article by slug ${slug}...`);
-    articleClient.getBySlug({ slug: slug })
+    articleClient.getArticleBySlug({ slug: slug })
         .then((response) => {
             logArticle("✓ Article retrieved:", response);
         })
@@ -210,7 +210,7 @@ function updateArticle() {
         return;
     }
     log(`Updating article ${id}...`);
-    articleClient.getByID({ ID: id })
+    articleClient.getArticleByID({ ID: id })
         .then((article) => {
             const request: StrictMessageInput<UpdateArticleRequest> = {
                 ID: article.ID,
@@ -226,7 +226,7 @@ function updateArticle() {
                 metadata: JSON.stringify({ updated: true, hash: createHash(6) }),
                 isFeatured: !article.isFeatured,
             };
-            return articleClient.update(request);
+            return articleClient.updateArticle(request);
         })
         .then((response) => {
             logArticle("✓ Article updated:", response);
@@ -245,7 +245,7 @@ function clearOptionals() {
         return;
     }
     log(`Clearing optional fields of article ${id}...`);
-    articleClient.getByID({ ID: id })
+    articleClient.getArticleByID({ ID: id })
         .then((article) => {
             const request: StrictMessageInput<UpdateArticleRequest> = {
                 ID: article.ID,
@@ -253,7 +253,7 @@ function clearOptionals() {
                 title: article.title,
                 author: article.author,
             };
-            return articleClient.update(request);
+            return articleClient.updateArticle(request);
         })
         .then((response) => {
             logArticle("✓ Optional fields cleared:", response);
@@ -273,7 +273,7 @@ function deleteArticle() {
         return;
     }
     log(`Deleting article ${id}...`);
-    articleClient.delete({ ID: id })
+    articleClient.deleteArticle({ ID: id })
         .then((response) => {
             log("✓ Article deleted:", response);
         })
@@ -286,7 +286,7 @@ function deleteArticle() {
 
 function listAll() {
     log("Listing all articles...");
-    articleClient.listAll({})
+    articleClient.listAllArticle({})
         .then((response) => {
             log(`✓ Articles listed (${response.rows.length} articles):`);
             response.rows.forEach((article) => log(describeArticle(article)));
@@ -303,7 +303,7 @@ function listByAuthor() {
         return;
     }
     log(`Listing articles of ${author}...`);
-    articleClient.listByAuthor({ limit: 50, offset: 0, author: author })
+    articleClient.listArticleByAuthor({ limit: 50, offset: 0, author: author })
         .then((response) => {
             log(`✓ Articles listed (${response.rows.length} articles):`);
             response.rows.forEach((article) => log(describeArticle(article)));
@@ -337,7 +337,7 @@ function filterArticles() {
         request.maxPublishedAt = timestampFromDate(new Date());
     }
     log("Filtering articles:", request);
-    articleClient.filterByAuthorIsFeaturedPublishedAtTitle(request)
+    articleClient.listArticleFilterByAuthorIsFeaturedPublishedAtTitle(request)
         .then((response) => {
             log(`✓ Articles filtered (${response.rows.length} articles):`);
             response.rows.forEach((article) => log(describeArticle(article)));

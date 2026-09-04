@@ -30,7 +30,7 @@ func NewMatchServiceServer(db *sql.DB) *MatchServer {
 	}
 }
 
-func (s *MatchServer) Create(
+func (s *MatchServer) CreateMatch(
 	ctx context.Context,
 	req *connect.Request[pb.CreateMatchRequest],
 ) (*connect.Response[pb.Match], error) {
@@ -61,7 +61,7 @@ func (s *MatchServer) Create(
 	return connect.NewResponse(match.ToProto()), nil
 }
 
-func (s *MatchServer) GetByID(
+func (s *MatchServer) GetMatchByID(
 	ctx context.Context,
 	req *connect.Request[pb.GetMatchByIDRequest],
 ) (*connect.Response[pb.Match], error) {
@@ -80,7 +80,7 @@ func (s *MatchServer) GetByID(
 	return connect.NewResponse(match.ToProto()), nil
 }
 
-func (s *MatchServer) Delete(
+func (s *MatchServer) DeleteMatch(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteMatchRequest],
 ) (*connect.Response[emptypb.Empty], error) {
@@ -97,7 +97,7 @@ func (s *MatchServer) Delete(
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *MatchServer) ListAll(
+func (s *MatchServer) ListAllMatch(
 	ctx context.Context,
 	req *connect.Request[pb.ListAllMatchRequest],
 ) (*connect.Response[pb.ListAllMatchResponse], error) {
@@ -171,7 +171,7 @@ func NewPlayerServiceServer(db *sql.DB) *PlayerServer {
 
 // GetByName reads one roster entry, index.Primary("name") makes the name the key,
 // and the read only contract gives no write rpc
-func (s *PlayerServer) GetByName(
+func (s *PlayerServer) GetPlayerByName(
 	ctx context.Context,
 	req *connect.Request[pb.GetPlayerByNameRequest],
 ) (*connect.Response[pb.Player], error) {
@@ -188,7 +188,7 @@ func (s *PlayerServer) GetByName(
 	return connect.NewResponse(player.ToProto()), nil
 }
 
-func (s *PlayerServer) ListAll(
+func (s *PlayerServer) ListAllPlayer(
 	ctx context.Context,
 	req *connect.Request[pb.ListAllPlayerRequest],
 ) (*connect.Response[pb.ListAllPlayerResponse], error) {
@@ -256,7 +256,7 @@ func NewStandingServiceServer(db *sql.DB) *StandingServer {
 }
 
 // ListAll counts the standings from matches, Standing has no table to read from
-func (s *StandingServer) ListAll(
+func (s *StandingServer) ListAllStanding(
 	ctx context.Context,
 	req *connect.Request[pb.ListAllStandingRequest],
 ) (*connect.Response[pb.ListAllStandingResponse], error) {

@@ -72,10 +72,10 @@ message ListAllMatchResponse {
 
 // MatchService provides CRUD opertions for Match entities
 service MatchService {
-  rpc Create(CreateMatchRequest) returns (Match);
-  rpc GetByID(GetMatchByIDRequest) returns (Match);
-  rpc Delete(DeleteMatchRequest) returns (google.protobuf.Empty);
-  rpc ListAll(ListAllMatchRequest) returns (ListAllMatchResponse);
+  rpc CreateMatch(CreateMatchRequest) returns (Match);
+  rpc GetMatchByID(GetMatchByIDRequest) returns (Match);
+  rpc DeleteMatch(DeleteMatchRequest) returns (google.protobuf.Empty);
+  rpc ListAllMatch(ListAllMatchRequest) returns (ListAllMatchResponse);
 }
 
 message GetPlayerByNameRequest {
@@ -90,8 +90,8 @@ message ListAllPlayerResponse {
 
 // PlayerService provides CRUD opertions for Player entities
 service PlayerService {
-  rpc GetByName(GetPlayerByNameRequest) returns (Player);
-  rpc ListAll(ListAllPlayerRequest) returns (ListAllPlayerResponse);
+  rpc GetPlayerByName(GetPlayerByNameRequest) returns (Player);
+  rpc ListAllPlayer(ListAllPlayerRequest) returns (ListAllPlayerResponse);
 }
 
 message ListAllStandingRequest {
@@ -103,5 +103,5 @@ message ListAllStandingResponse {
 
 // StandingService provides CRUD opertions for Standing entities
 service StandingService {
-  rpc ListAll(ListAllStandingRequest) returns (ListAllStandingResponse);
+  rpc ListAllStanding(ListAllStandingRequest) returns (ListAllStandingResponse);
 }
