@@ -286,7 +286,7 @@ syntax = "proto3";
 
 package proto;
 
-option go_package = "./pb";
+option go_package = "github.com/guntisdev/entlite/examples/01-basic-entity/sqlite/ent/gen/pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -341,7 +341,7 @@ message UpdateUserRequest {
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
-message CreateBulkUserItem {
+message CreateBulkUserRow {
   string email = 2 [(buf.validate.field).required = true];
   // Full name, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
@@ -356,11 +356,11 @@ message CreateBulkUserItem {
 }
 
 message CreateBulkUserRequest {
-  repeated CreateBulkUserItem items = 1 [(buf.validate.field).required = true];
+  repeated CreateBulkUserRow rows = 1 [(buf.validate.field).required = true];
 }
 
 message CreateBulkUserResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 message GetUserByEmailRequest {
   string email = 2 [(buf.validate.field).required = true];
@@ -369,7 +369,7 @@ message ListAllUserRequest {
 }
 
 message ListAllUserResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 message DeleteAllUserRequest {
 }
@@ -380,7 +380,7 @@ message ListActiveRequest {
 }
 
 message ListActiveResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 message ListUserFilterByAgeNameRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
@@ -391,22 +391,22 @@ message ListUserFilterByAgeNameRequest {
 }
 
 message ListUserFilterByAgeNameResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 
 // UserService provides CRUD opertions for User entities
 service UserService {
-  rpc Create(CreateUserRequest) returns (User);
-  rpc GetByID(GetUserByIDRequest) returns (User);
-  rpc Update(UpdateUserRequest) returns (User);
-  rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
-  rpc CreateBulk(CreateBulkUserRequest) returns (CreateBulkUserResponse);
+  rpc CreateUser(CreateUserRequest) returns (User);
+  rpc GetUserByID(GetUserByIDRequest) returns (User);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  rpc CreateBulkUser(CreateBulkUserRequest) returns (CreateBulkUserResponse);
   // Look up a user by email address
-  rpc GetByEmail(GetUserByEmailRequest) returns (User);
-  rpc ListAll(ListAllUserRequest) returns (ListAllUserResponse);
-  rpc DeleteAll(DeleteAllUserRequest) returns (google.protobuf.Empty);
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (User);
+  rpc ListAllUser(ListAllUserRequest) returns (ListAllUserResponse);
+  rpc DeleteAllUser(DeleteAllUserRequest) returns (google.protobuf.Empty);
   rpc ListActive(ListActiveRequest) returns (ListActiveResponse);
-  rpc FilterByAgeName(ListUserFilterByAgeNameRequest) returns (ListUserFilterByAgeNameResponse);
+  rpc ListUserFilterByAgeName(ListUserFilterByAgeNameRequest) returns (ListUserFilterByAgeNameResponse);
 }
 ```
 

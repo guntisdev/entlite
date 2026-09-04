@@ -274,7 +274,7 @@ syntax = "proto3";
 
 package proto;
 
-option go_package = "./pb";
+option go_package = "github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/gen/pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -349,13 +349,13 @@ message ListArticleByAuthorRequest {
 }
 
 message ListArticleByAuthorResponse {
-  repeated Article articles = 1;
+  repeated Article rows = 1;
 }
 message ListAllArticleRequest {
 }
 
 message ListAllArticleResponse {
-  repeated Article articles = 1;
+  repeated Article rows = 1;
 }
 message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
@@ -368,19 +368,19 @@ message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
 }
 
 message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse {
-  repeated Article articles = 1;
+  repeated Article rows = 1;
 }
 
 // ArticleService provides CRUD opertions for Article entities
 service ArticleService {
-  rpc Create(CreateArticleRequest) returns (Article);
-  rpc GetByID(GetArticleByIDRequest) returns (Article);
-  rpc Update(UpdateArticleRequest) returns (Article);
-  rpc Delete(DeleteArticleRequest) returns (google.protobuf.Empty);
-  rpc GetBySlug(GetArticleBySlugRequest) returns (Article);
-  rpc ListByAuthor(ListArticleByAuthorRequest) returns (ListArticleByAuthorResponse);
-  rpc ListAll(ListAllArticleRequest) returns (ListAllArticleResponse);
-  rpc FilterByAuthorIsFeaturedPublishedAtTitle(ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest) returns (ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse);
+  rpc CreateArticle(CreateArticleRequest) returns (Article);
+  rpc GetArticleByID(GetArticleByIDRequest) returns (Article);
+  rpc UpdateArticle(UpdateArticleRequest) returns (Article);
+  rpc DeleteArticle(DeleteArticleRequest) returns (google.protobuf.Empty);
+  rpc GetArticleBySlug(GetArticleBySlugRequest) returns (Article);
+  rpc ListArticleByAuthor(ListArticleByAuthorRequest) returns (ListArticleByAuthorResponse);
+  rpc ListAllArticle(ListAllArticleRequest) returns (ListAllArticleResponse);
+  rpc ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest) returns (ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse);
 }
 ```
 

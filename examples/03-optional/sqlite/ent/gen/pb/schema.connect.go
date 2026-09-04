@@ -35,37 +35,42 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// ArticleServiceCreateProcedure is the fully-qualified name of the ArticleService's Create RPC.
-	ArticleServiceCreateProcedure = "/proto.ArticleService/Create"
-	// ArticleServiceGetByIDProcedure is the fully-qualified name of the ArticleService's GetByID RPC.
-	ArticleServiceGetByIDProcedure = "/proto.ArticleService/GetByID"
-	// ArticleServiceUpdateProcedure is the fully-qualified name of the ArticleService's Update RPC.
-	ArticleServiceUpdateProcedure = "/proto.ArticleService/Update"
-	// ArticleServiceDeleteProcedure is the fully-qualified name of the ArticleService's Delete RPC.
-	ArticleServiceDeleteProcedure = "/proto.ArticleService/Delete"
-	// ArticleServiceGetBySlugProcedure is the fully-qualified name of the ArticleService's GetBySlug
-	// RPC.
-	ArticleServiceGetBySlugProcedure = "/proto.ArticleService/GetBySlug"
-	// ArticleServiceListByAuthorProcedure is the fully-qualified name of the ArticleService's
-	// ListByAuthor RPC.
-	ArticleServiceListByAuthorProcedure = "/proto.ArticleService/ListByAuthor"
-	// ArticleServiceListAllProcedure is the fully-qualified name of the ArticleService's ListAll RPC.
-	ArticleServiceListAllProcedure = "/proto.ArticleService/ListAll"
-	// ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure is the fully-qualified name of
-	// the ArticleService's FilterByAuthorIsFeaturedPublishedAtTitle RPC.
-	ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure = "/proto.ArticleService/FilterByAuthorIsFeaturedPublishedAtTitle"
+	// ArticleServiceCreateArticleProcedure is the fully-qualified name of the ArticleService's
+	// CreateArticle RPC.
+	ArticleServiceCreateArticleProcedure = "/proto.ArticleService/CreateArticle"
+	// ArticleServiceGetArticleByIDProcedure is the fully-qualified name of the ArticleService's
+	// GetArticleByID RPC.
+	ArticleServiceGetArticleByIDProcedure = "/proto.ArticleService/GetArticleByID"
+	// ArticleServiceUpdateArticleProcedure is the fully-qualified name of the ArticleService's
+	// UpdateArticle RPC.
+	ArticleServiceUpdateArticleProcedure = "/proto.ArticleService/UpdateArticle"
+	// ArticleServiceDeleteArticleProcedure is the fully-qualified name of the ArticleService's
+	// DeleteArticle RPC.
+	ArticleServiceDeleteArticleProcedure = "/proto.ArticleService/DeleteArticle"
+	// ArticleServiceGetArticleBySlugProcedure is the fully-qualified name of the ArticleService's
+	// GetArticleBySlug RPC.
+	ArticleServiceGetArticleBySlugProcedure = "/proto.ArticleService/GetArticleBySlug"
+	// ArticleServiceListArticleByAuthorProcedure is the fully-qualified name of the ArticleService's
+	// ListArticleByAuthor RPC.
+	ArticleServiceListArticleByAuthorProcedure = "/proto.ArticleService/ListArticleByAuthor"
+	// ArticleServiceListAllArticleProcedure is the fully-qualified name of the ArticleService's
+	// ListAllArticle RPC.
+	ArticleServiceListAllArticleProcedure = "/proto.ArticleService/ListAllArticle"
+	// ArticleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleProcedure is the fully-qualified
+	// name of the ArticleService's ListArticleFilterByAuthorIsFeaturedPublishedAtTitle RPC.
+	ArticleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleProcedure = "/proto.ArticleService/ListArticleFilterByAuthorIsFeaturedPublishedAtTitle"
 )
 
 // ArticleServiceClient is a client for the proto.ArticleService service.
 type ArticleServiceClient interface {
-	Create(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
-	GetByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
-	Update(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error)
-	Delete(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error)
-	GetBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error)
-	ListByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error)
-	ListAll(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error)
-	FilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error)
+	CreateArticle(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
+	GetArticleByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
+	UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error)
+	DeleteArticle(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error)
+	GetArticleBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error)
+	ListArticleByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error)
+	ListAllArticle(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error)
+	ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error)
 }
 
 // NewArticleServiceClient constructs a client for the proto.ArticleService service. By default, it
@@ -79,52 +84,52 @@ func NewArticleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 	baseURL = strings.TrimRight(baseURL, "/")
 	articleServiceMethods := File_schema_proto.Services().ByName("ArticleService").Methods()
 	return &articleServiceClient{
-		create: connect.NewClient[CreateArticleRequest, Article](
+		createArticle: connect.NewClient[CreateArticleRequest, Article](
 			httpClient,
-			baseURL+ArticleServiceCreateProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("Create")),
+			baseURL+ArticleServiceCreateArticleProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("CreateArticle")),
 			connect.WithClientOptions(opts...),
 		),
-		getByID: connect.NewClient[GetArticleByIDRequest, Article](
+		getArticleByID: connect.NewClient[GetArticleByIDRequest, Article](
 			httpClient,
-			baseURL+ArticleServiceGetByIDProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("GetByID")),
+			baseURL+ArticleServiceGetArticleByIDProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("GetArticleByID")),
 			connect.WithClientOptions(opts...),
 		),
-		update: connect.NewClient[UpdateArticleRequest, Article](
+		updateArticle: connect.NewClient[UpdateArticleRequest, Article](
 			httpClient,
-			baseURL+ArticleServiceUpdateProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("Update")),
+			baseURL+ArticleServiceUpdateArticleProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("UpdateArticle")),
 			connect.WithClientOptions(opts...),
 		),
-		delete: connect.NewClient[DeleteArticleRequest, emptypb.Empty](
+		deleteArticle: connect.NewClient[DeleteArticleRequest, emptypb.Empty](
 			httpClient,
-			baseURL+ArticleServiceDeleteProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("Delete")),
+			baseURL+ArticleServiceDeleteArticleProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("DeleteArticle")),
 			connect.WithClientOptions(opts...),
 		),
-		getBySlug: connect.NewClient[GetArticleBySlugRequest, Article](
+		getArticleBySlug: connect.NewClient[GetArticleBySlugRequest, Article](
 			httpClient,
-			baseURL+ArticleServiceGetBySlugProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("GetBySlug")),
+			baseURL+ArticleServiceGetArticleBySlugProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("GetArticleBySlug")),
 			connect.WithClientOptions(opts...),
 		),
-		listByAuthor: connect.NewClient[ListArticleByAuthorRequest, ListArticleByAuthorResponse](
+		listArticleByAuthor: connect.NewClient[ListArticleByAuthorRequest, ListArticleByAuthorResponse](
 			httpClient,
-			baseURL+ArticleServiceListByAuthorProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("ListByAuthor")),
+			baseURL+ArticleServiceListArticleByAuthorProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("ListArticleByAuthor")),
 			connect.WithClientOptions(opts...),
 		),
-		listAll: connect.NewClient[ListAllArticleRequest, ListAllArticleResponse](
+		listAllArticle: connect.NewClient[ListAllArticleRequest, ListAllArticleResponse](
 			httpClient,
-			baseURL+ArticleServiceListAllProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("ListAll")),
+			baseURL+ArticleServiceListAllArticleProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("ListAllArticle")),
 			connect.WithClientOptions(opts...),
 		),
-		filterByAuthorIsFeaturedPublishedAtTitle: connect.NewClient[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest, ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse](
+		listArticleFilterByAuthorIsFeaturedPublishedAtTitle: connect.NewClient[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest, ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse](
 			httpClient,
-			baseURL+ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("FilterByAuthorIsFeaturedPublishedAtTitle")),
+			baseURL+ArticleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("ListArticleFilterByAuthorIsFeaturedPublishedAtTitle")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -132,67 +137,67 @@ func NewArticleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // articleServiceClient implements ArticleServiceClient.
 type articleServiceClient struct {
-	create                                   *connect.Client[CreateArticleRequest, Article]
-	getByID                                  *connect.Client[GetArticleByIDRequest, Article]
-	update                                   *connect.Client[UpdateArticleRequest, Article]
-	delete                                   *connect.Client[DeleteArticleRequest, emptypb.Empty]
-	getBySlug                                *connect.Client[GetArticleBySlugRequest, Article]
-	listByAuthor                             *connect.Client[ListArticleByAuthorRequest, ListArticleByAuthorResponse]
-	listAll                                  *connect.Client[ListAllArticleRequest, ListAllArticleResponse]
-	filterByAuthorIsFeaturedPublishedAtTitle *connect.Client[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest, ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse]
+	createArticle                                       *connect.Client[CreateArticleRequest, Article]
+	getArticleByID                                      *connect.Client[GetArticleByIDRequest, Article]
+	updateArticle                                       *connect.Client[UpdateArticleRequest, Article]
+	deleteArticle                                       *connect.Client[DeleteArticleRequest, emptypb.Empty]
+	getArticleBySlug                                    *connect.Client[GetArticleBySlugRequest, Article]
+	listArticleByAuthor                                 *connect.Client[ListArticleByAuthorRequest, ListArticleByAuthorResponse]
+	listAllArticle                                      *connect.Client[ListAllArticleRequest, ListAllArticleResponse]
+	listArticleFilterByAuthorIsFeaturedPublishedAtTitle *connect.Client[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest, ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse]
 }
 
-// Create calls proto.ArticleService.Create.
-func (c *articleServiceClient) Create(ctx context.Context, req *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error) {
-	return c.create.CallUnary(ctx, req)
+// CreateArticle calls proto.ArticleService.CreateArticle.
+func (c *articleServiceClient) CreateArticle(ctx context.Context, req *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error) {
+	return c.createArticle.CallUnary(ctx, req)
 }
 
-// GetByID calls proto.ArticleService.GetByID.
-func (c *articleServiceClient) GetByID(ctx context.Context, req *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error) {
-	return c.getByID.CallUnary(ctx, req)
+// GetArticleByID calls proto.ArticleService.GetArticleByID.
+func (c *articleServiceClient) GetArticleByID(ctx context.Context, req *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error) {
+	return c.getArticleByID.CallUnary(ctx, req)
 }
 
-// Update calls proto.ArticleService.Update.
-func (c *articleServiceClient) Update(ctx context.Context, req *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {
-	return c.update.CallUnary(ctx, req)
+// UpdateArticle calls proto.ArticleService.UpdateArticle.
+func (c *articleServiceClient) UpdateArticle(ctx context.Context, req *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {
+	return c.updateArticle.CallUnary(ctx, req)
 }
 
-// Delete calls proto.ArticleService.Delete.
-func (c *articleServiceClient) Delete(ctx context.Context, req *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error) {
-	return c.delete.CallUnary(ctx, req)
+// DeleteArticle calls proto.ArticleService.DeleteArticle.
+func (c *articleServiceClient) DeleteArticle(ctx context.Context, req *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteArticle.CallUnary(ctx, req)
 }
 
-// GetBySlug calls proto.ArticleService.GetBySlug.
-func (c *articleServiceClient) GetBySlug(ctx context.Context, req *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error) {
-	return c.getBySlug.CallUnary(ctx, req)
+// GetArticleBySlug calls proto.ArticleService.GetArticleBySlug.
+func (c *articleServiceClient) GetArticleBySlug(ctx context.Context, req *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error) {
+	return c.getArticleBySlug.CallUnary(ctx, req)
 }
 
-// ListByAuthor calls proto.ArticleService.ListByAuthor.
-func (c *articleServiceClient) ListByAuthor(ctx context.Context, req *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
-	return c.listByAuthor.CallUnary(ctx, req)
+// ListArticleByAuthor calls proto.ArticleService.ListArticleByAuthor.
+func (c *articleServiceClient) ListArticleByAuthor(ctx context.Context, req *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
+	return c.listArticleByAuthor.CallUnary(ctx, req)
 }
 
-// ListAll calls proto.ArticleService.ListAll.
-func (c *articleServiceClient) ListAll(ctx context.Context, req *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
-	return c.listAll.CallUnary(ctx, req)
+// ListAllArticle calls proto.ArticleService.ListAllArticle.
+func (c *articleServiceClient) ListAllArticle(ctx context.Context, req *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
+	return c.listAllArticle.CallUnary(ctx, req)
 }
 
-// FilterByAuthorIsFeaturedPublishedAtTitle calls
-// proto.ArticleService.FilterByAuthorIsFeaturedPublishedAtTitle.
-func (c *articleServiceClient) FilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, req *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
-	return c.filterByAuthorIsFeaturedPublishedAtTitle.CallUnary(ctx, req)
+// ListArticleFilterByAuthorIsFeaturedPublishedAtTitle calls
+// proto.ArticleService.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle.
+func (c *articleServiceClient) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, req *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
+	return c.listArticleFilterByAuthorIsFeaturedPublishedAtTitle.CallUnary(ctx, req)
 }
 
 // ArticleServiceHandler is an implementation of the proto.ArticleService service.
 type ArticleServiceHandler interface {
-	Create(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
-	GetByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
-	Update(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error)
-	Delete(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error)
-	GetBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error)
-	ListByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error)
-	ListAll(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error)
-	FilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error)
+	CreateArticle(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
+	GetArticleByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
+	UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error)
+	DeleteArticle(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error)
+	GetArticleBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error)
+	ListArticleByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error)
+	ListAllArticle(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error)
+	ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error)
 }
 
 // NewArticleServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -202,72 +207,72 @@ type ArticleServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	articleServiceMethods := File_schema_proto.Services().ByName("ArticleService").Methods()
-	articleServiceCreateHandler := connect.NewUnaryHandler(
-		ArticleServiceCreateProcedure,
-		svc.Create,
-		connect.WithSchema(articleServiceMethods.ByName("Create")),
+	articleServiceCreateArticleHandler := connect.NewUnaryHandler(
+		ArticleServiceCreateArticleProcedure,
+		svc.CreateArticle,
+		connect.WithSchema(articleServiceMethods.ByName("CreateArticle")),
 		connect.WithHandlerOptions(opts...),
 	)
-	articleServiceGetByIDHandler := connect.NewUnaryHandler(
-		ArticleServiceGetByIDProcedure,
-		svc.GetByID,
-		connect.WithSchema(articleServiceMethods.ByName("GetByID")),
+	articleServiceGetArticleByIDHandler := connect.NewUnaryHandler(
+		ArticleServiceGetArticleByIDProcedure,
+		svc.GetArticleByID,
+		connect.WithSchema(articleServiceMethods.ByName("GetArticleByID")),
 		connect.WithHandlerOptions(opts...),
 	)
-	articleServiceUpdateHandler := connect.NewUnaryHandler(
-		ArticleServiceUpdateProcedure,
-		svc.Update,
-		connect.WithSchema(articleServiceMethods.ByName("Update")),
+	articleServiceUpdateArticleHandler := connect.NewUnaryHandler(
+		ArticleServiceUpdateArticleProcedure,
+		svc.UpdateArticle,
+		connect.WithSchema(articleServiceMethods.ByName("UpdateArticle")),
 		connect.WithHandlerOptions(opts...),
 	)
-	articleServiceDeleteHandler := connect.NewUnaryHandler(
-		ArticleServiceDeleteProcedure,
-		svc.Delete,
-		connect.WithSchema(articleServiceMethods.ByName("Delete")),
+	articleServiceDeleteArticleHandler := connect.NewUnaryHandler(
+		ArticleServiceDeleteArticleProcedure,
+		svc.DeleteArticle,
+		connect.WithSchema(articleServiceMethods.ByName("DeleteArticle")),
 		connect.WithHandlerOptions(opts...),
 	)
-	articleServiceGetBySlugHandler := connect.NewUnaryHandler(
-		ArticleServiceGetBySlugProcedure,
-		svc.GetBySlug,
-		connect.WithSchema(articleServiceMethods.ByName("GetBySlug")),
+	articleServiceGetArticleBySlugHandler := connect.NewUnaryHandler(
+		ArticleServiceGetArticleBySlugProcedure,
+		svc.GetArticleBySlug,
+		connect.WithSchema(articleServiceMethods.ByName("GetArticleBySlug")),
 		connect.WithHandlerOptions(opts...),
 	)
-	articleServiceListByAuthorHandler := connect.NewUnaryHandler(
-		ArticleServiceListByAuthorProcedure,
-		svc.ListByAuthor,
-		connect.WithSchema(articleServiceMethods.ByName("ListByAuthor")),
+	articleServiceListArticleByAuthorHandler := connect.NewUnaryHandler(
+		ArticleServiceListArticleByAuthorProcedure,
+		svc.ListArticleByAuthor,
+		connect.WithSchema(articleServiceMethods.ByName("ListArticleByAuthor")),
 		connect.WithHandlerOptions(opts...),
 	)
-	articleServiceListAllHandler := connect.NewUnaryHandler(
-		ArticleServiceListAllProcedure,
-		svc.ListAll,
-		connect.WithSchema(articleServiceMethods.ByName("ListAll")),
+	articleServiceListAllArticleHandler := connect.NewUnaryHandler(
+		ArticleServiceListAllArticleProcedure,
+		svc.ListAllArticle,
+		connect.WithSchema(articleServiceMethods.ByName("ListAllArticle")),
 		connect.WithHandlerOptions(opts...),
 	)
-	articleServiceFilterByAuthorIsFeaturedPublishedAtTitleHandler := connect.NewUnaryHandler(
-		ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure,
-		svc.FilterByAuthorIsFeaturedPublishedAtTitle,
-		connect.WithSchema(articleServiceMethods.ByName("FilterByAuthorIsFeaturedPublishedAtTitle")),
+	articleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleHandler := connect.NewUnaryHandler(
+		ArticleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleProcedure,
+		svc.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle,
+		connect.WithSchema(articleServiceMethods.ByName("ListArticleFilterByAuthorIsFeaturedPublishedAtTitle")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/proto.ArticleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case ArticleServiceCreateProcedure:
-			articleServiceCreateHandler.ServeHTTP(w, r)
-		case ArticleServiceGetByIDProcedure:
-			articleServiceGetByIDHandler.ServeHTTP(w, r)
-		case ArticleServiceUpdateProcedure:
-			articleServiceUpdateHandler.ServeHTTP(w, r)
-		case ArticleServiceDeleteProcedure:
-			articleServiceDeleteHandler.ServeHTTP(w, r)
-		case ArticleServiceGetBySlugProcedure:
-			articleServiceGetBySlugHandler.ServeHTTP(w, r)
-		case ArticleServiceListByAuthorProcedure:
-			articleServiceListByAuthorHandler.ServeHTTP(w, r)
-		case ArticleServiceListAllProcedure:
-			articleServiceListAllHandler.ServeHTTP(w, r)
-		case ArticleServiceFilterByAuthorIsFeaturedPublishedAtTitleProcedure:
-			articleServiceFilterByAuthorIsFeaturedPublishedAtTitleHandler.ServeHTTP(w, r)
+		case ArticleServiceCreateArticleProcedure:
+			articleServiceCreateArticleHandler.ServeHTTP(w, r)
+		case ArticleServiceGetArticleByIDProcedure:
+			articleServiceGetArticleByIDHandler.ServeHTTP(w, r)
+		case ArticleServiceUpdateArticleProcedure:
+			articleServiceUpdateArticleHandler.ServeHTTP(w, r)
+		case ArticleServiceDeleteArticleProcedure:
+			articleServiceDeleteArticleHandler.ServeHTTP(w, r)
+		case ArticleServiceGetArticleBySlugProcedure:
+			articleServiceGetArticleBySlugHandler.ServeHTTP(w, r)
+		case ArticleServiceListArticleByAuthorProcedure:
+			articleServiceListArticleByAuthorHandler.ServeHTTP(w, r)
+		case ArticleServiceListAllArticleProcedure:
+			articleServiceListAllArticleHandler.ServeHTTP(w, r)
+		case ArticleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleProcedure:
+			articleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -277,34 +282,34 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 // UnimplementedArticleServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedArticleServiceHandler struct{}
 
-func (UnimplementedArticleServiceHandler) Create(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.Create is not implemented"))
+func (UnimplementedArticleServiceHandler) CreateArticle(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.CreateArticle is not implemented"))
 }
 
-func (UnimplementedArticleServiceHandler) GetByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetByID is not implemented"))
+func (UnimplementedArticleServiceHandler) GetArticleByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetArticleByID is not implemented"))
 }
 
-func (UnimplementedArticleServiceHandler) Update(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.Update is not implemented"))
+func (UnimplementedArticleServiceHandler) UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.UpdateArticle is not implemented"))
 }
 
-func (UnimplementedArticleServiceHandler) Delete(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.Delete is not implemented"))
+func (UnimplementedArticleServiceHandler) DeleteArticle(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.DeleteArticle is not implemented"))
 }
 
-func (UnimplementedArticleServiceHandler) GetBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetBySlug is not implemented"))
+func (UnimplementedArticleServiceHandler) GetArticleBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetArticleBySlug is not implemented"))
 }
 
-func (UnimplementedArticleServiceHandler) ListByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListByAuthor is not implemented"))
+func (UnimplementedArticleServiceHandler) ListArticleByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListArticleByAuthor is not implemented"))
 }
 
-func (UnimplementedArticleServiceHandler) ListAll(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListAll is not implemented"))
+func (UnimplementedArticleServiceHandler) ListAllArticle(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListAllArticle is not implemented"))
 }
 
-func (UnimplementedArticleServiceHandler) FilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.FilterByAuthorIsFeaturedPublishedAtTitle is not implemented"))
+func (UnimplementedArticleServiceHandler) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle is not implemented"))
 }

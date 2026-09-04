@@ -61,6 +61,8 @@ func runGenWithContracts(t *testing.T, contracts string) string {
 		t.Fatalf("failed to create schema directory: %v", err)
 	}
 
+	writeTestGoMod(t, tmpDir)
+
 	source := strings.Replace(gatingSchemaTemplate, "%s", contracts, 1)
 	if err := os.WriteFile(filepath.Join(schemaDir, "note.go"), []byte(source), 0644); err != nil {
 		t.Fatalf("failed to write entity file: %v", err)

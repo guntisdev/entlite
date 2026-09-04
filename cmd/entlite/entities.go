@@ -8,6 +8,7 @@ import (
 
 	"github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
 // loadEntities discovers and parses entities from the given directory
@@ -29,6 +30,10 @@ func loadEntities(entityDir string) ([]schema.Entity, error) {
 	parsedEntities, err := parser.ParseEntities(discoveredEntities)
 	if err != nil {
 		return nil, fmt.Errorf("parsing entities: %w", err)
+	}
+
+	if err := util.ValidateQueryNames(parsedEntities); err != nil {
+		return nil, err
 	}
 
 	return parsedEntities, nil

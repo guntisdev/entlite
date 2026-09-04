@@ -15,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIokCCgVNYXRjaBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBXdoaXRlGAIgASgJQga6SAPIAQESFQoFYmxhY2sYAyABKAlCBrpIA8gBARIWCgZyZXN1bHQYBCABKAlCBrpIA8gBARIUCgdvcGVuaW5nGAUgASgJSACIAQESFQoFbW92ZXMYBiABKAVCBrpIA8gBARI1CglwbGF5ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIKCghfb3BlbmluZyKLAQoGUGxheWVyEhQKBG5hbWUYASABKAlCBrpIA8gBARIWCgZyYXRpbmcYAiABKAVCBrpIA8gBARISCgV0aXRsZRgDIAEoCUgAiAEBEjUKCWpvaW5lZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIICgZfdGl0bGUiqwEKCFN0YW5kaW5nEhIKAklEGAEgASgFQga6SAPIAQESFgoGcGxheWVyGAIgASgJQga6SAPIAQESFgoGcGxheWVkGAMgASgFQga6SAPIAQESFAoEd2lucxgEIAEoBUIGukgDyAEBEhUKBWRyYXdzGAUgASgFQga6SAPIAQESFgoGbG9zc2VzGAYgASgFQga6SAPIAQESFgoGcG9pbnRzGAcgASgBQga6SAPIAQEi1QEKEkNyZWF0ZU1hdGNoUmVxdWVzdBIVCgV3aGl0ZRgCIAEoCUIGukgDyAEBEhUKBWJsYWNrGAMgASgJQga6SAPIAQESFgoGcmVzdWx0GAQgASgJQga6SAPIAQESFAoHb3BlbmluZxgFIAEoCUgAiAEBEhUKBW1vdmVzGAYgASgFQga6SAPIAQESMgoJcGxheWVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBQgoKCF9vcGVuaW5nQgwKCl9wbGF5ZWRfYXQiKQoTR2V0TWF0Y2hCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIigKEkRlbGV0ZU1hdGNoUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIhUKE0xpc3RBbGxNYXRjaFJlcXVlc3QiNAoUTGlzdEFsbE1hdGNoUmVzcG9uc2USHAoGbWF0Y2hzGAEgAygLMgwucHJvdG8uTWF0Y2giLgoWR2V0UGxheWVyQnlOYW1lUmVxdWVzdBIUCgRuYW1lGAEgASgJQga6SAPIAQEiFgoUTGlzdEFsbFBsYXllclJlcXVlc3QiNwoVTGlzdEFsbFBsYXllclJlc3BvbnNlEh4KB3BsYXllcnMYASADKAsyDS5wcm90by5QbGF5ZXIiGAoWTGlzdEFsbFN0YW5kaW5nUmVxdWVzdCI9ChdMaXN0QWxsU3RhbmRpbmdSZXNwb25zZRIiCglzdGFuZGluZ3MYASADKAsyDy5wcm90by5TdGFuZGluZzL3AQoMTWF0Y2hTZXJ2aWNlEjEKBkNyZWF0ZRIZLnByb3RvLkNyZWF0ZU1hdGNoUmVxdWVzdBoMLnByb3RvLk1hdGNoEjMKB0dldEJ5SUQSGi5wcm90by5HZXRNYXRjaEJ5SURSZXF1ZXN0GgwucHJvdG8uTWF0Y2gSOwoGRGVsZXRlEhkucHJvdG8uRGVsZXRlTWF0Y2hSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EkIKB0xpc3RBbGwSGi5wcm90by5MaXN0QWxsTWF0Y2hSZXF1ZXN0GhsucHJvdG8uTGlzdEFsbE1hdGNoUmVzcG9uc2UykAEKDVBsYXllclNlcnZpY2USOQoJR2V0QnlOYW1lEh0ucHJvdG8uR2V0UGxheWVyQnlOYW1lUmVxdWVzdBoNLnByb3RvLlBsYXllchJECgdMaXN0QWxsEhsucHJvdG8uTGlzdEFsbFBsYXllclJlcXVlc3QaHC5wcm90by5MaXN0QWxsUGxheWVyUmVzcG9uc2UyWwoPU3RhbmRpbmdTZXJ2aWNlEkgKB0xpc3RBbGwSHS5wcm90by5MaXN0QWxsU3RhbmRpbmdSZXF1ZXN0Gh4ucHJvdG8uTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2VCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIokCCgVNYXRjaBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBXdoaXRlGAIgASgJQga6SAPIAQESFQoFYmxhY2sYAyABKAlCBrpIA8gBARIWCgZyZXN1bHQYBCABKAlCBrpIA8gBARIUCgdvcGVuaW5nGAUgASgJSACIAQESFQoFbW92ZXMYBiABKAVCBrpIA8gBARI1CglwbGF5ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIKCghfb3BlbmluZyKLAQoGUGxheWVyEhQKBG5hbWUYASABKAlCBrpIA8gBARIWCgZyYXRpbmcYAiABKAVCBrpIA8gBARISCgV0aXRsZRgDIAEoCUgAiAEBEjUKCWpvaW5lZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIICgZfdGl0bGUiqwEKCFN0YW5kaW5nEhIKAklEGAEgASgFQga6SAPIAQESFgoGcGxheWVyGAIgASgJQga6SAPIAQESFgoGcGxheWVkGAMgASgFQga6SAPIAQESFAoEd2lucxgEIAEoBUIGukgDyAEBEhUKBWRyYXdzGAUgASgFQga6SAPIAQESFgoGbG9zc2VzGAYgASgFQga6SAPIAQESFgoGcG9pbnRzGAcgASgBQga6SAPIAQEi1QEKEkNyZWF0ZU1hdGNoUmVxdWVzdBIVCgV3aGl0ZRgCIAEoCUIGukgDyAEBEhUKBWJsYWNrGAMgASgJQga6SAPIAQESFgoGcmVzdWx0GAQgASgJQga6SAPIAQESFAoHb3BlbmluZxgFIAEoCUgAiAEBEhUKBW1vdmVzGAYgASgFQga6SAPIAQESMgoJcGxheWVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBQgoKCF9vcGVuaW5nQgwKCl9wbGF5ZWRfYXQiKQoTR2V0TWF0Y2hCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIigKEkRlbGV0ZU1hdGNoUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIhUKE0xpc3RBbGxNYXRjaFJlcXVlc3QiMgoUTGlzdEFsbE1hdGNoUmVzcG9uc2USGgoEcm93cxgBIAMoCzIMLnByb3RvLk1hdGNoIi4KFkdldFBsYXllckJ5TmFtZVJlcXVlc3QSFAoEbmFtZRgBIAEoCUIGukgDyAEBIhYKFExpc3RBbGxQbGF5ZXJSZXF1ZXN0IjQKFUxpc3RBbGxQbGF5ZXJSZXNwb25zZRIbCgRyb3dzGAEgAygLMg0ucHJvdG8uUGxheWVyIhgKFkxpc3RBbGxTdGFuZGluZ1JlcXVlc3QiOAoXTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2USHQoEcm93cxgBIAMoCzIPLnByb3RvLlN0YW5kaW5nMosCCgxNYXRjaFNlcnZpY2USNgoLQ3JlYXRlTWF0Y2gSGS5wcm90by5DcmVhdGVNYXRjaFJlcXVlc3QaDC5wcm90by5NYXRjaBI4CgxHZXRNYXRjaEJ5SUQSGi5wcm90by5HZXRNYXRjaEJ5SURSZXF1ZXN0GgwucHJvdG8uTWF0Y2gSQAoLRGVsZXRlTWF0Y2gSGS5wcm90by5EZWxldGVNYXRjaFJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSRwoMTGlzdEFsbE1hdGNoEhoucHJvdG8uTGlzdEFsbE1hdGNoUmVxdWVzdBobLnByb3RvLkxpc3RBbGxNYXRjaFJlc3BvbnNlMpwBCg1QbGF5ZXJTZXJ2aWNlEj8KD0dldFBsYXllckJ5TmFtZRIdLnByb3RvLkdldFBsYXllckJ5TmFtZVJlcXVlc3QaDS5wcm90by5QbGF5ZXISSgoNTGlzdEFsbFBsYXllchIbLnByb3RvLkxpc3RBbGxQbGF5ZXJSZXF1ZXN0GhwucHJvdG8uTGlzdEFsbFBsYXllclJlc3BvbnNlMmMKD1N0YW5kaW5nU2VydmljZRJQCg9MaXN0QWxsU3RhbmRpbmcSHS5wcm90by5MaXN0QWxsU3RhbmRpbmdSZXF1ZXN0Gh4ucHJvdG8uTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2VCRlpEZ2l0aHViLmNvbS9ndW50aXNkZXYvZW50bGl0ZS9leGFtcGxlcy8wNC1jb250cmFjdHMvc3FsaXRlL2VudC9nZW4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * Match represents as match entity
@@ -264,9 +264,9 @@ export const ListAllMatchRequestSchema: GenMessage<ListAllMatchRequest> = /*@__P
  */
 export type ListAllMatchResponse = Message<"proto.ListAllMatchResponse"> & {
   /**
-   * @generated from field: repeated proto.Match matchs = 1;
+   * @generated from field: repeated proto.Match rows = 1;
    */
-  matchs: Match[];
+  rows: Match[];
 };
 
 /**
@@ -311,9 +311,9 @@ export const ListAllPlayerRequestSchema: GenMessage<ListAllPlayerRequest> = /*@_
  */
 export type ListAllPlayerResponse = Message<"proto.ListAllPlayerResponse"> & {
   /**
-   * @generated from field: repeated proto.Player players = 1;
+   * @generated from field: repeated proto.Player rows = 1;
    */
-  players: Player[];
+  rows: Player[];
 };
 
 /**
@@ -341,9 +341,9 @@ export const ListAllStandingRequestSchema: GenMessage<ListAllStandingRequest> = 
  */
 export type ListAllStandingResponse = Message<"proto.ListAllStandingResponse"> & {
   /**
-   * @generated from field: repeated proto.Standing standings = 1;
+   * @generated from field: repeated proto.Standing rows = 1;
    */
-  standings: Standing[];
+  rows: Standing[];
 };
 
 /**
@@ -360,33 +360,33 @@ export const ListAllStandingResponseSchema: GenMessage<ListAllStandingResponse> 
  */
 export const MatchService: GenService<{
   /**
-   * @generated from rpc proto.MatchService.Create
+   * @generated from rpc proto.MatchService.CreateMatch
    */
-  create: {
+  createMatch: {
     methodKind: "unary";
     input: typeof CreateMatchRequestSchema;
     output: typeof MatchSchema;
   },
   /**
-   * @generated from rpc proto.MatchService.GetByID
+   * @generated from rpc proto.MatchService.GetMatchByID
    */
-  getByID: {
+  getMatchByID: {
     methodKind: "unary";
     input: typeof GetMatchByIDRequestSchema;
     output: typeof MatchSchema;
   },
   /**
-   * @generated from rpc proto.MatchService.Delete
+   * @generated from rpc proto.MatchService.DeleteMatch
    */
-  delete: {
+  deleteMatch: {
     methodKind: "unary";
     input: typeof DeleteMatchRequestSchema;
     output: typeof EmptySchema;
   },
   /**
-   * @generated from rpc proto.MatchService.ListAll
+   * @generated from rpc proto.MatchService.ListAllMatch
    */
-  listAll: {
+  listAllMatch: {
     methodKind: "unary";
     input: typeof ListAllMatchRequestSchema;
     output: typeof ListAllMatchResponseSchema;
@@ -401,17 +401,17 @@ export const MatchService: GenService<{
  */
 export const PlayerService: GenService<{
   /**
-   * @generated from rpc proto.PlayerService.GetByName
+   * @generated from rpc proto.PlayerService.GetPlayerByName
    */
-  getByName: {
+  getPlayerByName: {
     methodKind: "unary";
     input: typeof GetPlayerByNameRequestSchema;
     output: typeof PlayerSchema;
   },
   /**
-   * @generated from rpc proto.PlayerService.ListAll
+   * @generated from rpc proto.PlayerService.ListAllPlayer
    */
-  listAll: {
+  listAllPlayer: {
     methodKind: "unary";
     input: typeof ListAllPlayerRequestSchema;
     output: typeof ListAllPlayerResponseSchema;
@@ -426,9 +426,9 @@ export const PlayerService: GenService<{
  */
 export const StandingService: GenService<{
   /**
-   * @generated from rpc proto.StandingService.ListAll
+   * @generated from rpc proto.StandingService.ListAllStanding
    */
-  listAll: {
+  listAllStanding: {
     methodKind: "unary";
     input: typeof ListAllStandingRequestSchema;
     output: typeof ListAllStandingResponseSchema;

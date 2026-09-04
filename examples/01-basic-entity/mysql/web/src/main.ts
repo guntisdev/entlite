@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "../../ent/gen/ts/schema_pb.js";
-import type { CreateBulkUserItem, CreateBulkUserRequest, CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "../../ent/gen/ts/schema_pb.js";
+import type { CreateBulkUserRow, CreateBulkUserRequest, CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "../../ent/gen/ts/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
@@ -32,7 +32,7 @@ function createUser() {
         isAdmin: false,
         lastLoginMs: BigInt(Date.now()),
     };
-    client.create(request)
+    client.createUser(request)
     .then((response) => {
         log("✓ User created:", response);
     })
@@ -44,7 +44,7 @@ function createUser() {
 function createBulkUsers() {
     const count = 3;
     log(`Creating ${count} users in bulk...`);
-    const items: StrictMessageInput<CreateBulkUserItem>[] = Array.from({ length: count }, () => {
+    const rows: StrictMessageInput<CreateBulkUserRow>[] = Array.from({ length: count }, () => {
         const fullName = randomFullName();
         const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
         return {
@@ -54,10 +54,10 @@ function createBulkUsers() {
             password: createHash(12),
         };
     });
-    const request: StrictMessageInput<CreateBulkUserRequest> = { items };
-    client.createBulk(request)
+    const request: StrictMessageInput<CreateBulkUserRequest> = { rows };
+    client.createBulkUser(request)
     .then((response) => {
-        log(`✓ ${response.users.length} users created in bulk:`, response);
+        log(`✓ ${response.rows.length} users created in bulk:`, response);
     })
     .catch((error) => {
         log("✗ Error creating users in bulk:", error);
@@ -72,7 +72,7 @@ function getUserByID() {
         return;
     }
     log(`Getting user ${id}...`);
-    client.getByID({ ID: id })
+    client.getUserByID({ ID: id })
     .then((response) => {
         log("✓ User retrieved:", response);
     })
@@ -84,10 +84,10 @@ function getUserByID() {
 function listAllUsers() {
     log("Listing all users...");
     const request: StrictMessageInput<ListAllUserRequest> = {};
-    client.listAll(request)
+    client.listAllUser(request)
     .then((response) => {
-        log(`✓ Users listed (${response.users.length} users):`);
-        response.users.forEach((user, index) => {
+        log(`✓ Users listed (${response.rows.length} users):`);
+        response.rows.forEach((user, index) => {
             log(`ID: ${user.ID} ${user.name} ${user.age} ${user.email}`);
         });
     })
@@ -114,7 +114,7 @@ function updateUser() {
         isAdmin: true,
         lastLoginMs: BigInt(Date.now()),
     };
-    client.update(request)
+    client.updateUser(request)
     .then((response) => {
         log("✓ User updated:", response);
     })
@@ -131,7 +131,7 @@ function deleteUser() {
         return;
     }
     log(`Deleting user ${id}...`);
-    client.delete({ ID: id })
+    client.deleteUser({ ID: id })
     .then((response) => {
         log("✓ User deleted:", response);
     })
@@ -143,7 +143,7 @@ function deleteUser() {
 function deleteAllUsers() {
     log("Deleting all users...");
     const request: StrictMessageInput<DeleteAllUserRequest> = {};
-    client.deleteAll(request)
+    client.deleteAllUser(request)
     .then((response) => {
         log("✓ All users deleted:", response);
     })

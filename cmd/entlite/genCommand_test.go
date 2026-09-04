@@ -45,6 +45,17 @@ sql:
 		t.Fatalf("Failed to write sqlc.yaml: %v", err)
 	}
 
+	bufGenYamlContent := `version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/go:v1.34.2
+    out: gen/pb
+    opt: paths=source_relative`
+
+	bufGenYamlPath := filepath.Join(tmpDir, "ent", "buf.gen.yaml")
+	if err := os.WriteFile(bufGenYamlPath, []byte(bufGenYamlContent), 0644); err != nil {
+		t.Fatalf("Failed to write buf.gen.yaml: %v", err)
+	}
+
 	genCommand([]string{schemaDir})
 
 	expectedDirs := []string{
@@ -78,7 +89,7 @@ sql:
 
 package proto;
 
-option go_package = "./pb";
+option go_package = "github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -138,16 +149,16 @@ message ListUserByNameAgeRequest {
 }
 
 message ListUserByNameAgeResponse {
-  repeated User users = 1;
+  repeated User rows = 1;
 }
 
 // UserService provides CRUD opertions for User entities
 service UserService {
-  rpc Create(CreateUserRequest) returns (User);
-  rpc GetByID(GetUserByIDRequest) returns (User);
-  rpc Update(UpdateUserRequest) returns (User);
-  rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty);
-  rpc ListByNameAge(ListUserByNameAgeRequest) returns (ListUserByNameAgeResponse);
+  rpc CreateUser(CreateUserRequest) returns (User);
+  rpc GetUserByID(GetUserByIDRequest) returns (User);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  rpc ListUserByNameAge(ListUserByNameAgeRequest) returns (ListUserByNameAgeResponse);
 }`
 
 	if content, err := os.ReadFile(protoPath); err != nil {

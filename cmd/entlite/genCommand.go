@@ -43,7 +43,13 @@ func genCommand(args []string) {
 	// PROTO
 	protoEntities := schema.FilterPROTO(parsedEntities)
 	if len(protoEntities) > 0 {
-		if err := proto.Generate(protoEntities, protoDir); err != nil {
+		goPackage, err := pbImportPath(filepath.Dir(dir))
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed resolving go_package: %v\n", err)
+			os.Exit(1)
+		}
+
+		if err := proto.Generate(protoEntities, protoDir, goPackage); err != nil {
 			fmt.Fprintf(os.Stderr, "Failed generating proto: %v\n", err)
 			os.Exit(1)
 		}
@@ -65,4 +71,15 @@ func genCommand(args []string) {
 			os.Exit(1)
 		}
 	}
+}
+
+func pbImportPath(entDir string) (string, error) {
+	pbDir := filepath.Join(entDir, "gen", "pb")
+
+	// buf.gen.yaml is the source of truth
+	if bufConfig, err := util.GetBufConfigFromYaml(filepath.Join(entDir, "buf.gen.yaml")); err == nil {
+		pbDir = filepath.Join(entDir, bufConfig.ProtoTypesDir)
+	}
+
+	return util.PathToImport(pbDir)
 }

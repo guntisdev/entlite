@@ -73,7 +73,7 @@ function createMatch() {
         moves: randomMoves(),
         playedAt: timestampFromDate(daysAgo(Math.random() * 60)),
     };
-    matchClient.create(request)
+    matchClient.createMatch(request)
         .then((response) => {
             log("✓ Match created:", response);
             log(describeMatch(response));
@@ -87,7 +87,7 @@ function createMatch() {
 function createInvalidMatch() {
     const white = randomPlayer();
     log("Creating match with result 2-0, logic.IsKnownResult should reject it...");
-    matchClient.create({
+    matchClient.createMatch({
         white: white,
         black: randomPlayer(white),
         result: "2-0",
@@ -104,7 +104,7 @@ function createInvalidMatch() {
 function getMatch() {
     const id = numberInput("getMatchId");
     log(`Getting match #${id}...`);
-    matchClient.getByID({ ID: id })
+    matchClient.getMatchByID({ ID: id })
         .then((response) => {
             log("✓ Match:", response);
             log(describeMatch(response));
@@ -117,7 +117,7 @@ function getMatch() {
 function deleteMatch() {
     const id = numberInput("deleteMatchId");
     log(`Deleting match #${id}...`);
-    matchClient.delete({ ID: id })
+    matchClient.deleteMatch({ ID: id })
         .then(() => {
             log(`✓ Match #${id} deleted, the server wrote an audit row for it`);
         })
@@ -128,10 +128,10 @@ function deleteMatch() {
 
 function listMatches() {
     log("Listing matches from the match table...");
-    matchClient.listAll({})
+    matchClient.listAllMatch({})
         .then((response) => {
-            log(`✓ ${response.matchs.length} matches:`);
-            for (const match of response.matchs) {
+            log(`✓ ${response.rows.length} matches:`);
+            for (const match of response.rows) {
                 log(describeMatch(match));
             }
         })
@@ -145,7 +145,7 @@ function listMatches() {
 function getPlayer() {
     const name = textInput("getPlayerName");
     log(`Getting player ${name}...`);
-    playerClient.getByName({ name: name })
+    playerClient.getPlayerByName({ name: name })
         .then((response) => {
             log("✓ Player:", response);
             log(describePlayer(response));
@@ -157,10 +157,10 @@ function getPlayer() {
 
 function listPlayers() {
     log("Listing the roster, seeded by the server on startup...");
-    playerClient.listAll({})
+    playerClient.listAllPlayer({})
         .then((response) => {
-            log(`✓ ${response.players.length} players:`);
-            for (const player of response.players) {
+            log(`✓ ${response.rows.length} players:`);
+            for (const player of response.rows) {
                 log(describePlayer(player));
             }
         })
@@ -181,10 +181,10 @@ function listPlayerRpcs() {
 
 function listStandings() {
     log("Listing standings, counted from matches, there is no standings table...");
-    standingClient.listAll({})
+    standingClient.listAllStanding({})
         .then((response) => {
-            log(`✓ ${response.standings.length} players:`);
-            for (const standing of response.standings) {
+            log(`✓ ${response.rows.length} players:`);
+            for (const standing of response.rows) {
                 log(describeStanding(standing));
             }
         })

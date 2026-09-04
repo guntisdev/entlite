@@ -13,8 +13,8 @@ import (
 // proto package name for every generated schema.proto
 const PackageName = "proto"
 
-func Generate(entities []schema.Entity, dir string) error {
-	protoContent := generateSchemaProto(entities)
+func Generate(entities []schema.Entity, dir string, goPackage string) error {
+	protoContent := generateSchemaProto(entities, goPackage)
 
 	fileName := "schema.proto"
 	filePath := filepath.Join(dir, fileName)
@@ -26,13 +26,13 @@ func Generate(entities []schema.Entity, dir string) error {
 	return nil
 }
 
-func generateSchemaProto(entities []schema.Entity) string {
+func generateSchemaProto(entities []schema.Entity, goPackage string) string {
 	var content strings.Builder
 
 	content.WriteString(util.GeneratedGo)
 	content.WriteString("syntax = \"proto3\";\n\n")
 	content.WriteString(fmt.Sprintf("package %s;\n\n", PackageName))
-	content.WriteString("option go_package = \"./pb\";\n\n")
+	content.WriteString(fmt.Sprintf("option go_package = \"%s\";\n\n", goPackage))
 
 	imports := []string{}
 	if needsCommonImports(entities) {
@@ -144,16 +144,16 @@ func generateResponseMessages(entity schema.Entity) string {
 			writeCreateFields(&content, entity)
 			content.WriteString("}")
 		case schema.QueryCreateBulk:
-			content.WriteString(fmt.Sprintf("message %sItem {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %sRow {\n", messageName))
 			writeCreateFields(&content, entity)
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %sItem items = 1 %s;\n", messageName, requiredStr))
+			content.WriteString(fmt.Sprintf("  repeated %sRow rows = 1 %s;\n", messageName, requiredStr))
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			content.WriteString("}")
 		case schema.QueryGetBy, schema.QueryDelete:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
@@ -199,7 +199,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			content.WriteString("}")
 		case schema.QueryListBy:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
@@ -246,7 +246,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %s %ss = 1;\n", entity.Name, strings.ToLower(entity.Name)))
+			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			content.WriteString("}")
 		}
 
@@ -318,22 +318,21 @@ func rpcComment(query schema.Query) string {
 }
 
 func generateRpc(entity schema.Entity, query schema.Query) string {
-	rpcName := util.GenQueryRpcName(query, entity.Name)
-	messageName := util.GenQueryName(query, entity.Name)
+	name := util.GenQueryName(query, entity.Name)
 
 	switch query.Type {
 	case schema.QueryCreate:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
 	case schema.QueryCreateBulk:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, messageName, messageName)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", name, name, name)
 	case schema.QueryGetBy:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
 	case schema.QueryUpdate:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", rpcName, messageName, entity.Name)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
 	case schema.QueryDelete, schema.QueryDeleteAll:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (google.protobuf.Empty);\n", rpcName, messageName)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (google.protobuf.Empty);\n", name, name)
 	case schema.QueryListBy, schema.QueryListAll:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", rpcName, messageName, messageName)
+		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", name, name, name)
 	default:
 		return ""
 	}

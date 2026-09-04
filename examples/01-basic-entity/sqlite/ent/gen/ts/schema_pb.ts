@@ -15,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIs8CCgRVc2VyEhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFwoHYXBpX2tleRgGIAEoDEIGukgDyAEBEhEKCWlzX2FjdGl2ZRgHIAEoCBIbCgtsb2dpbl9jb3VudBgIIAEoA0IGukgDyAEBEhYKBnJhdGluZxgJIAEoAUIGukgDyAEBEhsKC3ByZWZlcmVuY2VzGAogASgJQga6SAPIAQESNgoKY3JlYXRlZF9hdBgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UisAIKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAUgASgJQga6SAPIAQESFAoHYXBpX2tleRgGIAEoDEgBiAEBEhYKCWlzX2FjdGl2ZRgHIAEoCEgCiAEBEhgKC2xvZ2luX2NvdW50GAggASgDSAOIAQESEwoGcmF0aW5nGAkgASgBSASIAQESGAoLcHJlZmVyZW5jZXMYCiABKAlIBYgBAUIGCgRfYWdlQgoKCF9hcGlfa2V5QgwKCl9pc19hY3RpdmVCDgoMX2xvZ2luX2NvdW50QgkKB19yYXRpbmdCDgoMX3ByZWZlcmVuY2VzIigKEkdldFVzZXJCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIqwCChFVcGRhdGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhUKCHBhc3N3b3JkGAUgASgJSAGIAQESFgoJaXNfYWN0aXZlGAcgASgISAKIAQESGAoLbG9naW5fY291bnQYCCABKANIA4gBARITCgZyYXRpbmcYCSABKAFIBIgBARIYCgtwcmVmZXJlbmNlcxgKIAEoCUgFiAEBQgYKBF9hZ2VCCwoJX3Bhc3N3b3JkQgwKCl9pc19hY3RpdmVCDgoMX2xvZ2luX2NvdW50QgkKB19yYXRpbmdCDgoMX3ByZWZlcmVuY2VzIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEisQIKEkNyZWF0ZUJ1bGtVc2VySXRlbRIVCgVlbWFpbBgCIAEoCUIGukgDyAEBEhQKBG5hbWUYAyABKAlCBrpIA8gBARIQCgNhZ2UYBCABKAVIAIgBARIYCghwYXNzd29yZBgFIAEoCUIGukgDyAEBEhQKB2FwaV9rZXkYBiABKAxIAYgBARIWCglpc19hY3RpdmUYByABKAhIAogBARIYCgtsb2dpbl9jb3VudBgIIAEoA0gDiAEBEhMKBnJhdGluZxgJIAEoAUgEiAEBEhgKC3ByZWZlcmVuY2VzGAogASgJSAWIAQFCBgoEX2FnZUIKCghfYXBpX2tleUIMCgpfaXNfYWN0aXZlQg4KDF9sb2dpbl9jb3VudEIJCgdfcmF0aW5nQg4KDF9wcmVmZXJlbmNlcyJJChVDcmVhdGVCdWxrVXNlclJlcXVlc3QSMAoFaXRlbXMYASADKAsyGS5wcm90by5DcmVhdGVCdWxrVXNlckl0ZW1CBrpIA8gBASI0ChZDcmVhdGVCdWxrVXNlclJlc3BvbnNlEhoKBXVzZXJzGAEgAygLMgsucHJvdG8uVXNlciIuChVHZXRVc2VyQnlFbWFpbFJlcXVlc3QSFQoFZW1haWwYAiABKAlCBrpIA8gBASIUChJMaXN0QWxsVXNlclJlcXVlc3QiMQoTTGlzdEFsbFVzZXJSZXNwb25zZRIaCgV1c2VycxgBIAMoCzILLnByb3RvLlVzZXIiFgoURGVsZXRlQWxsVXNlclJlcXVlc3QiVQoRTGlzdEFjdGl2ZVJlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUSGQoJaXNfYWN0aXZlGAMgASgIQga6SAPIAQEiMAoSTGlzdEFjdGl2ZVJlc3BvbnNlEhoKBXVzZXJzGAEgAygLMgsucHJvdG8uVXNlciKPAQoeTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhcKB21pbl9hZ2UYAyABKAVCBrpIA8gBARIXCgdtYXhfYWdlGAQgASgFQga6SAPIAQESFAoEbmFtZRgFIAEoCUIGukgDyAEBIj0KH0xpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lUmVzcG9uc2USGgoFdXNlcnMYASADKAsyCy5wcm90by5Vc2VyMosFCgtVc2VyU2VydmljZRIvCgZDcmVhdGUSGC5wcm90by5DcmVhdGVVc2VyUmVxdWVzdBoLLnByb3RvLlVzZXISMQoHR2V0QnlJRBIZLnByb3RvLkdldFVzZXJCeUlEUmVxdWVzdBoLLnByb3RvLlVzZXISLwoGVXBkYXRlEhgucHJvdG8uVXBkYXRlVXNlclJlcXVlc3QaCy5wcm90by5Vc2VyEjoKBkRlbGV0ZRIYLnByb3RvLkRlbGV0ZVVzZXJSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EkkKCkNyZWF0ZUJ1bGsSHC5wcm90by5DcmVhdGVCdWxrVXNlclJlcXVlc3QaHS5wcm90by5DcmVhdGVCdWxrVXNlclJlc3BvbnNlEjcKCkdldEJ5RW1haWwSHC5wcm90by5HZXRVc2VyQnlFbWFpbFJlcXVlc3QaCy5wcm90by5Vc2VyEkAKB0xpc3RBbGwSGS5wcm90by5MaXN0QWxsVXNlclJlcXVlc3QaGi5wcm90by5MaXN0QWxsVXNlclJlc3BvbnNlEkAKCURlbGV0ZUFsbBIbLnByb3RvLkRlbGV0ZUFsbFVzZXJSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EkEKCkxpc3RBY3RpdmUSGC5wcm90by5MaXN0QWN0aXZlUmVxdWVzdBoZLnByb3RvLkxpc3RBY3RpdmVSZXNwb25zZRJgCg9GaWx0ZXJCeUFnZU5hbWUSJS5wcm90by5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZVJlcXVlc3QaJi5wcm90by5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZVJlc3BvbnNlQgZaBC4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIs8CCgRVc2VyEhIKAklEGAEgASgFQga6SAPIAQESFQoFZW1haWwYAiABKAlCBrpIA8gBARIUCgRuYW1lGAMgASgJQga6SAPIAQESEAoDYWdlGAQgASgFSACIAQESFwoHYXBpX2tleRgGIAEoDEIGukgDyAEBEhEKCWlzX2FjdGl2ZRgHIAEoCBIbCgtsb2dpbl9jb3VudBgIIAEoA0IGukgDyAEBEhYKBnJhdGluZxgJIAEoAUIGukgDyAEBEhsKC3ByZWZlcmVuY2VzGAogASgJQga6SAPIAQESNgoKY3JlYXRlZF9hdBgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQgYKBF9hZ2UisAIKEUNyZWF0ZVVzZXJSZXF1ZXN0EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAUgASgJQga6SAPIAQESFAoHYXBpX2tleRgGIAEoDEgBiAEBEhYKCWlzX2FjdGl2ZRgHIAEoCEgCiAEBEhgKC2xvZ2luX2NvdW50GAggASgDSAOIAQESEwoGcmF0aW5nGAkgASgBSASIAQESGAoLcHJlZmVyZW5jZXMYCiABKAlIBYgBAUIGCgRfYWdlQgoKCF9hcGlfa2V5QgwKCl9pc19hY3RpdmVCDgoMX2xvZ2luX2NvdW50QgkKB19yYXRpbmdCDgoMX3ByZWZlcmVuY2VzIigKEkdldFVzZXJCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIqwCChFVcGRhdGVVc2VyUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhUKCHBhc3N3b3JkGAUgASgJSAGIAQESFgoJaXNfYWN0aXZlGAcgASgISAKIAQESGAoLbG9naW5fY291bnQYCCABKANIA4gBARITCgZyYXRpbmcYCSABKAFIBIgBARIYCgtwcmVmZXJlbmNlcxgKIAEoCUgFiAEBQgYKBF9hZ2VCCwoJX3Bhc3N3b3JkQgwKCl9pc19hY3RpdmVCDgoMX2xvZ2luX2NvdW50QgkKB19yYXRpbmdCDgoMX3ByZWZlcmVuY2VzIicKEURlbGV0ZVVzZXJSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEisAIKEUNyZWF0ZUJ1bGtVc2VyUm93EhUKBWVtYWlsGAIgASgJQga6SAPIAQESFAoEbmFtZRgDIAEoCUIGukgDyAEBEhAKA2FnZRgEIAEoBUgAiAEBEhgKCHBhc3N3b3JkGAUgASgJQga6SAPIAQESFAoHYXBpX2tleRgGIAEoDEgBiAEBEhYKCWlzX2FjdGl2ZRgHIAEoCEgCiAEBEhgKC2xvZ2luX2NvdW50GAggASgDSAOIAQESEwoGcmF0aW5nGAkgASgBSASIAQESGAoLcHJlZmVyZW5jZXMYCiABKAlIBYgBAUIGCgRfYWdlQgoKCF9hcGlfa2V5QgwKCl9pc19hY3RpdmVCDgoMX2xvZ2luX2NvdW50QgkKB19yYXRpbmdCDgoMX3ByZWZlcmVuY2VzIkcKFUNyZWF0ZUJ1bGtVc2VyUmVxdWVzdBIuCgRyb3dzGAEgAygLMhgucHJvdG8uQ3JlYXRlQnVsa1VzZXJSb3dCBrpIA8gBASIzChZDcmVhdGVCdWxrVXNlclJlc3BvbnNlEhkKBHJvd3MYASADKAsyCy5wcm90by5Vc2VyIi4KFUdldFVzZXJCeUVtYWlsUmVxdWVzdBIVCgVlbWFpbBgCIAEoCUIGukgDyAEBIhQKEkxpc3RBbGxVc2VyUmVxdWVzdCIwChNMaXN0QWxsVXNlclJlc3BvbnNlEhkKBHJvd3MYASADKAsyCy5wcm90by5Vc2VyIhYKFERlbGV0ZUFsbFVzZXJSZXF1ZXN0IlUKEUxpc3RBY3RpdmVSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhkKCWlzX2FjdGl2ZRgDIAEoCEIGukgDyAEBIi8KEkxpc3RBY3RpdmVSZXNwb25zZRIZCgRyb3dzGAEgAygLMgsucHJvdG8uVXNlciKPAQoeTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWVSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFEhcKB21pbl9hZ2UYAyABKAVCBrpIA8gBARIXCgdtYXhfYWdlGAQgASgFQga6SAPIAQESFAoEbmFtZRgFIAEoCUIGukgDyAEBIjwKH0xpc3RVc2VyRmlsdGVyQnlBZ2VOYW1lUmVzcG9uc2USGQoEcm93cxgBIAMoCzILLnByb3RvLlVzZXIyswUKC1VzZXJTZXJ2aWNlEjMKCkNyZWF0ZVVzZXISGC5wcm90by5DcmVhdGVVc2VyUmVxdWVzdBoLLnByb3RvLlVzZXISNQoLR2V0VXNlckJ5SUQSGS5wcm90by5HZXRVc2VyQnlJRFJlcXVlc3QaCy5wcm90by5Vc2VyEjMKClVwZGF0ZVVzZXISGC5wcm90by5VcGRhdGVVc2VyUmVxdWVzdBoLLnByb3RvLlVzZXISPgoKRGVsZXRlVXNlchIYLnByb3RvLkRlbGV0ZVVzZXJSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Ek0KDkNyZWF0ZUJ1bGtVc2VyEhwucHJvdG8uQ3JlYXRlQnVsa1VzZXJSZXF1ZXN0Gh0ucHJvdG8uQ3JlYXRlQnVsa1VzZXJSZXNwb25zZRI7Cg5HZXRVc2VyQnlFbWFpbBIcLnByb3RvLkdldFVzZXJCeUVtYWlsUmVxdWVzdBoLLnByb3RvLlVzZXISRAoLTGlzdEFsbFVzZXISGS5wcm90by5MaXN0QWxsVXNlclJlcXVlc3QaGi5wcm90by5MaXN0QWxsVXNlclJlc3BvbnNlEkQKDURlbGV0ZUFsbFVzZXISGy5wcm90by5EZWxldGVBbGxVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRJBCgpMaXN0QWN0aXZlEhgucHJvdG8uTGlzdEFjdGl2ZVJlcXVlc3QaGS5wcm90by5MaXN0QWN0aXZlUmVzcG9uc2USaAoXTGlzdFVzZXJGaWx0ZXJCeUFnZU5hbWUSJS5wcm90by5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZVJlcXVlc3QaJi5wcm90by5MaXN0VXNlckZpbHRlckJ5QWdlTmFtZVJlc3BvbnNlQklaR2dpdGh1Yi5jb20vZ3VudGlzZGV2L2VudGxpdGUvZXhhbXBsZXMvMDEtYmFzaWMtZW50aXR5L3NxbGl0ZS9lbnQvZ2VuL3BiYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * User represents as user entity
@@ -247,9 +247,9 @@ export const DeleteUserRequestSchema: GenMessage<DeleteUserRequest> = /*@__PURE_
   messageDesc(file_schema, 4);
 
 /**
- * @generated from message proto.CreateBulkUserItem
+ * @generated from message proto.CreateBulkUserRow
  */
-export type CreateBulkUserItem = Message<"proto.CreateBulkUserItem"> & {
+export type CreateBulkUserRow = Message<"proto.CreateBulkUserRow"> & {
   /**
    * @generated from field: string email = 2;
    */
@@ -301,10 +301,10 @@ export type CreateBulkUserItem = Message<"proto.CreateBulkUserItem"> & {
 };
 
 /**
- * Describes the message proto.CreateBulkUserItem.
- * Use `create(CreateBulkUserItemSchema)` to create a new message.
+ * Describes the message proto.CreateBulkUserRow.
+ * Use `create(CreateBulkUserRowSchema)` to create a new message.
  */
-export const CreateBulkUserItemSchema: GenMessage<CreateBulkUserItem> = /*@__PURE__*/
+export const CreateBulkUserRowSchema: GenMessage<CreateBulkUserRow> = /*@__PURE__*/
   messageDesc(file_schema, 5);
 
 /**
@@ -312,9 +312,9 @@ export const CreateBulkUserItemSchema: GenMessage<CreateBulkUserItem> = /*@__PUR
  */
 export type CreateBulkUserRequest = Message<"proto.CreateBulkUserRequest"> & {
   /**
-   * @generated from field: repeated proto.CreateBulkUserItem items = 1;
+   * @generated from field: repeated proto.CreateBulkUserRow rows = 1;
    */
-  items: CreateBulkUserItem[];
+  rows: CreateBulkUserRow[];
 };
 
 /**
@@ -329,9 +329,9 @@ export const CreateBulkUserRequestSchema: GenMessage<CreateBulkUserRequest> = /*
  */
 export type CreateBulkUserResponse = Message<"proto.CreateBulkUserResponse"> & {
   /**
-   * @generated from field: repeated proto.User users = 1;
+   * @generated from field: repeated proto.User rows = 1;
    */
-  users: User[];
+  rows: User[];
 };
 
 /**
@@ -376,9 +376,9 @@ export const ListAllUserRequestSchema: GenMessage<ListAllUserRequest> = /*@__PUR
  */
 export type ListAllUserResponse = Message<"proto.ListAllUserResponse"> & {
   /**
-   * @generated from field: repeated proto.User users = 1;
+   * @generated from field: repeated proto.User rows = 1;
    */
-  users: User[];
+  rows: User[];
 };
 
 /**
@@ -433,9 +433,9 @@ export const ListActiveRequestSchema: GenMessage<ListActiveRequest> = /*@__PURE_
  */
 export type ListActiveResponse = Message<"proto.ListActiveResponse"> & {
   /**
-   * @generated from field: repeated proto.User users = 1;
+   * @generated from field: repeated proto.User rows = 1;
    */
-  users: User[];
+  rows: User[];
 };
 
 /**
@@ -487,9 +487,9 @@ export const ListUserFilterByAgeNameRequestSchema: GenMessage<ListUserFilterByAg
  */
 export type ListUserFilterByAgeNameResponse = Message<"proto.ListUserFilterByAgeNameResponse"> & {
   /**
-   * @generated from field: repeated proto.User users = 1;
+   * @generated from field: repeated proto.User rows = 1;
    */
-  users: User[];
+  rows: User[];
 };
 
 /**
@@ -506,41 +506,41 @@ export const ListUserFilterByAgeNameResponseSchema: GenMessage<ListUserFilterByA
  */
 export const UserService: GenService<{
   /**
-   * @generated from rpc proto.UserService.Create
+   * @generated from rpc proto.UserService.CreateUser
    */
-  create: {
+  createUser: {
     methodKind: "unary";
     input: typeof CreateUserRequestSchema;
     output: typeof UserSchema;
   },
   /**
-   * @generated from rpc proto.UserService.GetByID
+   * @generated from rpc proto.UserService.GetUserByID
    */
-  getByID: {
+  getUserByID: {
     methodKind: "unary";
     input: typeof GetUserByIDRequestSchema;
     output: typeof UserSchema;
   },
   /**
-   * @generated from rpc proto.UserService.Update
+   * @generated from rpc proto.UserService.UpdateUser
    */
-  update: {
+  updateUser: {
     methodKind: "unary";
     input: typeof UpdateUserRequestSchema;
     output: typeof UserSchema;
   },
   /**
-   * @generated from rpc proto.UserService.Delete
+   * @generated from rpc proto.UserService.DeleteUser
    */
-  delete: {
+  deleteUser: {
     methodKind: "unary";
     input: typeof DeleteUserRequestSchema;
     output: typeof EmptySchema;
   },
   /**
-   * @generated from rpc proto.UserService.CreateBulk
+   * @generated from rpc proto.UserService.CreateBulkUser
    */
-  createBulk: {
+  createBulkUser: {
     methodKind: "unary";
     input: typeof CreateBulkUserRequestSchema;
     output: typeof CreateBulkUserResponseSchema;
@@ -548,25 +548,25 @@ export const UserService: GenService<{
   /**
    * Look up a user by email address
    *
-   * @generated from rpc proto.UserService.GetByEmail
+   * @generated from rpc proto.UserService.GetUserByEmail
    */
-  getByEmail: {
+  getUserByEmail: {
     methodKind: "unary";
     input: typeof GetUserByEmailRequestSchema;
     output: typeof UserSchema;
   },
   /**
-   * @generated from rpc proto.UserService.ListAll
+   * @generated from rpc proto.UserService.ListAllUser
    */
-  listAll: {
+  listAllUser: {
     methodKind: "unary";
     input: typeof ListAllUserRequestSchema;
     output: typeof ListAllUserResponseSchema;
   },
   /**
-   * @generated from rpc proto.UserService.DeleteAll
+   * @generated from rpc proto.UserService.DeleteAllUser
    */
-  deleteAll: {
+  deleteAllUser: {
     methodKind: "unary";
     input: typeof DeleteAllUserRequestSchema;
     output: typeof EmptySchema;
@@ -580,9 +580,9 @@ export const UserService: GenService<{
     output: typeof ListActiveResponseSchema;
   },
   /**
-   * @generated from rpc proto.UserService.FilterByAgeName
+   * @generated from rpc proto.UserService.ListUserFilterByAgeName
    */
-  filterByAgeName: {
+  listUserFilterByAgeName: {
     methodKind: "unary";
     input: typeof ListUserFilterByAgeNameRequestSchema;
     output: typeof ListUserFilterByAgeNameResponseSchema;

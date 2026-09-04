@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
 func parseQueriesMethod(funcDecl *ast.FuncDecl, comments commentLookup) ([]schema.Query, error) {
@@ -162,6 +163,9 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 		}
 		if !token.IsIdentifier(name) {
 			return nil, true, fmt.Errorf("Name %q is not a valid identifier", name)
+		}
+		if suffix := util.ReservedNameSuffix(name); suffix != "" {
+			return nil, true, fmt.Errorf("Name %q cannot end with %s, the generator appends it", name, suffix)
 		}
 		query.Name = name
 	case "Contracts":

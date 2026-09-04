@@ -7,8 +7,6 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-// GenQueryName returns the entity qualified query name, used as the sqlc query name
-// and the base name of its proto messages. A custom Name() replaces it.
 func GenQueryName(query schema.Query, entityName string) string {
 	if query.Name != "" {
 		return query.Name
@@ -28,34 +26,7 @@ func GenQueryName(query schema.Query, entityName string) string {
 	case schema.QueryGetBy:
 		return fmt.Sprintf("Get%sBy%s", entityName, FieldsToStr(query.Fields))
 	case schema.QueryListBy, schema.QueryListAll:
-		return GenListMethodName(query, entityName)
-	default:
-		return ""
-	}
-}
-
-// GenQueryRpcName returns the rpc name inside the entity service. A custom Name()
-// replaces it.
-func GenQueryRpcName(query schema.Query, entityName string) string {
-	if query.Name != "" {
-		return query.Name
-	}
-
-	switch query.Type {
-	case schema.QueryCreate:
-		return "Create"
-	case schema.QueryCreateBulk:
-		return "CreateBulk"
-	case schema.QueryUpdate:
-		return "Update"
-	case schema.QueryDelete:
-		return "Delete"
-	case schema.QueryDeleteAll:
-		return "DeleteAll"
-	case schema.QueryGetBy:
-		return fmt.Sprintf("GetBy%s", FieldsToStr(query.Fields))
-	case schema.QueryListBy, schema.QueryListAll:
-		return GenListRpcName(query, entityName)
+		return genListName(query, entityName)
 	default:
 		return ""
 	}
@@ -102,4 +73,22 @@ func sameFields(a, b []string) bool {
 	}
 
 	return true
+}
+
+func genListName(query schema.Query, entityName string) string {
+	if query.Type == schema.QueryListAll {
+		return fmt.Sprintf("ListAll%s", entityName)
+	}
+
+	byStr := ""
+	if fieldsStr := FieldsToStr(query.Fields); fieldsStr != "" {
+		byStr = fmt.Sprintf("By%s", fieldsStr)
+	}
+
+	byFilter := ""
+	if filtersStr := FiltersToStr(query.Filters); filtersStr != "" {
+		byFilter = fmt.Sprintf("FilterBy%s", filtersStr)
+	}
+
+	return fmt.Sprintf("List%s%s%s", entityName, byStr, byFilter)
 }

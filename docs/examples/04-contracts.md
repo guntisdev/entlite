@@ -435,7 +435,7 @@ syntax = "proto3";
 
 package proto;
 
-option go_package = "./pb";
+option go_package = "github.com/guntisdev/entlite/examples/04-contracts/sqlite/ent/gen/pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -498,15 +498,15 @@ message ListAllMatchRequest {
 }
 
 message ListAllMatchResponse {
-  repeated Match matchs = 1;
+  repeated Match rows = 1;
 }
 
 // MatchService provides CRUD opertions for Match entities
 service MatchService {
-  rpc Create(CreateMatchRequest) returns (Match);
-  rpc GetByID(GetMatchByIDRequest) returns (Match);
-  rpc Delete(DeleteMatchRequest) returns (google.protobuf.Empty);
-  rpc ListAll(ListAllMatchRequest) returns (ListAllMatchResponse);
+  rpc CreateMatch(CreateMatchRequest) returns (Match);
+  rpc GetMatchByID(GetMatchByIDRequest) returns (Match);
+  rpc DeleteMatch(DeleteMatchRequest) returns (google.protobuf.Empty);
+  rpc ListAllMatch(ListAllMatchRequest) returns (ListAllMatchResponse);
 }
 
 message GetPlayerByNameRequest {
@@ -516,25 +516,25 @@ message ListAllPlayerRequest {
 }
 
 message ListAllPlayerResponse {
-  repeated Player players = 1;
+  repeated Player rows = 1;
 }
 
 // PlayerService provides CRUD opertions for Player entities
 service PlayerService {
-  rpc GetByName(GetPlayerByNameRequest) returns (Player);
-  rpc ListAll(ListAllPlayerRequest) returns (ListAllPlayerResponse);
+  rpc GetPlayerByName(GetPlayerByNameRequest) returns (Player);
+  rpc ListAllPlayer(ListAllPlayerRequest) returns (ListAllPlayerResponse);
 }
 
 message ListAllStandingRequest {
 }
 
 message ListAllStandingResponse {
-  repeated Standing standings = 1;
+  repeated Standing rows = 1;
 }
 
 // StandingService provides CRUD opertions for Standing entities
 service StandingService {
-  rpc ListAll(ListAllStandingRequest) returns (ListAllStandingResponse);
+  rpc ListAllStanding(ListAllStandingRequest) returns (ListAllStandingResponse);
 }
 ```
 
