@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { UserService } from "../../ent/gen/ts/schema_pb.js";
-import type { CreateBulkUserItem, CreateBulkUserRequest, CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "../../ent/gen/ts/schema_pb.js";
+import type { CreateBulkUserRow, CreateBulkUserRequest, CreateUserRequest, DeleteAllUserRequest, ListAllUserRequest, UpdateUserRequest } from "../../ent/gen/ts/schema_pb.js";
 import { createHash, randomFullName, randomName, toString } from "./utils.js";
 
 type StrictMessageInput<T extends { $typeName: string; $unknown?: unknown }> = Omit<T, "$typeName" | "$unknown">;
@@ -44,7 +44,7 @@ function createUser() {
 function createBulkUsers() {
     const count = 3;
     log(`Creating ${count} users in bulk...`);
-    const items: StrictMessageInput<CreateBulkUserItem>[] = Array.from({ length: count }, () => {
+    const rows: StrictMessageInput<CreateBulkUserRow>[] = Array.from({ length: count }, () => {
         const fullName = randomFullName();
         const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
         return {
@@ -54,7 +54,7 @@ function createBulkUsers() {
             password: createHash(12),
         };
     });
-    const request: StrictMessageInput<CreateBulkUserRequest> = { items };
+    const request: StrictMessageInput<CreateBulkUserRequest> = { rows };
     client.createBulk(request)
     .then((response) => {
         log(`✓ ${response.rows.length} users created in bulk:`, response);

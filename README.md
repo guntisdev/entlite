@@ -12,7 +12,9 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 * Implement Queries OrderBy()
 * On queries Create() and CreateBulk() add .Upsert() with or without fields to generate query ON CONFLICET (....) DO UPDATE
 * Implement Queries Count(), Sum(), Avg()
+* Implement Limit()
 
+* Implement Offset()
 * Comment out in examples Queries use case for: Count, GroupBy, Having, OrderBy
 * Implement Queries GroupBy()
 * Implement Queries Having()

@@ -59,7 +59,7 @@ message UpdateUserRequest {
 message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
-message CreateBulkUserItem {
+message CreateBulkUserRow {
   string email = 2 [(buf.validate.field).required = true];
   // Full name, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
@@ -74,7 +74,7 @@ message CreateBulkUserItem {
 }
 
 message CreateBulkUserRequest {
-  repeated CreateBulkUserItem items = 1 [(buf.validate.field).required = true];
+  repeated CreateBulkUserRow rows = 1 [(buf.validate.field).required = true];
 }
 
 message CreateBulkUserResponse {

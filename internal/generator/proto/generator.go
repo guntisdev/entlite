@@ -144,12 +144,12 @@ func generateResponseMessages(entity schema.Entity) string {
 			writeCreateFields(&content, entity)
 			content.WriteString("}")
 		case schema.QueryCreateBulk:
-			content.WriteString(fmt.Sprintf("message %sItem {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %sRow {\n", messageName))
 			writeCreateFields(&content, entity)
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %sItem items = 1 %s;\n", messageName, requiredStr))
+			content.WriteString(fmt.Sprintf("  repeated %sRow rows = 1 %s;\n", messageName, requiredStr))
 			content.WriteString("}\n\n")
 
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))

@@ -61,22 +61,22 @@ func (s *UserServer) CreateBulk(
 	ctx context.Context,
 	req *connect.Request[pb.CreateBulkUserRequest],
 ) (*connect.Response[pb.CreateBulkUserResponse], error) {
-	log.Printf("Create bulk users: %d items", len(req.Msg.Items))
+	log.Printf("Create bulk users: %d rows", len(req.Msg.Rows))
 
 	queries := db.New(s.db)
 
-	params := make([]db.CreateBulkUserParams, 0, len(req.Msg.Items))
-	for _, item := range req.Msg.Items {
+	params := make([]db.CreateBulkUserParams, 0, len(req.Msg.Rows))
+	for _, row := range req.Msg.Rows {
 		params = append(params, db.CreateBulkUserParams{
-			Email:       item.Email,
-			Name:        item.Name,
-			Age:         item.Age,
-			Password:    item.Password,
-			ApiKey:      &item.ApiKey,
-			IsActive:    item.IsActive,
-			LoginCount:  item.LoginCount,
-			Rating:      item.Rating,
-			Preferences: item.Preferences,
+			Email:       row.Email,
+			Name:        row.Name,
+			Age:         row.Age,
+			Password:    row.Password,
+			ApiKey:      &row.ApiKey,
+			IsActive:    row.IsActive,
+			LoginCount:  row.LoginCount,
+			Rating:      row.Rating,
+			Preferences: row.Preferences,
 		})
 	}
 
