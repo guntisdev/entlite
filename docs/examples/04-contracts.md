@@ -15,6 +15,7 @@ Source: [examples/04-contracts](../../examples/04-contracts)
 - Query level `Contracts()`: a query the server runs that gets no rpc
 - Field level `PROTO().ReadOnly()` for server managed timestamps
 - Contracts on an entity are the default; a field or query can narrow them
+- `index.Primary("name")` — a natural key, the entity gets no generated `id` column
 
 ## Four entities
 
@@ -36,6 +37,24 @@ Check it against the generated files. `schema.sql` has three tables and no
 create, update or delete rpc. `query.Create()` is still declared and still
 becomes a database query — the server calls it in `SeedRoster`. The read only
 contract only removes the rpc.
+
+It is also the entity with a natural key:
+
+```go
+func (Player) Indexes() []entlite.Index {
+	return []entlite.Index{
+		index.Primary("name"),
+	}
+}
+```
+
+A club roster is identified by the player name, and `Match` already refers to
+players that way, by name and not by id. So the name is the primary key and
+there is no `id` column at all — `index.Primary` replaces the one entlite would
+otherwise generate. Everything keyed by the primary key follows it: the column
+is `PRIMARY KEY` in `schema.sql`, `query.Get()` becomes `GetPlayerByName` with
+a `GetByName` rpc, and `CreatePlayer` returns only an `error`, because there is
+no generated id left for the database to hand back.
 
 **Standing** is a league table counted from matches on every request. There is
 no `standing` table. The entity exists to give the response a typed shape. Its
@@ -74,8 +93,8 @@ cd sqlite
 make run     # serves on :8080
 ```
 
-The page has a panel for Match, Standing and Audit. Player has no panel yet, so
-to see its read only service use the generated client or curl.
+The page has a panel per entity. The Player one is read only: get by name and
+list the roster.
 
 ## Schema
 
@@ -185,6 +204,7 @@ import (
 
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
+	"github.com/guntisdev/entlite/pkg/entlite/index"
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
@@ -203,7 +223,7 @@ func (Player) Contracts() []entlite.Contract {
 
 func (Player) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.String("name").Unique(),
+		field.String("name").Immutable(),
 		// Elo rating, kept by the secretary
 		field.Int("rating"),
 		// e.g. GM, IM, FM
@@ -212,10 +232,17 @@ func (Player) Fields() []entlite.Field {
 	}
 }
 
+// the roster is keyed by player name, matches refer to players the same way
+func (Player) Indexes() []entlite.Index {
+	return []entlite.Index{
+		index.Primary("name"),
+	}
+}
+
 func (Player) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.Create(), // stays a db query, the read only proto contract keeps it out of the service
-		query.Get(),
+		query.Get(),    // by name, the primary key
 		query.ListAll(),
 	}
 }
@@ -304,13 +331,13 @@ CREATE TABLE IF NOT EXISTS "match"(
 
 -- Player is the club roster, written on the server and read by members.
 CREATE TABLE IF NOT EXISTS "player"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
   -- Elo rating, kept by the secretary
   rating INTEGER NOT NULL,
   -- e.g. GM, IM, FM
   title TEXT,
-  joined_at DATETIME NOT NULL
+  joined_at DATETIME NOT NULL,
+  PRIMARY KEY (name)
 );
 ```
 
@@ -377,7 +404,7 @@ DELETE FROM "match";
 
 -- Player CRUD operations
 
--- name: CreatePlayer :one
+-- name: CreatePlayer :exec
 INSERT INTO "player" (
   name,
   rating,
@@ -388,10 +415,9 @@ INSERT INTO "player" (
   ?,
   ?,
   ?
-) RETURNING ID;
-
--- name: GetPlayerByID :one
-SELECT * FROM "player" WHERE ID = ?;
+);
+-- name: GetPlayerByName :one
+SELECT * FROM "player" WHERE name = ?;
 
 -- name: ListAllPlayer :many
 SELECT * FROM "player";
@@ -431,13 +457,12 @@ message Match {
 
 // Player is the club roster, written on the server and read by members.
 message Player {
-  int32 ID = 1 [(buf.validate.field).required = true];
-  string name = 2 [(buf.validate.field).required = true];
+  string name = 1 [(buf.validate.field).required = true];
   // Elo rating, kept by the secretary
-  int32 rating = 3 [(buf.validate.field).required = true];
+  int32 rating = 2 [(buf.validate.field).required = true];
   // e.g. GM, IM, FM
-  optional string title = 4;
-  google.protobuf.Timestamp joined_at = 5 [(buf.validate.field).required = true];
+  optional string title = 3;
+  google.protobuf.Timestamp joined_at = 4 [(buf.validate.field).required = true];
 }
 
 // Standing represents as standing entity
@@ -484,8 +509,8 @@ service MatchService {
   rpc ListAll(ListAllMatchRequest) returns (ListAllMatchResponse);
 }
 
-message GetPlayerByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetPlayerByNameRequest {
+  string name = 1 [(buf.validate.field).required = true];
 }
 message ListAllPlayerRequest {
 }
@@ -496,7 +521,7 @@ message ListAllPlayerResponse {
 
 // PlayerService provides CRUD opertions for Player entities
 service PlayerService {
-  rpc GetByID(GetPlayerByIDRequest) returns (Player);
+  rpc GetByName(GetPlayerByNameRequest) returns (Player);
   rpc ListAll(ListAllPlayerRequest) returns (ListAllPlayerResponse);
 }
 

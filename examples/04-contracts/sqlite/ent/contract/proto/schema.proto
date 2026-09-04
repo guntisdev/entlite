@@ -26,13 +26,12 @@ message Match {
 
 // Player is the club roster, written on the server and read by members.
 message Player {
-  int32 ID = 1 [(buf.validate.field).required = true];
-  string name = 2 [(buf.validate.field).required = true];
+  string name = 1 [(buf.validate.field).required = true];
   // Elo rating, kept by the secretary
-  int32 rating = 3 [(buf.validate.field).required = true];
+  int32 rating = 2 [(buf.validate.field).required = true];
   // e.g. GM, IM, FM
-  optional string title = 4;
-  google.protobuf.Timestamp joined_at = 5 [(buf.validate.field).required = true];
+  optional string title = 3;
+  google.protobuf.Timestamp joined_at = 4 [(buf.validate.field).required = true];
 }
 
 // Standing represents as standing entity
@@ -79,8 +78,8 @@ service MatchService {
   rpc ListAll(ListAllMatchRequest) returns (ListAllMatchResponse);
 }
 
-message GetPlayerByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetPlayerByNameRequest {
+  string name = 1 [(buf.validate.field).required = true];
 }
 message ListAllPlayerRequest {
 }
@@ -91,7 +90,7 @@ message ListAllPlayerResponse {
 
 // PlayerService provides CRUD opertions for Player entities
 service PlayerService {
-  rpc GetByID(GetPlayerByIDRequest) returns (Player);
+  rpc GetByName(GetPlayerByNameRequest) returns (Player);
   rpc ListAll(ListAllPlayerRequest) returns (ListAllPlayerResponse);
 }
 

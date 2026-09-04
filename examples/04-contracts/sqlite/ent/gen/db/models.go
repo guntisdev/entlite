@@ -30,7 +30,6 @@ type Match struct {
 }
 
 type Player struct {
-	ID int32 `json:"ID"`
 	Name string `json:"name"`
 	Rating int32 `json:"rating"`
 	Title *string `json:"title"`
@@ -105,7 +104,6 @@ func (m *Player) PlayerToSQL() *internal.Player {
 	}
 
 	return &internal.Player{
-		ID: IntConvert[int32, int64](m.ID),
 		Name: m.Name,
 		Rating: IntConvert[int32, int64](m.Rating),
 		Title: m.Title,
@@ -119,7 +117,6 @@ func PlayerFromSQL(db *internal.Player) *Player {
 	}
 
 	return &Player{
-		ID: IntConvert[int64, int32](db.ID),
 		Name: db.Name,
 		Rating: IntConvert[int64, int32](db.Rating),
 		Title: db.Title,
@@ -152,7 +149,6 @@ func (m *Player) ToProto() *pb.Player {
 	}
 
 	return &pb.Player{
-		ID: m.ID,
 		Name: m.Name,
 		Rating: m.Rating,
 		Title: m.Title,

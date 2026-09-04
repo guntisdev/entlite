@@ -169,14 +169,15 @@ func NewPlayerServiceServer(db *sql.DB) *PlayerServer {
 	}
 }
 
-// GetByID reads one roster entry, the read only contract gives no write rpc
-func (s *PlayerServer) GetByID(
+// GetByName reads one roster entry, index.Primary("name") makes the name the key,
+// and the read only contract gives no write rpc
+func (s *PlayerServer) GetByName(
 	ctx context.Context,
-	req *connect.Request[pb.GetPlayerByIDRequest],
+	req *connect.Request[pb.GetPlayerByNameRequest],
 ) (*connect.Response[pb.Player], error) {
-	log.Printf("Get player: ID=%d", req.Msg.ID)
+	log.Printf("Get player: name=%q", req.Msg.Name)
 
-	player, err := db.New(s.db).GetPlayerByID(ctx, req.Msg.ID)
+	player, err := db.New(s.db).GetPlayerByName(ctx, req.Msg.Name)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("player not found"))
@@ -228,7 +229,7 @@ func SeedRoster(ctx context.Context, database *sql.DB) error {
 	}
 
 	for _, player := range roster {
-		if _, err := queries.CreatePlayer(ctx, player); err != nil {
+		if err := queries.CreatePlayer(ctx, player); err != nil {
 			return fmt.Errorf("failed to seed player %q: %w", player.Name, err)
 		}
 	}

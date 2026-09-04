@@ -68,6 +68,11 @@ export function daysAgo(days: number): Date {
     return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 }
 
+export function textInput(id: string): string {
+    const input = document.getElementById(id) as HTMLInputElement;
+    return input.value;
+}
+
 export function numberInput(id: string): number {
     const input = document.getElementById(id) as HTMLInputElement;
     return parseInt(input.value);

@@ -11,6 +11,7 @@ import {
     randomOpening,
     randomPlayer,
     randomResult,
+    textInput,
     toString,
 } from "./utils.js";
 
@@ -46,9 +47,10 @@ function describeMatch(match: Match): string {
         + `(${match.moves} moves, ${match.opening ?? "no opening"}, ${playedAt})`;
 }
 
+// no id to print, index.Primary("name") makes the name the key
 function describePlayer(player: Player): string {
     const joinedAt = player.joinedAt ? timestampDate(player.joinedAt).toISOString().slice(0, 10) : "?";
-    return `#${player.ID} ${player.name} ${player.rating} `
+    return `${player.name} ${player.rating} `
         + `(${player.title ?? "no title"}, joined ${joinedAt})`;
 }
 
@@ -141,9 +143,9 @@ function listMatches() {
 // --- Player: both contracts, proto is read only ----------------------------
 
 function getPlayer() {
-    const id = numberInput("getPlayerId");
-    log(`Getting player #${id}...`);
-    playerClient.getByID({ ID: id })
+    const name = textInput("getPlayerName");
+    log(`Getting player ${name}...`);
+    playerClient.getByName({ name: name })
         .then((response) => {
             log("✓ Player:", response);
             log(describePlayer(response));

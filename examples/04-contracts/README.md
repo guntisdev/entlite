@@ -11,6 +11,7 @@ entities, one for each combination.
 - Query level `Contracts()`: a query the server runs that gets no rpc
 - Field level `PROTO().ReadOnly()` for server managed timestamps
 - Contracts on an entity are the default; a field or query can narrow them
+- `index.Primary("name")` — a natural key, the entity gets no generated `id` column
 <!-- teaches:end -->
 
 ## Four entities
@@ -33,6 +34,24 @@ Check it against the generated files. `schema.sql` has three tables and no
 create, update or delete rpc. `query.Create()` is still declared and still
 becomes a database query — the server calls it in `SeedRoster`. The read only
 contract only removes the rpc.
+
+It is also the entity with a natural key:
+
+```go
+func (Player) Indexes() []entlite.Index {
+	return []entlite.Index{
+		index.Primary("name"),
+	}
+}
+```
+
+A club roster is identified by the player name, and `Match` already refers to
+players that way, by name and not by id. So the name is the primary key and
+there is no `id` column at all — `index.Primary` replaces the one entlite would
+otherwise generate. Everything keyed by the primary key follows it: the column
+is `PRIMARY KEY` in `schema.sql`, `query.Get()` becomes `GetPlayerByName` with
+a `GetByName` rpc, and `CreatePlayer` returns only an `error`, because there is
+no generated id left for the database to hand back.
 
 **Standing** is a league table counted from matches on every request. There is
 no `standing` table. The entity exists to give the response a typed shape. Its
@@ -71,5 +90,5 @@ cd sqlite
 make run     # serves on :8080
 ```
 
-The page has a panel for Match, Standing and Audit. Player has no panel yet, so
-to see its read only service use the generated client or curl.
+The page has a panel per entity. The Player one is read only: get by name and
+list the roster.

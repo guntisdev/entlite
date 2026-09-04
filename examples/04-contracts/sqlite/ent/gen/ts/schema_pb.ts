@@ -15,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIokCCgVNYXRjaBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBXdoaXRlGAIgASgJQga6SAPIAQESFQoFYmxhY2sYAyABKAlCBrpIA8gBARIWCgZyZXN1bHQYBCABKAlCBrpIA8gBARIUCgdvcGVuaW5nGAUgASgJSACIAQESFQoFbW92ZXMYBiABKAVCBrpIA8gBARI1CglwbGF5ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIKCghfb3BlbmluZyKfAQoGUGxheWVyEhIKAklEGAEgASgFQga6SAPIAQESFAoEbmFtZRgCIAEoCUIGukgDyAEBEhYKBnJhdGluZxgDIAEoBUIGukgDyAEBEhIKBXRpdGxlGAQgASgJSACIAQESNQoJam9pbmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBQggKBl90aXRsZSKrAQoIU3RhbmRpbmcSEgoCSUQYASABKAVCBrpIA8gBARIWCgZwbGF5ZXIYAiABKAlCBrpIA8gBARIWCgZwbGF5ZWQYAyABKAVCBrpIA8gBARIUCgR3aW5zGAQgASgFQga6SAPIAQESFQoFZHJhd3MYBSABKAVCBrpIA8gBARIWCgZsb3NzZXMYBiABKAVCBrpIA8gBARIWCgZwb2ludHMYByABKAFCBrpIA8gBASLVAQoSQ3JlYXRlTWF0Y2hSZXF1ZXN0EhUKBXdoaXRlGAIgASgJQga6SAPIAQESFQoFYmxhY2sYAyABKAlCBrpIA8gBARIWCgZyZXN1bHQYBCABKAlCBrpIA8gBARIUCgdvcGVuaW5nGAUgASgJSACIAQESFQoFbW92ZXMYBiABKAVCBrpIA8gBARIyCglwbGF5ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAGIAQFCCgoIX29wZW5pbmdCDAoKX3BsYXllZF9hdCIpChNHZXRNYXRjaEJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiKAoSRGVsZXRlTWF0Y2hSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiFQoTTGlzdEFsbE1hdGNoUmVxdWVzdCI0ChRMaXN0QWxsTWF0Y2hSZXNwb25zZRIcCgZtYXRjaHMYASADKAsyDC5wcm90by5NYXRjaCIqChRHZXRQbGF5ZXJCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIhYKFExpc3RBbGxQbGF5ZXJSZXF1ZXN0IjcKFUxpc3RBbGxQbGF5ZXJSZXNwb25zZRIeCgdwbGF5ZXJzGAEgAygLMg0ucHJvdG8uUGxheWVyIhgKFkxpc3RBbGxTdGFuZGluZ1JlcXVlc3QiPQoXTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2USIgoJc3RhbmRpbmdzGAEgAygLMg8ucHJvdG8uU3RhbmRpbmcy9wEKDE1hdGNoU2VydmljZRIxCgZDcmVhdGUSGS5wcm90by5DcmVhdGVNYXRjaFJlcXVlc3QaDC5wcm90by5NYXRjaBIzCgdHZXRCeUlEEhoucHJvdG8uR2V0TWF0Y2hCeUlEUmVxdWVzdBoMLnByb3RvLk1hdGNoEjsKBkRlbGV0ZRIZLnByb3RvLkRlbGV0ZU1hdGNoUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRJCCgdMaXN0QWxsEhoucHJvdG8uTGlzdEFsbE1hdGNoUmVxdWVzdBobLnByb3RvLkxpc3RBbGxNYXRjaFJlc3BvbnNlMowBCg1QbGF5ZXJTZXJ2aWNlEjUKB0dldEJ5SUQSGy5wcm90by5HZXRQbGF5ZXJCeUlEUmVxdWVzdBoNLnByb3RvLlBsYXllchJECgdMaXN0QWxsEhsucHJvdG8uTGlzdEFsbFBsYXllclJlcXVlc3QaHC5wcm90by5MaXN0QWxsUGxheWVyUmVzcG9uc2UyWwoPU3RhbmRpbmdTZXJ2aWNlEkgKB0xpc3RBbGwSHS5wcm90by5MaXN0QWxsU3RhbmRpbmdSZXF1ZXN0Gh4ucHJvdG8uTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2VCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIokCCgVNYXRjaBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBXdoaXRlGAIgASgJQga6SAPIAQESFQoFYmxhY2sYAyABKAlCBrpIA8gBARIWCgZyZXN1bHQYBCABKAlCBrpIA8gBARIUCgdvcGVuaW5nGAUgASgJSACIAQESFQoFbW92ZXMYBiABKAVCBrpIA8gBARI1CglwbGF5ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIKCghfb3BlbmluZyKLAQoGUGxheWVyEhQKBG5hbWUYASABKAlCBrpIA8gBARIWCgZyYXRpbmcYAiABKAVCBrpIA8gBARISCgV0aXRsZRgDIAEoCUgAiAEBEjUKCWpvaW5lZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIICgZfdGl0bGUiqwEKCFN0YW5kaW5nEhIKAklEGAEgASgFQga6SAPIAQESFgoGcGxheWVyGAIgASgJQga6SAPIAQESFgoGcGxheWVkGAMgASgFQga6SAPIAQESFAoEd2lucxgEIAEoBUIGukgDyAEBEhUKBWRyYXdzGAUgASgFQga6SAPIAQESFgoGbG9zc2VzGAYgASgFQga6SAPIAQESFgoGcG9pbnRzGAcgASgBQga6SAPIAQEi1QEKEkNyZWF0ZU1hdGNoUmVxdWVzdBIVCgV3aGl0ZRgCIAEoCUIGukgDyAEBEhUKBWJsYWNrGAMgASgJQga6SAPIAQESFgoGcmVzdWx0GAQgASgJQga6SAPIAQESFAoHb3BlbmluZxgFIAEoCUgAiAEBEhUKBW1vdmVzGAYgASgFQga6SAPIAQESMgoJcGxheWVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBQgoKCF9vcGVuaW5nQgwKCl9wbGF5ZWRfYXQiKQoTR2V0TWF0Y2hCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIigKEkRlbGV0ZU1hdGNoUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIhUKE0xpc3RBbGxNYXRjaFJlcXVlc3QiNAoUTGlzdEFsbE1hdGNoUmVzcG9uc2USHAoGbWF0Y2hzGAEgAygLMgwucHJvdG8uTWF0Y2giLgoWR2V0UGxheWVyQnlOYW1lUmVxdWVzdBIUCgRuYW1lGAEgASgJQga6SAPIAQEiFgoUTGlzdEFsbFBsYXllclJlcXVlc3QiNwoVTGlzdEFsbFBsYXllclJlc3BvbnNlEh4KB3BsYXllcnMYASADKAsyDS5wcm90by5QbGF5ZXIiGAoWTGlzdEFsbFN0YW5kaW5nUmVxdWVzdCI9ChdMaXN0QWxsU3RhbmRpbmdSZXNwb25zZRIiCglzdGFuZGluZ3MYASADKAsyDy5wcm90by5TdGFuZGluZzL3AQoMTWF0Y2hTZXJ2aWNlEjEKBkNyZWF0ZRIZLnByb3RvLkNyZWF0ZU1hdGNoUmVxdWVzdBoMLnByb3RvLk1hdGNoEjMKB0dldEJ5SUQSGi5wcm90by5HZXRNYXRjaEJ5SURSZXF1ZXN0GgwucHJvdG8uTWF0Y2gSOwoGRGVsZXRlEhkucHJvdG8uRGVsZXRlTWF0Y2hSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EkIKB0xpc3RBbGwSGi5wcm90by5MaXN0QWxsTWF0Y2hSZXF1ZXN0GhsucHJvdG8uTGlzdEFsbE1hdGNoUmVzcG9uc2UykAEKDVBsYXllclNlcnZpY2USOQoJR2V0QnlOYW1lEh0ucHJvdG8uR2V0UGxheWVyQnlOYW1lUmVxdWVzdBoNLnByb3RvLlBsYXllchJECgdMaXN0QWxsEhsucHJvdG8uTGlzdEFsbFBsYXllclJlcXVlc3QaHC5wcm90by5MaXN0QWxsUGxheWVyUmVzcG9uc2UyWwoPU3RhbmRpbmdTZXJ2aWNlEkgKB0xpc3RBbGwSHS5wcm90by5MaXN0QWxsU3RhbmRpbmdSZXF1ZXN0Gh4ucHJvdG8uTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2VCBloELi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * Match represents as match entity
@@ -82,31 +82,26 @@ export const MatchSchema: GenMessage<Match> = /*@__PURE__*/
  */
 export type Player = Message<"proto.Player"> & {
   /**
-   * @generated from field: int32 ID = 1;
-   */
-  ID: number;
-
-  /**
-   * @generated from field: string name = 2;
+   * @generated from field: string name = 1;
    */
   name: string;
 
   /**
    * Elo rating, kept by the secretary
    *
-   * @generated from field: int32 rating = 3;
+   * @generated from field: int32 rating = 2;
    */
   rating: number;
 
   /**
    * e.g. GM, IM, FM
    *
-   * @generated from field: optional string title = 4;
+   * @generated from field: optional string title = 3;
    */
   title?: string;
 
   /**
-   * @generated from field: google.protobuf.Timestamp joined_at = 5;
+   * @generated from field: google.protobuf.Timestamp joined_at = 4;
    */
   joinedAt?: Timestamp;
 };
@@ -282,20 +277,20 @@ export const ListAllMatchResponseSchema: GenMessage<ListAllMatchResponse> = /*@_
   messageDesc(file_schema, 7);
 
 /**
- * @generated from message proto.GetPlayerByIDRequest
+ * @generated from message proto.GetPlayerByNameRequest
  */
-export type GetPlayerByIDRequest = Message<"proto.GetPlayerByIDRequest"> & {
+export type GetPlayerByNameRequest = Message<"proto.GetPlayerByNameRequest"> & {
   /**
-   * @generated from field: int32 ID = 1;
+   * @generated from field: string name = 1;
    */
-  ID: number;
+  name: string;
 };
 
 /**
- * Describes the message proto.GetPlayerByIDRequest.
- * Use `create(GetPlayerByIDRequestSchema)` to create a new message.
+ * Describes the message proto.GetPlayerByNameRequest.
+ * Use `create(GetPlayerByNameRequestSchema)` to create a new message.
  */
-export const GetPlayerByIDRequestSchema: GenMessage<GetPlayerByIDRequest> = /*@__PURE__*/
+export const GetPlayerByNameRequestSchema: GenMessage<GetPlayerByNameRequest> = /*@__PURE__*/
   messageDesc(file_schema, 8);
 
 /**
@@ -406,11 +401,11 @@ export const MatchService: GenService<{
  */
 export const PlayerService: GenService<{
   /**
-   * @generated from rpc proto.PlayerService.GetByID
+   * @generated from rpc proto.PlayerService.GetByName
    */
-  getByID: {
+  getByName: {
     methodKind: "unary";
-    input: typeof GetPlayerByIDRequestSchema;
+    input: typeof GetPlayerByNameRequestSchema;
     output: typeof PlayerSchema;
   },
   /**

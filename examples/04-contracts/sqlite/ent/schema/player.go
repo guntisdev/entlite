@@ -5,6 +5,7 @@ import (
 
 	"github.com/guntisdev/entlite/pkg/entlite"
 	"github.com/guntisdev/entlite/pkg/entlite/field"
+	"github.com/guntisdev/entlite/pkg/entlite/index"
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
@@ -23,7 +24,7 @@ func (Player) Contracts() []entlite.Contract {
 
 func (Player) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.String("name").Unique(),
+		field.String("name").Immutable(),
 		// Elo rating, kept by the secretary
 		field.Int("rating"),
 		// e.g. GM, IM, FM
@@ -32,10 +33,17 @@ func (Player) Fields() []entlite.Field {
 	}
 }
 
+// the roster is keyed by player name, matches refer to players the same way
+func (Player) Indexes() []entlite.Index {
+	return []entlite.Index{
+		index.Primary("name"),
+	}
+}
+
 func (Player) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.Create(), // stays a db query, the read only proto contract keeps it out of the service
-		query.Get(),
+		query.Get(),    // by name, the primary key
 		query.ListAll(),
 	}
 }
