@@ -117,7 +117,7 @@ func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) st
 
 	// json text is checked before the request reaches the handler
 	for _, field := range entity.Fields {
-		if field.Type != schema.FieldTypeJSON || !inRequest(field, queryType) {
+		if field.Type != schema.FieldTypeJSON || !inRequest(entity, field, queryType) {
 			continue
 		}
 
@@ -137,6 +137,9 @@ func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) st
 		if field.Validate == nil {
 			continue
 		}
+		if !inRequest(entity, field, queryType) {
+			continue
+		}
 
 		fieldName := toProtoFieldName(field)
 		content.WriteString(fmt.Sprintf("\tif !%s(r.%s) {\n", field.Validate().(string), fieldName))
@@ -149,14 +152,15 @@ func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) st
 }
 
 // inRequest reports if the field exists in the create or update request message
-func inRequest(field schema.Field, queryType schema.QueryType) bool {
+func inRequest(entity schema.Entity, field schema.Field, queryType schema.QueryType) bool {
 	if !field.CanApiWrite() {
 		return false
 	}
 	if queryType == schema.QueryCreate {
 		return !field.IsID()
 	}
-	return field.IsID() || !field.Immutable
+	// an update is keyed by the primary key, so those fields stay even when immutable
+	return entity.IsPrimaryKeyField(field) || !field.Immutable
 }
 
 // isPointerField reports if protoc emits the field as a pointer

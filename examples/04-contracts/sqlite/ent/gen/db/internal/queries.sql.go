@@ -96,7 +96,7 @@ func (q *Queries) CreateMatch(ctx context.Context, arg CreateMatchParams) (int64
 	return id, err
 }
 
-const createPlayer = `-- name: CreatePlayer :one
+const createPlayer = `-- name: CreatePlayer :exec
 
 INSERT INTO "player" (
   name,
@@ -108,7 +108,7 @@ INSERT INTO "player" (
   ?,
   ?,
   ?
-) RETURNING ID
+)
 `
 
 type CreatePlayerParams struct {
@@ -119,16 +119,14 @@ type CreatePlayerParams struct {
 }
 
 // Player CRUD operations
-func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, createPlayer,
+func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) error {
+	_, err := q.db.ExecContext(ctx, createPlayer,
 		arg.Name,
 		arg.Rating,
 		arg.Title,
 		arg.JoinedAt,
 	)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+	return err
 }
 
 const deleteAllMatch = `-- name: DeleteAllMatch :exec
@@ -169,15 +167,14 @@ func (q *Queries) GetMatchByID(ctx context.Context, id int64) (Match, error) {
 	return i, err
 }
 
-const getPlayerByID = `-- name: GetPlayerByID :one
-SELECT id, name, rating, title, joined_at FROM "player" WHERE ID = ?
+const getPlayerByName = `-- name: GetPlayerByName :one
+SELECT name, rating, title, joined_at FROM "player" WHERE name = ?
 `
 
-func (q *Queries) GetPlayerByID(ctx context.Context, id int64) (Player, error) {
-	row := q.db.QueryRowContext(ctx, getPlayerByID, id)
+func (q *Queries) GetPlayerByName(ctx context.Context, name string) (Player, error) {
+	row := q.db.QueryRowContext(ctx, getPlayerByName, name)
 	var i Player
 	err := row.Scan(
-		&i.ID,
 		&i.Name,
 		&i.Rating,
 		&i.Title,
@@ -256,7 +253,7 @@ func (q *Queries) ListAllMatch(ctx context.Context) ([]Match, error) {
 }
 
 const listAllPlayer = `-- name: ListAllPlayer :many
-SELECT id, name, rating, title, joined_at FROM "player"
+SELECT name, rating, title, joined_at FROM "player"
 `
 
 func (q *Queries) ListAllPlayer(ctx context.Context) ([]Player, error) {
@@ -269,7 +266,6 @@ func (q *Queries) ListAllPlayer(ctx context.Context) ([]Player, error) {
 	for rows.Next() {
 		var i Player
 		if err := rows.Scan(
-			&i.ID,
 			&i.Name,
 			&i.Rating,
 			&i.Title,

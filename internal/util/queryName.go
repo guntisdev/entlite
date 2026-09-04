@@ -73,20 +73,33 @@ func GenEntityQueryName(entity schema.Entity, queryType schema.QueryType) string
 	return GenQueryName(schema.Query{Type: queryType}, entity.Name)
 }
 
-// GenEntityGetByIdName returns the name of the query that gets the entity by id.
-func GenEntityGetByIdName(entity schema.Entity) string {
-	idQuery := schema.Query{Type: schema.QueryGetBy, Fields: []string{"ID"}}
+func GenEntityGetByPrimaryKeyName(entity schema.Entity) string {
+	keyFields := entity.PrimaryKeyFields()
+	names := make([]string, 0, len(keyFields))
+	for _, field := range keyFields {
+		names = append(names, field.Name)
+	}
 
 	for _, query := range entity.Queries {
-		if query.Type != schema.QueryGetBy || len(query.Fields) != 1 {
+		if query.Type != schema.QueryGetBy || len(query.Fields) != len(names) {
 			continue
 		}
-		if !strings.EqualFold(query.Fields[0], "id") {
+		if !sameFields(query.Fields, names) {
 			continue
 		}
 
 		return GenQueryName(query, entity.Name)
 	}
 
-	return GenQueryName(idQuery, entity.Name)
+	return GenQueryName(schema.Query{Type: schema.QueryGetBy, Fields: names}, entity.Name)
+}
+
+func sameFields(a, b []string) bool {
+	for i := range a {
+		if !strings.EqualFold(a[i], b[i]) {
+			return false
+		}
+	}
+
+	return true
 }

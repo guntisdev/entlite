@@ -129,9 +129,58 @@ func (e Entity) GetIdField() Field {
 	panic("No id field detected")
 }
 
+func (e Entity) HasIdField() bool {
+	for _, field := range e.Fields {
+		if field.IsID() {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (e Entity) PrimaryIndex() (Index, bool) {
+	for _, idx := range e.Indexes {
+		if idx.Type == IndexPrimary {
+			return idx, true
+		}
+	}
+
+	return Index{}, false
+}
+
+func (e Entity) PrimaryKeyFields() []Field {
+	idx, ok := e.PrimaryIndex()
+	if !ok {
+		if !e.HasIdField() {
+			return nil
+		}
+		return []Field{e.GetIdField()}
+	}
+
+	fields := make([]Field, 0, len(idx.Columns))
+	for _, column := range idx.Columns {
+		if field, found := e.GetFieldByName(column.Name); found {
+			fields = append(fields, field)
+		}
+	}
+
+	return fields
+}
+
+func (e Entity) IsPrimaryKeyField(field Field) bool {
+	for _, keyField := range e.PrimaryKeyFields() {
+		if strings.EqualFold(keyField.Name, field.Name) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (e Entity) GetFieldByName(name string) (Field, bool) {
 	for _, field := range e.Fields {
-		if field.Name == name {
+		if strings.EqualFold(field.Name, name) {
 			return field, true
 		}
 	}
@@ -235,14 +284,15 @@ const (
 )
 
 type Query struct {
-	Type      QueryType
-	Fields    []string
-	Filters   []QueryFilter
-	Count     bool
-	OrderBy   string
-	Name      string // custom query name; empty means auto-generated
-	Comment   string
-	Contracts []Contract
+	Type       QueryType
+	Fields     []string
+	Filters    []QueryFilter
+	Count      bool
+	OrderBy    string
+	Name       string // custom query name; empty means auto-generated
+	Comment    string
+	Contracts  []Contract
+	PrimaryKey bool
 }
 
 func (q Query) HasContract(contractType ContractType) bool {

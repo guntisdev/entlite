@@ -81,7 +81,9 @@ func (User) Indexes() []entlite.Index      { ... }`)
 
 	page.Heading(2, "The id field")
 	page.Text("Every entity gets an `id` field, it is added by the parser when the schema does not declare one. " +
-		"An `index.Primary(...)` takes over as the primary key, and the `id` column stays a plain column.")
+		"An `index.Primary(...)` declares the primary key itself, so the generated `id` column is dropped and " +
+		"`query.Get()`, `query.Update()` and `query.Delete()` key on the index columns instead. " +
+		"A declared `id` field is kept, as a plain column.")
 
 	return page.Bytes()
 }

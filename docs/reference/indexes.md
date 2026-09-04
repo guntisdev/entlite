@@ -8,7 +8,7 @@ Holds the index builders used in an entity schema.
 
 | Builder | Description |
 | --- | --- |
-| `index.Primary(fields ...string) IndexBuilder` | Declares the primary key over the given fields. |
+| `index.Primary(fields ...string) IndexBuilder` | Declares the primary key over the given fields. It replaces the generated id column, which is left out of the table. |
 | `index.Fields(fields ...string) IndexOperations` | Declares a secondary index over the given fields. |
 
 ## IndexOperations

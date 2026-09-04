@@ -74,24 +74,24 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 		switch selExpr.Sel.Name {
 		case "DefaultCRUD":
 			return []schema.Query{
-				{Type: schema.QueryCreate, Fields: []string{"ID"}},
-				{Type: schema.QueryGetBy, Fields: []string{"ID"}},
-				{Type: schema.QueryUpdate, Fields: []string{"ID"}},
-				{Type: schema.QueryDelete, Fields: []string{"ID"}},
+				{Type: schema.QueryCreate},
+				{Type: schema.QueryGetBy, PrimaryKey: true},
+				{Type: schema.QueryUpdate, PrimaryKey: true},
+				{Type: schema.QueryDelete, PrimaryKey: true},
 			}, true, nil
 		case "Create":
-			return []schema.Query{{Type: schema.QueryCreate, Fields: []string{"ID"}}}, true, nil
+			return []schema.Query{{Type: schema.QueryCreate}}, true, nil
 		case "CreateBulk":
 			if len(callExpr.Args) != 0 {
 				return nil, true, fmt.Errorf("CreateBulk does not accept arguments")
 			}
 			return []schema.Query{{Type: schema.QueryCreateBulk}}, true, nil
 		case "Get":
-			return []schema.Query{{Type: schema.QueryGetBy, Fields: []string{"ID"}}}, true, nil
+			return []schema.Query{{Type: schema.QueryGetBy, PrimaryKey: true}}, true, nil
 		case "Update":
-			return []schema.Query{{Type: schema.QueryUpdate, Fields: []string{"ID"}}}, true, nil
+			return []schema.Query{{Type: schema.QueryUpdate, PrimaryKey: true}}, true, nil
 		case "Delete":
-			return []schema.Query{{Type: schema.QueryDelete, Fields: []string{"ID"}}}, true, nil
+			return []schema.Query{{Type: schema.QueryDelete, PrimaryKey: true}}, true, nil
 		case "DeleteAll":
 			if len(callExpr.Args) != 0 {
 				return nil, true, fmt.Errorf("DeleteAll does not accept arguments")
@@ -422,6 +422,16 @@ func entityFieldIsVirtual(entity schema.Entity, fieldName string) bool {
 	for _, field := range entity.Fields {
 		if strings.EqualFold(field.Name, fieldName) {
 			return entity.IsFieldVirtual(field)
+		}
+	}
+
+	return false
+}
+
+func entityFieldIsOptional(entity schema.Entity, fieldName string) bool {
+	for _, field := range entity.Fields {
+		if strings.EqualFold(field.Name, fieldName) {
+			return field.Optional
 		}
 	}
 

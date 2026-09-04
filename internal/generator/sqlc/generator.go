@@ -88,56 +88,55 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	writeTableComment(&content, entity, tableName)
 	content.WriteString(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s(\n", g.quote(tableName)))
 
-	idField := entity.GetIdField()
+	var columns []string
 
 	for _, field := range entity.Fields {
 		if field.IsVirtual() {
 			continue
 		}
 
+		var column strings.Builder
+
 		if field.IsID() {
-			writeColumnComment(&content, idField.Comment)
-			content.WriteString(g.getIdFieldSQL(idField))
+			writeColumnComment(&column, field.Comment)
+			column.WriteString(g.getIdFieldSQL(field))
+			columns = append(columns, column.String())
 			continue
 		}
 
-		content.WriteString(",\n")
-		writeColumnComment(&content, field.Comment)
+		writeColumnComment(&column, field.Comment)
 		sqlType := g.getSQLType(field.Type)
 
-		content.WriteString(fmt.Sprintf("  %s %s", g.column(field.Name), sqlType))
+		column.WriteString(fmt.Sprintf("  %s %s", g.column(field.Name), sqlType))
 
 		if field.Unique {
-			content.WriteString(" UNIQUE")
+			column.WriteString(" UNIQUE")
 		}
 
 		// json defaults are applied in Go, mysql does not allow them on a JSON column
 		if field.DefaultValue != nil && field.Type != schema.FieldTypeJSON {
 			defaultVal := g.formatDefaultValue(field.DefaultValue, field.Type)
-			content.WriteString(fmt.Sprintf(" DEFAULT %s", defaultVal))
+			column.WriteString(fmt.Sprintf(" DEFAULT %s", defaultVal))
 		}
 
 		if !field.Optional {
-			content.WriteString(" NOT NULL")
+			column.WriteString(" NOT NULL")
 		}
 
 		if check := g.jsonCheck(field); check != "" {
-			content.WriteString(" " + check)
+			column.WriteString(" " + check)
 		}
 
 		// TODO write logic for DefaultFunc etc
+		columns = append(columns, column.String())
 	}
 
-	// compound primary key from index.Primary, the parser clears the id flag so this
-	// is the table's only PRIMARY KEY
-	for _, idx := range entity.Indexes {
-		if idx.Type != schema.IndexPrimary {
-			continue
-		}
-		content.WriteString(",\n")
-		content.WriteString(fmt.Sprintf("  PRIMARY KEY (%s)", strings.Join(g.indexColumns(idx), ", ")))
+	// compound primary key from index.Primary, it is the table's only PRIMARY KEY
+	if idx, ok := entity.PrimaryIndex(); ok {
+		columns = append(columns, fmt.Sprintf("  PRIMARY KEY (%s)", strings.Join(g.indexColumns(idx), ", ")))
 	}
 
+	content.WriteString(strings.Join(columns, ",\n"))
 	content.WriteString("\n);\n")
 
 	content.WriteString(g.generateIndexSQL(entity))
@@ -226,7 +225,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var content strings.Builder
 
 	tableName := strings.ToLower(entity.Name)
-	idField := entity.GetIdField()
+	keyFields := entity.PrimaryKeyFields()
 
 	var createQuery *schema.Query
 	var createBulkQuery *schema.Query
@@ -329,7 +328,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			if !canWrite {
 				continue
 			}
-			if field.IsID() || field.Immutable {
+			if entity.IsPrimaryKeyField(field) || field.Immutable {
 				continue
 			}
 
@@ -351,7 +350,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		}
 
 		content.WriteString(strings.Join(updateFields, ",\n"))
-		content.WriteString(fmt.Sprintf("\nWHERE %s = %s", g.column(idField.Name), g.namedArg(idField.Name)))
+
+		var whereKeys []string
+		for _, field := range keyFields {
+			whereKeys = append(whereKeys, fmt.Sprintf("%s = %s", g.column(field.Name), g.namedArg(field.Name)))
+		}
+		content.WriteString(fmt.Sprintf("\nWHERE %s", strings.Join(whereKeys, " AND ")))
 		if g.supportsReturning() {
 			content.WriteString("\nRETURNING *;\n")
 		} else {
@@ -362,7 +366,11 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	// DELETE
 	if deleteQuery != nil {
 		writeQueryHeader(&content, *deleteQuery, util.GenQueryName(*deleteQuery, entity.Name), "exec")
-		content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s = %s;\n", g.quote(tableName), g.column(idField.Name), g.getParameterPlaceholder(1)))
+		var whereKeys []string
+		for i, field := range keyFields {
+			whereKeys = append(whereKeys, fmt.Sprintf("%s = %s", g.column(field.Name), g.getParameterPlaceholder(i+1)))
+		}
+		content.WriteString(fmt.Sprintf("DELETE FROM %s WHERE %s;\n", g.quote(tableName), strings.Join(whereKeys, " AND ")))
 	}
 
 	// DELETE ALL
@@ -376,11 +384,14 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Entity, query schema.Query, queryName string) {
 	tableName := strings.ToLower(entity.Name)
-	idField := entity.GetIdField()
 
-	if g.supportsReturning() {
+	// without an id field there is nothing the db generates, so nothing to return
+	switch {
+	case !entity.HasIdField():
+		writeQueryHeader(content, query, queryName, "exec")
+	case g.supportsReturning():
 		writeQueryHeader(content, query, queryName, "one")
-	} else {
+	default:
 		writeQueryHeader(content, query, queryName, "execlastid")
 	}
 	content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
@@ -404,8 +415,8 @@ func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Ent
 	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertFields, ",\n ")))
 	content.WriteString(") VALUES (\n")
 	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
-	if g.supportsReturning() {
-		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", g.column(idField.Name)))
+	if entity.HasIdField() && g.supportsReturning() {
+		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", g.column(entity.GetIdField().Name)))
 	} else {
 		content.WriteString(");")
 	}

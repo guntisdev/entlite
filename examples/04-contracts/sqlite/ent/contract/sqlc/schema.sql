@@ -28,12 +28,12 @@ CREATE TABLE IF NOT EXISTS "match"(
 
 -- Player is the club roster, written on the server and read by members.
 CREATE TABLE IF NOT EXISTS "player"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
   -- Elo rating, kept by the secretary
   rating INTEGER NOT NULL,
   -- e.g. GM, IM, FM
   title TEXT,
-  joined_at DATETIME NOT NULL
+  joined_at DATETIME NOT NULL,
+  PRIMARY KEY (name)
 );
 

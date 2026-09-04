@@ -73,8 +73,8 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 		if field.IsVirtual() {
 			continue
 		}
-		// Skip immutable fields (except ID which is needed for WHERE clause)
-		if field.Immutable && !field.IsID() {
+		// Skip immutable fields, the primary key is needed for the WHERE clause
+		if field.Immutable && !entity.IsPrimaryKeyField(field) {
 			continue
 		}
 
@@ -120,7 +120,8 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")
 		sb.WriteString("\t}\n")
-		sb.WriteString(fmt.Sprintf("\tdb%s, err := (*%s.Queries)(q).%s(ctx, arg.ID)\n", entity.Name, inputPkg, util.GenEntityGetByIdName(entity)))
+		getName := util.GenEntityGetByPrimaryKeyName(entity)
+		sb.WriteString(fmt.Sprintf("\tdb%s, err := (*%s.Queries)(q).%s(ctx, %s)\n", entity.Name, inputPkg, getName, getByPrimaryKeyArg(entity, inputPkg, getName)))
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")
 		sb.WriteString("\t}\n")
@@ -133,6 +134,27 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 
 	sb.WriteString(fmt.Sprintf("\treturn %sFromSQL(&db%s), nil\n", entity.Name, entity.Name))
 	sb.WriteString("}\n\n")
+
+	return sb.String()
+}
+
+func getByPrimaryKeyArg(entity schema.Entity, inputPkg, getName string) string {
+	keyFields := entity.PrimaryKeyFields()
+
+	if len(keyFields) == 1 {
+		return fmt.Sprintf("arg.%s", toDBFieldName(keyFields[0]))
+	}
+
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("%s.%sParams{", inputPkg, getName))
+	for i, field := range keyFields {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		name := toDBFieldName(field)
+		sb.WriteString(fmt.Sprintf("%s: arg.%s", name, name))
+	}
+	sb.WriteString("}")
 
 	return sb.String()
 }

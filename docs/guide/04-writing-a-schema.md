@@ -114,8 +114,6 @@ See [queries](../reference/queries.md) and [filters](../reference/filters.md).
 ```go
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
-		// compound primary key
-		// index.Primary("email", "created_at"),
 		// index on two columns
 		index.Fields("age", "is_active"),
 		// descending sort
@@ -131,8 +129,10 @@ func (User) Indexes() []entlite.Index {
 ```
 <!-- snippet:examples/01-basic-entity/sqlite/ent/schema/user.go:Indexes:end -->
 
-`index.Primary()` replaces the automatic `id` primary key with a compound one.
-See [indexes](../reference/indexes.md).
+`index.Primary()` takes over the primary key: the generated `id` column is
+dropped and the queries keyed by it follow the named columns instead. The
+[04-contracts](../examples/04-contracts.md) roster does that with its player
+name. See [indexes](../reference/indexes.md).
 
 ## What the parser rejects
 

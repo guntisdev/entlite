@@ -28,7 +28,6 @@ type Match struct {
 }
 
 type Player struct {
-	ID       int64     `json:"id"`
 	Name     string    `json:"name"`
 	Rating   int64     `json:"rating"`
 	Title    *string   `json:"title"`

@@ -47,8 +47,8 @@ const (
 	MatchServiceDeleteProcedure = "/proto.MatchService/Delete"
 	// MatchServiceListAllProcedure is the fully-qualified name of the MatchService's ListAll RPC.
 	MatchServiceListAllProcedure = "/proto.MatchService/ListAll"
-	// PlayerServiceGetByIDProcedure is the fully-qualified name of the PlayerService's GetByID RPC.
-	PlayerServiceGetByIDProcedure = "/proto.PlayerService/GetByID"
+	// PlayerServiceGetByNameProcedure is the fully-qualified name of the PlayerService's GetByName RPC.
+	PlayerServiceGetByNameProcedure = "/proto.PlayerService/GetByName"
 	// PlayerServiceListAllProcedure is the fully-qualified name of the PlayerService's ListAll RPC.
 	PlayerServiceListAllProcedure = "/proto.PlayerService/ListAll"
 	// StandingServiceListAllProcedure is the fully-qualified name of the StandingService's ListAll RPC.
@@ -205,7 +205,7 @@ func (UnimplementedMatchServiceHandler) ListAll(context.Context, *connect.Reques
 
 // PlayerServiceClient is a client for the proto.PlayerService service.
 type PlayerServiceClient interface {
-	GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error)
+	GetByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error)
 	ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
 }
 
@@ -220,10 +220,10 @@ func NewPlayerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 	baseURL = strings.TrimRight(baseURL, "/")
 	playerServiceMethods := File_schema_proto.Services().ByName("PlayerService").Methods()
 	return &playerServiceClient{
-		getByID: connect.NewClient[GetPlayerByIDRequest, Player](
+		getByName: connect.NewClient[GetPlayerByNameRequest, Player](
 			httpClient,
-			baseURL+PlayerServiceGetByIDProcedure,
-			connect.WithSchema(playerServiceMethods.ByName("GetByID")),
+			baseURL+PlayerServiceGetByNameProcedure,
+			connect.WithSchema(playerServiceMethods.ByName("GetByName")),
 			connect.WithClientOptions(opts...),
 		),
 		listAll: connect.NewClient[ListAllPlayerRequest, ListAllPlayerResponse](
@@ -237,13 +237,13 @@ func NewPlayerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 
 // playerServiceClient implements PlayerServiceClient.
 type playerServiceClient struct {
-	getByID *connect.Client[GetPlayerByIDRequest, Player]
-	listAll *connect.Client[ListAllPlayerRequest, ListAllPlayerResponse]
+	getByName *connect.Client[GetPlayerByNameRequest, Player]
+	listAll   *connect.Client[ListAllPlayerRequest, ListAllPlayerResponse]
 }
 
-// GetByID calls proto.PlayerService.GetByID.
-func (c *playerServiceClient) GetByID(ctx context.Context, req *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error) {
-	return c.getByID.CallUnary(ctx, req)
+// GetByName calls proto.PlayerService.GetByName.
+func (c *playerServiceClient) GetByName(ctx context.Context, req *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error) {
+	return c.getByName.CallUnary(ctx, req)
 }
 
 // ListAll calls proto.PlayerService.ListAll.
@@ -253,7 +253,7 @@ func (c *playerServiceClient) ListAll(ctx context.Context, req *connect.Request[
 
 // PlayerServiceHandler is an implementation of the proto.PlayerService service.
 type PlayerServiceHandler interface {
-	GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error)
+	GetByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error)
 	ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
 }
 
@@ -264,10 +264,10 @@ type PlayerServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	playerServiceMethods := File_schema_proto.Services().ByName("PlayerService").Methods()
-	playerServiceGetByIDHandler := connect.NewUnaryHandler(
-		PlayerServiceGetByIDProcedure,
-		svc.GetByID,
-		connect.WithSchema(playerServiceMethods.ByName("GetByID")),
+	playerServiceGetByNameHandler := connect.NewUnaryHandler(
+		PlayerServiceGetByNameProcedure,
+		svc.GetByName,
+		connect.WithSchema(playerServiceMethods.ByName("GetByName")),
 		connect.WithHandlerOptions(opts...),
 	)
 	playerServiceListAllHandler := connect.NewUnaryHandler(
@@ -278,8 +278,8 @@ func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOp
 	)
 	return "/proto.PlayerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case PlayerServiceGetByIDProcedure:
-			playerServiceGetByIDHandler.ServeHTTP(w, r)
+		case PlayerServiceGetByNameProcedure:
+			playerServiceGetByNameHandler.ServeHTTP(w, r)
 		case PlayerServiceListAllProcedure:
 			playerServiceListAllHandler.ServeHTTP(w, r)
 		default:
@@ -291,8 +291,8 @@ func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOp
 // UnimplementedPlayerServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedPlayerServiceHandler struct{}
 
-func (UnimplementedPlayerServiceHandler) GetByID(context.Context, *connect.Request[GetPlayerByIDRequest]) (*connect.Response[Player], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.GetByID is not implemented"))
+func (UnimplementedPlayerServiceHandler) GetByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.GetByName is not implemented"))
 }
 
 func (UnimplementedPlayerServiceHandler) ListAll(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {

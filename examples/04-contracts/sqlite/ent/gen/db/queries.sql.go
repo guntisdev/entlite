@@ -66,15 +66,14 @@ type CreatePlayerParams struct {
 	Title *string `json:"title"`
 }
 
-func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (int32, error) {
+func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) error {
 	internalArg := internal.CreatePlayerParams{
 		Name: arg.Name,
 		Rating: IntConvert[int32, int64](arg.Rating),
 		Title: arg.Title,
 		JoinedAt: time.Now(),
 	}
-	id, err := (*internal.Queries)(q).CreatePlayer(ctx, internalArg)
-	return IntConvert[int64, int32](id), err
+	return (*internal.Queries)(q).CreatePlayer(ctx, internalArg)
 }
 
 func (q *Queries) DeleteAllMatch(ctx context.Context) error {
@@ -93,8 +92,8 @@ func (q *Queries) GetMatchByID(ctx context.Context, id int32) (*Match, error) {
 	return MatchFromSQL(&dbResult), nil
 }
 
-func (q *Queries) GetPlayerByID(ctx context.Context, id int32) (*Player, error) {
-	dbResult, err := (*internal.Queries)(q).GetPlayerByID(ctx, IntConvert[int32, int64](id))
+func (q *Queries) GetPlayerByName(ctx context.Context, name string) (*Player, error) {
+	dbResult, err := (*internal.Queries)(q).GetPlayerByName(ctx, name)
 	if err != nil {
 		return nil, err
 	}

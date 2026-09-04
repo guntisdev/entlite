@@ -221,11 +221,11 @@
 
     <div class="section">
       <h2>Player — entlite.SQLC() and entlite.PROTO().ReadOnly()
-        <small>A player table and a PlayerService with read rpc only, seeded by the server</small>
+        <small>A player table keyed by name and a PlayerService with read rpc only, seeded by the server</small>
       </h2>
       <div class="controls">
         <div class="button-group">
-          <input type="number" id="getPlayerId" placeholder="ID" value="1">
+          <input type="text" id="getPlayerName" placeholder="name" value="Mikhail Tal">
           <button id="getPlayerBtn" class="read">Get</button>
         </div>
         <button id="listPlayersBtn" class="list">List Players</button>
@@ -263,7 +263,7 @@
         <code>ent/contract/proto</code>. <code>Player</code> declares both too,
         but its proto contract is <code>ReadOnly()</code>, so the table and the
         queries are there while the service has only
-        <code>GetByID</code> and <code>ListAll</code> — the server seeds the
+        <code>GetByName</code> and <code>ListAll</code> — the server seeds the
         roster with the generated <code>CreatePlayer</code> query, which never
         became an rpc. <code>Standing</code> declares only
         <code>entlite.PROTO()</code>, so it is a message and a service with no

@@ -89,8 +89,6 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 				return entity, err
 			}
 
-			// add protoField, add id if not there
-			fields = addFieldNumbers(fields)
 			entity.Fields = fields
 		}
 
@@ -117,9 +115,10 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 		return entity, err
 	}
 
-	// an explicit index.Primary overrides the id field, the compound key becomes the
-	// table's only PRIMARY KEY
+	// runs after the indexes are known, an index.Primary drops the auto generated id
+	entity.Fields = addFieldNumbers(entity.Fields, needsIdField(entity))
 	applyPrimaryIndexOverride(&entity)
+	resolvePrimaryKeyQueries(&entity)
 
 	fields, err := applyFieldContracts(entity)
 	if err != nil {
@@ -133,15 +132,15 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 	}
 	entity.Queries = queries
 
+	if err := validateIndexFields(entity); err != nil {
+		return entity, err
+	}
+
 	if err := validateQueryFields(entity); err != nil {
 		return entity, err
 	}
 
 	if err := validateVirtualFields(entity); err != nil {
-		return entity, err
-	}
-
-	if err := validateIndexFields(entity); err != nil {
 		return entity, err
 	}
 
@@ -199,6 +198,10 @@ func validateIndexFields(entity schema.Entity) error {
 			if !entityHasField(entity, column.Name) {
 				return fmt.Errorf("entity %q index references nonexisting field %q", entity.Name, column.Name)
 			}
+			// a primary key column cannot hold null
+			if idx.Type == schema.IndexPrimary && entityFieldIsOptional(entity, column.Name) {
+				return fmt.Errorf("entity %q index.Primary references optional field %q, a primary key column cannot be null", entity.Name, column.Name)
+			}
 			if entityFieldIsVirtual(entity, column.Name) {
 				return fmt.Errorf("entity %q index references virtual field %q, which has no database column", entity.Name, column.Name)
 			}
@@ -213,14 +216,7 @@ func validateIndexFields(entity schema.Entity) error {
 }
 
 func applyPrimaryIndexOverride(entity *schema.Entity) {
-	hasPrimaryIndex := false
-	for _, idx := range entity.Indexes {
-		if idx.Type == schema.IndexPrimary {
-			hasPrimaryIndex = true
-			break
-		}
-	}
-	if !hasPrimaryIndex {
+	if _, ok := entity.PrimaryIndex(); !ok {
 		return
 	}
 
@@ -228,6 +224,41 @@ func applyPrimaryIndexOverride(entity *schema.Entity) {
 		if entity.Fields[i].IsID() {
 			entity.Fields[i].Primary = false
 		}
+	}
+}
+
+// needsIdField reports if the parser should add the id field. An index.Primary
+// declares the primary key itself, so the generated id column is dropped, unless the
+// index names it.
+func needsIdField(entity schema.Entity) bool {
+	idx, ok := entity.PrimaryIndex()
+	if !ok {
+		return true
+	}
+
+	for _, column := range idx.Columns {
+		if strings.EqualFold(column.Name, "id") {
+			return true
+		}
+	}
+
+	return false
+}
+
+// resolvePrimaryKeyQueries fills the fields of the queries keyed by the primary key,
+// query.Get, query.Update and query.Delete: the id field, or the index.Primary columns
+func resolvePrimaryKeyQueries(entity *schema.Entity) {
+	keyFields := entity.PrimaryKeyFields()
+	names := make([]string, 0, len(keyFields))
+	for _, field := range keyFields {
+		names = append(names, field.Name)
+	}
+
+	for i := range entity.Queries {
+		if !entity.Queries[i].PrimaryKey {
+			continue
+		}
+		entity.Queries[i].Fields = names
 	}
 }
 

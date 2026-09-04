@@ -55,7 +55,7 @@ DELETE FROM "match";
 
 -- Player CRUD operations
 
--- name: CreatePlayer :one
+-- name: CreatePlayer :exec
 INSERT INTO "player" (
   name,
   rating,
@@ -66,10 +66,9 @@ INSERT INTO "player" (
   ?,
   ?,
   ?
-) RETURNING ID;
-
--- name: GetPlayerByID :one
-SELECT * FROM "player" WHERE ID = ?;
+);
+-- name: GetPlayerByName :one
+SELECT * FROM "player" WHERE name = ?;
 
 -- name: ListAllPlayer :many
 SELECT * FROM "player";

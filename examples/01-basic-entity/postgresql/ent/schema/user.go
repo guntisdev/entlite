@@ -58,8 +58,6 @@ func (User) Queries() []entlite.Query {
 
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
-		// compound primary key
-		// index.Primary("email", "created_at"),
 		// index on two columns
 		index.Fields("age", "is_active"),
 		// descending sort

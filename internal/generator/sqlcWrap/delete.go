@@ -8,50 +8,17 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-func generateDeleteQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg string, sqlDialect schema.SQLDialect) string {
+func (ctx *generationContext) generateDeleteQuery(funcDecl *ast.FuncDecl, entity schema.Entity) string {
 	var sb strings.Builder
+	inputPkg := ctx.inputPackageName
+
+	// The primary key params need no special case: they resolve to the entity fields
+	params, args, prelude := ctx.wrapFilterParams(funcDecl, entity)
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
-	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context", receiverType, funcDecl.Name.Name))
-
-	if funcDecl.Type.Params != nil && len(funcDecl.Type.Params.List) > 1 {
-		for i := 1; i < len(funcDecl.Type.Params.List); i++ {
-			param := funcDecl.Type.Params.List[i]
-			for _, name := range param.Names {
-				if strings.ToLower(name.Name) == "id" {
-					idField := entity.GetIdField()
-					sb.WriteString(fmt.Sprintf(", %s %s", name.Name, fieldToGoType(idField)))
-				} else {
-					sb.WriteString(fmt.Sprintf(", %s %s", name.Name, formatType(param.Type)))
-				}
-			}
-		}
-	}
-
-	sb.WriteString(") error {\n")
-
-	sb.WriteString(fmt.Sprintf("\treturn (*%s.Queries)(q).%s(ctx", inputPkg, funcDecl.Name.Name))
-
-	if funcDecl.Type.Params != nil && len(funcDecl.Type.Params.List) > 1 {
-		for i := 1; i < len(funcDecl.Type.Params.List); i++ {
-			param := funcDecl.Type.Params.List[i]
-			for _, name := range param.Names {
-				if strings.ToLower(name.Name) == "id" {
-					idField := entity.GetIdField()
-					if sqlDialect == schema.SQLite && idField.Type == schema.FieldTypeInt {
-						// TODO use field converter
-						sb.WriteString(", IntConvert[int32, int64](id)")
-					} else {
-						sb.WriteString(fmt.Sprintf(", %s", name.Name))
-					}
-				} else {
-					sb.WriteString(fmt.Sprintf(", %s", name.Name))
-				}
-			}
-		}
-	}
-
-	sb.WriteString(")\n")
+	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context%s) error {\n", receiverType, funcDecl.Name.Name, params))
+	sb.WriteString(prelude)
+	sb.WriteString(fmt.Sprintf("\treturn (*%s.Queries)(q).%s(ctx%s)\n", inputPkg, funcDecl.Name.Name, args))
 	sb.WriteString("}\n\n")
 
 	return sb.String()

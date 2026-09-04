@@ -155,7 +155,7 @@ func (ctx *generationContext) filterParamsEntity(structName string) (schema.Enti
 	// a custom Name() query does not follow the List<Entity>By... pattern
 	if target, ok := ctx.dslQueries[methodName]; ok {
 		switch target.query.Type {
-		case schema.QueryListBy, schema.QueryListAll, schema.QueryGetBy:
+		case schema.QueryListBy, schema.QueryListAll, schema.QueryGetBy, schema.QueryDelete:
 			return target.entity, true
 		}
 	}
@@ -165,6 +165,11 @@ func (ctx *generationContext) filterParamsEntity(structName string) (schema.Enti
 	}
 	if strings.HasPrefix(methodName, "Get") {
 		return ctx.findEntityForGetMethod(methodName)
+	}
+	if name, ok := strings.CutPrefix(methodName, "Delete"); ok {
+		if entity, found := ctx.entityMap[name]; found {
+			return entity, true
+		}
 	}
 
 	return schema.Entity{}, false
@@ -557,7 +562,7 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 		if strings.HasPrefix(funcDecl.Name.Name, "Delete") {
 			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Delete")
 			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateDeleteQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+				sb.WriteString(ctx.generateDeleteQuery(funcDecl, entity))
 				return
 			}
 		}
@@ -585,7 +590,7 @@ func (ctx *generationContext) generateDslQuery(funcDecl *ast.FuncDecl, target ds
 	case schema.QueryListBy, schema.QueryListAll:
 		return ctx.generateListQuery(funcDecl, target.entity)
 	case schema.QueryDelete:
-		return generateDeleteQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
+		return ctx.generateDeleteQuery(funcDecl, target.entity)
 	case schema.QueryDeleteAll:
 		return generateDeleteAllQuery(funcDecl, target.entity, ctx.inputPackageName, ctx.sqlDialect)
 	default:
