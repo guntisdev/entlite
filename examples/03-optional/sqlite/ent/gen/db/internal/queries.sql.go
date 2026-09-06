@@ -241,7 +241,7 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuth
 }
 
 const listArticleFilterByAuthorIsFeaturedPublishedAtTitle = `-- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5 LIMIT ?7 OFFSET ?6
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5 ORDER BY published_at LIMIT ?7 OFFSET ?6
 `
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {

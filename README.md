@@ -8,13 +8,11 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 * Add mcp for visual testing of examples/
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 
-* Implement Queries OrderBy()
 * On queries Create() and CreateBulk() add .Upsert() with or without fields to generate query ON CONFLICET (....) DO UPDATE
 * Implement Queries Count(), Sum(), Avg()
 * Implement Limit()
 
 * Implement Offset()
-* Comment out in examples Queries use case for: Count, GroupBy, Having, OrderBy
 * Implement Queries GroupBy()
 * Implement Queries Having()
 * DeleteBy(...) query

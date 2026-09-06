@@ -239,7 +239,7 @@ SELECT * FROM "article" WHERE author = @author LIMIT sqlc.arg('limit') OFFSET sq
 SELECT * FROM "article";
 
 -- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT * FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at BETWEEN @min_published_at AND @max_published_at AND title LIKE @title LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT * FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at BETWEEN @min_published_at AND @max_published_at AND title LIKE @title ORDER BY published_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateArticle :one
 UPDATE "article" SET

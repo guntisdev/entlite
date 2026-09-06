@@ -248,7 +248,7 @@ func (q *Queries) ListReadingBySensorId(ctx context.Context, arg ListReadingBySe
 }
 
 const listReadingFilterBySensorIdRecordedAtFlagged = `-- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4 LIMIT ?6 OFFSET ?5
+SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4 ORDER BY recorded_at LIMIT ?6 OFFSET ?5
 `
 
 type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
@@ -295,7 +295,7 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 }
 
 const listSensorFilterByLabelKindActive = `-- name: ListSensorFilterByLabelKindActive :many
-SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3 LIMIT ?5 OFFSET ?4
+SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3 ORDER BY installed_at LIMIT ?5 OFFSET ?4
 `
 
 type ListSensorFilterByLabelKindActiveParams struct {

@@ -161,6 +161,9 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 		if err != nil {
 			return nil, true, fmt.Errorf("OrderBy expects exactly one string field: %w", err)
 		}
+		if orderField == "" {
+			return nil, true, fmt.Errorf("OrderBy expects a field name")
+		}
 		query.OrderBy = orderField
 	case "Limit":
 		if len(callExpr.Args) > 1 {
