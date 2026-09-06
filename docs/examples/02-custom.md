@@ -439,8 +439,8 @@ message DeleteReadingRequest {
   int64 ID = 1 [(buf.validate.field).required = true];
 }
 message ListReadingBySensorIdRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   int32 sensor_id = 3 [(buf.validate.field).required = true];
 }
 
@@ -448,8 +448,8 @@ message ListReadingBySensorIdResponse {
   repeated Reading rows = 1;
 }
 message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   int32 sensor_id = 3 [(buf.validate.field).required = true];
   google.protobuf.Timestamp min_recorded_at = 4 [(buf.validate.field).required = true];
   google.protobuf.Timestamp max_recorded_at = 5 [(buf.validate.field).required = true];
@@ -516,8 +516,8 @@ message GetSensorByCodeRequest {
   string code = 2 [(buf.validate.field).required = true];
 }
 message ListSensorFilterByLabelKindActiveRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   string label = 3 [(buf.validate.field).required = true];
   string kind = 4 [(buf.validate.field).required = true];
   optional bool active = 5;

@@ -374,8 +374,8 @@ message ListAllUserResponse {
 message DeleteAllUserRequest {
 }
 message ListActiveRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   bool is_active = 3 [(buf.validate.field).required = true];
 }
 
@@ -383,8 +383,8 @@ message ListActiveResponse {
   repeated User rows = 1;
 }
 message ListUserFilterByAgeNameRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   int32 min_age = 3 [(buf.validate.field).required = true];
   int32 max_age = 4 [(buf.validate.field).required = true];
   string name = 5 [(buf.validate.field).required = true];
