@@ -46,6 +46,19 @@ type QueryOperations interface {
 	Contracts(contracts ...entlite.Layer) QueryOperations
 }
 
+// ListAllOperations exposes the modifiers available on a ListAll query.
+type ListAllOperations interface {
+	QueryBuilder
+	// Limit takes the row count from the caller, Limit(rows) sets it in the query.
+	Limit(rows ...int) ListAllOperations
+	// Offset asks the caller how many rows to skip. Needs a Limit.
+	Offset() ListAllOperations
+	// Name overrides the auto-generated query/method name
+	Name(name string) ListAllOperations
+	// Contracts limits the query to the given layers, sqlc or proto.
+	Contracts(contracts ...entlite.Layer) ListAllOperations
+}
+
 // ListByOperations exposes the modifiers available on a ListBy query.
 type ListByOperations interface {
 	QueryBuilder
@@ -53,6 +66,10 @@ type ListByOperations interface {
 	Count() ListByOperations
 	// OrderBy sorts the result by the given field.
 	OrderBy(field string) ListByOperations
+	// Limit takes the row count from the caller, Limit(rows) sets it in the query.
+	Limit(rows ...int) ListByOperations
+	// Offset asks the caller how many rows to skip. Needs a Limit.
+	Offset() ListByOperations
 	// Name overrides the auto-generated query/method name
 	Name(name string) ListByOperations
 	// Contracts limits the query to the given layers, sqlc or proto.
@@ -66,6 +83,9 @@ type Query struct {
 	filters   []filter.Filter // For ListBy: list of filters
 	count     bool            // For ListBy: whether to count
 	orderBy   string          // For ListBy: order by field
+	hasLimit  bool            // For list queries: whether LIMIT is set
+	limit     int             // For list queries: fixed limit, 0 means the caller sets it
+	hasOffset bool            // For list queries: whether OFFSET is set
 	name      string          // Custom query name
 	contracts []entlite.Layer
 }
@@ -82,6 +102,37 @@ func (q Query) Name(name string) QueryOperations {
 // Contracts limits the query to the given layers, sqlc or proto.
 func (q Query) Contracts(contracts ...entlite.Layer) QueryOperations {
 	q.contracts = contracts
+	return q
+}
+
+type listAllQuery struct {
+	base Query
+}
+
+// marker method for sealed interface
+func (listAllQuery) Query() {}
+
+// Name overrides the auto-generated query/method name
+func (q listAllQuery) Name(name string) ListAllOperations {
+	q.base.name = name
+	return q
+}
+
+// Contracts limits the query to the given layers, sqlc or proto.
+func (q listAllQuery) Contracts(contracts ...entlite.Layer) ListAllOperations {
+	q.base.contracts = contracts
+	return q
+}
+
+// Limit sets how many rows the ListAll query returns
+func (q listAllQuery) Limit(rows ...int) ListAllOperations {
+	q.base.setLimit(rows)
+	return q
+}
+
+// Offset skips rows of the ListAll query, the caller gives the count
+func (q listAllQuery) Offset() ListAllOperations {
+	q.base.hasOffset = true
 	return q
 }
 
@@ -114,6 +165,26 @@ func (q listByQuery) Count() ListByOperations {
 func (q listByQuery) OrderBy(field string) ListByOperations {
 	q.base.orderBy = field
 	return q
+}
+
+// Limit sets how many rows the ListBy query returns
+func (q listByQuery) Limit(rows ...int) ListByOperations {
+	q.base.setLimit(rows)
+	return q
+}
+
+// Offset skips rows of the ListBy query, the caller gives the count
+func (q listByQuery) Offset() ListByOperations {
+	q.base.hasOffset = true
+	return q
+}
+
+// setLimit marks the limit, a given value keeps it out of the request
+func (q *Query) setLimit(rows []int) {
+	q.hasLimit = true
+	if len(rows) > 0 {
+		q.limit = rows[0]
+	}
 }
 
 // GetBy gets a record by one or more fields, e.g. GetBy("id") or GetBy("org_id", "email")
@@ -157,8 +228,8 @@ func DeleteAll() QueryOperations {
 }
 
 // ListAll reads every record of the table.
-func ListAll() QueryOperations {
-	return Query{typeName: TypeListAll}
+func ListAll() ListAllOperations {
+	return listAllQuery{base: Query{typeName: TypeListAll}}
 }
 
 // ListBy lists records with filters. Takes field names, which default to Eq, or Filter
@@ -202,6 +273,21 @@ func (q Query) HasCount() bool {
 // GetOrderBy returns the order by field, or "" when there is none.
 func (q Query) GetOrderBy() string {
 	return q.orderBy
+}
+
+// HasLimit reports if the query limits the returned rows.
+func (q Query) HasLimit() bool {
+	return q.hasLimit
+}
+
+// GetLimit returns the fixed limit, or 0 when the caller sets it.
+func (q Query) GetLimit() int {
+	return q.limit
+}
+
+// HasOffset reports if the query skips rows.
+func (q Query) HasOffset() bool {
+	return q.hasOffset
 }
 
 // GetName returns the custom query name, or "" when auto-generated.

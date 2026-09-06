@@ -16,7 +16,7 @@ Holds the query builders used in an entity schema.
 | `query.Update() QueryOperations` | Updates one record by primary key. |
 | `query.Delete() QueryOperations` | Deletes one record by primary key. |
 | `query.DeleteAll() QueryOperations` | Deletes every record of the table. |
-| `query.ListAll() QueryOperations` | Reads every record of the table. |
+| `query.ListAll() ListAllOperations` | Reads every record of the table. |
 | `query.ListBy(args ...interface{}) ListByOperations` | Lists records with filters. Takes field names, which default to Eq, or Filter values, e.g. ListBy("org_id") or ListBy(filter.Range("age"), filter.Search("name")) |
 
 ## QueryOperations
@@ -28,6 +28,17 @@ Exposes the modifiers available on a plain query.
 | `Name(name string) QueryOperations` | Overrides the auto-generated query/method name |
 | `Contracts(contracts ...entlite.Layer) QueryOperations` | Limits the query to the given layers, sqlc or proto. |
 
+## ListAllOperations
+
+Exposes the modifiers available on a ListAll query.
+
+| Method | Description |
+| --- | --- |
+| `Limit(rows ...int) ListAllOperations` | Takes the row count from the caller, Limit(rows) sets it in the query. |
+| `Offset() ListAllOperations` | Asks the caller how many rows to skip. Needs a Limit. |
+| `Name(name string) ListAllOperations` | Overrides the auto-generated query/method name |
+| `Contracts(contracts ...entlite.Layer) ListAllOperations` | Limits the query to the given layers, sqlc or proto. |
+
 ## ListByOperations
 
 Exposes the modifiers available on a ListBy query.
@@ -36,6 +47,8 @@ Exposes the modifiers available on a ListBy query.
 | --- | --- |
 | `Count() ListByOperations` | Also returns the number of matching rows. |
 | `OrderBy(field string) ListByOperations` | Sorts the result by the given field. |
+| `Limit(rows ...int) ListByOperations` | Takes the row count from the caller, Limit(rows) sets it in the query. |
+| `Offset() ListByOperations` | Asks the caller how many rows to skip. Needs a Limit. |
 | `Name(name string) ListByOperations` | Overrides the auto-generated query/method name |
 | `Contracts(contracts ...entlite.Layer) ListByOperations` | Limits the query to the given layers, sqlc or proto. |
 

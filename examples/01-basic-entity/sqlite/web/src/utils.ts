@@ -84,3 +84,13 @@ export function randomFullName(): string {
   
   return `${firstName} ${lastName}`;
 }
+
+export function numberInput(id: string): number {
+    const input = document.getElementById(id) as HTMLInputElement;
+    return parseInt(input.value);
+}
+
+export function textInput(id: string): string {
+    const input = document.getElementById(id) as HTMLInputElement;
+    return input.value;
+}

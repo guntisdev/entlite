@@ -128,12 +128,12 @@ func (Reading) Queries() []entlite.Query {
 		query.Get(),
 		query.Update().Contracts(entlite.SQLC()), // a recorded fact, clients never edit it, no proto rpc
 		query.Delete(),
-		query.ListBy("sensor_id"),
+		query.ListBy("sensor_id").Limit().Offset(),
 		query.ListBy(
 			filter.Eq("sensor_id"),
 			filter.Range("recorded_at"),
 			filter.Eq("flagged"),
-		).Count().OrderBy("recorded_at"),
+		).Count().OrderBy("recorded_at").Limit().Offset(),
 	}
 }
 ```
@@ -201,7 +201,7 @@ func (Sensor) Queries() []entlite.Query {
 			filter.Search("label"),
 			filter.Eq("kind"),
 			filter.Eq("active").Optional(),
-		).Count().OrderBy("installed_at"),
+		).Count().OrderBy("installed_at").Limit().Offset(),
 	}
 }
 ```
@@ -439,8 +439,8 @@ message DeleteReadingRequest {
   int64 ID = 1 [(buf.validate.field).required = true];
 }
 message ListReadingBySensorIdRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   int32 sensor_id = 3 [(buf.validate.field).required = true];
 }
 
@@ -448,8 +448,8 @@ message ListReadingBySensorIdResponse {
   repeated Reading rows = 1;
 }
 message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   int32 sensor_id = 3 [(buf.validate.field).required = true];
   google.protobuf.Timestamp min_recorded_at = 4 [(buf.validate.field).required = true];
   google.protobuf.Timestamp max_recorded_at = 5 [(buf.validate.field).required = true];
@@ -516,8 +516,8 @@ message GetSensorByCodeRequest {
   string code = 2 [(buf.validate.field).required = true];
 }
 message ListSensorFilterByLabelKindActiveRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   string label = 3 [(buf.validate.field).required = true];
   string kind = 4 [(buf.validate.field).required = true];
   optional bool active = 5;

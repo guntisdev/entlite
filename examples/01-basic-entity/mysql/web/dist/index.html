@@ -201,6 +201,19 @@
       </div>
       <button id="listBtn">List</button>
       <div class="button-group">
+        <input type="number" id="activeLimit" placeholder="limit" value="10" min="1">
+        <input type="number" id="activeOffset" placeholder="offset" value="0" min="0">
+        <button id="listActiveBtn">List Active</button>
+      </div>
+      <div class="button-group">
+        <input type="number" id="filterLimit" placeholder="limit" value="10" min="1">
+        <input type="number" id="filterOffset" placeholder="offset" value="0" min="0">
+        <input type="number" id="filterMinAge" placeholder="min age" value="0">
+        <input type="number" id="filterMaxAge" placeholder="max age" value="100">
+        <input type="text" id="filterName" placeholder="name like" value="%">
+        <button id="filterBtn">Filter by Age/Name</button>
+      </div>
+      <div class="button-group">
         <input type="number" id="deleteId" placeholder="ID" value="1">
         <button id="deleteBtn">Delete</button>
       </div>

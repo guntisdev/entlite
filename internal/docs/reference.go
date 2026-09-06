@@ -168,7 +168,7 @@ func queriesPage(pkg apiPackage) []byte {
 	page.Heading(2, "Builders")
 	page.FuncTable("Builder", "query", pkg.Funcs)
 
-	for _, name := range []string{"QueryOperations", "ListByOperations"} {
+	for _, name := range []string{"QueryOperations", "ListAllOperations", "ListByOperations"} {
 		typ, ok := pkg.Type(name)
 		if !ok {
 			continue

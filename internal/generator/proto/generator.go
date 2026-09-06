@@ -194,18 +194,14 @@ func generateResponseMessages(entity schema.Entity) string {
 		case schema.QueryDeleteAll:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
 			content.WriteString("}")
-		case schema.QueryListAll:
+		case schema.QueryListAll, schema.QueryListBy:
 			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
-			content.WriteString("}\n\n")
-
-			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
-			content.WriteString("}")
-		case schema.QueryListBy:
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
-			// TODO proly change int type depending on ID field type
-			content.WriteString(fmt.Sprintf("  int32 limit = 1 %s;\n", requiredStr))
-			content.WriteString("  int32 offset = 2;\n")
+			if query.LimitFromRequest() {
+				content.WriteString(fmt.Sprintf("  int32 limit = 1 [%s, %s];\n", requiredRule, gteRule(1)))
+			}
+			if query.HasOffset {
+				content.WriteString(fmt.Sprintf("  int32 offset = 2 [%s];\n", gteRule(0)))
+			}
 
 			protoFieldNum := 3
 			for _, fieldName := range query.Fields {
@@ -253,6 +249,13 @@ func generateResponseMessages(entity schema.Entity) string {
 	}
 
 	return content.String()
+}
+
+// rule bodies, they go inside the [] of a field option
+const requiredRule = "(buf.validate.field).required = true"
+
+func gteRule(min int) string {
+	return fmt.Sprintf("(buf.validate.field).int32.gte = %d", min)
 }
 
 func writeMessageComment(content *strings.Builder, entity schema.Entity) {

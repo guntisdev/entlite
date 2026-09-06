@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
@@ -302,10 +303,16 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		if len(whereParts) > 0 {
 			selectSQL += " WHERE " + strings.Join(whereParts, " AND ")
 		}
-		// pagination comes from the proto request, ListAll has no limit/offset there
-		if query.Type == schema.QueryListBy {
+		// Limit()/Offset() in the schema decide, a fixed Limit(rows) goes straight into the sql
+		if query.HasLimit {
 			limitArg, offsetArg := g.limitOffsetArgs()
-			selectSQL += fmt.Sprintf(" LIMIT %s OFFSET %s", limitArg, offsetArg)
+			if query.Limit > 0 {
+				limitArg = strconv.Itoa(query.Limit)
+			}
+			selectSQL += " LIMIT " + limitArg
+			if query.HasOffset {
+				selectSQL += " OFFSET " + offsetArg
+			}
 		}
 		content.WriteString(selectSQL + ";\n")
 	}

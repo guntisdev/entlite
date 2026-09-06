@@ -132,7 +132,7 @@ func (Article) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.DefaultCRUD(),
 		query.GetBy("slug"),
-		query.ListBy("author"),
+		query.ListBy("author").Limit().Offset(),
 		query.ListAll(),
 
 		// is_featured is a required field, but an optional filter
@@ -142,7 +142,7 @@ func (Article) Queries() []entlite.Query {
 			filter.Eq("is_featured").Optional(),
 			filter.Range("published_at").Optional(),
 			filter.Search("title").Optional(),
-		).OrderBy("published_at").Count(),
+		).OrderBy("published_at").Count().Limit().Offset(),
 	}
 }
 ```
@@ -343,8 +343,8 @@ message GetArticleBySlugRequest {
   string slug = 2 [(buf.validate.field).required = true];
 }
 message ListArticleByAuthorRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   string author = 3 [(buf.validate.field).required = true];
 }
 
@@ -358,8 +358,8 @@ message ListAllArticleResponse {
   repeated Article rows = 1;
 }
 message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   string author = 3 [(buf.validate.field).required = true];
   optional bool is_featured = 4;
   optional google.protobuf.Timestamp min_published_at = 5;
