@@ -289,10 +289,21 @@ type Query struct {
 	Filters    []QueryFilter
 	Count      bool
 	OrderBy    string
+	HasLimit   bool
+	Limit      int // fixed row count, 0 means the caller sets it
+	HasOffset  bool
 	Name       string
 	Comment    string
 	Contracts  []Contract
 	PrimaryKey bool
+}
+
+func (q Query) LimitFromRequest() bool {
+	return q.HasLimit && q.Limit == 0
+}
+
+func (q Query) IsList() bool {
+	return q.Type == QueryListAll || q.Type == QueryListBy
 }
 
 // returns the entity's first query of the given type

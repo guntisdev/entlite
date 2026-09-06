@@ -142,8 +142,8 @@ message DeleteUserRequest {
   int32 ID = 1 [(buf.validate.field).required = true];
 }
 message ListUserByNameAgeRequest {
-  int32 limit = 1 [(buf.validate.field).required = true];
-  int32 offset = 2;
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
   string name = 3 [(buf.validate.field).required = true];
   int32 age = 4 [(buf.validate.field).required = true];
 }

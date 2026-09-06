@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"strconv"
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
@@ -134,8 +135,16 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	}
 
 	query := queries[0]
-	if query.Type != schema.QueryListBy && selExpr.Sel.Name != "Name" && selExpr.Sel.Name != "Contracts" {
-		return nil, true, fmt.Errorf("%s is only supported for ListBy queries", selExpr.Sel.Name)
+	switch selExpr.Sel.Name {
+	case "Name", "Contracts":
+	case "Limit", "Offset":
+		if !query.IsList() {
+			return nil, true, fmt.Errorf("%s is only supported for list queries", selExpr.Sel.Name)
+		}
+	default:
+		if query.Type != schema.QueryListBy {
+			return nil, true, fmt.Errorf("%s is only supported for ListBy queries", selExpr.Sel.Name)
+		}
 	}
 
 	switch selExpr.Sel.Name {
@@ -153,6 +162,26 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return nil, true, fmt.Errorf("OrderBy expects exactly one string field: %w", err)
 		}
 		query.OrderBy = orderField
+	case "Limit":
+		if len(callExpr.Args) > 1 {
+			return nil, true, fmt.Errorf("Limit expects no arguments or a single row count")
+		}
+		query.HasLimit = true
+		if len(callExpr.Args) == 1 {
+			rows, err := parseSingleIntArg(callExpr.Args[0])
+			if err != nil {
+				return nil, true, fmt.Errorf("Limit expects no arguments or a single row count: %w", err)
+			}
+			if rows < 1 {
+				return nil, true, fmt.Errorf("Limit %d must be at least 1", rows)
+			}
+			query.Limit = rows
+		}
+	case "Offset":
+		if len(callExpr.Args) != 0 {
+			return nil, true, fmt.Errorf("Offset does not accept arguments, the caller sends the value")
+		}
+		query.HasOffset = true
 	case "Name":
 		if len(callExpr.Args) != 1 {
 			return nil, true, fmt.Errorf("Name expects exactly one string argument")
@@ -230,6 +259,20 @@ func parseSingleStringArg(arg ast.Expr) (string, error) {
 	}
 
 	return strings.Trim(lit.Value, "\""), nil
+}
+
+func parseSingleIntArg(arg ast.Expr) (int, error) {
+	lit, ok := arg.(*ast.BasicLit)
+	if !ok || lit.Kind != token.INT {
+		return 0, fmt.Errorf("expected int literal")
+	}
+
+	value, err := strconv.Atoi(lit.Value)
+	if err != nil {
+		return 0, fmt.Errorf("expected int literal: %w", err)
+	}
+
+	return value, nil
 }
 
 func parseListByArgs(args []ast.Expr) ([]string, []schema.QueryFilter, error) {
@@ -358,6 +401,10 @@ func validateQueryFields(entity schema.Entity) error {
 	}
 
 	for _, query := range entity.Queries {
+		if query.HasOffset && !query.HasLimit {
+			return fmt.Errorf("entity %q query %q has Offset() without Limit()", entity.Name, query.Type)
+		}
+
 		switch query.Type {
 		case schema.QueryGetBy:
 			if len(query.Fields) == 0 {

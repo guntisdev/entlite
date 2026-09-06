@@ -128,12 +128,12 @@ func (Reading) Queries() []entlite.Query {
 		query.Get(),
 		query.Update().Contracts(entlite.SQLC()), // a recorded fact, clients never edit it, no proto rpc
 		query.Delete(),
-		query.ListBy("sensor_id"),
+		query.ListBy("sensor_id").Limit().Offset(),
 		query.ListBy(
 			filter.Eq("sensor_id"),
 			filter.Range("recorded_at"),
 			filter.Eq("flagged"),
-		).Count().OrderBy("recorded_at"),
+		).Count().OrderBy("recorded_at").Limit().Offset(),
 	}
 }
 ```
@@ -201,7 +201,7 @@ func (Sensor) Queries() []entlite.Query {
 			filter.Search("label"),
 			filter.Eq("kind"),
 			filter.Eq("active").Optional(),
-		).Count().OrderBy("installed_at"),
+		).Count().OrderBy("installed_at").Limit().Offset(),
 	}
 }
 ```

@@ -112,11 +112,11 @@ func (User) Queries() []entlite.Query {
 		query.GetBy("email"),
 		query.ListAll(),
 		query.DeleteAll(),
-		query.ListBy("is_active").Name("ListActive"),
+		query.ListBy("is_active").Name("ListActive").Limit().Offset(),
 		query.ListBy(
 			filter.Range("age"),   // age BETWEEN :min_age AND :max_age
 			filter.Search("name"), // name LIKE :name
-		).OrderBy("created_at").Count(),
+		).OrderBy("created_at").Count().Limit().Offset(),
 	}
 }
 
