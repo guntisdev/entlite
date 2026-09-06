@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
-	"github.com/guntisdev/entlite/internal/util"
 )
 
 func generateUpdateStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
@@ -120,7 +119,9 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")
 		sb.WriteString("\t}\n")
-		getName := util.GenEntityGetByPrimaryKeyName(entity)
+		// mysql has no RETURNING, the row is read back with the get query
+		getQuery, _ := entity.PrimaryKeyGetQuery() // Generate checked that it exists
+		getName := getQuery.Name
 		sb.WriteString(fmt.Sprintf("\tdb%s, err := (*%s.Queries)(q).%s(ctx, %s)\n", entity.Name, inputPkg, getName, getByPrimaryKeyArg(entity, inputPkg, getName)))
 		sb.WriteString("\tif err != nil {\n")
 		sb.WriteString("\t\treturn nil, err\n")

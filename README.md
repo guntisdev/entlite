@@ -6,7 +6,6 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 ## TODO
 * Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/
-* Move query name to parser instead of generator
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 
 * Implement Queries OrderBy()

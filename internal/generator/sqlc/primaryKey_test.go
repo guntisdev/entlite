@@ -23,10 +23,10 @@ func compoundKeyEntity() schema.Entity {
 			Columns: []schema.IndexColumn{{Name: "country"}, {Name: "env"}},
 		}},
 		Queries: []schema.Query{
-			{Type: schema.QueryCreate, Contracts: contracts},
-			{Type: schema.QueryGetBy, Fields: []string{"country", "env"}, PrimaryKey: true, Contracts: contracts},
-			{Type: schema.QueryUpdate, Fields: []string{"country", "env"}, PrimaryKey: true, Contracts: contracts},
-			{Type: schema.QueryDelete, Fields: []string{"country", "env"}, PrimaryKey: true, Contracts: contracts},
+			{Type: schema.QueryCreate, Name: "CreateSetting", Contracts: contracts},
+			{Type: schema.QueryGetBy, Name: "GetSettingByCountryEnv", Fields: []string{"country", "env"}, PrimaryKey: true, Contracts: contracts},
+			{Type: schema.QueryUpdate, Name: "UpdateSetting", Fields: []string{"country", "env"}, PrimaryKey: true, Contracts: contracts},
+			{Type: schema.QueryDelete, Name: "DeleteSetting", Fields: []string{"country", "env"}, PrimaryKey: true, Contracts: contracts},
 		},
 	}
 }

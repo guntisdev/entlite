@@ -136,7 +136,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString("\n")
 		}
 
-		messageName := util.GenQueryName(query, entity.Name)
+		messageName := query.Name
 
 		switch query.Type {
 		case schema.QueryCreate:
@@ -318,7 +318,7 @@ func rpcComment(query schema.Query) string {
 }
 
 func generateRpc(entity schema.Entity, query schema.Query) string {
-	name := util.GenQueryName(query, entity.Name)
+	name := query.Name
 
 	switch query.Type {
 	case schema.QueryCreate:

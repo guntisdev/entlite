@@ -32,34 +32,55 @@ func ValidateQueryNames(entities []schema.Entity) error {
 func validateNamespace(entities []schema.Entity, queries func(schema.Entity) []schema.Query, namespace string) error {
 	type owner struct {
 		entity string
-		custom bool
+		query  schema.Query
 	}
 
 	seen := make(map[string]owner)
 	for _, entity := range entities {
 		for _, query := range queries(entity) {
-			name := GenQueryName(query, entity.Name)
-			if name == "" {
+			if query.Name == "" {
 				continue
 			}
 
-			if previous, found := seen[name]; found {
+			if previous, found := seen[query.Name]; found {
 				return fmt.Errorf(
 					"%s name %q is used twice, by %s and %s, %s",
-					namespace, name, previous.entity, entity.Name, renameHint(previous.custom, query.Name != ""),
+					namespace, query.Name, previous.entity, entity.Name,
+					renameHint(previous.entity == entity.Name && sameQuery(previous.query, query)),
 				)
 			}
-			seen[name] = owner{entity: entity.Name, custom: query.Name != ""}
+			seen[query.Name] = owner{entity: entity.Name, query: query}
 		}
 	}
 
 	return nil
 }
 
-func renameHint(previousCustom, currentCustom bool) string {
-	if previousCustom || currentCustom {
-		return "give one of them a different Name()"
+func renameHint(duplicate bool) string {
+	if duplicate {
+		return "the same query is declared twice"
 	}
 
-	return "the same query is declared twice"
+	return "give one of them a different Name()"
+}
+
+// reports duplication
+func sameQuery(a, b schema.Query) bool {
+	if a.Type != b.Type || len(a.Fields) != len(b.Fields) || len(a.Filters) != len(b.Filters) {
+		return false
+	}
+
+	for i := range a.Fields {
+		if !strings.EqualFold(a.Fields[i], b.Fields[i]) {
+			return false
+		}
+	}
+
+	for i := range a.Filters {
+		if a.Filters[i] != b.Filters[i] {
+			return false
+		}
+	}
+
+	return true
 }
