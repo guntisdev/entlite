@@ -25,11 +25,11 @@ func reservedEntity() schema.Entity {
 			Columns: []schema.IndexColumn{{Name: "table"}, {Name: "order", Desc: true}},
 		}},
 		Queries: []schema.Query{
-			{Type: schema.QueryCreate, Contracts: sqlc},
-			{Type: schema.QueryGetBy, Fields: []string{"table"}, Contracts: sqlc},
-			{Type: schema.QueryUpdate, Contracts: sqlc},
-			{Type: schema.QueryDelete, Contracts: sqlc},
-			{Type: schema.QueryListBy, Filters: []schema.QueryFilter{
+			{Type: schema.QueryCreate, Name: "CreateBooking", Contracts: sqlc},
+			{Type: schema.QueryGetBy, Name: "GetBookingByTable", Fields: []string{"table"}, Contracts: sqlc},
+			{Type: schema.QueryUpdate, Name: "UpdateBooking", Contracts: sqlc},
+			{Type: schema.QueryDelete, Name: "DeleteBooking", Contracts: sqlc},
+			{Type: schema.QueryListBy, Name: "ListBookingFilterByTableLabel", Filters: []schema.QueryFilter{
 				{Type: schema.QueryFilterEq, Field: "table"},
 				{Type: schema.QueryFilterEq, Field: "label"},
 			}, Contracts: sqlc},

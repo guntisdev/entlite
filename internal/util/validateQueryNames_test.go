@@ -11,7 +11,6 @@ func bothContracts() []schema.Contract {
 	return []schema.Contract{{Type: schema.ContractSQLC}, {Type: schema.ContractPROTO}}
 }
 
-// testEntity builds an entity where every query targets both contracts
 func testEntity(name string, queries ...schema.Query) schema.Entity {
 	for i := range queries {
 		queries[i].Contracts = bothContracts()
@@ -29,8 +28,8 @@ func TestValidateQueryNames(t *testing.T) {
 		{
 			name: "generated names never collide",
 			entities: []schema.Entity{
-				testEntity("User", schema.Query{Type: schema.QueryGetBy, Fields: []string{"email"}}),
-				testEntity("Post", schema.Query{Type: schema.QueryGetBy, Fields: []string{"email"}}),
+				testEntity("User", schema.Query{Type: schema.QueryGetBy, Name: "GetUserByEmail"}),
+				testEntity("Post", schema.Query{Type: schema.QueryGetBy, Name: "GetPostByEmail"}),
 			},
 		},
 		{
@@ -44,7 +43,7 @@ func TestValidateQueryNames(t *testing.T) {
 		{
 			name: "custom name collides with a generated one",
 			entities: []schema.Entity{
-				testEntity("User", schema.Query{Type: schema.QueryGetBy, Fields: []string{"email"}}),
+				testEntity("User", schema.Query{Type: schema.QueryGetBy, Name: "GetUserByEmail"}),
 				testEntity("Post", schema.Query{Type: schema.QueryListAll, Name: "GetUserByEmail"}),
 			},
 			wantErr: `"GetUserByEmail" is used twice, by User and Post, give one of them a different Name()`,
@@ -53,8 +52,8 @@ func TestValidateQueryNames(t *testing.T) {
 			name: "same query declared twice on one entity",
 			entities: []schema.Entity{
 				testEntity("User",
-					schema.Query{Type: schema.QueryGetBy, Fields: []string{"email"}},
-					schema.Query{Type: schema.QueryGetBy, Fields: []string{"email"}},
+					schema.Query{Type: schema.QueryGetBy, Name: "GetUserByEmail"},
+					schema.Query{Type: schema.QueryGetBy, Name: "GetUserByEmail"},
 				),
 			},
 			wantErr: `"GetUserByEmail" is used twice, by User and User, the same query is declared twice`,

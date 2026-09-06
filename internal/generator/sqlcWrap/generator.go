@@ -41,6 +41,12 @@ func detectFileType(filename string) FileType {
 func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity, entityImports map[string]internalParser.ImportInfo, sqlDialect schema.SQLDialect) (string, error) {
 	fileType := detectFileType(inputFilePath)
 
+	if sqlDialect == schema.MySQL {
+		if err := validateMySQLUpdateQueries(parsedEntities); err != nil {
+			return "", err
+		}
+	}
+
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, inputFilePath, nil, parser.ParseComments)
 	if err != nil {
@@ -70,11 +76,7 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 	dslQueries := make(map[string]dslQuery)
 	for _, entity := range parsedEntities {
 		for _, query := range entity.SQLCQueries() {
-			name := util.GenQueryName(query, entity.Name)
-			if name == "" {
-				continue
-			}
-			dslQueries[name] = dslQuery{entity: entity, query: query}
+			dslQueries[query.Name] = dslQuery{entity: entity, query: query}
 		}
 	}
 
@@ -120,8 +122,22 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 	return sb.String(), nil
 }
 
-// dslQuery ties a sqlc query name back to its schema query, so wrappers survive a
-// custom Name().
+func validateMySQLUpdateQueries(entities []schema.Entity) error {
+	for _, entity := range entities {
+		update, ok := entity.QueryByType(schema.QueryUpdate)
+		if !ok || !update.HasContract(schema.ContractSQLC) {
+			continue
+		}
+
+		if _, ok := entity.PrimaryKeyGetQuery(); !ok {
+			return fmt.Errorf("entity %q has an update query, mysql needs a get query by the primary key to read the updated row back", entity.Name)
+		}
+	}
+
+	return nil
+}
+
+// dslQuery ties a sqlc query name back to its schema query
 type dslQuery struct {
 	entity schema.Entity
 	query  schema.Query

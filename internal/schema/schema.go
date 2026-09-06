@@ -289,10 +289,48 @@ type Query struct {
 	Filters    []QueryFilter
 	Count      bool
 	OrderBy    string
-	Name       string // custom query name; empty means auto-generated
+	Name       string
 	Comment    string
 	Contracts  []Contract
 	PrimaryKey bool
+}
+
+// returns the entity's first query of the given type
+func (e Entity) QueryByType(queryType QueryType) (Query, bool) {
+	for _, query := range e.Queries {
+		if query.Type == queryType {
+			return query, true
+		}
+	}
+
+	return Query{}, false
+}
+
+// returns the get query keyed by the primary key
+func (e Entity) PrimaryKeyGetQuery() (Query, bool) {
+	keyFields := e.PrimaryKeyFields()
+
+	for _, query := range e.Queries {
+		if query.Type != QueryGetBy || len(query.Fields) != len(keyFields) {
+			continue
+		}
+
+		if sameFieldNames(query.Fields, keyFields) {
+			return query, true
+		}
+	}
+
+	return Query{}, false
+}
+
+func sameFieldNames(names []string, fields []Field) bool {
+	for i := range names {
+		if !strings.EqualFold(names[i], fields[i].Name) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (q Query) HasContract(contractType ContractType) bool {

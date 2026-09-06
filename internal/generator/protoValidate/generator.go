@@ -18,10 +18,11 @@ func Generate(entities []schema.Entity, imports map[string]parser.ImportInfo) (s
 			continue
 		}
 		for _, queryType := range []schema.QueryType{schema.QueryCreate, schema.QueryUpdate} {
-			if !hasQueryType(entity, queryType) {
+			query, ok := protoQueryByType(entity, queryType)
+			if !ok {
 				continue
 			}
-			methods.WriteString(generateValidateMethod(entity, queryType))
+			methods.WriteString(generateValidateMethod(entity, query))
 		}
 	}
 	body := methods.String()
@@ -109,11 +110,11 @@ func (c *validatingHandlerConn) Receive(msg any) error {
 }
 `
 
-// generateValidateMethod writes Validate() for the create/update queries
-func generateValidateMethod(entity schema.Entity, queryType schema.QueryType) string {
+// writes Validate() for the create/update queries
+func generateValidateMethod(entity schema.Entity, query schema.Query) string {
 	var content strings.Builder
-	messageName := util.GenEntityQueryName(entity, queryType)
-	content.WriteString(fmt.Sprintf("func (r *%sRequest) Validate() error {\n", messageName))
+	queryType := query.Type
+	content.WriteString(fmt.Sprintf("func (r *%sRequest) Validate() error {\n", query.Name))
 
 	// json text is checked before the request reaches the handler
 	for _, field := range entity.Fields {
@@ -172,15 +173,14 @@ func isPointerField(field schema.Field, queryType schema.QueryType) bool {
 	return queryType == schema.QueryUpdate && !field.CanApiRead()
 }
 
-// only a declared query has a request message to hang Validate() on
-func hasQueryType(entity schema.Entity, queryType schema.QueryType) bool {
+func protoQueryByType(entity schema.Entity, queryType schema.QueryType) (schema.Query, bool) {
 	for _, query := range entity.ProtoQueries() {
 		if query.Type == queryType {
-			return true
+			return query, true
 		}
 	}
 
-	return false
+	return schema.Query{}, false
 }
 
 func hasJSONField(entity schema.Entity) bool {
