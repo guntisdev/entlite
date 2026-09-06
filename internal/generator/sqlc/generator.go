@@ -303,6 +303,10 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		if len(whereParts) > 0 {
 			selectSQL += " WHERE " + strings.Join(whereParts, " AND ")
 		}
+		// OrderBy() sorts the rows, it has to come before LIMIT
+		if query.OrderBy != "" {
+			selectSQL += " ORDER BY " + g.column(query.OrderBy)
+		}
 		// Limit()/Offset() in the schema decide, a fixed Limit(rows) goes straight into the sql
 		if query.HasLimit {
 			limitArg, offsetArg := g.limitOffsetArgs()

@@ -100,9 +100,11 @@ func (User) Queries() []entlite.Query {
 
 `DefaultCRUD()` expands to create, get, update and delete. `Name()` renames the
 generated method, which you need when two queries would collide. Filters become
-where clauses: `Eq` is `=`, `Range` is `BETWEEN`, `Search` is `LIKE`. Every
-`ListBy` is paginated: the query gets `LIMIT`/`OFFSET` and the proto request a
-required `limit` and an optional `offset`. `ListAll()` is not paginated.
+where clauses: `Eq` is `=`, `Range` is `BETWEEN`, `Search` is `LIKE`.
+`OrderBy(field)` sorts a `ListBy` by one column, ascending. `Limit()` and
+`Offset()` paginate any list query: the query gets `LIMIT`/`OFFSET` and the
+proto request a required `limit` and an optional `offset`. A fixed `Limit(50)`
+stays in the sql and never reaches the request.
 
 See [queries](../reference/queries.md) and [filters](../reference/filters.md).
 

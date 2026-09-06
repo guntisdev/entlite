@@ -251,7 +251,7 @@ SELECT * FROM "user";
 SELECT * FROM "user" WHERE is_active = @is_active LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListUserFilterByAgeName :many
-SELECT * FROM "user" WHERE age BETWEEN @min_age AND @max_age AND name LIKE @name LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT * FROM "user" WHERE age BETWEEN @min_age AND @max_age AND name LIKE @name ORDER BY created_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateUser :one
 UPDATE "user" SET
