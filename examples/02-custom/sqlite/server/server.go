@@ -152,7 +152,7 @@ func (s *SensorServer) ListSensorFilterByLabelKindActive(
 
 	queries := db.New(s.db)
 
-	dbSensors, err := queries.ListSensorFilterByLabelKindActive(ctx, db.ListSensorFilterByLabelKindActiveParams{
+	dbSensors, totalSize, err := queries.ListSensorFilterByLabelKindActive(ctx, db.ListSensorFilterByLabelKindActiveParams{
 		Label:  req.Msg.Label, // filter.Search: compared with LIKE, so the caller supplies the wildcards
 		Kind:   req.Msg.Kind,
 		Active: req.Msg.GetActive(),
@@ -169,7 +169,8 @@ func (s *SensorServer) ListSensorFilterByLabelKindActive(
 	}
 
 	return connect.NewResponse(&pb.ListSensorFilterByLabelKindActiveResponse{
-		Rows: pbSensors,
+		Rows:      pbSensors,
+		TotalSize: totalSize,
 	}), nil
 }
 
@@ -278,7 +279,7 @@ func (s *ReadingServer) ListReadingFilterBySensorIdRecordedAtFlagged(
 
 	queries := db.New(s.db)
 
-	dbReadings, err := queries.ListReadingFilterBySensorIdRecordedAtFlagged(ctx, db.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
+	dbReadings, totalSize, err := queries.ListReadingFilterBySensorIdRecordedAtFlagged(ctx, db.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
 		SensorID: req.Msg.SensorId,
 		Flagged:  req.Msg.Flagged,
 		Limit:    req.Msg.GetLimit(),
@@ -289,7 +290,8 @@ func (s *ReadingServer) ListReadingFilterBySensorIdRecordedAtFlagged(
 	}
 
 	return connect.NewResponse(&pb.ListReadingFilterBySensorIdRecordedAtFlaggedResponse{
-		Rows: toProtoReadings(dbReadings),
+		Rows:      toProtoReadings(dbReadings),
+		TotalSize: totalSize,
 	}), nil
 }
 

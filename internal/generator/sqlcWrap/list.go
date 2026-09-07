@@ -8,7 +8,7 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-const totalCountField = "TotalCount"
+const totalSizeField = "TotalSize"
 
 func (ctx *generationContext) generateListQuery(funcDecl *ast.FuncDecl, entity schema.Entity) string {
 	var sb strings.Builder
@@ -60,11 +60,11 @@ func (ctx *generationContext) generateListQuery(funcDecl *ast.FuncDecl, entity s
 		return sb.String()
 	}
 
-	sb.WriteString("\tvar totalCount int64\n")
+	sb.WriteString("\tvar totalSize int64\n")
 	sb.WriteString("\tif len(dbResults) > 0 {\n")
-	sb.WriteString(fmt.Sprintf("\t\ttotalCount = dbResults[0].%s\n", totalCountField))
+	sb.WriteString(fmt.Sprintf("\t\ttotalSize = dbResults[0].%s\n", totalSizeField))
 	sb.WriteString("\t}\n")
-	sb.WriteString("\treturn result, totalCount, nil\n")
+	sb.WriteString("\treturn result, totalSize, nil\n")
 	sb.WriteString("}\n\n")
 
 	return sb.String()

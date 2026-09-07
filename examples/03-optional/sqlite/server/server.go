@@ -198,7 +198,7 @@ func (s *ArticleServer) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(
 	queries := db.New(s.db)
 
 	// TODO generated params miss the optional published_at range
-	dbArticles, err := queries.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(
+	dbArticles, totalSize, err := queries.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(
 		ctx,
 		db.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams{
 			Author:     req.Msg.Author,
@@ -213,7 +213,8 @@ func (s *ArticleServer) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(
 	}
 
 	return connect.NewResponse(&pb.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse{
-		Rows: toProtoArticles(dbArticles),
+		Rows:      toProtoArticles(dbArticles),
+		TotalSize: totalSize,
 	}), nil
 }
 

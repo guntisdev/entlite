@@ -296,7 +296,7 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 }
 
 const listUserFilterByAgeName = `-- name: ListUserFilterByAgeName :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at, CAST(COUNT(*) OVER() AS SIGNED) AS total_count FROM ` + "`" + `user` + "`" + ` WHERE age BETWEEN ? AND ? AND name LIKE ? ORDER BY created_at LIMIT ? OFFSET ?
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at, CAST(COUNT(*) OVER() AS SIGNED) AS total_size FROM ` + "`" + `user` + "`" + ` WHERE age BETWEEN ? AND ? AND name LIKE ? ORDER BY created_at LIMIT ? OFFSET ?
 `
 
 type ListUserFilterByAgeNameParams struct {
@@ -320,7 +320,7 @@ type ListUserFilterByAgeNameRow struct {
 	Preferences json.RawMessage `json:"preferences"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
-	TotalCount  int64           `json:"total_count"`
+	TotalSize   int64           `json:"total_size"`
 }
 
 func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]ListUserFilterByAgeNameRow, error) {
@@ -351,7 +351,7 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 			&i.Preferences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.TotalCount,
+			&i.TotalSize,
 		); err != nil {
 			return nil, err
 		}

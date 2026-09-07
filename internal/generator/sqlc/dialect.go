@@ -223,7 +223,7 @@ func (g *Generator) limitOffsetArgs() (limit, offset string) {
 }
 
 // COUNT(*) OVER() counts every matching row, LIMIT cuts the page afterwards
-func (g *Generator) totalCountExpr() string {
+func (g *Generator) totalSizeExpr() string {
 	switch g.sqlDialect {
 	case schema.MySQL:
 		// mysql types a bare window count as unknown, the cast keeps it an int64

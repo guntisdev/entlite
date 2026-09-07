@@ -248,7 +248,7 @@ func (q *Queries) ListReadingBySensorId(ctx context.Context, arg ListReadingBySe
 }
 
 const listReadingFilterBySensorIdRecordedAtFlagged = `-- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at, COUNT(*) OVER() AS total_count FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4 ORDER BY recorded_at LIMIT ?6 OFFSET ?5
+SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4 ORDER BY recorded_at LIMIT ?6 OFFSET ?5
 `
 
 type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
@@ -266,7 +266,7 @@ type ListReadingFilterBySensorIdRecordedAtFlaggedRow struct {
 	Flagged    int64     `json:"flagged"`
 	RecordedAt time.Time `json:"recorded_at"`
 	CreatedAt  time.Time `json:"created_at"`
-	TotalCount int64     `json:"total_count"`
+	TotalSize  int64     `json:"total_size"`
 }
 
 func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]ListReadingFilterBySensorIdRecordedAtFlaggedRow, error) {
@@ -291,7 +291,7 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 			&i.Flagged,
 			&i.RecordedAt,
 			&i.CreatedAt,
-			&i.TotalCount,
+			&i.TotalSize,
 		); err != nil {
 			return nil, err
 		}
@@ -307,7 +307,7 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 }
 
 const listSensorFilterByLabelKindActive = `-- name: ListSensorFilterByLabelKindActive :many
-SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at, COUNT(*) OVER() AS total_count FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3 ORDER BY installed_at LIMIT ?5 OFFSET ?4
+SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3 ORDER BY installed_at LIMIT ?5 OFFSET ?4
 `
 
 type ListSensorFilterByLabelKindActiveParams struct {
@@ -331,7 +331,7 @@ type ListSensorFilterByLabelKindActiveRow struct {
 	InstalledAt  time.Time `json:"installed_at"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
-	TotalCount   int64     `json:"total_count"`
+	TotalSize    int64     `json:"total_size"`
 }
 
 func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg ListSensorFilterByLabelKindActiveParams) ([]ListSensorFilterByLabelKindActiveRow, error) {
@@ -362,7 +362,7 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 			&i.InstalledAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.TotalCount,
+			&i.TotalSize,
 		); err != nil {
 			return nil, err
 		}

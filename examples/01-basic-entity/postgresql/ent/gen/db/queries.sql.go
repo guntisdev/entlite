@@ -219,11 +219,11 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 			UpdatedAt: dbResults[i].UpdatedAt,
 		}
 	}
-	var totalCount int64
+	var totalSize int64
 	if len(dbResults) > 0 {
-		totalCount = dbResults[0].TotalCount
+		totalSize = dbResults[0].TotalSize
 	}
-	return result, totalCount, nil
+	return result, totalSize, nil
 }
 
 type UpdateUserParams struct {

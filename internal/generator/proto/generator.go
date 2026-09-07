@@ -244,7 +244,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
 			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			if query.Count {
-				content.WriteString(fmt.Sprintf("  int64 %s = 2;\n", schema.TotalCountColumn))
+				content.WriteString(fmt.Sprintf("  int64 %s = 2;\n", schema.TotalSizeColumn))
 			}
 			content.WriteString("}")
 		}

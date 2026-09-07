@@ -32,18 +32,18 @@ func TestCountColumn(t *testing.T) {
 		want    []string
 	}{
 		{schema.PostgreSQL, []string{
-			`SELECT *, COUNT(*) OVER() AS total_count FROM "post" WHERE title = @title LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');`,
-			`SELECT *, COUNT(*) OVER() AS total_count FROM "post";`,
+			`SELECT *, COUNT(*) OVER() AS total_size FROM "post" WHERE title = @title LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');`,
+			`SELECT *, COUNT(*) OVER() AS total_size FROM "post";`,
 			`SELECT * FROM "post" WHERE title = @title;`,
 		}},
 		{schema.SQLite, []string{
-			`SELECT *, COUNT(*) OVER() AS total_count FROM "post" WHERE title = @title LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');`,
-			`SELECT *, COUNT(*) OVER() AS total_count FROM "post";`,
+			`SELECT *, COUNT(*) OVER() AS total_size FROM "post" WHERE title = @title LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');`,
+			`SELECT *, COUNT(*) OVER() AS total_size FROM "post";`,
 			`SELECT * FROM "post" WHERE title = @title;`,
 		}},
 		{schema.MySQL, []string{
-			"SELECT *, CAST(COUNT(*) OVER() AS SIGNED) AS total_count FROM `post` WHERE title = sqlc.arg('title') LIMIT ? OFFSET ?;",
-			"SELECT *, CAST(COUNT(*) OVER() AS SIGNED) AS total_count FROM `post`;",
+			"SELECT *, CAST(COUNT(*) OVER() AS SIGNED) AS total_size FROM `post` WHERE title = sqlc.arg('title') LIMIT ? OFFSET ?;",
+			"SELECT *, CAST(COUNT(*) OVER() AS SIGNED) AS total_size FROM `post`;",
 			"SELECT * FROM `post` WHERE title = sqlc.arg('title');",
 		}},
 	}
@@ -59,8 +59,8 @@ func TestCountColumn(t *testing.T) {
 			}
 
 			// only the two counted queries get a window count
-			if got := strings.Count(sql, "total_count"); got != 2 {
-				t.Errorf("expected 2 total_count columns, got %d:\n%s", got, sql)
+			if got := strings.Count(sql, "total_size"); got != 2 {
+				t.Errorf("expected 2 total_size columns, got %d:\n%s", got, sql)
 			}
 		})
 	}

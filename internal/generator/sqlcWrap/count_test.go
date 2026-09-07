@@ -68,8 +68,8 @@ func TestListQueryWithCount(t *testing.T) {
 		"result[i] = &Post{",
 		"ID: dbResults[i].ID,",
 		"Title: dbResults[i].Title,",
-		"totalCount = dbResults[0].TotalCount",
-		"return result, totalCount, nil",
+		"totalSize = dbResults[0].TotalSize",
+		"return result, totalSize, nil",
 	}
 	for _, part := range want {
 		if !strings.Contains(got, part) {
@@ -104,7 +104,7 @@ func TestListQueryWithoutCount(t *testing.T) {
 		}
 	}
 
-	if strings.Contains(got, "totalCount") {
+	if strings.Contains(got, "totalSize") {
 		t.Errorf("expected no count in a plain list:\n%s", got)
 	}
 }

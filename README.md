@@ -5,6 +5,7 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 
 ## TODO
 * Implement DefaultFunc for sql generation
+* Rename to google AIP https://google.aip.dev/
 * Add mcp for visual testing of examples/
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
 * Fix filter.Range() on sqlite, emit `col >= @min_col AND col <= @max_col` instead of BETWEEN - sqlc binds

@@ -301,7 +301,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		selectSQL := fmt.Sprintf("SELECT * FROM %s", g.quote(tableName))
 		// Count() adds the total as a column repeated on every row
 		if query.Count {
-			selectSQL = fmt.Sprintf("SELECT *, %s AS %s FROM %s", g.totalCountExpr(), schema.TotalCountColumn, g.quote(tableName))
+			selectSQL = fmt.Sprintf("SELECT *, %s AS %s FROM %s", g.totalSizeExpr(), schema.TotalSizeColumn, g.quote(tableName))
 		}
 		// ListAll has no filters, so no WHERE clause
 		if len(whereParts) > 0 {

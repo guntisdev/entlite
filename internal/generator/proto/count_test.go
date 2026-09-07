@@ -30,16 +30,16 @@ func TestCountResponseField(t *testing.T) {
 
 	counted := `message ListPostPagedResponse {
   repeated Post rows = 1;
-  int64 total_count = 2;
+  int64 total_size = 2;
 }`
 	if !strings.Contains(content, counted) {
-		t.Errorf("expected the counted response to carry total_count:\n%s", content)
+		t.Errorf("expected the counted response to carry total_size:\n%s", content)
 	}
 
 	plain := `message ListPostPlainResponse {
   repeated Post rows = 1;
 }`
 	if !strings.Contains(content, plain) {
-		t.Errorf("expected the plain response to stay without total_count:\n%s", content)
+		t.Errorf("expected the plain response to stay without total_size:\n%s", content)
 	}
 }

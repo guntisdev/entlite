@@ -152,11 +152,11 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 			CreatedAt: dbResults[i].CreatedAt,
 		}
 	}
-	var totalCount int64
+	var totalSize int64
 	if len(dbResults) > 0 {
-		totalCount = dbResults[0].TotalCount
+		totalSize = dbResults[0].TotalSize
 	}
-	return result, totalCount, nil
+	return result, totalSize, nil
 }
 
 type ListSensorFilterByLabelKindActiveParams struct {
@@ -197,11 +197,11 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 			UpdatedAt: dbResults[i].UpdatedAt,
 		}
 	}
-	var totalCount int64
+	var totalSize int64
 	if len(dbResults) > 0 {
-		totalCount = dbResults[0].TotalCount
+		totalSize = dbResults[0].TotalSize
 	}
-	return result, totalCount, nil
+	return result, totalSize, nil
 }
 
 type UpdateReadingParams struct {

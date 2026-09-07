@@ -241,7 +241,7 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuth
 }
 
 const listArticleFilterByAuthorIsFeaturedPublishedAtTitle = `-- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at, COUNT(*) OVER() AS total_count FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5 ORDER BY published_at LIMIT ?7 OFFSET ?6
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5 ORDER BY published_at LIMIT ?7 OFFSET ?6
 `
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
@@ -267,7 +267,7 @@ type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRow struct {
 	IsFeatured     int64      `json:"is_featured"`
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`
-	TotalCount     int64      `json:"total_count"`
+	TotalSize      int64      `json:"total_size"`
 }
 
 func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, arg ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams) ([]ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRow, error) {
@@ -300,7 +300,7 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 			&i.IsFeatured,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.TotalCount,
+			&i.TotalSize,
 		); err != nil {
 			return nil, err
 		}

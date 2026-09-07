@@ -283,8 +283,8 @@ const (
 	ContractPROTO ContractType = "proto"
 )
 
-// TotalCountColumn is the column Count() adds to a list query
-const TotalCountColumn = "total_count"
+// TotalSizeColumn is the column Count() adds to a list query, named after google AIP-158
+const TotalSizeColumn = "total_size"
 
 type Query struct {
 	Type       QueryType
