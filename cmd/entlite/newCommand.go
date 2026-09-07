@@ -144,14 +144,14 @@ func createSqlcYamlFile(dir, dialect string) error {
 	content := fmt.Sprintf(`version: "2"
 sql:
   - schema: "contract/sqlc/schema.sql"
-    queries: "contract/sqlc/queries.sql"    
+    queries: "contract/sqlc/queries.sql"
     engine: "%s"       # postgresql or sqlite or mysql
     gen:
       go:
         package: "internal"
         out: "gen/db/internal"
         emit_json_tags: true
-		emit_pointers_for_null_types: true
+        emit_pointers_for_null_types: true
 `, dialect)
 
 	path := filepath.Join(dir, "sqlc.yaml")

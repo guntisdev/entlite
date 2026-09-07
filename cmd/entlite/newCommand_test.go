@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestNewCommandFunction(t *testing.T) {
@@ -54,6 +56,24 @@ func TestNewCommandFunction(t *testing.T) {
 	for _, actual := range actualFiles {
 		if !expectedMap[actual] {
 			t.Errorf("Unexpected file created: %s", actual)
+		}
+	}
+}
+
+func TestNewCommandScaffoldsValidYaml(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	newCommand([]string{"User"})
+
+	for _, file := range []string{"ent/sqlc.yaml", "ent/buf.yaml", "ent/buf.gen.yaml"} {
+		data, err := os.ReadFile(file)
+		if err != nil {
+			t.Fatalf("Failed to read %s: %v", file, err)
+		}
+		var out any
+		if err := yaml.Unmarshal(data, &out); err != nil {
+			t.Errorf("%s is not valid yaml: %v", file, err)
 		}
 	}
 }
