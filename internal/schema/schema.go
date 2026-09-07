@@ -283,11 +283,14 @@ const (
 	ContractPROTO ContractType = "proto"
 )
 
+// TotalCountColumn is the column Count() adds to a list query
+const TotalCountColumn = "total_count"
+
 type Query struct {
 	Type       QueryType
 	Fields     []string
 	Filters    []QueryFilter
-	Count      bool
+	Count      bool // Count() asks for the number of matching rows
 	OrderBy    string
 	HasLimit   bool
 	Limit      int // fixed row count, 0 means the caller sets it

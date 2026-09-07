@@ -49,6 +49,8 @@ type QueryOperations interface {
 // ListAllOperations exposes the modifiers available on a ListAll query.
 type ListAllOperations interface {
 	QueryBuilder
+	// Count also returns how many rows match, counted before Limit. An empty page reports 0.
+	Count() ListAllOperations
 	// Limit takes the row count from the caller, Limit(rows) sets it in the query.
 	Limit(rows ...int) ListAllOperations
 	// Offset asks the caller how many rows to skip. Needs a Limit.
@@ -62,7 +64,7 @@ type ListAllOperations interface {
 // ListByOperations exposes the modifiers available on a ListBy query.
 type ListByOperations interface {
 	QueryBuilder
-	// Count also returns the number of matching rows.
+	// Count also returns how many rows match, counted before Limit. An empty page reports 0.
 	Count() ListByOperations
 	// OrderBy sorts the result by the given field.
 	OrderBy(field string) ListByOperations
@@ -81,7 +83,7 @@ type Query struct {
 	typeName  Type
 	fields    []string        // For GetBy: list of field name strings
 	filters   []filter.Filter // For ListBy: list of filters
-	count     bool            // For ListBy: whether to count
+	count     bool            // For list queries: whether to count matching rows
 	orderBy   string          // For ListBy: order by field
 	hasLimit  bool            // For list queries: whether LIMIT is set
 	limit     int             // For list queries: fixed limit, 0 means the caller sets it
@@ -121,6 +123,12 @@ func (q listAllQuery) Name(name string) ListAllOperations {
 // Contracts limits the query to the given layers, sqlc or proto.
 func (q listAllQuery) Contracts(contracts ...entlite.Layer) ListAllOperations {
 	q.base.contracts = contracts
+	return q
+}
+
+// Count adds a COUNT operation to the ListAll query
+func (q listAllQuery) Count() ListAllOperations {
+	q.base.count = true
 	return q
 }
 
@@ -265,7 +273,7 @@ func (q Query) GetFilters() []filter.Filter {
 	return q.filters
 }
 
-// HasCount reports if a ListBy query also returns a count.
+// HasCount reports if a list query also returns a count.
 func (q Query) HasCount() bool {
 	return q.count
 }

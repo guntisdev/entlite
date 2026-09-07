@@ -104,7 +104,10 @@ where clauses: `Eq` is `=`, `Range` is `BETWEEN`, `Search` is `LIKE`.
 `OrderBy(field)` sorts a `ListBy` by one column, ascending. `Limit()` and
 `Offset()` paginate any list query: the query gets `LIMIT`/`OFFSET` and the
 proto request a required `limit` and an optional `offset`. A fixed `Limit(50)`
-stays in the sql and never reaches the request.
+stays in the sql and never reaches the request. `Count()` adds the number of
+matching rows, counted before `LIMIT` cuts the page: the method returns it next
+to the rows and the proto response carries a `total_count`. A page with no rows
+reports `0`, the count travels with the rows.
 
 See [queries](../reference/queries.md) and [filters](../reference/filters.md).
 

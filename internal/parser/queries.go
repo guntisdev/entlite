@@ -137,7 +137,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	query := queries[0]
 	switch selExpr.Sel.Name {
 	case "Name", "Contracts":
-	case "Limit", "Offset":
+	case "Count", "Limit", "Offset":
 		if !query.IsList() {
 			return nil, true, fmt.Errorf("%s is only supported for list queries", selExpr.Sel.Name)
 		}
