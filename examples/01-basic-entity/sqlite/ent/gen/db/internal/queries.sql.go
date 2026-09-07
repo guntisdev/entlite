@@ -35,7 +35,17 @@ INSERT INTO "user" (
   ?,
   ?,
   ?
-) RETURNING ID
+)
+ON CONFLICT (email) DO UPDATE SET
+  name = excluded.name,
+  age = excluded.age,
+  password = excluded.password,
+  is_active = excluded.is_active,
+  login_count = excluded.login_count,
+  rating = excluded.rating,
+  preferences = excluded.preferences,
+  updated_at = excluded.updated_at
+RETURNING ID
 `
 
 type CreateBulkUserParams struct {
@@ -52,6 +62,7 @@ type CreateBulkUserParams struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+// re-importing the same users overwrites the row that shares the email
 func (q *Queries) CreateBulkUser(ctx context.Context, arg CreateBulkUserParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createBulkUser,
 		arg.Email,

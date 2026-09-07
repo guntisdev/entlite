@@ -5,6 +5,8 @@
 -- Article CRUD operations
 
 -- name: CreateArticle :one
+-- re-posting a slug keeps the article that is already there, the caller
+-- gets sql.ErrNoRows because nothing was inserted
 INSERT INTO "article" (
   ID,
   slug,
@@ -35,7 +37,9 @@ INSERT INTO "article" (
   ?,
   ?,
   ?
-) RETURNING ID;
+)
+ON CONFLICT (slug) DO NOTHING
+RETURNING ID;
 
 -- name: GetArticleByID :one
 SELECT * FROM "article" WHERE ID = ?;

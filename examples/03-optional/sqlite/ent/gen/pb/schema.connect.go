@@ -63,6 +63,8 @@ const (
 
 // ArticleServiceClient is a client for the proto.ArticleService service.
 type ArticleServiceClient interface {
+	// re-posting a slug keeps the article that is already there, the caller
+	// gets sql.ErrNoRows because nothing was inserted
 	CreateArticle(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
 	GetArticleByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
 	UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error)
@@ -190,6 +192,8 @@ func (c *articleServiceClient) ListArticleFilterByAuthorIsFeaturedPublishedAtTit
 
 // ArticleServiceHandler is an implementation of the proto.ArticleService service.
 type ArticleServiceHandler interface {
+	// re-posting a slug keeps the article that is already there, the caller
+	// gets sql.ErrNoRows because nothing was inserted
 	CreateArticle(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
 	GetArticleByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
 	UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error)

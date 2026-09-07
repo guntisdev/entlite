@@ -10,8 +10,8 @@ Holds the query builders used in an entity schema.
 | --- | --- |
 | `query.GetBy(fields ...string) QueryOperations` | Gets a record by one or more fields, e.g. GetBy("id") or GetBy("org_id", "email") |
 | `query.DefaultCRUD() QueryBuilder` | Expands to several queries, so it cannot be named |
-| `query.Create() QueryOperations` | Inserts one record. |
-| `query.CreateBulk() QueryOperations` | Inserts many records in one call. |
+| `query.Create() CreateOperations` | Inserts one record. |
+| `query.CreateBulk() CreateOperations` | Inserts many records in one call. |
 | `query.Get() QueryOperations` | Reads one record by primary key. |
 | `query.Update() QueryOperations` | Updates one record by primary key. |
 | `query.Delete() QueryOperations` | Deletes one record by primary key. |
@@ -27,6 +27,17 @@ Exposes the modifiers available on a plain query.
 | --- | --- |
 | `Name(name string) QueryOperations` | Overrides the auto-generated query/method name |
 | `Contracts(contracts ...entlite.Layer) QueryOperations` | Limits the query to the given layers, sqlc or proto. |
+
+## CreateOperations
+
+Exposes the modifiers available on a Create or CreateBulk query.
+
+| Method | Description |
+| --- | --- |
+| `Upsert(fields ...string) CreateOperations` | Updates the existing row when the given fields collide. The fields must be a primary key or a unique constraint, no fields means the primary key. |
+| `Ignore() CreateOperations` | Keeps the existing row instead of updating it. Needs an Upsert. |
+| `Name(name string) CreateOperations` | Overrides the auto-generated query/method name |
+| `Contracts(contracts ...entlite.Layer) CreateOperations` | Limits the query to the given layers, sqlc or proto. |
 
 ## ListAllOperations
 

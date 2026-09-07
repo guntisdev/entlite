@@ -67,6 +67,7 @@ type UserServiceClient interface {
 	GetUserByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error)
 	UpdateUser(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	DeleteUser(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
+	// re-importing the same users overwrites the row that shares the email
 	CreateBulkUser(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error)
 	// Look up a user by email address
 	GetUserByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)
@@ -220,6 +221,7 @@ type UserServiceHandler interface {
 	GetUserByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error)
 	UpdateUser(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	DeleteUser(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
+	// re-importing the same users overwrites the row that shares the email
 	CreateBulkUser(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error)
 	// Look up a user by email address
 	GetUserByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error)

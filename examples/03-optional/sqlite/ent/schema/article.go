@@ -55,7 +55,12 @@ func (Article) Fields() []entlite.Field {
 
 func (Article) Queries() []entlite.Query {
 	return []entlite.Query{
-		query.DefaultCRUD(),
+		// re-posting a slug keeps the article that is already there, the caller
+		// gets sql.ErrNoRows because nothing was inserted
+		query.Create().Upsert("slug").Ignore(),
+		query.Get(),
+		query.Update(),
+		query.Delete(),
 		query.GetBy("slug"),
 		query.ListBy("author").Limit().Offset(),
 		query.ListAll(),

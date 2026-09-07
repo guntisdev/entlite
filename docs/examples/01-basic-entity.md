@@ -13,6 +13,7 @@ Source: [examples/01-basic-entity](../../examples/01-basic-entity)
 - `Validate()` with your own Go function from the `logic` package
 - Field level `Contracts()`: a password that clients write but never read, timestamps they read but never write
 - Ready made queries: `DefaultCRUD()`, `CreateBulk()`, `ListAll()`, `DeleteAll()`
+- `CreateBulk().Upsert("email")`: re-importing a row overwrites it instead of failing on the unique email
 - Queries by field: `GetBy("email")`, `ListBy("is_active")`, and `Name()` to rename one
 - Filters: `filter.Range()` and `filter.Search()`
 - Indexes: multi column, `Desc()` sort order, `Unique()`, `Name()`
@@ -107,7 +108,8 @@ func (User) Fields() []entlite.Field {
 func (User) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.DefaultCRUD(),
-		query.CreateBulk(),
+		// re-importing the same users overwrites the row that shares the email
+		query.CreateBulk().Upsert("email"),
 		// Look up a user by email address
 		query.GetBy("email"),
 		query.ListAll(),
@@ -211,6 +213,7 @@ INSERT INTO "user" (
 ) RETURNING ID;
 
 -- name: CreateBulkUser :one
+-- re-importing the same users overwrites the row that shares the email
 INSERT INTO "user" (
   email,
   name,
@@ -235,7 +238,17 @@ INSERT INTO "user" (
   ?,
   ?,
   ?
-) RETURNING ID;
+)
+ON CONFLICT (email) DO UPDATE SET
+  name = excluded.name,
+  age = excluded.age,
+  password = excluded.password,
+  is_active = excluded.is_active,
+  login_count = excluded.login_count,
+  rating = excluded.rating,
+  preferences = excluded.preferences,
+  updated_at = excluded.updated_at
+RETURNING ID;
 
 -- name: GetUserByID :one
 SELECT * FROM "user" WHERE ID = ?;
@@ -401,6 +414,7 @@ service UserService {
   rpc GetUserByID(GetUserByIDRequest) returns (User);
   rpc UpdateUser(UpdateUserRequest) returns (User);
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  // re-importing the same users overwrites the row that shares the email
   rpc CreateBulkUser(CreateBulkUserRequest) returns (CreateBulkUserResponse);
   // Look up a user by email address
   rpc GetUserByEmail(GetUserByEmailRequest) returns (User);

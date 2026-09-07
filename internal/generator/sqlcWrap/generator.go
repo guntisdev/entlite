@@ -292,6 +292,9 @@ func (ctx *generationContext) generateImports(body string) string {
 	add("fmt", "", "fmt")
 	// json is used to check json fields
 	add("json", "", "encoding/json")
+	// errors and sql are used when a bulk upsert skips a row
+	add("errors", "", "errors")
+	add("sql", "", "database/sql")
 
 	used := make([]importSpec, 0, len(specs))
 	for _, s := range specs {

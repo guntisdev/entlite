@@ -10,6 +10,7 @@ optional filter.
 - `filter.Eq("is_featured").Optional()` — a required field used as an optional filter
 - A string uuid primary key: `Immutable()`, `DefaultFunc()` and `PROTO().ReadOnly()`
 - Server generated fields drop out of create and update requests
+- `Create().Upsert("slug").Ignore()` — a taken slug keeps the stored row instead of failing
 <!-- teaches:end -->
 
 ## Entity
@@ -55,6 +56,17 @@ Two different things:
 `is_featured` is required on the entity, but the last query in `Queries()` uses
 it as an optional filter. Send it and the rows are narrowed. Leave it out and
 the filter is skipped. The same query does this with `Range` and `Search` too.
+
+## Re-posting the same slug
+
+`query.Create().Upsert("slug").Ignore()` puts `ON CONFLICT (slug) DO NOTHING` on
+the insert. A slug that is already taken leaves the stored article alone, and
+since no row comes back the caller gets `sql.ErrNoRows`. That is the signal
+nothing was inserted, not a failure to log.
+
+`slug` can be the conflict target because it is `Unique()`. A target that is not
+the primary key, a `Unique()` field or the fields of a `Unique()` index is
+rejected when you generate, not when the query runs.
 
 ## Run
 

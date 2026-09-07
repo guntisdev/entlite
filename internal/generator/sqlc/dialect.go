@@ -199,6 +199,80 @@ func (g *Generator) supportsReturning() bool {
 	panic("unreachable: invalid SQL dialect")
 }
 
+// Postgres and sqlite name target, mysql cannot name one and fires on every unique key of the table.
+func (g *Generator) upsertClause(entity schema.Entity, query schema.Query) string {
+	target := entity.UpsertTarget(query)
+
+	switch g.sqlDialect {
+	case schema.MySQL:
+		if query.UpsertIgnore {
+			// a no-op assignment keeps the stored row, INSERT IGNORE would hide every other error too
+			column := g.column(target[0])
+			return fmt.Sprintf("ON DUPLICATE KEY UPDATE %s = %s", column, column)
+		}
+		return "ON DUPLICATE KEY UPDATE\n" + strings.Join(g.upsertSetColumns(entity, target), ",\n")
+
+	case schema.PostgreSQL, schema.SQLite:
+		columns := make([]string, len(target))
+		for i, name := range target {
+			columns[i] = g.column(name)
+		}
+		clause := fmt.Sprintf("ON CONFLICT (%s)", strings.Join(columns, ", "))
+		if query.UpsertIgnore {
+			return clause + " DO NOTHING"
+		}
+		return clause + " DO UPDATE SET\n" + strings.Join(g.upsertSetColumns(entity, target), ",\n")
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}
+
+func (g *Generator) upsertSetColumns(entity schema.Entity, target []string) []string {
+	fields := entity.UpsertSetFields(target)
+	columns := make([]string, 0, len(fields))
+
+	for _, field := range fields {
+		columns = append(columns, fmt.Sprintf("  %s = %s", g.column(field.Name), g.upsertValue(field.Name)))
+	}
+
+	return columns
+}
+
+func (g *Generator) upsertValue(fieldName string) string {
+	switch g.sqlDialect {
+	case schema.MySQL:
+		// sqlc's mysql parser does not take the 8.0.19 row alias, VALUES() works everywhere
+		return fmt.Sprintf("VALUES(%s)", g.column(fieldName))
+	case schema.PostgreSQL, schema.SQLite:
+		return fmt.Sprintf("excluded.%s", g.column(fieldName))
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}
+
+// reports warning for mysql
+func (g *Generator) upsertWarning(entity schema.Entity, query schema.Query) string {
+	if g.sqlDialect != schema.MySQL || !query.Upsert {
+		return ""
+	}
+
+	target := entity.UpsertTarget(query)
+	others := entity.OtherCollidableConstraints(target)
+	if len(others) == 0 {
+		return ""
+	}
+
+	rendered := make([]string, len(others))
+	for i, columns := range others {
+		rendered[i] = "(" + strings.Join(columns, ", ") + ")"
+	}
+
+	return fmt.Sprintf("mysql ON DUPLICATE KEY UPDATE takes no conflict target, so it ignores Upsert(%s) and fires on %s as well",
+		strings.Join(target, ", "),
+		strings.Join(rendered, " and "),
+	)
+}
+
 func (g *Generator) indexIfNotExists() string {
 	switch g.sqlDialect {
 	case schema.MySQL:
