@@ -119,6 +119,7 @@ service UserService {
   rpc GetUserByID(GetUserByIDRequest) returns (User);
   rpc UpdateUser(UpdateUserRequest) returns (User);
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  // re-importing the same users overwrites the row that shares the email
   rpc CreateBulkUser(CreateBulkUserRequest) returns (CreateBulkUserResponse);
   // Look up a user by email address
   rpc GetUserByEmail(GetUserByEmailRequest) returns (User);

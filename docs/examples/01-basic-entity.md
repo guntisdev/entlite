@@ -213,6 +213,7 @@ INSERT INTO "user" (
 ) RETURNING ID;
 
 -- name: CreateBulkUser :one
+-- re-importing the same users overwrites the row that shares the email
 INSERT INTO "user" (
   email,
   name,
@@ -237,7 +238,17 @@ INSERT INTO "user" (
   ?,
   ?,
   ?
-) RETURNING ID;
+)
+ON CONFLICT (email) DO UPDATE SET
+  name = excluded.name,
+  age = excluded.age,
+  password = excluded.password,
+  is_active = excluded.is_active,
+  login_count = excluded.login_count,
+  rating = excluded.rating,
+  preferences = excluded.preferences,
+  updated_at = excluded.updated_at
+RETURNING ID;
 
 -- name: GetUserByID :one
 SELECT * FROM "user" WHERE ID = ?;
@@ -403,6 +414,7 @@ service UserService {
   rpc GetUserByID(GetUserByIDRequest) returns (User);
   rpc UpdateUser(UpdateUserRequest) returns (User);
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  // re-importing the same users overwrites the row that shares the email
   rpc CreateBulkUser(CreateBulkUserRequest) returns (CreateBulkUserResponse);
   // Look up a user by email address
   rpc GetUserByEmail(GetUserByEmailRequest) returns (User);

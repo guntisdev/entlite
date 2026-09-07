@@ -38,6 +38,15 @@ INSERT INTO ` + "`" + `user` + "`" + ` (
   ?,
   ?
 )
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  age = VALUES(age),
+  password = VALUES(password),
+  is_active = VALUES(is_active),
+  login_count = VALUES(login_count),
+  rating = VALUES(rating),
+  preferences = VALUES(preferences),
+  updated_at = VALUES(updated_at)
 `
 
 type CreateBulkUserParams struct {
@@ -54,6 +63,7 @@ type CreateBulkUserParams struct {
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
 
+// re-importing the same users overwrites the row that shares the email
 func (q *Queries) CreateBulkUser(ctx context.Context, arg CreateBulkUserParams) (int64, error) {
 	result, err := q.db.ExecContext(ctx, createBulkUser,
 		arg.Email,

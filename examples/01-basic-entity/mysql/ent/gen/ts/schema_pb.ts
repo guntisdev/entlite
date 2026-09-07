@@ -543,6 +543,8 @@ export const UserService: GenService<{
     output: typeof EmptySchema;
   },
   /**
+   * re-importing the same users overwrites the row that shares the email
+   *
    * @generated from rpc proto.UserService.CreateBulkUser
    */
   createBulkUser: {

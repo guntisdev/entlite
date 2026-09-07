@@ -31,6 +31,7 @@ INSERT INTO `user` (
   ?
 );
 -- name: CreateBulkUser :execlastid
+-- re-importing the same users overwrites the row that shares the email
 INSERT INTO `user` (
   email,
   name,
@@ -55,7 +56,16 @@ INSERT INTO `user` (
   ?,
   ?,
   ?
-);
+)
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  age = VALUES(age),
+  password = VALUES(password),
+  is_active = VALUES(is_active),
+  login_count = VALUES(login_count),
+  rating = VALUES(rating),
+  preferences = VALUES(preferences),
+  updated_at = VALUES(updated_at);
 -- name: GetUserByID :one
 SELECT * FROM `user` WHERE ID = ?;
 

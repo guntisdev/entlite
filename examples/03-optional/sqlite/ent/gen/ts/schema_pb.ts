@@ -457,6 +457,9 @@ export const ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponseSchema: 
  */
 export const ArticleService: GenService<{
   /**
+   * re-posting a slug keeps the article that is already there, the caller
+   * gets sql.ErrNoRows because nothing was inserted
+   *
    * @generated from rpc proto.ArticleService.CreateArticle
    */
   createArticle: {

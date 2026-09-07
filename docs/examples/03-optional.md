@@ -211,6 +211,8 @@ CREATE TABLE IF NOT EXISTS "article"(
 -- Article CRUD operations
 
 -- name: CreateArticle :one
+-- re-posting a slug keeps the article that is already there, the caller
+-- gets sql.ErrNoRows because nothing was inserted
 INSERT INTO "article" (
   ID,
   slug,
@@ -241,7 +243,9 @@ INSERT INTO "article" (
   ?,
   ?,
   ?
-) RETURNING ID;
+)
+ON CONFLICT (slug) DO NOTHING
+RETURNING ID;
 
 -- name: GetArticleByID :one
 SELECT * FROM "article" WHERE ID = ?;
@@ -391,6 +395,8 @@ message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse {
 
 // ArticleService provides CRUD opertions for Article entities
 service ArticleService {
+  // re-posting a slug keeps the article that is already there, the caller
+  // gets sql.ErrNoRows because nothing was inserted
   rpc CreateArticle(CreateArticleRequest) returns (Article);
   rpc GetArticleByID(GetArticleByIDRequest) returns (Article);
   rpc UpdateArticle(UpdateArticleRequest) returns (Article);
