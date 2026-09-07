@@ -292,7 +292,7 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 }
 
 const listUserFilterByAgeName = `-- name: ListUserFilterByAgeName :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE age BETWEEN ?1 AND ?2 AND name LIKE ?3 ORDER BY created_at LIMIT ?5 OFFSET ?4
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at, COUNT(*) OVER() AS total_count FROM "user" WHERE age BETWEEN ?1 AND ?2 AND name LIKE ?3 ORDER BY created_at LIMIT ?5 OFFSET ?4
 `
 
 type ListUserFilterByAgeNameParams struct {
@@ -303,7 +303,23 @@ type ListUserFilterByAgeNameParams struct {
 	Limit  int64  `json:"limit"`
 }
 
-func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]User, error) {
+type ListUserFilterByAgeNameRow struct {
+	ID          int64     `json:"id"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Age         *int64    `json:"age"`
+	Password    string    `json:"password"`
+	ApiKey      []byte    `json:"api_key"`
+	IsActive    int64     `json:"is_active"`
+	LoginCount  int64     `json:"login_count"`
+	Rating      float64   `json:"rating"`
+	Preferences string    `json:"preferences"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	TotalCount  int64     `json:"total_count"`
+}
+
+func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]ListUserFilterByAgeNameRow, error) {
 	rows, err := q.db.QueryContext(ctx, listUserFilterByAgeName,
 		arg.MinAge,
 		arg.MaxAge,
@@ -315,9 +331,9 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 		return nil, err
 	}
 	defer rows.Close()
-	var items []User
+	var items []ListUserFilterByAgeNameRow
 	for rows.Next() {
-		var i User
+		var i ListUserFilterByAgeNameRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Email,
@@ -331,6 +347,7 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 			&i.Preferences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

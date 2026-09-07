@@ -110,6 +110,7 @@ message ListUserFilterByAgeNameRequest {
 
 message ListUserFilterByAgeNameResponse {
   repeated User rows = 1;
+  int64 total_count = 2;
 }
 
 // UserService provides CRUD opertions for User entities

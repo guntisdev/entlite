@@ -70,7 +70,7 @@ SELECT * FROM `user`;
 SELECT * FROM `user` WHERE is_active = sqlc.arg('is_active') LIMIT ? OFFSET ?;
 
 -- name: ListUserFilterByAgeName :many
-SELECT * FROM `user` WHERE age BETWEEN sqlc.arg('min_age') AND sqlc.arg('max_age') AND name LIKE sqlc.arg('name') ORDER BY created_at LIMIT ? OFFSET ?;
+SELECT *, CAST(COUNT(*) OVER() AS SIGNED) AS total_count FROM `user` WHERE age BETWEEN sqlc.arg('min_age') AND sqlc.arg('max_age') AND name LIKE sqlc.arg('name') ORDER BY created_at LIMIT ? OFFSET ?;
 
 -- name: UpdateUser :exec
 UPDATE `user` SET

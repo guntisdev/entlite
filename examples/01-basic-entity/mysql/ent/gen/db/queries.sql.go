@@ -190,7 +190,8 @@ type ListUserFilterByAgeNameParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]*User, error) {
+type ListUserFilterByAgeNameRow = internal.ListUserFilterByAgeNameRow
+func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]*User, int64, error) {
 	internalArg := internal.ListUserFilterByAgeNameParams{
 		MinAge: PtrToNullInt32(arg.MinAge),
 		MaxAge: PtrToNullInt32(arg.MaxAge),
@@ -200,13 +201,30 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 	}
 	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeName(ctx, internalArg)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	result := make([]*User, len(dbResults))
 	for i := range dbResults {
-		result[i] = UserFromSQL(&dbResults[i])
+		result[i] = &User{
+			ID: dbResults[i].ID,
+			Email: dbResults[i].Email,
+			Name: dbResults[i].Name,
+			Age: NullInt32ToPtr(dbResults[i].Age),
+			Password: dbResults[i].Password,
+			ApiKey: dbResults[i].ApiKey,
+			IsActive: dbResults[i].IsActive,
+			LoginCount: dbResults[i].LoginCount,
+			Rating: dbResults[i].Rating,
+			Preferences: RawMessageToString(dbResults[i].Preferences),
+			CreatedAt: dbResults[i].CreatedAt,
+			UpdatedAt: dbResults[i].UpdatedAt,
+		}
 	}
-	return result, nil
+	var totalCount int64
+	if len(dbResults) > 0 {
+		totalCount = dbResults[0].TotalCount
+	}
+	return result, totalCount, nil
 }
 
 type UpdateUserParams struct {

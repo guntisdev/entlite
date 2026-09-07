@@ -128,7 +128,8 @@ type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
 	Limit int32 `json:"limit"`
 }
 
-func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]*Reading, error) {
+type ListReadingFilterBySensorIdRecordedAtFlaggedRow = internal.ListReadingFilterBySensorIdRecordedAtFlaggedRow
+func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]*Reading, int64, error) {
 	internalArg := internal.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
 		SensorID: IntConvert[int32, int64](arg.SensorID),
 		Flagged: SQLiteBoolToInt(arg.Flagged),
@@ -137,13 +138,25 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 	}
 	dbResults, err := (*internal.Queries)(q).ListReadingFilterBySensorIdRecordedAtFlagged(ctx, internalArg)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	result := make([]*Reading, len(dbResults))
 	for i := range dbResults {
-		result[i] = ReadingFromSQL(&dbResults[i])
+		result[i] = &Reading{
+			ID: dbResults[i].ID,
+			SensorID: IntConvert[int64, int32](dbResults[i].SensorID),
+			Value: dbResults[i].Value,
+			Quality: IntConvert[int64, int32](dbResults[i].Quality),
+			Flagged: SQLiteIntToBool(dbResults[i].Flagged),
+			RecordedAt: dbResults[i].RecordedAt,
+			CreatedAt: dbResults[i].CreatedAt,
+		}
 	}
-	return result, nil
+	var totalCount int64
+	if len(dbResults) > 0 {
+		totalCount = dbResults[0].TotalCount
+	}
+	return result, totalCount, nil
 }
 
 type ListSensorFilterByLabelKindActiveParams struct {
@@ -154,7 +167,8 @@ type ListSensorFilterByLabelKindActiveParams struct {
 	Limit int32 `json:"limit"`
 }
 
-func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg ListSensorFilterByLabelKindActiveParams) ([]*Sensor, error) {
+type ListSensorFilterByLabelKindActiveRow = internal.ListSensorFilterByLabelKindActiveRow
+func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg ListSensorFilterByLabelKindActiveParams) ([]*Sensor, int64, error) {
 	internalArg := internal.ListSensorFilterByLabelKindActiveParams{
 		Label: arg.Label,
 		Kind: arg.Kind,
@@ -164,13 +178,30 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 	}
 	dbResults, err := (*internal.Queries)(q).ListSensorFilterByLabelKindActive(ctx, internalArg)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	result := make([]*Sensor, len(dbResults))
 	for i := range dbResults {
-		result[i] = SensorFromSQL(&dbResults[i])
+		result[i] = &Sensor{
+			ID: IntConvert[int64, int32](dbResults[i].ID),
+			Code: dbResults[i].Code,
+			Label: dbResults[i].Label,
+			Kind: dbResults[i].Kind,
+			Unit: dbResults[i].Unit,
+			Location: dbResults[i].Location,
+			Active: SQLiteIntToBool(dbResults[i].Active),
+			Firmware: dbResults[i].Firmware,
+			SampleRateMs: IntConvert[int64, int32](dbResults[i].SampleRateMs),
+			InstalledAt: dbResults[i].InstalledAt,
+			CreatedAt: dbResults[i].CreatedAt,
+			UpdatedAt: dbResults[i].UpdatedAt,
+		}
 	}
-	return result, nil
+	var totalCount int64
+	if len(dbResults) > 0 {
+		totalCount = dbResults[0].TotalCount
+	}
+	return result, totalCount, nil
 }
 
 type UpdateReadingParams struct {
