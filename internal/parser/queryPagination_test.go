@@ -50,7 +50,7 @@ func TestParseQueryPagination(t *testing.T) {
 		},
 		{
 			name:      "chained after other operations",
-			queries:   `query.ListBy("email").OrderBy("email").Limit().Offset(),`,
+			queries:   `query.ListBy("email").Asc("email").Limit().Offset(),`,
 			wantLimit: true,
 			wantOff:   true,
 		},

@@ -58,6 +58,6 @@ func (Sensor) Queries() []entlite.Query {
 			filter.Search("label"),
 			filter.Eq("kind"),
 			filter.Eq("active").Optional(),
-		).Count().OrderBy("installed_at").Limit().Offset(),
+		).Count().Asc("installed_at").Limit().Offset(),
 	}
 }

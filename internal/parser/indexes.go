@@ -110,13 +110,13 @@ func parseIndexCall(callExpr *ast.CallExpr) (schema.Index, bool, error) {
 		}
 		index.Name = name
 	case "Asc":
-		field, err := parseIndexColumnArg(callExpr.Args, "Asc")
+		field, err := parseColumnArg(callExpr.Args, "Asc")
 		if err != nil {
 			return schema.Index{}, true, err
 		}
 		index.Columns = append(index.Columns, schema.IndexColumn{Name: field, Desc: false})
 	case "Desc":
-		field, err := parseIndexColumnArg(callExpr.Args, "Desc")
+		field, err := parseColumnArg(callExpr.Args, "Desc")
 		if err != nil {
 			return schema.Index{}, true, err
 		}
@@ -126,17 +126,6 @@ func parseIndexCall(callExpr *ast.CallExpr) (schema.Index, bool, error) {
 	}
 
 	return index, true, nil
-}
-
-func parseIndexColumnArg(args []ast.Expr, method string) (string, error) {
-	if len(args) != 1 {
-		return "", fmt.Errorf("%s expects exactly one string field", method)
-	}
-	field, err := parseSingleStringArg(args[0])
-	if err != nil {
-		return "", fmt.Errorf("%s expects exactly one string field: %w", method, err)
-	}
-	return field, nil
 }
 
 func columnsFromFields(fields []string) []schema.IndexColumn {

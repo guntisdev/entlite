@@ -118,7 +118,7 @@ func TestQueryContracts(t *testing.T) {
 		{
 			name:      "contracts chained after other operations",
 			contracts: bothContracts,
-			queries:   `query.ListBy("email").OrderBy("email").Contracts(entlite.SQLC()),`,
+			queries:   `query.ListBy("email").Asc("email").Contracts(entlite.SQLC()),`,
 			wantSQLC:  []schema.QueryType{schema.QueryListBy},
 			wantProto: nil,
 		},

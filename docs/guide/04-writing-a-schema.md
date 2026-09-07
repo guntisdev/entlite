@@ -93,7 +93,7 @@ func (User) Queries() []entlite.Query {
 		query.ListBy(
 			filter.Range("age"),   // age BETWEEN :min_age AND :max_age
 			filter.Search("name"), // name LIKE :name
-		).OrderBy("created_at").Count().Limit().Offset(),
+		).Asc("created_at").Count().Limit().Offset(),
 	}
 }
 ```
@@ -102,7 +102,8 @@ func (User) Queries() []entlite.Query {
 `DefaultCRUD()` expands to create, get, update and delete. `Name()` renames the
 generated method, which you need when two queries would collide. Filters become
 where clauses: `Eq` is `=`, `Range` is `BETWEEN`, `Search` is `LIKE`.
-`OrderBy(field)` sorts a `ListBy` by one column, ascending. `Limit()` and
+`Asc(field)` and `Desc(field)` sort a list query, chain them for more columns:
+`Desc("created_at").Asc("name")` gives `ORDER BY created_at DESC, name`. `Limit()` and
 `Offset()` paginate any list query: the query gets `LIMIT`/`OFFSET` and the
 proto request a required `limit` and an optional `offset`. A fixed `Limit(50)`
 stays in the sql and never reaches the request. `Count()` adds the number of

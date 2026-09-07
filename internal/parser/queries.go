@@ -137,7 +137,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	query := queries[0]
 	switch selExpr.Sel.Name {
 	case "Name", "Contracts":
-	case "Count", "Limit", "Offset":
+	case "Count", "Limit", "Offset", "Asc", "Desc":
 		if !query.IsList() {
 			return nil, true, fmt.Errorf("%s is only supported for list queries", selExpr.Sel.Name)
 		}
@@ -146,9 +146,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return nil, true, fmt.Errorf("%s is only supported for create queries", selExpr.Sel.Name)
 		}
 	default:
-		if query.Type != schema.QueryListBy {
-			return nil, true, fmt.Errorf("%s is only supported for ListBy queries", selExpr.Sel.Name)
-		}
+		return nil, true, fmt.Errorf("unsupported query operation %q", selExpr.Sel.Name)
 	}
 
 	switch selExpr.Sel.Name {
@@ -157,18 +155,15 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return nil, true, fmt.Errorf("Count does not accept arguments")
 		}
 		query.Count = true
-	case "OrderBy":
-		if len(callExpr.Args) != 1 {
-			return nil, true, fmt.Errorf("OrderBy expects exactly one string field")
-		}
-		orderField, err := parseSingleStringArg(callExpr.Args[0])
+	case "Asc", "Desc":
+		field, err := parseColumnArg(callExpr.Args, selExpr.Sel.Name)
 		if err != nil {
-			return nil, true, fmt.Errorf("OrderBy expects exactly one string field: %w", err)
+			return nil, true, err
 		}
-		if orderField == "" {
-			return nil, true, fmt.Errorf("OrderBy expects a field name")
+		if field == "" {
+			return nil, true, fmt.Errorf("%s expects a field name", selExpr.Sel.Name)
 		}
-		query.OrderBy = orderField
+		query.OrderBy = append(query.OrderBy, schema.OrderColumn{Name: field, Desc: selExpr.Sel.Name == "Desc"})
 	case "Limit":
 		if len(callExpr.Args) > 1 {
 			return nil, true, fmt.Errorf("Limit expects no arguments or a single row count")
@@ -269,6 +264,18 @@ func parseStringArgs(args []ast.Expr) ([]string, error) {
 	}
 
 	return fields, nil
+}
+
+// parseColumnArg reads the single field name of an Asc()/Desc() call
+func parseColumnArg(args []ast.Expr, method string) (string, error) {
+	if len(args) != 1 {
+		return "", fmt.Errorf("%s expects exactly one string field", method)
+	}
+	field, err := parseSingleStringArg(args[0])
+	if err != nil {
+		return "", fmt.Errorf("%s expects exactly one string field: %w", method, err)
+	}
+	return field, nil
 }
 
 func parseSingleStringArg(arg ast.Expr) (string, error) {
@@ -434,6 +441,10 @@ func validateQueryFields(entity schema.Entity) error {
 			}
 		}
 
+		if err := validateOrderColumns(entity, query); err != nil {
+			return err
+		}
+
 		switch query.Type {
 		case schema.QueryGetBy:
 			if len(query.Fields) == 0 {
@@ -474,15 +485,27 @@ func validateQueryFields(entity schema.Entity) error {
 					return fmt.Errorf("entity %q query %q filter references virtual field %q, which has no database column", entity.Name, query.Type, queryFilter.Field)
 				}
 			}
-
-			if query.OrderBy != "" && !entityHasField(entity, query.OrderBy) {
-				return fmt.Errorf("entity %q query %q order_by references nonexisting field %q", entity.Name, query.Type, query.OrderBy)
-			}
-
-			if query.OrderBy != "" && entityFieldIsVirtual(entity, query.OrderBy) {
-				return fmt.Errorf("entity %q query %q order_by references virtual field %q, which has no database column", entity.Name, query.Type, query.OrderBy)
-			}
 		}
+	}
+
+	return nil
+}
+
+// validateOrderColumns checks every Asc()/Desc() column is a real column, named once
+func validateOrderColumns(entity schema.Entity, query schema.Query) error {
+	seen := make(map[string]bool, len(query.OrderBy))
+	for _, column := range query.OrderBy {
+		if !entityHasField(entity, column.Name) {
+			return fmt.Errorf("entity %q query %q order by references nonexisting field %q", entity.Name, query.Type, column.Name)
+		}
+		if entityFieldIsVirtual(entity, column.Name) {
+			return fmt.Errorf("entity %q query %q order by references virtual field %q, which has no database column", entity.Name, query.Type, column.Name)
+		}
+		lower := strings.ToLower(column.Name)
+		if seen[lower] {
+			return fmt.Errorf("entity %q query %q order by repeats field %q", entity.Name, query.Type, column.Name)
+		}
+		seen[lower] = true
 	}
 
 	return nil

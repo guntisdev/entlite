@@ -72,6 +72,6 @@ func (Article) Queries() []entlite.Query {
 			filter.Eq("is_featured").Optional(),
 			filter.Range("published_at").Optional(),
 			filter.Search("title").Optional(),
-		).OrderBy("published_at").Count().Limit().Offset(),
+		).Asc("published_at").Count().Limit().Offset(),
 	}
 }
