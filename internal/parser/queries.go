@@ -520,6 +520,11 @@ func validateUpsertTarget(entity schema.Entity, query schema.Query) error {
 		return fmt.Errorf("entity %q query %q Upsert target (%s) is not unique, it must be the primary key, a Unique() field or the fields of a Unique() index", entity.Name, query.Type, strings.Join(target, ", "))
 	}
 
+	// DO UPDATE needs a column to write, DO NOTHING does not
+	if !query.UpsertIgnore && len(entity.UpsertSetFields(target)) == 0 {
+		return fmt.Errorf("entity %q query %q has Upsert() with no column left to update, every other column is a key or Immutable, use Ignore() instead", entity.Name, query.Type)
+	}
+
 	return nil
 }
 

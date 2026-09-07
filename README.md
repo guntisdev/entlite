@@ -13,8 +13,6 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
   the min_/max_ args, so `ListBy(filter.Search("name"), filter.Range("age"))` generates a method that cannot
   bind. postgresql and mysql are fine in any order
 
-* Upsert sqlc generation: the ON CONFLICT clause per dialect (mysql has none and cannot name a
-  target), and CreateBulk tolerating the ErrNoRows an ignored row returns
 * Implement Queries Sum(), Avg()
 * Implement Limit()
 

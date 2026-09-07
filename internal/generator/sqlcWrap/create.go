@@ -159,7 +159,15 @@ func generateCreateBulkQuery(funcDecl *ast.FuncDecl, entity schema.Entity, input
 		nilResult = "nil, "
 	}
 
+	ignoresConflict := false
+	if query, ok := entity.QueryByType(schema.QueryCreateBulk); ok {
+		ignoresConflict = query.Upsert && query.UpsertIgnore && hasID && sqlDialect != schema.MySQL
+	}
+
 	sb.WriteString(fmt.Sprintf("// %s inserts every row through q, which the caller binds to a transaction.\n", rowsFunc))
+	if ignoresConflict {
+		sb.WriteString("// A row the upsert kept holds the zero id, so the results line up with args.\n")
+	}
 	sb.WriteString(fmt.Sprintf("func %s(ctx context.Context, q *%s.Queries, args []%s) %s {\n", rowsFunc, inputPkg, internalParamsType, resultsType))
 	if hasID {
 		// Handle return value conversion for SQLite/MySQL ID (int64 -> int32)
@@ -168,8 +176,17 @@ func generateCreateBulkQuery(funcDecl *ast.FuncDecl, entity schema.Entity, input
 			idExpr = "IntConvert[int64, int32](id)"
 		}
 		sb.WriteString(fmt.Sprintf("\tresults := make([]%s, 0, len(args))\n", idType))
+		if ignoresConflict {
+			sb.WriteString(fmt.Sprintf("\tvar kept %s // the id an ignored row does not get\n", idType))
+		}
 		sb.WriteString("\tfor _, internalArg := range args {\n")
 		sb.WriteString(fmt.Sprintf("\t\tid, err := q.%s(ctx, internalArg)\n", queryName))
+		if ignoresConflict {
+			sb.WriteString("\t\tif errors.Is(err, sql.ErrNoRows) {\n")
+			sb.WriteString("\t\t\tresults = append(results, kept)\n")
+			sb.WriteString("\t\t\tcontinue\n")
+			sb.WriteString("\t\t}\n")
+		}
 		sb.WriteString("\t\tif err != nil {\n")
 		sb.WriteString("\t\t\treturn nil, err\n")
 		sb.WriteString("\t\t}\n")

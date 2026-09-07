@@ -152,9 +152,7 @@ func (Setting) Contracts() []entlite.Contract {
 
 func (Setting) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.String("country"),
-		field.String("env"),
-		field.String("value"),
+		FIELDS
 	}
 }
 
@@ -170,6 +168,10 @@ func (Setting) Indexes() []entlite.Index {
 	}
 }
 `
+
+const defaultUpsertFields = `field.String("country"),
+		field.String("env"),
+		field.String("value"),`
 
 // the conflict target may also be a unique index or a compound primary key
 func TestParseQueryUpsertTarget(t *testing.T) {
@@ -220,7 +222,7 @@ func TestParseQueryUpsertTarget(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			entity, err := parseUpsertEntity(t, test.queries, test.indexes)
+			entity, err := parseUpsertEntity(t, defaultUpsertFields, test.queries, test.indexes)
 
 			if test.wantErr != "" {
 				if err == nil || !strings.Contains(err.Error(), test.wantErr) {
@@ -243,12 +245,60 @@ func TestParseQueryUpsertTarget(t *testing.T) {
 	}
 }
 
-func parseUpsertEntity(t *testing.T, queries, indexes string) (schema.Entity, error) {
+// an upsert needs a column to overwrite, unless it ignores the conflict
+func TestParseQueryUpsertSetColumns(t *testing.T) {
+	// slug is the target and created_at is immutable, so DO UPDATE has nothing to write
+	keyAndImmutable := `field.String("slug").Unique(),
+		field.Time("created_at").Immutable(),`
+
+	tests := []struct {
+		name    string
+		fields  string
+		queries string
+		wantErr string
+	}{
+		{
+			name:    "nothing left to update",
+			fields:  keyAndImmutable,
+			queries: `query.Create().Upsert("slug"),`,
+			wantErr: "has Upsert() with no column left to update",
+		},
+		{
+			name:    "ignore does not need a column",
+			fields:  keyAndImmutable,
+			queries: `query.Create().Upsert("slug").Ignore(),`,
+		},
+		{
+			name:    "one plain column is enough",
+			fields:  keyAndImmutable + "\n\t\tfield.String(\"title\"),",
+			queries: `query.Create().Upsert("slug"),`,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := parseUpsertEntity(t, test.fields, test.queries, "")
+
+			if test.wantErr != "" {
+				if err == nil || !strings.Contains(err.Error(), test.wantErr) {
+					t.Fatalf("expected error containing %q, got: %v", test.wantErr, err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("expected no error, got: %v", err)
+			}
+		})
+	}
+}
+
+func parseUpsertEntity(t *testing.T, fields, queries, indexes string) (schema.Entity, error) {
 	t.Helper()
 
 	dir := t.TempDir()
 	path := filepath.Join(dir, "setting.go")
-	source := strings.Replace(upsertEntityTemplate, "QUERIES", queries, 1)
+	source := strings.Replace(upsertEntityTemplate, "FIELDS", fields, 1)
+	source = strings.Replace(source, "QUERIES", queries, 1)
 	source = strings.Replace(source, "INDEXES", indexes, 1)
 
 	if err := os.WriteFile(path, []byte(source), 0644); err != nil {

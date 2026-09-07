@@ -13,6 +13,7 @@ import (
 
 type Generator struct {
 	sqlDialect schema.SQLDialect
+	warnings   []string
 }
 
 func NewGenerator(sqlDialect schema.SQLDialect) *Generator {
@@ -21,16 +22,16 @@ func NewGenerator(sqlDialect schema.SQLDialect) *Generator {
 	}
 }
 
-func (g *Generator) Generate(entities []schema.Entity, dir string) error {
+func (g *Generator) Generate(entities []schema.Entity, dir string) ([]string, error) {
 	if err := g.generateSchema(entities, dir); err != nil {
-		return fmt.Errorf("Failed to generate schema.sql: %w", err)
+		return nil, fmt.Errorf("Failed to generate schema.sql: %w", err)
 	}
 
 	if err := g.generateQueries(entities, dir); err != nil {
-		return fmt.Errorf("failed to generate queries.sql: %w", err)
+		return nil, fmt.Errorf("failed to generate queries.sql: %w", err)
 	}
 
-	return nil
+	return g.warnings, nil
 }
 
 func (g *Generator) generateSchema(entities []schema.Entity, dir string) error {
@@ -71,6 +72,10 @@ func writeQueryHeader(content *strings.Builder, query schema.Query, kind string)
 		}
 		fmt.Fprintf(content, "-- %s\n", strings.TrimRight(line, "\r"))
 	}
+}
+
+func writeWarningComment(content *strings.Builder, warning string) {
+	fmt.Fprintf(content, "-- warning: %s\n", warning)
 }
 
 func writeColumnComment(content *strings.Builder, comment string) {
@@ -406,6 +411,11 @@ func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Ent
 	default:
 		writeQueryHeader(content, query, "execlastid")
 	}
+	if warning := g.upsertWarning(entity, query); warning != "" {
+		g.warnings = append(g.warnings, fmt.Sprintf("entity %q query %q: %s", entity.Name, query.Name, warning))
+		writeWarningComment(content, warning)
+	}
+
 	content.WriteString(fmt.Sprintf("INSERT INTO %s (\n", g.quote(tableName)))
 
 	var insertFields []string
@@ -427,10 +437,22 @@ func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Ent
 	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertFields, ",\n ")))
 	content.WriteString(") VALUES (\n")
 	content.WriteString(fmt.Sprintf(" %s\n", strings.Join(insertPlaceholders, ",\n ")))
+	content.WriteString(")")
+
+	if query.Upsert {
+		content.WriteString("\n" + g.upsertClause(entity, query))
+		if entity.HasIdField() && g.supportsReturning() {
+			content.WriteString(fmt.Sprintf("\nRETURNING %s;\n", g.column(entity.GetIdField().Name)))
+		} else {
+			content.WriteString(";")
+		}
+		return
+	}
+
 	if entity.HasIdField() && g.supportsReturning() {
-		content.WriteString(fmt.Sprintf(") RETURNING %s;\n", g.column(entity.GetIdField().Name)))
+		content.WriteString(fmt.Sprintf(" RETURNING %s;\n", g.column(entity.GetIdField().Name)))
 	} else {
-		content.WriteString(");")
+		content.WriteString(";")
 	}
 }
 

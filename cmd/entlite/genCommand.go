@@ -66,9 +66,13 @@ func genCommand(args []string) {
 		}
 
 		sqlcGenerator := sqlc.NewGenerator(sqlcConfig.Dialect)
-		if err := sqlcGenerator.Generate(sqlcEntities, sqlcDir); err != nil {
+		warnings, err := sqlcGenerator.Generate(sqlcEntities, sqlcDir)
+		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed generating sqlc: %v\n", err)
 			os.Exit(1)
+		}
+		for _, warning := range warnings {
+			fmt.Fprintf(os.Stderr, "warning: %s\n", warning)
 		}
 	}
 }
