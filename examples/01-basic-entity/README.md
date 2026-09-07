@@ -8,6 +8,7 @@ One `User` entity, written out in every field type and every query type. Start h
 - `Validate()` with your own Go function from the `logic` package
 - Field level `Contracts()`: a password that clients write but never read, timestamps they read but never write
 - Ready made queries: `DefaultCRUD()`, `CreateBulk()`, `ListAll()`, `DeleteAll()`
+- `CreateBulk().Upsert("email")`: re-importing a row overwrites it instead of failing on the unique email
 - Queries by field: `GetBy("email")`, `ListBy("is_active")`, and `Name()` to rename one
 - Filters: `filter.Range()` and `filter.Search()`
 - Indexes: multi column, `Desc()` sort order, `Unique()`, `Name()`

@@ -43,7 +43,8 @@ func (User) Fields() []entlite.Field {
 func (User) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.DefaultCRUD(),
-		query.CreateBulk(),
+		// re-importing the same users overwrites the row that shares the email
+		query.CreateBulk().Upsert("email"),
 		// Look up a user by email address
 		query.GetBy("email"),
 		query.ListAll(),

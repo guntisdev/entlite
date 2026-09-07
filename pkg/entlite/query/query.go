@@ -46,6 +46,20 @@ type QueryOperations interface {
 	Contracts(contracts ...entlite.Layer) QueryOperations
 }
 
+// CreateOperations exposes the modifiers available on a Create or CreateBulk query.
+type CreateOperations interface {
+	QueryBuilder
+	// Upsert updates the existing row when the given fields collide. The fields must be
+	// a primary key or a unique constraint, no fields means the primary key.
+	Upsert(fields ...string) CreateOperations
+	// Ignore keeps the existing row instead of updating it. Needs an Upsert.
+	Ignore() CreateOperations
+	// Name overrides the auto-generated query/method name
+	Name(name string) CreateOperations
+	// Contracts limits the query to the given layers, sqlc or proto.
+	Contracts(contracts ...entlite.Layer) CreateOperations
+}
+
 // ListAllOperations exposes the modifiers available on a ListAll query.
 type ListAllOperations interface {
 	QueryBuilder
@@ -80,16 +94,19 @@ type ListByOperations interface {
 
 // Query holds the state of one query.
 type Query struct {
-	typeName  Type
-	fields    []string        // For GetBy: list of field name strings
-	filters   []filter.Filter // For ListBy: list of filters
-	count     bool            // For list queries: whether to count matching rows
-	orderBy   string          // For ListBy: order by field
-	hasLimit  bool            // For list queries: whether LIMIT is set
-	limit     int             // For list queries: fixed limit, 0 means the caller sets it
-	hasOffset bool            // For list queries: whether OFFSET is set
-	name      string          // Custom query name
-	contracts []entlite.Layer
+	typeName     Type
+	fields       []string        // For GetBy: list of field name strings
+	filters      []filter.Filter // For ListBy: list of filters
+	count        bool            // For list queries: whether to count matching rows
+	orderBy      string          // For ListBy: order by field
+	hasLimit     bool            // For list queries: whether LIMIT is set
+	limit        int             // For list queries: fixed limit, 0 means the caller sets it
+	hasOffset    bool            // For list queries: whether OFFSET is set
+	upsert       bool            // For create queries: whether ON CONFLICT is set
+	upsertFields []string        // For create queries: the conflict target, empty means the primary key
+	upsertIgnore bool            // For create queries: keep the existing row instead of updating it
+	name         string          // Custom query name
+	contracts    []entlite.Layer
 }
 
 // marker method for sealed interface
@@ -104,6 +121,38 @@ func (q Query) Name(name string) QueryOperations {
 // Contracts limits the query to the given layers, sqlc or proto.
 func (q Query) Contracts(contracts ...entlite.Layer) QueryOperations {
 	q.contracts = contracts
+	return q
+}
+
+type createQuery struct {
+	base Query
+}
+
+// marker method for sealed interface
+func (createQuery) Query() {}
+
+// Name overrides the auto-generated query/method name
+func (q createQuery) Name(name string) CreateOperations {
+	q.base.name = name
+	return q
+}
+
+// Contracts limits the query to the given layers, sqlc or proto.
+func (q createQuery) Contracts(contracts ...entlite.Layer) CreateOperations {
+	q.base.contracts = contracts
+	return q
+}
+
+// Upsert updates the existing row when the given fields collide
+func (q createQuery) Upsert(fields ...string) CreateOperations {
+	q.base.upsert = true
+	q.base.upsertFields = fields
+	return q
+}
+
+// Ignore keeps the existing row instead of updating it
+func (q createQuery) Ignore() CreateOperations {
+	q.base.upsertIgnore = true
 	return q
 }
 
@@ -206,13 +255,13 @@ func DefaultCRUD() QueryBuilder {
 }
 
 // Create inserts one record.
-func Create() QueryOperations {
-	return Query{typeName: TypeCreate}
+func Create() CreateOperations {
+	return createQuery{base: Query{typeName: TypeCreate}}
 }
 
 // CreateBulk inserts many records in one call.
-func CreateBulk() QueryOperations {
-	return Query{typeName: TypeCreateBulk}
+func CreateBulk() CreateOperations {
+	return createQuery{base: Query{typeName: TypeCreateBulk}}
 }
 
 // Get reads one record by primary key.
@@ -296,6 +345,21 @@ func (q Query) GetLimit() int {
 // HasOffset reports if the query skips rows.
 func (q Query) HasOffset() bool {
 	return q.hasOffset
+}
+
+// HasUpsert reports if a create query updates the row it collides with.
+func (q Query) HasUpsert() bool {
+	return q.upsert
+}
+
+// GetUpsertFields returns the conflict target, or nil for the primary key.
+func (q Query) GetUpsertFields() []string {
+	return q.upsertFields
+}
+
+// HasUpsertIgnore reports if an upsert keeps the existing row instead of updating it.
+func (q Query) HasUpsertIgnore() bool {
+	return q.upsertIgnore
 }
 
 // GetName returns the custom query name, or "" when auto-generated.

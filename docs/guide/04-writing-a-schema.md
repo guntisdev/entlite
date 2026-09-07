@@ -83,7 +83,8 @@ Each entry becomes one sql query, one wrapper method and, with `PROTO()`, one rp
 func (User) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.DefaultCRUD(),
-		query.CreateBulk(),
+		// re-importing the same users overwrites the row that shares the email
+		query.CreateBulk().Upsert("email"),
 		// Look up a user by email address
 		query.GetBy("email"),
 		query.ListAll(),
