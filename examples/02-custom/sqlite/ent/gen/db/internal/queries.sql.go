@@ -248,7 +248,7 @@ func (q *Queries) ListReadingBySensorId(ctx context.Context, arg ListReadingBySe
 }
 
 const listReadingFilterBySensorIdRecordedAtFlagged = `-- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4 ORDER BY recorded_at LIMIT ?6 OFFSET ?5
+SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4 ORDER BY recorded_at LIMIT ?6 OFFSET ?5
 `
 
 type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
@@ -258,7 +258,18 @@ type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
 	Limit    int64 `json:"limit"`
 }
 
-func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]Reading, error) {
+type ListReadingFilterBySensorIdRecordedAtFlaggedRow struct {
+	ID         int64     `json:"id"`
+	SensorID   int64     `json:"sensor_id"`
+	Value      float64   `json:"value"`
+	Quality    int64     `json:"quality"`
+	Flagged    int64     `json:"flagged"`
+	RecordedAt time.Time `json:"recorded_at"`
+	CreatedAt  time.Time `json:"created_at"`
+	TotalSize  int64     `json:"total_size"`
+}
+
+func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]ListReadingFilterBySensorIdRecordedAtFlaggedRow, error) {
 	rows, err := q.db.QueryContext(ctx, listReadingFilterBySensorIdRecordedAtFlagged,
 		arg.SensorID,
 		arg.Flagged,
@@ -269,9 +280,9 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Reading
+	var items []ListReadingFilterBySensorIdRecordedAtFlaggedRow
 	for rows.Next() {
-		var i Reading
+		var i ListReadingFilterBySensorIdRecordedAtFlaggedRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.SensorID,
@@ -280,6 +291,7 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 			&i.Flagged,
 			&i.RecordedAt,
 			&i.CreatedAt,
+			&i.TotalSize,
 		); err != nil {
 			return nil, err
 		}
@@ -295,7 +307,7 @@ func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Conte
 }
 
 const listSensorFilterByLabelKindActive = `-- name: ListSensorFilterByLabelKindActive :many
-SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3 ORDER BY installed_at LIMIT ?5 OFFSET ?4
+SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3 ORDER BY installed_at LIMIT ?5 OFFSET ?4
 `
 
 type ListSensorFilterByLabelKindActiveParams struct {
@@ -306,7 +318,23 @@ type ListSensorFilterByLabelKindActiveParams struct {
 	Limit  int64  `json:"limit"`
 }
 
-func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg ListSensorFilterByLabelKindActiveParams) ([]Sensor, error) {
+type ListSensorFilterByLabelKindActiveRow struct {
+	ID           int64     `json:"id"`
+	Code         string    `json:"code"`
+	Label        string    `json:"label"`
+	Kind         string    `json:"kind"`
+	Unit         string    `json:"unit"`
+	Location     *string   `json:"location"`
+	Active       int64     `json:"active"`
+	Firmware     string    `json:"firmware"`
+	SampleRateMs int64     `json:"sample_rate_ms"`
+	InstalledAt  time.Time `json:"installed_at"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+	TotalSize    int64     `json:"total_size"`
+}
+
+func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg ListSensorFilterByLabelKindActiveParams) ([]ListSensorFilterByLabelKindActiveRow, error) {
 	rows, err := q.db.QueryContext(ctx, listSensorFilterByLabelKindActive,
 		arg.Label,
 		arg.Kind,
@@ -318,9 +346,9 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Sensor
+	var items []ListSensorFilterByLabelKindActiveRow
 	for rows.Next() {
-		var i Sensor
+		var i ListSensorFilterByLabelKindActiveRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Code,
@@ -334,6 +362,7 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 			&i.InstalledAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.TotalSize,
 		); err != nil {
 			return nil, err
 		}

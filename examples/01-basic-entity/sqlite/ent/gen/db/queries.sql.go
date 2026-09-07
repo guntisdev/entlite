@@ -190,7 +190,8 @@ type ListUserFilterByAgeNameParams struct {
 	Limit int32 `json:"limit"`
 }
 
-func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]*User, error) {
+type ListUserFilterByAgeNameRow = internal.ListUserFilterByAgeNameRow
+func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilterByAgeNameParams) ([]*User, int64, error) {
 	internalArg := internal.ListUserFilterByAgeNameParams{
 		MinAge: IntPtrConvert[int32, int64](arg.MinAge),
 		MaxAge: IntPtrConvert[int32, int64](arg.MaxAge),
@@ -200,13 +201,30 @@ func (q *Queries) ListUserFilterByAgeName(ctx context.Context, arg ListUserFilte
 	}
 	dbResults, err := (*internal.Queries)(q).ListUserFilterByAgeName(ctx, internalArg)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	result := make([]*User, len(dbResults))
 	for i := range dbResults {
-		result[i] = UserFromSQL(&dbResults[i])
+		result[i] = &User{
+			ID: IntConvert[int64, int32](dbResults[i].ID),
+			Email: dbResults[i].Email,
+			Name: dbResults[i].Name,
+			Age: IntPtrConvert[int64, int32](dbResults[i].Age),
+			Password: dbResults[i].Password,
+			ApiKey: dbResults[i].ApiKey,
+			IsActive: SQLiteIntToBool(dbResults[i].IsActive),
+			LoginCount: dbResults[i].LoginCount,
+			Rating: dbResults[i].Rating,
+			Preferences: dbResults[i].Preferences,
+			CreatedAt: dbResults[i].CreatedAt,
+			UpdatedAt: dbResults[i].UpdatedAt,
+		}
 	}
-	return result, nil
+	var totalSize int64
+	if len(dbResults) > 0 {
+		totalSize = dbResults[0].TotalSize
+	}
+	return result, totalSize, nil
 }
 
 type UpdateUserParams struct {

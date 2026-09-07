@@ -261,7 +261,7 @@ func (s *UserServer) ListUserFilterByAgeName(
 
 	minAge := req.Msg.GetMinAge()
 	maxAge := req.Msg.GetMaxAge()
-	dbUsers, err := queries.ListUserFilterByAgeName(ctx, db.ListUserFilterByAgeNameParams{
+	dbUsers, totalSize, err := queries.ListUserFilterByAgeName(ctx, db.ListUserFilterByAgeNameParams{
 		MinAge: &minAge,
 		MaxAge: &maxAge,
 		Name:   req.Msg.GetName(),
@@ -278,7 +278,8 @@ func (s *UserServer) ListUserFilterByAgeName(
 	}
 
 	response := &pb.ListUserFilterByAgeNameResponse{
-		Rows: pbUsers,
+		Rows:      pbUsers,
+		TotalSize: totalSize,
 	}
 
 	return connect.NewResponse(response), nil

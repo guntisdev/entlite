@@ -86,6 +86,7 @@ message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
 
 message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
   repeated Reading rows = 1;
+  int64 total_size = 2;
 }
 
 // ReadingService provides CRUD opertions for Reading entities
@@ -153,6 +154,7 @@ message ListSensorFilterByLabelKindActiveRequest {
 
 message ListSensorFilterByLabelKindActiveResponse {
   repeated Sensor rows = 1;
+  int64 total_size = 2;
 }
 
 // SensorService provides CRUD opertions for Sensor entities

@@ -99,6 +99,7 @@ message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest {
 
 message ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse {
   repeated Article rows = 1;
+  int64 total_size = 2;
 }
 
 // ArticleService provides CRUD opertions for Article entities

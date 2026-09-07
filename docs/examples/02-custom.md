@@ -292,7 +292,7 @@ SELECT * FROM "reading" WHERE ID = ?;
 SELECT * FROM "reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT * FROM "reading" WHERE sensor_id = @sensor_id AND recorded_at BETWEEN @min_recorded_at AND @max_recorded_at AND flagged = @flagged ORDER BY recorded_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT *, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = @sensor_id AND recorded_at BETWEEN @min_recorded_at AND @max_recorded_at AND flagged = @flagged ORDER BY recorded_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateReading :one
 UPDATE "reading" SET
@@ -344,7 +344,7 @@ SELECT * FROM "sensor" WHERE ID = ?;
 SELECT * FROM "sensor" WHERE code = ?;
 
 -- name: ListSensorFilterByLabelKindActive :many
-SELECT * FROM "sensor" WHERE label LIKE @label AND kind = @kind AND active = @active ORDER BY installed_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT *, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE @label AND kind = @kind AND active = @active ORDER BY installed_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateSensor :one
 UPDATE "sensor" SET
@@ -458,6 +458,7 @@ message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
 
 message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
   repeated Reading rows = 1;
+  int64 total_size = 2;
 }
 
 // ReadingService provides CRUD opertions for Reading entities
@@ -525,6 +526,7 @@ message ListSensorFilterByLabelKindActiveRequest {
 
 message ListSensorFilterByLabelKindActiveResponse {
   repeated Sensor rows = 1;
+  int64 total_size = 2;
 }
 
 // SensorService provides CRUD opertions for Sensor entities

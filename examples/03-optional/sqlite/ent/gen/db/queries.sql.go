@@ -114,7 +114,8 @@ type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
 	Limit int32 `json:"limit"`
 }
 
-func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, arg ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams) ([]*Article, error) {
+type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRow = internal.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRow
+func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, arg ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams) ([]*Article, int64, error) {
 	internalArg := internal.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams{
 		Author: arg.Author,
 		IsFeatured: SQLiteBoolToInt(arg.IsFeatured),
@@ -124,13 +125,32 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 	}
 	dbResults, err := (*internal.Queries)(q).ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx, internalArg)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	result := make([]*Article, len(dbResults))
 	for i := range dbResults {
-		result[i] = ArticleFromSQL(&dbResults[i])
+		result[i] = &Article{
+			ID: dbResults[i].ID,
+			Slug: dbResults[i].Slug,
+			Title: dbResults[i].Title,
+			Author: dbResults[i].Author,
+			Subtitle: dbResults[i].Subtitle,
+			ReadingMinutes: IntPtrConvert[int64, int32](dbResults[i].ReadingMinutes),
+			LastViewedMs: dbResults[i].LastViewedMs,
+			Rating: dbResults[i].Rating,
+			CoverImage: NullBytesToPtr(dbResults[i].CoverImage),
+			PublishedAt: dbResults[i].PublishedAt,
+			Metadata: dbResults[i].Metadata,
+			IsFeatured: SQLiteIntToBool(dbResults[i].IsFeatured),
+			CreatedAt: dbResults[i].CreatedAt,
+			UpdatedAt: dbResults[i].UpdatedAt,
+		}
 	}
-	return result, nil
+	var totalSize int64
+	if len(dbResults) > 0 {
+		totalSize = dbResults[0].TotalSize
+	}
+	return result, totalSize, nil
 }
 
 type UpdateArticleParams struct {

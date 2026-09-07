@@ -222,6 +222,19 @@ func (g *Generator) limitOffsetArgs() (limit, offset string) {
 	panic("unreachable: invalid SQL dialect")
 }
 
+// COUNT(*) OVER() counts every matching row, LIMIT cuts the page afterwards
+func (g *Generator) totalSizeExpr() string {
+	switch g.sqlDialect {
+	case schema.MySQL:
+		// mysql types a bare window count as unknown, the cast keeps it an int64
+		return "CAST(COUNT(*) OVER() AS SIGNED)"
+	case schema.PostgreSQL, schema.SQLite:
+		return "COUNT(*) OVER()"
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}
+
 func (g *Generator) namedArg(name string) string {
 	switch g.sqlDialect {
 	case schema.MySQL:
