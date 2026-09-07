@@ -3,13 +3,15 @@ package parser
 import (
 	"strings"
 	"testing"
+
+	"github.com/guntisdev/entlite/internal/schema"
 )
 
 func TestParseQueryOrderBy(t *testing.T) {
 	tests := []struct {
 		name    string
 		queries string
-		want    string
+		want    []schema.OrderColumn
 		wantErr string
 	}{
 		{
@@ -17,54 +19,74 @@ func TestParseQueryOrderBy(t *testing.T) {
 			queries: `query.ListBy("email"),`,
 		},
 		{
-			name:    "sorted by a field",
-			queries: `query.ListBy("email").OrderBy("email"),`,
-			want:    "email",
+			name:    "ascending",
+			queries: `query.ListBy("email").Asc("name"),`,
+			want:    []schema.OrderColumn{{Name: "name"}},
+		},
+		{
+			name:    "descending",
+			queries: `query.ListBy("email").Desc("name"),`,
+			want:    []schema.OrderColumn{{Name: "name", Desc: true}},
+		},
+		{
+			name:    "two columns keep the chain order",
+			queries: `query.ListBy("email").Desc("name").Asc("email"),`,
+			want:    []schema.OrderColumn{{Name: "name", Desc: true}, {Name: "email"}},
 		},
 		{
 			name:    "sorted with pagination",
-			queries: `query.ListBy("email").OrderBy("email").Limit().Offset(),`,
-			want:    "email",
+			queries: `query.ListBy("email").Desc("email").Limit().Offset(),`,
+			want:    []schema.OrderColumn{{Name: "email", Desc: true}},
 		},
 		{
 			name:    "sorted by a filter field",
-			queries: `query.ListBy(filter.Search("email")).OrderBy("email"),`,
-			want:    "email",
+			queries: `query.ListBy(filter.Search("email")).Asc("email"),`,
+			want:    []schema.OrderColumn{{Name: "email"}},
+		},
+		{
+			name:    "sorted list all",
+			queries: `query.ListAll().Desc("name").Limit(),`,
+			want:    []schema.OrderColumn{{Name: "name", Desc: true}},
 		},
 		{
 			name:    "unknown field",
-			queries: `query.ListBy("email").OrderBy("created_at"),`,
-			wantErr: `order_by references nonexisting field "created_at"`,
+			queries: `query.ListBy("email").Asc("created_at"),`,
+			wantErr: `order by references nonexisting field "created_at"`,
+		},
+		{
+			name:    "repeated field",
+			queries: `query.ListBy("email").Asc("name").Desc("name"),`,
+			wantErr: `order by repeats field "name"`,
 		},
 		{
 			name:    "empty field name",
-			queries: `query.ListBy("email").OrderBy(""),`,
-			wantErr: "OrderBy expects a field name",
+			queries: `query.ListBy("email").Asc(""),`,
+			wantErr: "Asc expects a field name",
 		},
 		{
 			name:    "no argument",
-			queries: `query.ListBy("email").OrderBy(),`,
-			wantErr: "OrderBy expects exactly one string field",
+			queries: `query.ListBy("email").Asc(),`,
+			wantErr: "Asc expects exactly one string field",
 		},
 		{
 			name:    "two arguments",
-			queries: `query.ListBy("email").OrderBy("email", "email"),`,
-			wantErr: "OrderBy expects exactly one string field",
+			queries: `query.ListBy("email").Desc("email", "name"),`,
+			wantErr: "Desc expects exactly one string field",
 		},
 		{
 			name:    "not a string",
-			queries: `query.ListBy("email").OrderBy(1),`,
-			wantErr: "OrderBy expects exactly one string field",
+			queries: `query.ListBy("email").Desc(1),`,
+			wantErr: "Desc expects exactly one string field",
 		},
 		{
 			name:    "order by on a non list query",
-			queries: `query.Get().OrderBy("email"),`,
-			wantErr: "OrderBy is only supported for ListBy queries",
+			queries: `query.Get().Asc("email"),`,
+			wantErr: "Asc is only supported for list queries",
 		},
 		{
-			name:    "order by on list all",
-			queries: `query.ListAll().OrderBy("email"),`,
-			wantErr: "OrderBy is only supported for ListBy queries",
+			name:    "unknown operation",
+			queries: `query.ListBy("email").Sort("email"),`,
+			wantErr: `unsupported query operation "Sort"`,
 		},
 	}
 
@@ -82,8 +104,14 @@ func TestParseQueryOrderBy(t *testing.T) {
 				t.Fatalf("expected no error, got: %v", err)
 			}
 
-			if got := entity.Queries[0].OrderBy; got != test.want {
-				t.Errorf("OrderBy: expected %q, got %q", test.want, got)
+			got := entity.Queries[0].OrderBy
+			if len(got) != len(test.want) {
+				t.Fatalf("OrderBy: expected %v, got %v", test.want, got)
+			}
+			for i := range got {
+				if got[i] != test.want[i] {
+					t.Errorf("OrderBy column %d: expected %v, got %v", i, test.want[i], got[i])
+				}
 			}
 		})
 	}

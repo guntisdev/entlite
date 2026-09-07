@@ -133,7 +133,7 @@ func (Reading) Queries() []entlite.Query {
 			filter.Eq("sensor_id"),
 			filter.Range("recorded_at"),
 			filter.Eq("flagged"),
-		).Count().OrderBy("recorded_at").Limit().Offset(),
+		).Count().Asc("recorded_at").Limit().Offset(),
 	}
 }
 ```
@@ -201,7 +201,7 @@ func (Sensor) Queries() []entlite.Query {
 			filter.Search("label"),
 			filter.Eq("kind"),
 			filter.Eq("active").Optional(),
-		).Count().OrderBy("installed_at").Limit().Offset(),
+		).Count().Asc("installed_at").Limit().Offset(),
 	}
 }
 ```

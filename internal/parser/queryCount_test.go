@@ -28,7 +28,7 @@ func TestParseQueryCount(t *testing.T) {
 		},
 		{
 			name:      "count next to pagination",
-			queries:   `query.ListBy("email").OrderBy("email").Limit().Offset().Count(),`,
+			queries:   `query.ListBy("email").Asc("email").Limit().Offset().Count(),`,
 			wantCount: true,
 		},
 		{

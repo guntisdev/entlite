@@ -46,6 +46,8 @@ Exposes the modifiers available on a ListAll query.
 | Method | Description |
 | --- | --- |
 | `Count() ListAllOperations` | Also returns how many rows match, counted before Limit. An empty page reports 0. |
+| `Asc(field string) ListAllOperations` | Appends a sort column, ascending. |
+| `Desc(field string) ListAllOperations` | Appends a sort column, descending. |
 | `Limit(rows ...int) ListAllOperations` | Takes the row count from the caller, Limit(rows) sets it in the query. |
 | `Offset() ListAllOperations` | Asks the caller how many rows to skip. Needs a Limit. |
 | `Name(name string) ListAllOperations` | Overrides the auto-generated query/method name |
@@ -58,7 +60,8 @@ Exposes the modifiers available on a ListBy query.
 | Method | Description |
 | --- | --- |
 | `Count() ListByOperations` | Also returns how many rows match, counted before Limit. An empty page reports 0. |
-| `OrderBy(field string) ListByOperations` | Sorts the result by the given field. |
+| `Asc(field string) ListByOperations` | Appends a sort column, ascending. |
+| `Desc(field string) ListByOperations` | Appends a sort column, descending. |
 | `Limit(rows ...int) ListByOperations` | Takes the row count from the caller, Limit(rows) sets it in the query. |
 | `Offset() ListByOperations` | Asks the caller how many rows to skip. Needs a Limit. |
 | `Name(name string) ListByOperations` | Overrides the auto-generated query/method name |

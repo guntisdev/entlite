@@ -480,7 +480,7 @@ type Query struct {
 	Fields       []string
 	Filters      []QueryFilter
 	Count        bool // Count() asks for the number of matching rows
-	OrderBy      string
+	OrderBy      []OrderColumn
 	HasLimit     bool
 	Limit        int // fixed row count, 0 means the caller sets it
 	HasOffset    bool
@@ -491,6 +491,11 @@ type Query struct {
 	Upsert       bool     // Upsert() updates the row the insert collides with
 	UpsertFields []string // the conflict target, empty means the primary key
 	UpsertIgnore bool     // Ignore() keeps the existing row instead of updating it
+}
+
+type OrderColumn struct {
+	Name string
+	Desc bool // false = ASC (default), true = DESC
 }
 
 func (q Query) LimitFromRequest() bool {

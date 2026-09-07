@@ -312,9 +312,18 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		if len(whereParts) > 0 {
 			selectSQL += " WHERE " + strings.Join(whereParts, " AND ")
 		}
-		// OrderBy() sorts the rows, it has to come before LIMIT
-		if query.OrderBy != "" {
-			selectSQL += " ORDER BY " + g.column(query.OrderBy)
+		// Asc()/Desc() sort the rows, they have to come before LIMIT
+		if len(query.OrderBy) > 0 {
+			orderParts := make([]string, 0, len(query.OrderBy))
+			for _, column := range query.OrderBy {
+				part := g.column(column.Name)
+				// ASC is the sql default, so only DESC is spelled out
+				if column.Desc {
+					part += " DESC"
+				}
+				orderParts = append(orderParts, part)
+			}
+			selectSQL += " ORDER BY " + strings.Join(orderParts, ", ")
 		}
 		// Limit()/Offset() in the schema decide, a fixed Limit(rows) goes straight into the sql
 		if query.HasLimit {

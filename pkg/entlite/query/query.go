@@ -65,6 +65,10 @@ type ListAllOperations interface {
 	QueryBuilder
 	// Count also returns how many rows match, counted before Limit. An empty page reports 0.
 	Count() ListAllOperations
+	// Asc appends a sort column, ascending.
+	Asc(field string) ListAllOperations
+	// Desc appends a sort column, descending.
+	Desc(field string) ListAllOperations
 	// Limit takes the row count from the caller, Limit(rows) sets it in the query.
 	Limit(rows ...int) ListAllOperations
 	// Offset asks the caller how many rows to skip. Needs a Limit.
@@ -80,8 +84,10 @@ type ListByOperations interface {
 	QueryBuilder
 	// Count also returns how many rows match, counted before Limit. An empty page reports 0.
 	Count() ListByOperations
-	// OrderBy sorts the result by the given field.
-	OrderBy(field string) ListByOperations
+	// Asc appends a sort column, ascending.
+	Asc(field string) ListByOperations
+	// Desc appends a sort column, descending.
+	Desc(field string) ListByOperations
 	// Limit takes the row count from the caller, Limit(rows) sets it in the query.
 	Limit(rows ...int) ListByOperations
 	// Offset asks the caller how many rows to skip. Needs a Limit.
@@ -92,13 +98,25 @@ type ListByOperations interface {
 	Contracts(contracts ...entlite.Layer) ListByOperations
 }
 
+// OrderColumn is a single sort column together with its direction.
+type OrderColumn struct {
+	name string
+	desc bool // false = ASC (default), true = DESC
+}
+
+// GetName returns the column name.
+func (c OrderColumn) GetName() string { return c.name }
+
+// IsDesc reports if the column is sorted descending.
+func (c OrderColumn) IsDesc() bool { return c.desc }
+
 // Query holds the state of one query.
 type Query struct {
 	typeName     Type
 	fields       []string        // For GetBy: list of field name strings
 	filters      []filter.Filter // For ListBy: list of filters
 	count        bool            // For list queries: whether to count matching rows
-	orderBy      string          // For ListBy: order by field
+	orderBy      []OrderColumn   // For list queries: sort columns, in order
 	hasLimit     bool            // For list queries: whether LIMIT is set
 	limit        int             // For list queries: fixed limit, 0 means the caller sets it
 	hasOffset    bool            // For list queries: whether OFFSET is set
@@ -181,6 +199,18 @@ func (q listAllQuery) Count() ListAllOperations {
 	return q
 }
 
+// Asc appends a sort column to the ListAll query, ascending
+func (q listAllQuery) Asc(field string) ListAllOperations {
+	q.base.addOrder(field, false)
+	return q
+}
+
+// Desc appends a sort column to the ListAll query, descending
+func (q listAllQuery) Desc(field string) ListAllOperations {
+	q.base.addOrder(field, true)
+	return q
+}
+
 // Limit sets how many rows the ListAll query returns
 func (q listAllQuery) Limit(rows ...int) ListAllOperations {
 	q.base.setLimit(rows)
@@ -218,9 +248,15 @@ func (q listByQuery) Count() ListByOperations {
 	return q
 }
 
-// OrderBy adds ordering to the ListBy query
-func (q listByQuery) OrderBy(field string) ListByOperations {
-	q.base.orderBy = field
+// Asc appends a sort column to the ListBy query, ascending
+func (q listByQuery) Asc(field string) ListByOperations {
+	q.base.addOrder(field, false)
+	return q
+}
+
+// Desc appends a sort column to the ListBy query, descending
+func (q listByQuery) Desc(field string) ListByOperations {
+	q.base.addOrder(field, true)
 	return q
 }
 
@@ -234,6 +270,11 @@ func (q listByQuery) Limit(rows ...int) ListByOperations {
 func (q listByQuery) Offset() ListByOperations {
 	q.base.hasOffset = true
 	return q
+}
+
+// addOrder appends one sort column, the chain order is the sort order
+func (q *Query) addOrder(field string, desc bool) {
+	q.orderBy = append(q.orderBy, OrderColumn{name: field, desc: desc})
 }
 
 // setLimit marks the limit, a given value keeps it out of the request
@@ -327,8 +368,8 @@ func (q Query) HasCount() bool {
 	return q.count
 }
 
-// GetOrderBy returns the order by field, or "" when there is none.
-func (q Query) GetOrderBy() string {
+// GetOrderBy returns the sort columns in order, or nil when there is none.
+func (q Query) GetOrderBy() []OrderColumn {
 	return q.orderBy
 }
 
