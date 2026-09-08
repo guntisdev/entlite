@@ -202,9 +202,6 @@ func hasValidateField(entity schema.Entity) bool {
 }
 
 func toProtoFieldName(field schema.Field) string {
-	if field.IsID() {
-		return strings.ToUpper(field.Name[:1]) + field.Name[1:]
-	}
 	return snakeToCamelCase(field.Name)
 }
 

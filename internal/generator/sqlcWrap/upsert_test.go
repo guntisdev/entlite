@@ -14,7 +14,7 @@ func bulkUpsertEntity(ignore bool) schema.Entity {
 		Name:      "Post",
 		Contracts: contracts,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeInt64, Primary: true, Contracts: contracts},
+			{Name: "id", Type: schema.FieldTypeInt64, Primary: true, Contracts: contracts},
 			{Name: "slug", Type: schema.FieldTypeString, Unique: true, Contracts: contracts},
 			{Name: "title", Type: schema.FieldTypeString, Contracts: contracts},
 		},

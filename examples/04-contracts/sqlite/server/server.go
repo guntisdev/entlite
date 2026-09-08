@@ -50,7 +50,7 @@ func (s *MatchServer) CreateMatch(
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("failed to create match: %w", err))
 	}
 
-	match, err := queries.GetMatchByID(ctx, matchID)
+	match, err := queries.GetMatchById(ctx, matchID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created match: %w", err))
 	}
@@ -61,15 +61,15 @@ func (s *MatchServer) CreateMatch(
 	return connect.NewResponse(match.ToProto()), nil
 }
 
-func (s *MatchServer) GetMatchByID(
+func (s *MatchServer) GetMatchById(
 	ctx context.Context,
-	req *connect.Request[pb.GetMatchByIDRequest],
+	req *connect.Request[pb.GetMatchByIdRequest],
 ) (*connect.Response[pb.Match], error) {
-	log.Printf("Get match: ID=%d", req.Msg.ID)
+	log.Printf("Get match: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	match, err := queries.GetMatchByID(ctx, req.Msg.ID)
+	match, err := queries.GetMatchById(ctx, req.Msg.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("match not found"))
@@ -84,15 +84,15 @@ func (s *MatchServer) DeleteMatch(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteMatchRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	log.Printf("Delete match: ID=%d", req.Msg.ID)
+	log.Printf("Delete match: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	if err := queries.DeleteMatch(ctx, req.Msg.ID); err != nil {
+	if err := queries.DeleteMatch(ctx, req.Msg.Id); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete match: %w", err))
 	}
 
-	audit(ctx, queries, "deleted", req.Msg.ID, "removed from the club records")
+	audit(ctx, queries, "deleted", req.Msg.Id, "removed from the club records")
 
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
@@ -281,7 +281,7 @@ func countStandings(matches []*db.Match) []*pb.Standing {
 			return entry
 		}
 		entry := &pb.Standing{
-			ID:     0,
+			Id:     0,
 			Player: player,
 			Played: 0,
 			Wins:   0,
@@ -331,7 +331,7 @@ func countStandings(matches []*db.Match) []*pb.Standing {
 
 	// the id field carries the rank
 	for i, entry := range standings {
-		entry.ID = int32(i + 1)
+		entry.Id = int32(i + 1)
 	}
 
 	return standings

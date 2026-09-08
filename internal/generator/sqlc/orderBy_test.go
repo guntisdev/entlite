@@ -14,7 +14,7 @@ func orderByEntity() schema.Entity {
 		Name:      "Post",
 		Contracts: contracts,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeInt, Primary: true, Contracts: contracts},
+			{Name: "id", Type: schema.FieldTypeInt, Primary: true, Contracts: contracts},
 			{Name: "title", Type: schema.FieldTypeString, Contracts: contracts},
 			{Name: "created_at", Type: schema.FieldTypeTime, Contracts: contracts},
 			{Name: "order", Type: schema.FieldTypeInt, Contracts: contracts},

@@ -133,7 +133,7 @@ func TestParseQueryDistinct(t *testing.T) {
 		{
 			name:    "the primary key makes every row unique",
 			queries: `query.ListAll().Distinct("id", "name"),`,
-			wantErr: "Distinct selects the unique key (ID)",
+			wantErr: "Distinct selects the unique key (id)",
 		},
 		{
 			name:    "a unique column makes every row unique",

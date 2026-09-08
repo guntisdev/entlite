@@ -36,7 +36,7 @@ func TestCompoundPrimaryKeyTable(t *testing.T) {
 		t.Run(string(dialect), func(t *testing.T) {
 			sql := NewGenerator(dialect).generateTableSQL(compoundKeyEntity())
 
-			if strings.Contains(sql, "ID") {
+			if strings.Contains(sql, "  id ") {
 				t.Errorf("expected no id column:\n%s", sql)
 			}
 			if !strings.Contains(sql, "PRIMARY KEY (country, env)") {

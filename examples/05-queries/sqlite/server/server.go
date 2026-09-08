@@ -51,7 +51,7 @@ func (s *BuildServer) CreateBuild(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create build: %w", err))
 	}
 
-	build, err := queries.GetBuildByID(ctx, buildID)
+	build, err := queries.GetBuildById(ctx, buildID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created build: %w", err))
 	}
@@ -89,7 +89,7 @@ func (s *BuildServer) CreateBulkBuild(
 
 	builds := make([]*pb.Build, 0, len(buildIDs))
 	for _, buildID := range buildIDs {
-		build, err := queries.GetBuildByID(ctx, buildID)
+		build, err := queries.GetBuildById(ctx, buildID)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created build: %w", err))
 		}
@@ -99,15 +99,15 @@ func (s *BuildServer) CreateBulkBuild(
 	return connect.NewResponse(&pb.CreateBulkBuildResponse{Rows: builds}), nil
 }
 
-func (s *BuildServer) GetBuildByID(
+func (s *BuildServer) GetBuildById(
 	ctx context.Context,
-	req *connect.Request[pb.GetBuildByIDRequest],
+	req *connect.Request[pb.GetBuildByIdRequest],
 ) (*connect.Response[pb.Build], error) {
-	log.Printf("Get build: ID=%d", req.Msg.ID)
+	log.Printf("Get build: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	build, err := queries.GetBuildByID(ctx, req.Msg.ID)
+	build, err := queries.GetBuildById(ctx, req.Msg.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("build not found"))
@@ -141,12 +141,12 @@ func (s *BuildServer) UpdateBuild(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateBuildRequest],
 ) (*connect.Response[pb.Build], error) {
-	log.Printf("Update build: ID=%d", req.Msg.ID)
+	log.Printf("Update build: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
 	build, err := queries.UpdateBuild(ctx, db.UpdateBuildParams{
-		ID:          req.Msg.ID,
+		ID:          req.Msg.Id,
 		CommitSha:   req.Msg.CommitSha,
 		Branch:      req.Msg.Branch,
 		Env:         req.Msg.Env,
@@ -171,11 +171,11 @@ func (s *BuildServer) DeleteBuild(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteBuildRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	log.Printf("Delete build: ID=%d", req.Msg.ID)
+	log.Printf("Delete build: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	if err := queries.DeleteBuild(ctx, req.Msg.ID); err != nil {
+	if err := queries.DeleteBuild(ctx, req.Msg.Id); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete build: %w", err))
 	}
 

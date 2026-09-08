@@ -14,7 +14,7 @@ func distinctEntity() schema.Entity {
 		Name:      "Gametype",
 		Contracts: contracts,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeInt, Primary: true, Contracts: contracts},
+			{Name: "id", Type: schema.FieldTypeInt, Primary: true, Contracts: contracts},
 			{Name: "env", Type: schema.FieldTypeString, Contracts: contracts},
 			{Name: "gametype", Type: schema.FieldTypeString, Contracts: contracts},
 			{Name: "name", Type: schema.FieldTypeString, Contracts: contracts},

@@ -15,7 +15,7 @@ func upsertEntity(query schema.Query) schema.Entity {
 		Name:      "Post",
 		Contracts: upsertContracts,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeInt, Primary: true, Unique: true, Contracts: upsertContracts},
+			{Name: "id", Type: schema.FieldTypeInt, Primary: true, Unique: true, Contracts: upsertContracts},
 			{Name: "slug", Type: schema.FieldTypeString, Unique: true, Contracts: upsertContracts},
 			{Name: "title", Type: schema.FieldTypeString, Contracts: upsertContracts},
 			{Name: "views", Type: schema.FieldTypeInt, Contracts: upsertContracts},
@@ -52,22 +52,22 @@ func TestUpsertClause(t *testing.T) {
 				"ON CONFLICT (slug) DO UPDATE SET",
 				"  title = excluded.title,",
 				"  views = excluded.views",
-				"RETURNING ID;",
+				"RETURNING id;",
 			},
 			// the target, the key and an immutable column are never overwritten
-			absent: []string{"slug = excluded.slug", "ID = excluded.ID", "created_at = excluded.created_at"},
+			absent: []string{"slug = excluded.slug", "id = excluded.id", "created_at = excluded.created_at"},
 		},
 		{
 			name:    "sqlite updates from excluded",
 			dialect: schema.SQLite,
 			query:   createUpsert([]string{"slug"}, false),
-			want:    []string{"ON CONFLICT (slug) DO UPDATE SET", "  title = excluded.title,", "RETURNING ID;"},
+			want:    []string{"ON CONFLICT (slug) DO UPDATE SET", "  title = excluded.title,", "RETURNING id;"},
 		},
 		{
 			name:    "postgres does nothing",
 			dialect: schema.PostgreSQL,
 			query:   createUpsert([]string{"slug"}, true),
-			want:    []string{"ON CONFLICT (slug) DO NOTHING\nRETURNING ID;"},
+			want:    []string{"ON CONFLICT (slug) DO NOTHING\nRETURNING id;"},
 			absent:  []string{"DO UPDATE"},
 		},
 		{
@@ -93,7 +93,7 @@ func TestUpsertClause(t *testing.T) {
 			name:    "no upsert leaves the insert alone",
 			dialect: schema.PostgreSQL,
 			query:   schema.Query{Type: schema.QueryCreate, Name: "CreatePost", Contracts: upsertContracts},
-			want:    []string{") RETURNING ID;"},
+			want:    []string{") RETURNING id;"},
 			absent:  []string{"ON CONFLICT", "ON DUPLICATE KEY"},
 		},
 	}

@@ -52,7 +52,7 @@ function log(message: string, data?: any) {
 
 function describeSensor(sensor: Sensor): string {
     const latest = sensor.latestValue !== undefined ? ` latest=${sensor.latestValue}` : "";
-    return `ID: ${sensor.ID} ${sensor.code} ${sensor.kind} ${sensor.label}${latest}`;
+    return `ID: ${sensor.id} ${sensor.code} ${sensor.kind} ${sensor.label}${latest}`;
 }
 
 // --- SensorService: generated from the DSL ---------------------------------
@@ -98,14 +98,14 @@ function createInvalidSensor() {
         });
 }
 
-function getSensorByID() {
+function getSensorById() {
     const id = numberInput("getSensorId");
     if (isNaN(id) || id <= 0) {
         log("✗ Invalid sensor ID");
         return;
     }
     log(`Getting sensor ${id}...`);
-    sensorClient.getSensorByID({ ID: id })
+    sensorClient.getSensorById({ id: id })
         .then((response) => {
             log("✓ Sensor retrieved:", response);
         })
@@ -138,10 +138,10 @@ function updateSensor() {
     }
     log(`Updating sensor ${id}...`);
     // Update needs the whole entity, so read it first and change a few fields
-    sensorClient.getSensorByID({ ID: id })
+    sensorClient.getSensorById({ id: id })
         .then((sensor) => {
             const request: StrictMessageInput<UpdateSensorRequest> = {
-                ID: sensor.ID,
+                id: sensor.id,
                 code: sensor.code,
                 label: `Updated ${createHash(3)}`,
                 kind: sensor.kind,
@@ -169,7 +169,7 @@ function deleteSensor() {
         return;
     }
     log(`Deleting sensor ${id}...`);
-    sensorClient.deleteSensor({ ID: id })
+    sensorClient.deleteSensor({ id: id })
         .then((response) => {
             log("✓ Sensor deleted:", response);
         })
@@ -210,10 +210,10 @@ function createReading() {
     }
     log(`Creating reading for sensor ${sensorId}...`);
     // Look the sensor up first so the value matches its kind
-    sensorClient.getSensorByID({ ID: sensorId })
+    sensorClient.getSensorById({ id: sensorId })
         .then((sensor) => {
             const request: StrictMessageInput<CreateReadingRequest> = {
-                sensorId: sensor.ID,
+                sensorId: sensor.id,
                 value: randomValue(sensor.kind as any),
                 quality: 50 + Math.floor(Math.random() * 51),
                 flagged: Math.random() < 0.2,
@@ -247,14 +247,14 @@ function createInvalidReading() {
         });
 }
 
-function getReadingByID() {
+function getReadingById() {
     const id = bigIntInput("getReadingId");
     if (id <= 0n) {
         log("✗ Invalid reading ID");
         return;
     }
     log(`Getting reading ${id}...`);
-    readingClient.getReadingByID({ ID: id })
+    readingClient.getReadingById({ id: id })
         .then((response) => {
             log("✓ Reading retrieved:", response);
         })
@@ -270,7 +270,7 @@ function deleteReading() {
         return;
     }
     log(`Deleting reading ${id}...`);
-    readingClient.deleteReading({ ID: id })
+    readingClient.deleteReading({ id: id })
         .then((response) => {
             log("✓ Reading deleted:", response);
         })
@@ -291,7 +291,7 @@ function listReadings() {
             log(`✓ Readings listed (${response.rows.length} readings):`);
             response.rows.forEach((reading) => {
                 const recordedAt = reading.recordedAt ? timestampDate(reading.recordedAt).toISOString() : "-";
-                log(`ID: ${reading.ID} value=${reading.value} quality=${reading.quality} flagged=${reading.flagged} ${recordedAt}`);
+                log(`ID: ${reading.id} value=${reading.value} quality=${reading.quality} flagged=${reading.flagged} ${recordedAt}`);
             });
         })
         .catch((error) => {
@@ -389,7 +389,7 @@ function pruneReadings() {
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("createSensorBtn")!.addEventListener("click", createSensor);
     document.getElementById("createInvalidSensorBtn")!.addEventListener("click", createInvalidSensor);
-    document.getElementById("getSensorBtn")!.addEventListener("click", getSensorByID);
+    document.getElementById("getSensorBtn")!.addEventListener("click", getSensorById);
     document.getElementById("getSensorCodeBtn")!.addEventListener("click", getSensorByCode);
     document.getElementById("updateSensorBtn")!.addEventListener("click", updateSensor);
     document.getElementById("deleteSensorBtn")!.addEventListener("click", deleteSensor);
@@ -399,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("createInvalidReadingBtn")!.addEventListener("click", createInvalidReading);
     document.getElementById("listReadingBtn")!.addEventListener("click", listReadings);
     document.getElementById("filterReadingBtn")!.addEventListener("click", filterReadings);
-    document.getElementById("getReadingBtn")!.addEventListener("click", getReadingByID);
+    document.getElementById("getReadingBtn")!.addEventListener("click", getReadingById);
     document.getElementById("deleteReadingBtn")!.addEventListener("click", deleteReading);
 
     document.getElementById("latestBtn")!.addEventListener("click", listWithLatestReading);

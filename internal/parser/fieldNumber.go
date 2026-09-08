@@ -15,7 +15,7 @@ func addFieldNumbers(fields []schema.Field, addIdField bool) []schema.Field {
 	// checks if there is id field with protoField number
 	for i := range fields {
 		if fields[i].IsID() {
-			fields[i].Name = "ID" // capital letter for sqlc compatibility
+			fields[i].Name = "id"
 			fields[i].Primary = true
 			hasIdField = true
 		}
@@ -30,7 +30,7 @@ func addFieldNumbers(fields []schema.Field, addIdField bool) []schema.Field {
 		usedNumbers = append(usedNumbers, idNumber)
 
 		idField := schema.Field{
-			Name:       "ID",
+			Name:       "id",
 			Type:       schema.FieldTypeInt,
 			Primary:    true,
 			ProtoField: idNumber,

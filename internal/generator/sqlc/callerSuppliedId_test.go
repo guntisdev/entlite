@@ -15,13 +15,13 @@ func suppliedIdEntity() schema.Entity {
 		Name:      "Casino",
 		Contracts: contracts,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeString, Unique: true, Immutable: true, Contracts: contracts},
+			{Name: "id", Type: schema.FieldTypeString, Unique: true, Immutable: true, Contracts: contracts},
 			{Name: "env", Type: schema.FieldTypeString, Immutable: true, Contracts: contracts},
 			{Name: "init_count", Type: schema.FieldTypeInt, Contracts: contracts},
 		},
 		Indexes: []schema.Index{{
 			Type:    schema.IndexPrimary,
-			Columns: []schema.IndexColumn{{Name: "ID"}, {Name: "env"}},
+			Columns: []schema.IndexColumn{{Name: "id"}, {Name: "env"}},
 		}},
 		Queries: []schema.Query{
 			{Type: schema.QueryCreate, Name: "CreateCasino", Contracts: contracts},
@@ -36,17 +36,17 @@ func TestCallerSuppliedIdTable(t *testing.T) {
 		t.Run(string(dialect), func(t *testing.T) {
 			sql := NewGenerator(dialect).generateTableSQL(suppliedIdEntity())
 
-			if !strings.Contains(sql, "ID TEXT NOT NULL") && !strings.Contains(sql, "ID VARCHAR(255) NOT NULL") {
+			if !strings.Contains(sql, "id TEXT NOT NULL") && !strings.Contains(sql, "id VARCHAR(255) NOT NULL") {
 				t.Errorf("expected the id column to be NOT NULL:\n%s", sql)
 			}
-			if !strings.Contains(sql, "PRIMARY KEY (ID, env)") {
+			if !strings.Contains(sql, "PRIMARY KEY (id, env)") {
 				t.Errorf("expected the compound primary key:\n%s", sql)
 			}
 			if strings.Contains(sql, "AUTOINCREMENT") || strings.Contains(sql, "AUTO_INCREMENT") || strings.Contains(sql, "SERIAL") {
 				t.Errorf("expected no generated key:\n%s", sql)
 			}
 			// the inline PRIMARY KEY belongs to the index, never to the column
-			if strings.Contains(sql, "ID TEXT PRIMARY KEY") {
+			if strings.Contains(sql, "id TEXT PRIMARY KEY") {
 				t.Errorf("expected the id column to give up the primary key:\n%s", sql)
 			}
 		})
@@ -62,10 +62,10 @@ func TestCallerSuppliedIdInsert(t *testing.T) {
 			if !strings.Contains(sql, "-- name: CreateCasino :exec") {
 				t.Errorf("expected the insert to return nothing:\n%s", sql)
 			}
-			if !strings.Contains(sql, " ID,") {
+			if !strings.Contains(sql, " id,") {
 				t.Errorf("expected the id in the insert columns:\n%s", sql)
 			}
-			if strings.Contains(sql, "RETURNING ID") {
+			if strings.Contains(sql, "RETURNING id") {
 				t.Errorf("expected no RETURNING on the insert:\n%s", sql)
 			}
 		})
@@ -79,7 +79,7 @@ func TestGeneratedIdStaysOutOfInsert(t *testing.T) {
 		Name:      "Post",
 		Contracts: contracts,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeInt, Primary: true, Unique: true, Contracts: contracts},
+			{Name: "id", Type: schema.FieldTypeInt, Primary: true, Unique: true, Contracts: contracts},
 			{Name: "title", Type: schema.FieldTypeString, Contracts: contracts},
 		},
 		Queries: []schema.Query{
@@ -92,10 +92,10 @@ func TestGeneratedIdStaysOutOfInsert(t *testing.T) {
 	if !strings.Contains(sql, "-- name: CreatePost :one") {
 		t.Errorf("expected the insert to return the generated id:\n%s", sql)
 	}
-	if strings.Contains(sql, " ID,") {
+	if strings.Contains(sql, " id,") {
 		t.Errorf("expected the id out of the insert columns:\n%s", sql)
 	}
-	if !strings.Contains(sql, "RETURNING ID") {
+	if !strings.Contains(sql, "RETURNING id") {
 		t.Errorf("expected RETURNING on the insert:\n%s", sql)
 	}
 }

@@ -49,7 +49,7 @@ func (s *UserServer) CreateUser(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create user: %w", err))
 	}
 
-	user, err := queries.GetUserByID(ctx, userID)
+	user, err := queries.GetUserById(ctx, userID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created user: %w", err))
 	}
@@ -87,7 +87,7 @@ func (s *UserServer) CreateBulkUser(
 
 	users := make([]*pb.User, 0, len(userIDs))
 	for _, userID := range userIDs {
-		user, err := queries.GetUserByID(ctx, userID)
+		user, err := queries.GetUserById(ctx, userID)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created user: %w", err))
 		}
@@ -97,15 +97,15 @@ func (s *UserServer) CreateBulkUser(
 	return connect.NewResponse(&pb.CreateBulkUserResponse{Rows: users}), nil
 }
 
-func (s *UserServer) GetUserByID(
+func (s *UserServer) GetUserById(
 	ctx context.Context,
-	req *connect.Request[pb.GetUserByIDRequest],
+	req *connect.Request[pb.GetUserByIdRequest],
 ) (*connect.Response[pb.User], error) {
-	log.Printf("Get user: id=%d", req.Msg.ID)
+	log.Printf("Get user: id=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	user, err := queries.GetUserByID(ctx, req.Msg.ID)
+	user, err := queries.GetUserById(ctx, req.Msg.Id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("user not found"))
@@ -139,12 +139,12 @@ func (s *UserServer) UpdateUser(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateUserRequest],
 ) (*connect.Response[pb.User], error) {
-	log.Printf("Update user: ID=%d, %+v", req.Msg.ID, req.Msg)
+	log.Printf("Update user: ID=%d, %+v", req.Msg.Id, req.Msg)
 
 	queries := db.New(s.db)
 
 	dbUser, err := queries.UpdateUser(ctx, db.UpdateUserParams{
-		ID:          req.Msg.ID,
+		ID:          req.Msg.Id,
 		Email:       req.Msg.Email,
 		Name:        req.Msg.Name,
 		Age:         req.Msg.Age,
@@ -168,11 +168,11 @@ func (s *UserServer) DeleteUser(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteUserRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	log.Printf("Delete user: ID=%d", req.Msg.ID)
+	log.Printf("Delete user: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	err := queries.DeleteUser(ctx, req.Msg.ID)
+	err := queries.DeleteUser(ctx, req.Msg.Id)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete user: %w", err))
 	}

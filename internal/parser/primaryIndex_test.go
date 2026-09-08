@@ -133,8 +133,8 @@ func TestWithoutPrimaryIndexIdFieldIsAdded(t *testing.T) {
 
 	for _, queryType := range []schema.QueryType{schema.QueryGetBy, schema.QueryUpdate, schema.QueryDelete} {
 		got := queryFields(t, entity, queryType)
-		if strings.Join(got, ",") != "ID" {
-			t.Errorf("query %q keyed by %v, expected [ID]", queryType, got)
+		if strings.Join(got, ",") != "id" {
+			t.Errorf("query %q keyed by %v, expected [id]", queryType, got)
 		}
 	}
 }
@@ -152,8 +152,8 @@ func TestPrimaryIndexOnIdKeepsIdField(t *testing.T) {
 	if entity.GetIdField().Primary {
 		t.Error("expected the id field to give up the primary key to the index")
 	}
-	if got := queryFields(t, entity, schema.QueryGetBy); strings.Join(got, ",") != "ID,env" {
-		t.Errorf("get keyed by %v, expected [ID env]", got)
+	if got := queryFields(t, entity, schema.QueryGetBy); strings.Join(got, ",") != "id,env" {
+		t.Errorf("get keyed by %v, expected [id env]", got)
 	}
 }
 

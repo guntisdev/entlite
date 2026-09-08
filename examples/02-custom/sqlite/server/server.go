@@ -53,7 +53,7 @@ func (s *SensorServer) CreateSensor(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create sensor: %w", err))
 	}
 
-	sensor, err := queries.GetSensorByID(ctx, sensorID)
+	sensor, err := queries.GetSensorById(ctx, sensorID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created sensor: %w", err))
 	}
@@ -61,15 +61,15 @@ func (s *SensorServer) CreateSensor(
 	return connect.NewResponse(sensor.ToProto()), nil
 }
 
-func (s *SensorServer) GetSensorByID(
+func (s *SensorServer) GetSensorById(
 	ctx context.Context,
-	req *connect.Request[pb.GetSensorByIDRequest],
+	req *connect.Request[pb.GetSensorByIdRequest],
 ) (*connect.Response[pb.Sensor], error) {
-	log.Printf("Get sensor: ID=%d", req.Msg.ID)
+	log.Printf("Get sensor: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	sensor, err := queries.GetSensorByID(ctx, req.Msg.ID)
+	sensor, err := queries.GetSensorById(ctx, req.Msg.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("sensor not found"))
@@ -103,12 +103,12 @@ func (s *SensorServer) UpdateSensor(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateSensorRequest],
 ) (*connect.Response[pb.Sensor], error) {
-	log.Printf("Update sensor: ID=%d, %+v", req.Msg.ID, req.Msg)
+	log.Printf("Update sensor: ID=%d, %+v", req.Msg.Id, req.Msg)
 
 	queries := db.New(s.db)
 
 	sensor, err := queries.UpdateSensor(ctx, db.UpdateSensorParams{
-		ID:           req.Msg.ID,
+		ID:           req.Msg.Id,
 		Code:         req.Msg.Code,
 		Label:        req.Msg.Label,
 		Kind:         req.Msg.Kind,
@@ -132,11 +132,11 @@ func (s *SensorServer) DeleteSensor(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteSensorRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	log.Printf("Delete sensor: ID=%d", req.Msg.ID)
+	log.Printf("Delete sensor: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	if err := queries.DeleteSensor(ctx, req.Msg.ID); err != nil {
+	if err := queries.DeleteSensor(ctx, req.Msg.Id); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete sensor: %w", err))
 	}
 
@@ -206,7 +206,7 @@ func (s *ReadingServer) CreateReading(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create reading: %w", err))
 	}
 
-	reading, err := queries.GetReadingByID(ctx, readingID)
+	reading, err := queries.GetReadingById(ctx, readingID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created reading: %w", err))
 	}
@@ -214,15 +214,15 @@ func (s *ReadingServer) CreateReading(
 	return connect.NewResponse(reading.ToProto()), nil
 }
 
-func (s *ReadingServer) GetReadingByID(
+func (s *ReadingServer) GetReadingById(
 	ctx context.Context,
-	req *connect.Request[pb.GetReadingByIDRequest],
+	req *connect.Request[pb.GetReadingByIdRequest],
 ) (*connect.Response[pb.Reading], error) {
-	log.Printf("Get reading: ID=%d", req.Msg.ID)
+	log.Printf("Get reading: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	reading, err := queries.GetReadingByID(ctx, req.Msg.ID)
+	reading, err := queries.GetReadingById(ctx, req.Msg.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("reading not found"))
@@ -237,11 +237,11 @@ func (s *ReadingServer) DeleteReading(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteReadingRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	log.Printf("Delete reading: ID=%d", req.Msg.ID)
+	log.Printf("Delete reading: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	if err := queries.DeleteReading(ctx, req.Msg.ID); err != nil {
+	if err := queries.DeleteReading(ctx, req.Msg.Id); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete reading: %w", err))
 	}
 

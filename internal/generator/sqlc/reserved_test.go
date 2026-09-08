@@ -15,7 +15,7 @@ func reservedEntity() schema.Entity {
 		Name:      "Booking",
 		Contracts: sqlc,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeInt, Primary: true, Contracts: sqlc},
+			{Name: "id", Type: schema.FieldTypeInt, Primary: true, Contracts: sqlc},
 			{Name: "table", Type: schema.FieldTypeString, Contracts: sqlc},
 			{Name: "order", Type: schema.FieldTypeInt, Contracts: sqlc},
 			{Name: "commit", Type: schema.FieldTypeString, Contracts: sqlc},
