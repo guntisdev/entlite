@@ -53,27 +53,23 @@ func parseIndexCall(callExpr *ast.CallExpr) (schema.Index, bool, error) {
 		return schema.Index{}, false, nil
 	}
 
-	// Base constructors: index.Primary(...) / index.Fields(...)
+	// Base constructors: index.Primary(...) / index.Asc(...) / index.Desc(...)
 	if ident, ok := selExpr.X.(*ast.Ident); ok && ident.Name == "index" {
 		switch selExpr.Sel.Name {
 		case "Primary":
-			fields, err := parseStringArgs(callExpr.Args)
+			fields, err := parseIndexFieldArgs(callExpr.Args, "index.Primary")
 			if err != nil {
-				return schema.Index{}, true, fmt.Errorf("index.Primary expects string field args: %w", err)
+				return schema.Index{}, true, err
 			}
-			if len(fields) == 0 {
-				return schema.Index{}, true, fmt.Errorf("index.Primary requires at least one field")
-			}
-			return schema.Index{Type: schema.IndexPrimary, Columns: columnsFromFields(fields)}, true, nil
-		case "Fields":
-			fields, err := parseStringArgs(callExpr.Args)
+			return schema.Index{Type: schema.IndexPrimary, Columns: columnsFromFields(fields, false)}, true, nil
+		case "Asc", "Desc":
+			name := "index." + selExpr.Sel.Name
+			fields, err := parseIndexFieldArgs(callExpr.Args, name)
 			if err != nil {
-				return schema.Index{}, true, fmt.Errorf("index.Fields expects string field args: %w", err)
+				return schema.Index{}, true, err
 			}
-			if len(fields) == 0 {
-				return schema.Index{}, true, fmt.Errorf("index.Fields requires at least one field")
-			}
-			return schema.Index{Type: schema.IndexRegular, Columns: columnsFromFields(fields)}, true, nil
+			desc := selExpr.Sel.Name == "Desc"
+			return schema.Index{Type: schema.IndexRegular, Columns: columnsFromFields(fields, desc)}, true, nil
 		default:
 			return schema.Index{}, false, nil
 		}
@@ -109,18 +105,13 @@ func parseIndexCall(callExpr *ast.CallExpr) (schema.Index, bool, error) {
 			return schema.Index{}, true, fmt.Errorf("Name expects exactly one string argument: %w", err)
 		}
 		index.Name = name
-	case "Asc":
-		field, err := parseColumnArg(callExpr.Args, "Asc")
+	case "Asc", "Desc":
+		fields, err := parseIndexFieldArgs(callExpr.Args, selExpr.Sel.Name)
 		if err != nil {
 			return schema.Index{}, true, err
 		}
-		index.Columns = append(index.Columns, schema.IndexColumn{Name: field, Desc: false})
-	case "Desc":
-		field, err := parseColumnArg(callExpr.Args, "Desc")
-		if err != nil {
-			return schema.Index{}, true, err
-		}
-		index.Columns = append(index.Columns, schema.IndexColumn{Name: field, Desc: true})
+		desc := selExpr.Sel.Name == "Desc"
+		index.Columns = append(index.Columns, columnsFromFields(fields, desc)...)
 	default:
 		return schema.Index{}, true, fmt.Errorf("unsupported index operation %q", selExpr.Sel.Name)
 	}
@@ -128,10 +119,23 @@ func parseIndexCall(callExpr *ast.CallExpr) (schema.Index, bool, error) {
 	return index, true, nil
 }
 
-func columnsFromFields(fields []string) []schema.IndexColumn {
+// parseIndexFieldArgs reads the field names of a Primary()/Asc()/Desc() call
+func parseIndexFieldArgs(args []ast.Expr, method string) ([]string, error) {
+	fields, err := parseStringArgs(args)
+	if err != nil {
+		return nil, fmt.Errorf("%s expects string field args: %w", method, err)
+	}
+	if len(fields) == 0 {
+		return nil, fmt.Errorf("%s requires at least one field", method)
+	}
+
+	return fields, nil
+}
+
+func columnsFromFields(fields []string, desc bool) []schema.IndexColumn {
 	cols := make([]schema.IndexColumn, len(fields))
 	for i, f := range fields {
-		cols[i] = schema.IndexColumn{Name: f}
+		cols[i] = schema.IndexColumn{Name: f, Desc: desc}
 	}
 	return cols
 }

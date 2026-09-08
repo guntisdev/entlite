@@ -65,17 +65,31 @@ func TestIndexFieldValidation(t *testing.T) {
 	}{
 		{
 			name:    "existing fields",
-			indexes: `index.Fields("email", "is_active"),`,
+			indexes: `index.Asc("email", "is_active"),`,
 		},
 		{
 			name:    "unknown field",
-			indexes: `index.Fields("tenant_id", "email").Unique(),`,
+			indexes: `index.Asc("tenant_id", "email").Unique(),`,
 			wantErr: `index references nonexisting field "tenant_id"`,
 		},
 		{
 			name:    "unknown field in Desc modifier",
-			indexes: `index.Fields("is_active").Desc("created_at"),`,
+			indexes: `index.Asc("is_active").Desc("created_at"),`,
 			wantErr: `index references nonexisting field "created_at"`,
+		},
+		{
+			name:    "descending first column",
+			indexes: `index.Desc("email").Asc("is_active"),`,
+		},
+		{
+			name:    "same field twice",
+			indexes: `index.Asc("email").Desc("email"),`,
+			wantErr: `index lists field "email" twice`,
+		},
+		{
+			name:    "no fields",
+			indexes: `index.Asc(),`,
+			wantErr: `index.Asc requires at least one field`,
 		},
 		{
 			name:    "unknown field in Primary",
@@ -84,7 +98,7 @@ func TestIndexFieldValidation(t *testing.T) {
 		},
 		{
 			name:    "virtual field",
-			indexes: `index.Fields("captcha"),`,
+			indexes: `index.Asc("captcha"),`,
 			wantErr: `index references virtual field "captcha"`,
 		},
 	}

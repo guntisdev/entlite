@@ -184,13 +184,13 @@ func TestParseQueryUpsertTarget(t *testing.T) {
 	}{
 		{
 			name:       "unique index",
-			indexes:    `index.Fields("country", "env").Unique(),`,
+			indexes:    `index.Asc("country", "env").Unique(),`,
 			queries:    `query.Create().Upsert("country", "env"),`,
 			wantTarget: []string{"country", "env"},
 		},
 		{
 			name:       "unique index in any order",
-			indexes:    `index.Fields("country", "env").Unique(),`,
+			indexes:    `index.Asc("country", "env").Unique(),`,
 			queries:    `query.Create().Upsert("env", "country"),`,
 			wantTarget: []string{"env", "country"},
 		},
@@ -208,13 +208,13 @@ func TestParseQueryUpsertTarget(t *testing.T) {
 		},
 		{
 			name:    "a plain index is not unique",
-			indexes: `index.Fields("country", "env"),`,
+			indexes: `index.Asc("country", "env"),`,
 			queries: `query.Create().Upsert("country", "env"),`,
 			wantErr: "Upsert target (country, env) is not unique",
 		},
 		{
 			name:    "half of a unique index is not unique",
-			indexes: `index.Fields("country", "env").Unique(),`,
+			indexes: `index.Asc("country", "env").Unique(),`,
 			queries: `query.Create().Upsert("country"),`,
 			wantErr: "Upsert target (country) is not unique",
 		},

@@ -119,7 +119,7 @@ func TestPrimaryIndexDropsIdField(t *testing.T) {
 }
 
 func TestWithoutPrimaryIndexIdFieldIsAdded(t *testing.T) {
-	entity, err := parsePrimaryEntity(t, defaultPrimaryFields, `index.Fields("value"),`)
+	entity, err := parsePrimaryEntity(t, defaultPrimaryFields, `index.Asc("value"),`)
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
 	}

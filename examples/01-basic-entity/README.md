@@ -11,7 +11,7 @@ One `User` entity, written out in every field type and every query type. Start h
 - `CreateBulk().Upsert("email")`: re-importing a row overwrites it instead of failing on the unique email
 - Queries by field: `GetBy("email")`, `ListBy("is_active")`, and `Name()` to rename one
 - Filters: `filter.Range()` and `filter.Search()`
-- Indexes: multi column, `Desc()` sort order, `Unique()`, `Name()`
+- Indexes: multi column `index.Asc()` / `index.Desc()`, mixed sort order, `Unique()`, `Name()`
 - The same schema on three dialects: sqlite, postgresql, mysql
 <!-- teaches:end -->
 

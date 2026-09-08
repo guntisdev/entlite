@@ -195,7 +195,13 @@ func validateVirtualFields(entity schema.Entity) error {
 
 func validateIndexFields(entity schema.Entity) error {
 	for _, idx := range entity.Indexes {
+		seen := make(map[string]bool, len(idx.Columns))
 		for _, column := range idx.Columns {
+			// the same column twice in one index is always a mistake
+			if seen[column.Name] {
+				return fmt.Errorf("entity %q index lists field %q twice", entity.Name, column.Name)
+			}
+			seen[column.Name] = true
 			if !entityHasField(entity, column.Name) {
 				return fmt.Errorf("entity %q index references nonexisting field %q", entity.Name, column.Name)
 			}

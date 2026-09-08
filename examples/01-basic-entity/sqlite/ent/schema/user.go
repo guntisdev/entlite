@@ -60,14 +60,17 @@ func (User) Queries() []entlite.Query {
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
 		// index on two columns
-		index.Fields("age", "is_active"),
-		// descending sort
-		index.Fields("is_active").
+		index.Asc("age", "is_active"),
+		// created_at is sorted the other way round
+		index.Asc("is_active").
 			Desc("created_at"),
+		// newest first, id breaks the tie
+		index.Desc("created_at").
+			Asc("id"),
 		// unique across two columns
-		index.Fields("name", "email").Unique(),
+		index.Asc("name", "email").Unique(),
 		// explicit index name
-		index.Fields("login_count", "rating").
+		index.Asc("login_count", "rating").
 			Name("idx_users_stats"),
 	}
 }
