@@ -112,6 +112,15 @@ matching rows, counted before `LIMIT` cuts the page: the method returns it next
 to the rows and the proto response carries a `total_size`, the name google
 AIP-158 uses. A page with no rows reports `0`, the count travels with the rows.
 
+`Distinct(fields...)` returns deduplicated column values instead of whole rows:
+`query.ListBy(filter.Eq("env")).Distinct("gametype")` gives
+`SELECT DISTINCT gametype FROM gametype WHERE env = @env`, and the method returns
+`[]string`. Every listed column is part of the key, so `Distinct("name", "env")`
+dedupes on the pair and returns a row struct of those two columns, with a matching
+proto row message. Sorting is limited to the selected columns, and `Count()` does not
+fit, because the count runs before the dedupe. Selecting a unique key is rejected,
+since every row already differs there and nothing would be deduplicated.
+
 See [queries](../reference/queries.md) and [filters](../reference/filters.md).
 
 ## Indexes

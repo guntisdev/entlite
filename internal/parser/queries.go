@@ -137,7 +137,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	query := queries[0]
 	switch selExpr.Sel.Name {
 	case "Name", "Contracts":
-	case "Count", "Limit", "Offset", "Asc", "Desc":
+	case "Count", "Distinct", "Limit", "Offset", "Asc", "Desc":
 		if !query.IsList() {
 			return nil, true, fmt.Errorf("%s is only supported for list queries", selExpr.Sel.Name)
 		}
@@ -155,6 +155,15 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return nil, true, fmt.Errorf("Count does not accept arguments")
 		}
 		query.Count = true
+	case "Distinct":
+		fields, err := parseStringArgs(callExpr.Args)
+		if err != nil {
+			return nil, true, fmt.Errorf("Distinct expects string field args: %w", err)
+		}
+		if len(fields) == 0 {
+			return nil, true, fmt.Errorf("Distinct expects at least one field name")
+		}
+		query.Distinct = fields
 	case "Asc", "Desc":
 		field, err := parseColumnArg(callExpr.Args, selExpr.Sel.Name)
 		if err != nil {
@@ -441,6 +450,10 @@ func validateQueryFields(entity schema.Entity) error {
 			}
 		}
 
+		if err := validateDistinctColumns(entity, query); err != nil {
+			return err
+		}
+
 		if err := validateOrderColumns(entity, query); err != nil {
 			return err
 		}
@@ -491,6 +504,41 @@ func validateQueryFields(entity schema.Entity) error {
 	return nil
 }
 
+func validateDistinctColumns(entity schema.Entity, query schema.Query) error {
+	if !query.HasDistinct() {
+		return nil
+	}
+
+	if query.Count {
+		return fmt.Errorf("entity %q query %q has Distinct() with Count(), the total would count the rows the dedupe drops", entity.Name, query.Type)
+	}
+
+	if key, found := entity.ContainsUniqueKey(query.Distinct); found {
+		return fmt.Errorf("entity %q query %q Distinct selects the unique key (%s), which every row has a different value of, so nothing is deduplicated", entity.Name, query.Type, strings.Join(key, ", "))
+	}
+
+	seen := make(map[string]bool, len(query.Distinct))
+	for _, fieldName := range query.Distinct {
+		field, found := entity.GetFieldByName(fieldName)
+		if !found {
+			return fmt.Errorf("entity %q query %q Distinct references nonexisting field %q", entity.Name, query.Type, fieldName)
+		}
+		if entity.IsFieldVirtual(field) {
+			return fmt.Errorf("entity %q query %q Distinct references virtual field %q, which has no database column", entity.Name, query.Type, fieldName)
+		}
+		if query.HasContract(schema.ContractPROTO) && !field.CanApiRead() {
+			return fmt.Errorf("entity %q query %q Distinct returns field %q, which the proto contract cannot read", entity.Name, query.Type, fieldName)
+		}
+		lower := strings.ToLower(fieldName)
+		if seen[lower] {
+			return fmt.Errorf("entity %q query %q Distinct repeats field %q", entity.Name, query.Type, fieldName)
+		}
+		seen[lower] = true
+	}
+
+	return nil
+}
+
 // validateOrderColumns checks every Asc()/Desc() column is a real column, named once
 func validateOrderColumns(entity schema.Entity, query schema.Query) error {
 	seen := make(map[string]bool, len(query.OrderBy))
@@ -501,6 +549,10 @@ func validateOrderColumns(entity schema.Entity, query schema.Query) error {
 		if entityFieldIsVirtual(entity, column.Name) {
 			return fmt.Errorf("entity %q query %q order by references virtual field %q, which has no database column", entity.Name, query.Type, column.Name)
 		}
+		// a distinct select only holds its own columns, so nothing else can be sorted
+		if query.HasDistinct() && !containsFold(query.Distinct, column.Name) {
+			return fmt.Errorf("entity %q query %q sorts by field %q, which Distinct() does not select", entity.Name, query.Type, column.Name)
+		}
 		lower := strings.ToLower(column.Name)
 		if seen[lower] {
 			return fmt.Errorf("entity %q query %q order by repeats field %q", entity.Name, query.Type, column.Name)
@@ -509,6 +561,16 @@ func validateOrderColumns(entity schema.Entity, query schema.Query) error {
 	}
 
 	return nil
+}
+
+func containsFold(values []string, name string) bool {
+	for _, value := range values {
+		if strings.EqualFold(value, name) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // validateUpsertTarget checks the conflict target is a key the database can collide

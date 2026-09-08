@@ -38,6 +38,7 @@ New here? Start with [getting started](guide/01-getting-started.md).
 | [02-custom](examples/02-custom.md) | The DSL cannot express every query. This example adds hand-written SQL and proto next to the generated files, and both halves compile into one typed API. |
 | [03-optional](examples/03-optional.md) | What `Optional()` does to each type, and how an optional field differs from an optional filter. |
 | [04-contracts](examples/04-contracts.md) | `Contracts()` decides where an entity, a field or a query shows up. Four entities, one for each combination. |
+| [05-queries](examples/05-queries.md) | One `Build` entity and a tour of every query the DSL generates, so you can see the SQL, the proto and the Go method each one produces. |
 <!-- pages:end -->
 
 ## How these pages are kept

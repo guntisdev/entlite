@@ -65,6 +65,9 @@ type ListAllOperations interface {
 	QueryBuilder
 	// Count also returns how many rows match, counted before Limit. An empty page reports 0.
 	Count() ListAllOperations
+	// Distinct returns the deduplicated values of the given columns instead of whole
+	// rows. Every column is part of the key, so sorting is limited to them.
+	Distinct(fields ...string) ListAllOperations
 	// Asc appends a sort column, ascending.
 	Asc(field string) ListAllOperations
 	// Desc appends a sort column, descending.
@@ -84,6 +87,9 @@ type ListByOperations interface {
 	QueryBuilder
 	// Count also returns how many rows match, counted before Limit. An empty page reports 0.
 	Count() ListByOperations
+	// Distinct returns the deduplicated values of the given columns instead of whole
+	// rows. Every column is part of the key, so sorting is limited to them.
+	Distinct(fields ...string) ListByOperations
 	// Asc appends a sort column, ascending.
 	Asc(field string) ListByOperations
 	// Desc appends a sort column, descending.
@@ -116,6 +122,7 @@ type Query struct {
 	fields       []string        // For GetBy: list of field name strings
 	filters      []filter.Filter // For ListBy: list of filters
 	count        bool            // For list queries: whether to count matching rows
+	distinct     []string        // For list queries: the columns selected deduplicated
 	orderBy      []OrderColumn   // For list queries: sort columns, in order
 	hasLimit     bool            // For list queries: whether LIMIT is set
 	limit        int             // For list queries: fixed limit, 0 means the caller sets it
@@ -199,6 +206,12 @@ func (q listAllQuery) Count() ListAllOperations {
 	return q
 }
 
+// Distinct selects the deduplicated values of the given columns of the ListAll query
+func (q listAllQuery) Distinct(fields ...string) ListAllOperations {
+	q.base.distinct = fields
+	return q
+}
+
 // Asc appends a sort column to the ListAll query, ascending
 func (q listAllQuery) Asc(field string) ListAllOperations {
 	q.base.addOrder(field, false)
@@ -245,6 +258,12 @@ func (q listByQuery) Contracts(contracts ...entlite.Layer) ListByOperations {
 // Count adds a COUNT operation to the ListBy query
 func (q listByQuery) Count() ListByOperations {
 	q.base.count = true
+	return q
+}
+
+// Distinct selects the deduplicated values of the given columns of the ListBy query
+func (q listByQuery) Distinct(fields ...string) ListByOperations {
+	q.base.distinct = fields
 	return q
 }
 
@@ -366,6 +385,11 @@ func (q Query) GetFilters() []filter.Filter {
 // HasCount reports if a list query also returns a count.
 func (q Query) HasCount() bool {
 	return q.count
+}
+
+// GetDistinct returns the deduplicated columns, or nil when the query returns rows.
+func (q Query) GetDistinct() []string {
+	return q.distinct
 }
 
 // GetOrderBy returns the sort columns in order, or nil when there is none.
