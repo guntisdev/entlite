@@ -150,7 +150,7 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	return content.String()
 }
 
-// generateIndexSQL emits CREATE INDEX for index.Fields. Primary keys are inline
+// generateIndexSQL emits CREATE INDEX for secondary indexes. Primary keys are inline
 // in the CREATE TABLE.
 func (g *Generator) generateIndexSQL(entity schema.Entity) string {
 	var content strings.Builder

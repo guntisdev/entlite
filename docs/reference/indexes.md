@@ -9,18 +9,19 @@ Holds the index builders used in an entity schema.
 | Builder | Description |
 | --- | --- |
 | `index.Primary(fields ...string) IndexBuilder` | Declares the primary key over the given fields. It replaces the generated id column, which is left out of the table. |
-| `index.Fields(fields ...string) IndexOperations` | Declares a secondary index over the given fields. |
+| `index.Asc(fields ...string) IndexOperations` | Declares a secondary index whose first columns are sorted ascending. Chain Asc or Desc to append more columns, e.g. Asc("is_active").Desc("created_at"). |
+| `index.Desc(fields ...string) IndexOperations` | Declares a secondary index whose first columns are sorted descending. Chain Asc or Desc to append more columns, e.g. Desc("created_at").Asc("id"). |
 
 ## IndexOperations
 
-Exposes the fluent modifiers available on a Fields() index.
+Exposes the fluent modifiers available on a secondary index.
 
 | Method | Description |
 | --- | --- |
 | `Unique() IndexOperations` | Turns the index into a unique constraint. |
 | `Name(name string) IndexOperations` | Overrides the auto-generated index name |
-| `Asc(field string) IndexOperations` | Appends a column sorted ascending. |
-| `Desc(field string) IndexOperations` | Appends a column sorted descending. |
+| `Asc(fields ...string) IndexOperations` | Appends columns sorted ascending. |
+| `Desc(fields ...string) IndexOperations` | Appends columns sorted descending. |
 
 ## Index types
 

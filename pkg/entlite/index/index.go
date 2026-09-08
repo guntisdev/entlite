@@ -28,17 +28,17 @@ type IndexBuilder interface {
 	Index()
 }
 
-// IndexOperations exposes the fluent modifiers available on a Fields() index.
+// IndexOperations exposes the fluent modifiers available on a secondary index.
 type IndexOperations interface {
 	IndexBuilder
 	// Unique turns the index into a unique constraint.
 	Unique() IndexOperations
 	// Name overrides the auto-generated index name
 	Name(name string) IndexOperations
-	// Asc appends a column sorted ascending.
-	Asc(field string) IndexOperations
-	// Desc appends a column sorted descending.
-	Desc(field string) IndexOperations
+	// Asc appends columns sorted ascending.
+	Asc(fields ...string) IndexOperations
+	// Desc appends columns sorted descending.
+	Desc(fields ...string) IndexOperations
 }
 
 // Index holds the state of one index.
@@ -55,18 +55,25 @@ func (Index) Index() {}
 // Primary declares the primary key over the given fields. It replaces the generated
 // id column, which is left out of the table.
 func Primary(fields ...string) IndexBuilder {
-	return Index{typeName: TypePrimary, columns: columnsFromFields(fields)}
+	return Index{typeName: TypePrimary, columns: columnsFromFields(fields, false)}
 }
 
-// Fields declares a secondary index over the given fields.
-func Fields(fields ...string) IndexOperations {
-	return Index{typeName: TypeIndex, columns: columnsFromFields(fields)}
+// Asc declares a secondary index whose first columns are sorted ascending. Chain
+// Asc or Desc to append more columns, e.g. Asc("is_active").Desc("created_at").
+func Asc(fields ...string) IndexOperations {
+	return Index{typeName: TypeIndex, columns: columnsFromFields(fields, false)}
 }
 
-func columnsFromFields(fields []string) []Column {
+// Desc declares a secondary index whose first columns are sorted descending. Chain
+// Asc or Desc to append more columns, e.g. Desc("created_at").Asc("id").
+func Desc(fields ...string) IndexOperations {
+	return Index{typeName: TypeIndex, columns: columnsFromFields(fields, true)}
+}
+
+func columnsFromFields(fields []string, desc bool) []Column {
 	cols := make([]Column, len(fields))
 	for i, f := range fields {
-		cols[i] = Column{name: f}
+		cols[i] = Column{name: f, desc: desc}
 	}
 	return cols
 }
@@ -83,15 +90,15 @@ func (i Index) Name(name string) IndexOperations {
 	return i
 }
 
-// Asc appends a column sorted ascending.
-func (i Index) Asc(field string) IndexOperations {
-	i.columns = append(i.columns, Column{name: field, desc: false})
+// Asc appends columns sorted ascending.
+func (i Index) Asc(fields ...string) IndexOperations {
+	i.columns = append(i.columns, columnsFromFields(fields, false)...)
 	return i
 }
 
-// Desc appends a column sorted descending.
-func (i Index) Desc(field string) IndexOperations {
-	i.columns = append(i.columns, Column{name: field, desc: true})
+// Desc appends columns sorted descending.
+func (i Index) Desc(fields ...string) IndexOperations {
+	i.columns = append(i.columns, columnsFromFields(fields, true)...)
 	return i
 }
 
