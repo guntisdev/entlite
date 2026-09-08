@@ -18,6 +18,7 @@ func reservedEntity() schema.Entity {
 			{Name: "ID", Type: schema.FieldTypeInt, Primary: true, Contracts: sqlc},
 			{Name: "table", Type: schema.FieldTypeString, Contracts: sqlc},
 			{Name: "order", Type: schema.FieldTypeInt, Contracts: sqlc},
+			{Name: "commit", Type: schema.FieldTypeString, Contracts: sqlc},
 			{Name: "label", Type: schema.FieldTypeString, Contracts: sqlc},
 		},
 		Indexes: []schema.Index{{
@@ -42,9 +43,9 @@ func TestReservedColumnsAreQuoted(t *testing.T) {
 		dialect schema.SQLDialect
 		quoted  []string
 	}{
-		{schema.PostgreSQL, []string{`"table"`, `"order"`}},
-		{schema.SQLite, []string{`"table"`, `"order"`}},
-		{schema.MySQL, []string{"`table`", "`order`"}},
+		{schema.PostgreSQL, []string{`"table"`, `"order"`, `"commit"`}},
+		{schema.SQLite, []string{`"table"`, `"order"`, `"commit"`}},
+		{schema.MySQL, []string{"`table`", "`order`", "`commit`"}},
 	}
 
 	for _, tt := range tests {
