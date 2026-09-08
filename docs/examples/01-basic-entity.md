@@ -16,7 +16,7 @@ Source: [examples/01-basic-entity](../../examples/01-basic-entity)
 - `CreateBulk().Upsert("email")`: re-importing a row overwrites it instead of failing on the unique email
 - Queries by field: `GetBy("email")`, `ListBy("is_active")`, and `Name()` to rename one
 - Filters: `filter.Range()` and `filter.Search()`
-- Indexes: multi column, `Desc()` sort order, `Unique()`, `Name()`
+- Indexes: multi column `index.Asc()` / `index.Desc()`, mixed sort order, `Unique()`, `Name()`
 - The same schema on three dialects: sqlite, postgresql, mysql
 
 ## Entity
@@ -125,14 +125,17 @@ func (User) Queries() []entlite.Query {
 func (User) Indexes() []entlite.Index {
 	return []entlite.Index{
 		// index on two columns
-		index.Fields("age", "is_active"),
-		// descending sort
-		index.Fields("is_active").
+		index.Asc("age", "is_active"),
+		// created_at is sorted the other way round
+		index.Asc("is_active").
 			Desc("created_at"),
+		// newest first, id breaks the tie
+		index.Desc("created_at").
+			Asc("id"),
 		// unique across two columns
-		index.Fields("name", "email").Unique(),
+		index.Asc("name", "email").Unique(),
 		// explicit index name
-		index.Fields("login_count", "rating").
+		index.Asc("login_count", "rating").
 			Name("idx_users_stats"),
 	}
 }
@@ -169,6 +172,7 @@ CREATE TABLE IF NOT EXISTS "user"(
 );
 CREATE INDEX IF NOT EXISTS "idx_user_age_is_active" ON "user" (age, is_active);
 CREATE INDEX IF NOT EXISTS "idx_user_is_active_created_at" ON "user" (is_active, created_at DESC);
+CREATE INDEX IF NOT EXISTS "idx_user_created_at_id" ON "user" (created_at DESC, id);
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_user_name_email" ON "user" (name, email);
 CREATE INDEX IF NOT EXISTS "idx_users_stats" ON "user" (login_count, rating);
 ```

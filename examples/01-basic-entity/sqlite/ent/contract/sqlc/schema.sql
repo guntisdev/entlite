@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS "user"(
 );
 CREATE INDEX IF NOT EXISTS "idx_user_age_is_active" ON "user" (age, is_active);
 CREATE INDEX IF NOT EXISTS "idx_user_is_active_created_at" ON "user" (is_active, created_at DESC);
+CREATE INDEX IF NOT EXISTS "idx_user_created_at_id" ON "user" (created_at DESC, id);
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_user_name_email" ON "user" (name, email);
 CREATE INDEX IF NOT EXISTS "idx_users_stats" ON "user" (login_count, rating);
 
