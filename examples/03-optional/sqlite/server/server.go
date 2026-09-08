@@ -197,15 +197,16 @@ func (s *ArticleServer) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(
 
 	queries := db.New(s.db)
 
-	// TODO generated params miss the optional published_at range
 	dbArticles, totalSize, err := queries.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(
 		ctx,
 		db.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams{
-			Author:     req.Msg.Author,
-			IsFeatured: req.Msg.GetIsFeatured(),
-			Title:      req.Msg.GetTitle(),
-			Limit:      req.Msg.GetLimit(),
-			Offset:     req.Msg.GetOffset(),
+			Author:         req.Msg.Author,
+			IsFeatured:     req.Msg.GetIsFeatured(),
+			MinPublishedAt: protoToTimePtr(req.Msg.GetMinPublishedAt()),
+			MaxPublishedAt: protoToTimePtr(req.Msg.GetMaxPublishedAt()),
+			Title:          req.Msg.GetTitle(),
+			Limit:          req.Msg.GetLimit(),
+			Offset:         req.Msg.GetOffset(),
 		},
 	)
 	if err != nil {

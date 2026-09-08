@@ -280,10 +280,12 @@ func (s *ReadingServer) ListReadingFilterBySensorIdRecordedAtFlagged(
 	queries := db.New(s.db)
 
 	dbReadings, totalSize, err := queries.ListReadingFilterBySensorIdRecordedAtFlagged(ctx, db.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
-		SensorID: req.Msg.SensorId,
-		Flagged:  req.Msg.Flagged,
-		Limit:    req.Msg.GetLimit(),
-		Offset:   req.Msg.GetOffset(),
+		SensorID:      req.Msg.SensorId,
+		MinRecordedAt: req.Msg.MinRecordedAt.AsTime(),
+		MaxRecordedAt: req.Msg.MaxRecordedAt.AsTime(),
+		Flagged:       req.Msg.Flagged,
+		Limit:         req.Msg.GetLimit(),
+		Offset:        req.Msg.GetOffset(),
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list readings: %w", err))
