@@ -158,7 +158,7 @@ func inRequest(entity schema.Entity, field schema.Field, queryType schema.QueryT
 		return false
 	}
 	if queryType == schema.QueryCreate {
-		return !field.IsID()
+		return !field.IsID() || entity.CallerSuppliesID()
 	}
 	// an update is keyed by the primary key, so those fields stay even when immutable
 	return entity.IsPrimaryKeyField(field) || !field.Immutable

@@ -325,7 +325,11 @@ func writeCreateFields(content *strings.Builder, entity schema.Entity) {
 	var requiredStr = "[(buf.validate.field).required = true]"
 	for _, field := range entity.Fields {
 		canWrite := field.CanApiWrite()
-		if field.IsID() || !canWrite {
+		if !canWrite {
+			continue
+		}
+		// the id is in the request only when the caller supplies it
+		if field.IsID() && !entity.CallerSuppliesID() {
 			continue
 		}
 		writeFieldComment(content, field.Comment)
