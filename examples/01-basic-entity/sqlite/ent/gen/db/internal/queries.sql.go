@@ -303,7 +303,7 @@ func (q *Queries) ListAllUser(ctx context.Context) ([]User, error) {
 }
 
 const listUserFilterByAgeName = `-- name: ListUserFilterByAgeName :many
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "user" WHERE age BETWEEN ?1 AND ?2 AND name LIKE ?3 ORDER BY created_at LIMIT ?5 OFFSET ?4
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "user" WHERE age >= ?1 AND age <= ?2 AND name LIKE ?3 ORDER BY created_at LIMIT ?5 OFFSET ?4
 `
 
 type ListUserFilterByAgeNameParams struct {

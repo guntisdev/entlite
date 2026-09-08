@@ -116,7 +116,7 @@ func (User) Queries() []entlite.Query {
 		query.DeleteAll(),
 		query.ListBy("is_active").Name("ListActive").Limit().Offset(),
 		query.ListBy(
-			filter.Range("age"),   // age BETWEEN :min_age AND :max_age
+			filter.Range("age"),   // :min_age <= age <= :max_age
 			filter.Search("name"), // name LIKE :name
 		).Asc("created_at").Count().Limit().Offset(),
 	}
@@ -268,7 +268,7 @@ SELECT * FROM "user";
 SELECT * FROM "user" WHERE is_active = @is_active LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListUserFilterByAgeName :many
-SELECT *, COUNT(*) OVER() AS total_size FROM "user" WHERE age BETWEEN @min_age AND @max_age AND name LIKE @name ORDER BY created_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT *, COUNT(*) OVER() AS total_size FROM "user" WHERE age >= @min_age AND age <= @max_age AND name LIKE @name ORDER BY created_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateUser :one
 UPDATE "user" SET

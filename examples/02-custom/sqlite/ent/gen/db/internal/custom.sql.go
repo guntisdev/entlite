@@ -38,8 +38,8 @@ type GetSensorReadingStatsRow struct {
 // Hand-written queries the DSL cannot express. entlite never writes this file.
 // The tables are defined in the generated schema.sql.
 // Aggregate value statistics for a single sensor over a time window.
-// >= / <= instead of BETWEEN: sqlc cannot infer a DATETIME type inside BETWEEN
-// and drops the bounds from the params struct.
+// >= / <= instead of BETWEEN: sqlc drops the bounds from the params struct
+// unless the range is the first filter.
 func (q *Queries) GetSensorReadingStats(ctx context.Context, arg GetSensorReadingStatsParams) (GetSensorReadingStatsRow, error) {
 	row := q.db.QueryRowContext(ctx, getSensorReadingStats, arg.SensorID, arg.FromTs, arg.ToTs)
 	var i GetSensorReadingStatsRow

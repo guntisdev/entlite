@@ -248,14 +248,16 @@ func (q *Queries) ListReadingBySensorId(ctx context.Context, arg ListReadingBySe
 }
 
 const listReadingFilterBySensorIdRecordedAtFlagged = `-- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = ?1 AND recorded_at BETWEEN ?2 AND ?3 AND flagged = ?4 ORDER BY recorded_at LIMIT ?6 OFFSET ?5
+SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = ?1 AND recorded_at >= ?2 AND recorded_at <= ?3 AND flagged = ?4 ORDER BY recorded_at LIMIT ?6 OFFSET ?5
 `
 
 type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
-	SensorID int64 `json:"sensor_id"`
-	Flagged  int64 `json:"flagged"`
-	Offset   int64 `json:"offset"`
-	Limit    int64 `json:"limit"`
+	SensorID      int64     `json:"sensor_id"`
+	MinRecordedAt time.Time `json:"min_recorded_at"`
+	MaxRecordedAt time.Time `json:"max_recorded_at"`
+	Flagged       int64     `json:"flagged"`
+	Offset        int64     `json:"offset"`
+	Limit         int64     `json:"limit"`
 }
 
 type ListReadingFilterBySensorIdRecordedAtFlaggedRow struct {
@@ -272,6 +274,8 @@ type ListReadingFilterBySensorIdRecordedAtFlaggedRow struct {
 func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]ListReadingFilterBySensorIdRecordedAtFlaggedRow, error) {
 	rows, err := q.db.QueryContext(ctx, listReadingFilterBySensorIdRecordedAtFlagged,
 		arg.SensorID,
+		arg.MinRecordedAt,
+		arg.MaxRecordedAt,
 		arg.Flagged,
 		arg.Offset,
 		arg.Limit,

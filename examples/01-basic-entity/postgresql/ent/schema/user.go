@@ -51,7 +51,7 @@ func (User) Queries() []entlite.Query {
 		query.DeleteAll(),
 		query.ListBy("is_active").Name("ListActive").Limit().Offset(),
 		query.ListBy(
-			filter.Range("age"),   // age BETWEEN :min_age AND :max_age
+			filter.Range("age"),   // :min_age <= age <= :max_age
 			filter.Search("name"), // name LIKE :name
 		).Asc("created_at").Count().Limit().Offset(),
 	}

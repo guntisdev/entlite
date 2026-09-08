@@ -28,7 +28,7 @@ SELECT * FROM "reading" WHERE ID = ?;
 SELECT * FROM "reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT *, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = @sensor_id AND recorded_at BETWEEN @min_recorded_at AND @max_recorded_at AND flagged = @flagged ORDER BY recorded_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT *, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = @sensor_id AND recorded_at >= @min_recorded_at AND recorded_at <= @max_recorded_at AND flagged = @flagged ORDER BY recorded_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateReading :one
 UPDATE "reading" SET

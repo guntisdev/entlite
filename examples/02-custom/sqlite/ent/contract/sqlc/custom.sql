@@ -9,8 +9,8 @@ SELECT
   MIN(value) AS min_value,
   MAX(value) AS max_value
 FROM "reading"
--- >= / <= instead of BETWEEN: sqlc cannot infer a DATETIME type inside BETWEEN
--- and drops the bounds from the params struct.
+-- >= / <= instead of BETWEEN: sqlc drops the bounds from the params struct
+-- unless the range is the first filter.
 WHERE sensor_id = :sensor_id
   AND recorded_at >= :from_ts AND recorded_at <= :to_ts;
 

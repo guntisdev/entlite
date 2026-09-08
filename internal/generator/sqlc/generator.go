@@ -298,9 +298,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 				whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", g.column(filter.Field), g.namedArg(filter.Field)))
 
 			case schema.QueryFilterRange:
-				minArg := g.namedArg("min_" + filter.Field)
-				maxArg := g.namedArg("max_" + filter.Field)
-				whereParts = append(whereParts, fmt.Sprintf("%s BETWEEN %s AND %s", g.column(filter.Field), minArg, maxArg))
+				whereParts = append(whereParts, g.rangeClause(filter.Field))
 			}
 		}
 		selectSQL := fmt.Sprintf("SELECT * FROM %s", g.quote(tableName))

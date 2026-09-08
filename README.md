@@ -8,10 +8,6 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 * Rename to google AIP https://google.aip.dev/
 * Add mcp for visual testing of examples/
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
-* Fix filter.Range() on sqlite, emit `col >= @min_col AND col <= @max_col` instead of BETWEEN - sqlc binds
-  the BETWEEN params only when the range is the first filter, elsewhere it keeps the ?N placeholders but drops
-  the min_/max_ args, so `ListBy(filter.Search("name"), filter.Range("age"))` generates a method that cannot
-  bind. postgresql and mysql are fine in any order
 
 * Implement Queries Sum(), Avg()
 * Implement Limit()

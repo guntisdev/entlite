@@ -123,6 +123,8 @@ func (q *Queries) ListReadingBySensorId(ctx context.Context, arg ListReadingBySe
 
 type ListReadingFilterBySensorIdRecordedAtFlaggedParams struct {
 	SensorID int32 `json:"sensor_id"`
+	MinRecordedAt time.Time `json:"min_recorded_at"`
+	MaxRecordedAt time.Time `json:"max_recorded_at"`
 	Flagged bool `json:"flagged"`
 	Offset int32 `json:"offset"`
 	Limit int32 `json:"limit"`
@@ -132,6 +134,8 @@ type ListReadingFilterBySensorIdRecordedAtFlaggedRow = internal.ListReadingFilte
 func (q *Queries) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, arg ListReadingFilterBySensorIdRecordedAtFlaggedParams) ([]*Reading, int64, error) {
 	internalArg := internal.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
 		SensorID: IntConvert[int32, int64](arg.SensorID),
+		MinRecordedAt: arg.MinRecordedAt,
+		MaxRecordedAt: arg.MaxRecordedAt,
 		Flagged: SQLiteBoolToInt(arg.Flagged),
 		Offset: IntConvert[int32, int64](arg.Offset),
 		Limit: IntConvert[int32, int64](arg.Limit),

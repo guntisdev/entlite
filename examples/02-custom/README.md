@@ -66,8 +66,7 @@ cd sqlite
 make run     # serves on :8080
 ```
 
-Known gap: `ReadingService.FilterBySensorIdRecordedAtFlagged` fails at runtime.
-`filter.Range("recorded_at")` emits `recorded_at BETWEEN @min AND @max`, and
-sqlc cannot infer the type of a DATETIME placeholder inside `BETWEEN`. It drops
-both bounds from the params struct while the query still binds them.
-`custom.sql` works around this by writing the range as `>=` and `<=`.
+On sqlite `filter.Range("recorded_at")` emits `recorded_at >= @min_recorded_at
+AND recorded_at <= @max_recorded_at`, not `BETWEEN`: sqlc drops the bounds from
+the params struct unless the range is the first filter, and the query then binds
+parameters it never received. `custom.sql` writes its ranges the same way.

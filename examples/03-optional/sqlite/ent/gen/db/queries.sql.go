@@ -109,6 +109,8 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuth
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
 	Author string `json:"author"`
 	IsFeatured bool `json:"is_featured"`
+	MinPublishedAt *time.Time `json:"min_published_at"`
+	MaxPublishedAt *time.Time `json:"max_published_at"`
 	Title string `json:"title"`
 	Offset int32 `json:"offset"`
 	Limit int32 `json:"limit"`
@@ -119,6 +121,8 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 	internalArg := internal.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams{
 		Author: arg.Author,
 		IsFeatured: SQLiteBoolToInt(arg.IsFeatured),
+		MinPublishedAt: arg.MinPublishedAt,
+		MaxPublishedAt: arg.MaxPublishedAt,
 		Title: arg.Title,
 		Offset: IntConvert[int32, int64](arg.Offset),
 		Limit: IntConvert[int32, int64](arg.Limit),

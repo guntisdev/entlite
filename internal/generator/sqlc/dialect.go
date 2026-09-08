@@ -337,3 +337,19 @@ func (g *Generator) getParameterPlaceholder(index int) string {
 
 	panic("unreachable: invalid SQL dialect")
 }
+
+// BETWEEN on sqlite loses its min_/max_ args unless the range is the first filter, >= / <= always binds
+func (g *Generator) rangeClause(field string) string {
+	column := g.column(field)
+	minArg := g.namedArg("min_" + field)
+	maxArg := g.namedArg("max_" + field)
+
+	switch g.sqlDialect {
+	case schema.MySQL, schema.PostgreSQL:
+		return fmt.Sprintf("%s BETWEEN %s AND %s", column, minArg, maxArg)
+	case schema.SQLite:
+		return fmt.Sprintf("%s >= %s AND %s <= %s", column, minArg, column, maxArg)
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}

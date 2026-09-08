@@ -91,7 +91,7 @@ func (User) Queries() []entlite.Query {
 		query.DeleteAll(),
 		query.ListBy("is_active").Name("ListActive").Limit().Offset(),
 		query.ListBy(
-			filter.Range("age"),   // age BETWEEN :min_age AND :max_age
+			filter.Range("age"),   // :min_age <= age <= :max_age
 			filter.Search("name"), // name LIKE :name
 		).Asc("created_at").Count().Limit().Offset(),
 	}
@@ -101,7 +101,8 @@ func (User) Queries() []entlite.Query {
 
 `DefaultCRUD()` expands to create, get, update and delete. `Name()` renames the
 generated method, which you need when two queries would collide. Filters become
-where clauses: `Eq` is `=`, `Range` is `BETWEEN`, `Search` is `LIKE`.
+where clauses: `Eq` is `=`, `Range` is `BETWEEN`
+(`>=` and `<=` on sqlite, where sqlc mis-binds `BETWEEN`), `Search` is `LIKE`.
 `Asc(field)` and `Desc(field)` sort a list query, chain them for more columns:
 `Desc("created_at").Asc("name")` gives `ORDER BY created_at DESC, name`. `Limit()` and
 `Offset()` paginate any list query: the query gets `LIMIT`/`OFFSET` and the

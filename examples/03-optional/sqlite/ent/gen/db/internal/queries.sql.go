@@ -245,15 +245,17 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuth
 }
 
 const listArticleFilterByAuthorIsFeaturedPublishedAtTitle = `-- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at BETWEEN ?3 AND ?4 AND title LIKE ?5 ORDER BY published_at LIMIT ?7 OFFSET ?6
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "article" WHERE author = ?1 AND is_featured = ?2 AND published_at >= ?3 AND published_at <= ?4 AND title LIKE ?5 ORDER BY published_at LIMIT ?7 OFFSET ?6
 `
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
-	Author     string `json:"author"`
-	IsFeatured int64  `json:"is_featured"`
-	Title      string `json:"title"`
-	Offset     int64  `json:"offset"`
-	Limit      int64  `json:"limit"`
+	Author         string     `json:"author"`
+	IsFeatured     int64      `json:"is_featured"`
+	MinPublishedAt *time.Time `json:"min_published_at"`
+	MaxPublishedAt *time.Time `json:"max_published_at"`
+	Title          string     `json:"title"`
+	Offset         int64      `json:"offset"`
+	Limit          int64      `json:"limit"`
 }
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRow struct {
@@ -278,6 +280,8 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 	rows, err := q.db.QueryContext(ctx, listArticleFilterByAuthorIsFeaturedPublishedAtTitle,
 		arg.Author,
 		arg.IsFeatured,
+		arg.MinPublishedAt,
+		arg.MaxPublishedAt,
 		arg.Title,
 		arg.Offset,
 		arg.Limit,
