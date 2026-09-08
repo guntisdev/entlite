@@ -27,6 +27,7 @@ New here? Start with [getting started](guide/01-getting-started.md).
 | [Fields](reference/fields.md) | Holds the field builders used to describe an entity schema. |
 | [Filters](reference/filters.md) | Holds the filters used by a ListBy query. |
 | [Indexes](reference/indexes.md) | Holds the index builders used in an entity schema. |
+| [Naming](reference/naming.md) | One canonical name per concept in the schema. |
 | [Queries](reference/queries.md) | Holds the query builders used in an entity schema. |
 | [Type mapping](reference/type-mapping.md) | One field type, five outputs. |
 
