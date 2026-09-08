@@ -29,7 +29,7 @@ INSERT INTO "user" (
   $9,
   $10,
   $11
-) RETURNING ID;
+) RETURNING id;
 
 -- name: CreateBulkUser :one
 -- re-importing the same users overwrites the row that shares the email
@@ -67,10 +67,10 @@ ON CONFLICT (email) DO UPDATE SET
   rating = excluded.rating,
   preferences = excluded.preferences,
   updated_at = excluded.updated_at
-RETURNING ID;
+RETURNING id;
 
--- name: GetUserByID :one
-SELECT * FROM "user" WHERE ID = $1;
+-- name: GetUserById :one
+SELECT * FROM "user" WHERE id = $1;
 
 -- name: GetUserByEmail :one
 -- Look up a user by email address
@@ -96,11 +96,11 @@ UPDATE "user" SET
   rating = COALESCE(sqlc.narg('rating'), rating),
   preferences = COALESCE(sqlc.narg('preferences'), preferences),
   updated_at = @updated_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteUser :exec
-DELETE FROM "user" WHERE ID = $1;
+DELETE FROM "user" WHERE id = $1;
 
 -- name: DeleteAllUser :exec
 DELETE FROM "user";

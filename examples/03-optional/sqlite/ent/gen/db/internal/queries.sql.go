@@ -15,7 +15,7 @@ const createArticle = `-- name: CreateArticle :one
 
 
 INSERT INTO "article" (
-  ID,
+  id,
   slug,
   title,
   author,
@@ -46,7 +46,7 @@ INSERT INTO "article" (
   ?
 )
 ON CONFLICT (slug) DO NOTHING
-RETURNING ID
+RETURNING id
 `
 
 type CreateArticleParams struct {
@@ -94,7 +94,7 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (s
 }
 
 const deleteArticle = `-- name: DeleteArticle :exec
-DELETE FROM "article" WHERE ID = ?
+DELETE FROM "article" WHERE id = ?
 `
 
 func (q *Queries) DeleteArticle(ctx context.Context, id string) error {
@@ -102,12 +102,12 @@ func (q *Queries) DeleteArticle(ctx context.Context, id string) error {
 	return err
 }
 
-const getArticleByID = `-- name: GetArticleByID :one
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE ID = ?
+const getArticleById = `-- name: GetArticleById :one
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at FROM "article" WHERE id = ?
 `
 
-func (q *Queries) GetArticleByID(ctx context.Context, id string) (Article, error) {
-	row := q.db.QueryRowContext(ctx, getArticleByID, id)
+func (q *Queries) GetArticleById(ctx context.Context, id string) (Article, error) {
+	row := q.db.QueryRowContext(ctx, getArticleById, id)
 	var i Article
 	err := row.Scan(
 		&i.ID,
@@ -337,7 +337,7 @@ UPDATE "article" SET
   metadata = ?10,
   is_featured = COALESCE(?11, is_featured),
   updated_at = ?12
-WHERE ID = ?13
+WHERE id = ?13
 RETURNING id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at
 `
 
@@ -354,7 +354,7 @@ type UpdateArticleParams struct {
 	Metadata       *string    `json:"metadata"`
 	IsFeatured     *int64     `json:"is_featured"`
 	UpdatedAt      time.Time  `json:"updated_at"`
-	ID             string     `json:"ID"`
+	ID             string     `json:"id"`
 }
 
 func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (Article, error) {

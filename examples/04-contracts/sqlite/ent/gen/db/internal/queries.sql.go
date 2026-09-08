@@ -24,7 +24,7 @@ INSERT INTO "audit" (
   ?,
   ?,
   ?
-) RETURNING ID
+) RETURNING id
 `
 
 type CreateAuditParams struct {
@@ -67,7 +67,7 @@ INSERT INTO "match" (
   ?,
   ?,
   ?
-) RETURNING ID
+) RETURNING id
 `
 
 type CreateMatchParams struct {
@@ -139,7 +139,7 @@ func (q *Queries) DeleteAllMatch(ctx context.Context) error {
 }
 
 const deleteMatch = `-- name: DeleteMatch :exec
-DELETE FROM "match" WHERE ID = ?
+DELETE FROM "match" WHERE id = ?
 `
 
 func (q *Queries) DeleteMatch(ctx context.Context, id int64) error {
@@ -147,12 +147,12 @@ func (q *Queries) DeleteMatch(ctx context.Context, id int64) error {
 	return err
 }
 
-const getMatchByID = `-- name: GetMatchByID :one
-SELECT id, white, black, result, opening, moves, played_at, created_at FROM "match" WHERE ID = ?
+const getMatchById = `-- name: GetMatchById :one
+SELECT id, white, black, result, opening, moves, played_at, created_at FROM "match" WHERE id = ?
 `
 
-func (q *Queries) GetMatchByID(ctx context.Context, id int64) (Match, error) {
-	row := q.db.QueryRowContext(ctx, getMatchByID, id)
+func (q *Queries) GetMatchById(ctx context.Context, id int64) (Match, error) {
+	row := q.db.QueryRowContext(ctx, getMatchById, id)
 	var i Match
 	err := row.Scan(
 		&i.ID,

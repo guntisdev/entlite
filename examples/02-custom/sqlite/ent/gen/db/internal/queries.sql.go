@@ -28,7 +28,7 @@ INSERT INTO "reading" (
   ?,
   ?,
   ?
-) RETURNING ID
+) RETURNING id
 `
 
 type CreateReadingParams struct {
@@ -83,7 +83,7 @@ INSERT INTO "sensor" (
   ?,
   ?,
   ?
-) RETURNING ID
+) RETURNING id
 `
 
 type CreateSensorParams struct {
@@ -121,7 +121,7 @@ func (q *Queries) CreateSensor(ctx context.Context, arg CreateSensorParams) (int
 }
 
 const deleteReading = `-- name: DeleteReading :exec
-DELETE FROM "reading" WHERE ID = ?
+DELETE FROM "reading" WHERE id = ?
 `
 
 func (q *Queries) DeleteReading(ctx context.Context, id int64) error {
@@ -130,7 +130,7 @@ func (q *Queries) DeleteReading(ctx context.Context, id int64) error {
 }
 
 const deleteSensor = `-- name: DeleteSensor :exec
-DELETE FROM "sensor" WHERE ID = ?
+DELETE FROM "sensor" WHERE id = ?
 `
 
 func (q *Queries) DeleteSensor(ctx context.Context, id int64) error {
@@ -138,12 +138,12 @@ func (q *Queries) DeleteSensor(ctx context.Context, id int64) error {
 	return err
 }
 
-const getReadingByID = `-- name: GetReadingByID :one
-SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE ID = ?
+const getReadingById = `-- name: GetReadingById :one
+SELECT id, sensor_id, value, quality, flagged, recorded_at, created_at FROM "reading" WHERE id = ?
 `
 
-func (q *Queries) GetReadingByID(ctx context.Context, id int64) (Reading, error) {
-	row := q.db.QueryRowContext(ctx, getReadingByID, id)
+func (q *Queries) GetReadingById(ctx context.Context, id int64) (Reading, error) {
+	row := q.db.QueryRowContext(ctx, getReadingById, id)
 	var i Reading
 	err := row.Scan(
 		&i.ID,
@@ -182,12 +182,12 @@ func (q *Queries) GetSensorByCode(ctx context.Context, code string) (Sensor, err
 	return i, err
 }
 
-const getSensorByID = `-- name: GetSensorByID :one
-SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at FROM "sensor" WHERE ID = ?
+const getSensorById = `-- name: GetSensorById :one
+SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at FROM "sensor" WHERE id = ?
 `
 
-func (q *Queries) GetSensorByID(ctx context.Context, id int64) (Sensor, error) {
-	row := q.db.QueryRowContext(ctx, getSensorByID, id)
+func (q *Queries) GetSensorById(ctx context.Context, id int64) (Sensor, error) {
+	row := q.db.QueryRowContext(ctx, getSensorById, id)
 	var i Sensor
 	err := row.Scan(
 		&i.ID,
@@ -388,7 +388,7 @@ UPDATE "reading" SET
   quality = ?3,
   flagged = COALESCE(?4, flagged),
   recorded_at = ?5
-WHERE ID = ?6
+WHERE id = ?6
 RETURNING id, sensor_id, value, quality, flagged, recorded_at, created_at
 `
 
@@ -398,7 +398,7 @@ type UpdateReadingParams struct {
 	Quality    int64     `json:"quality"`
 	Flagged    *int64    `json:"flagged"`
 	RecordedAt time.Time `json:"recorded_at"`
-	ID         int64     `json:"ID"`
+	ID         int64     `json:"id"`
 }
 
 func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (Reading, error) {
@@ -434,7 +434,7 @@ UPDATE "sensor" SET
   firmware = COALESCE(?7, firmware),
   sample_rate_ms = COALESCE(?8, sample_rate_ms),
   updated_at = ?9
-WHERE ID = ?10
+WHERE id = ?10
 RETURNING id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at
 `
 
@@ -448,7 +448,7 @@ type UpdateSensorParams struct {
 	Firmware     *string   `json:"firmware"`
 	SampleRateMs *int64    `json:"sample_rate_ms"`
 	UpdatedAt    time.Time `json:"updated_at"`
-	ID           int64     `json:"ID"`
+	ID           int64     `json:"id"`
 }
 
 func (q *Queries) UpdateSensor(ctx context.Context, arg UpdateSensorParams) (Sensor, error) {

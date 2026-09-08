@@ -4,7 +4,7 @@
 
 -- user table
 CREATE TABLE IF NOT EXISTS "user"(
-  ID SERIAL PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   -- Full name, e.g. "Jane Doe"
   name TEXT NOT NULL,

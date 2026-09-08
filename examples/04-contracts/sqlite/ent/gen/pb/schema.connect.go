@@ -42,9 +42,9 @@ const (
 	// MatchServiceCreateMatchProcedure is the fully-qualified name of the MatchService's CreateMatch
 	// RPC.
 	MatchServiceCreateMatchProcedure = "/proto.MatchService/CreateMatch"
-	// MatchServiceGetMatchByIDProcedure is the fully-qualified name of the MatchService's GetMatchByID
+	// MatchServiceGetMatchByIdProcedure is the fully-qualified name of the MatchService's GetMatchById
 	// RPC.
-	MatchServiceGetMatchByIDProcedure = "/proto.MatchService/GetMatchByID"
+	MatchServiceGetMatchByIdProcedure = "/proto.MatchService/GetMatchById"
 	// MatchServiceDeleteMatchProcedure is the fully-qualified name of the MatchService's DeleteMatch
 	// RPC.
 	MatchServiceDeleteMatchProcedure = "/proto.MatchService/DeleteMatch"
@@ -65,7 +65,7 @@ const (
 // MatchServiceClient is a client for the proto.MatchService service.
 type MatchServiceClient interface {
 	CreateMatch(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
-	GetMatchByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error)
+	GetMatchById(context.Context, *connect.Request[GetMatchByIdRequest]) (*connect.Response[Match], error)
 	DeleteMatch(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error)
 	ListAllMatch(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error)
 }
@@ -87,10 +87,10 @@ func NewMatchServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(matchServiceMethods.ByName("CreateMatch")),
 			connect.WithClientOptions(opts...),
 		),
-		getMatchByID: connect.NewClient[GetMatchByIDRequest, Match](
+		getMatchById: connect.NewClient[GetMatchByIdRequest, Match](
 			httpClient,
-			baseURL+MatchServiceGetMatchByIDProcedure,
-			connect.WithSchema(matchServiceMethods.ByName("GetMatchByID")),
+			baseURL+MatchServiceGetMatchByIdProcedure,
+			connect.WithSchema(matchServiceMethods.ByName("GetMatchById")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteMatch: connect.NewClient[DeleteMatchRequest, emptypb.Empty](
@@ -111,7 +111,7 @@ func NewMatchServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 // matchServiceClient implements MatchServiceClient.
 type matchServiceClient struct {
 	createMatch  *connect.Client[CreateMatchRequest, Match]
-	getMatchByID *connect.Client[GetMatchByIDRequest, Match]
+	getMatchById *connect.Client[GetMatchByIdRequest, Match]
 	deleteMatch  *connect.Client[DeleteMatchRequest, emptypb.Empty]
 	listAllMatch *connect.Client[ListAllMatchRequest, ListAllMatchResponse]
 }
@@ -121,9 +121,9 @@ func (c *matchServiceClient) CreateMatch(ctx context.Context, req *connect.Reque
 	return c.createMatch.CallUnary(ctx, req)
 }
 
-// GetMatchByID calls proto.MatchService.GetMatchByID.
-func (c *matchServiceClient) GetMatchByID(ctx context.Context, req *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error) {
-	return c.getMatchByID.CallUnary(ctx, req)
+// GetMatchById calls proto.MatchService.GetMatchById.
+func (c *matchServiceClient) GetMatchById(ctx context.Context, req *connect.Request[GetMatchByIdRequest]) (*connect.Response[Match], error) {
+	return c.getMatchById.CallUnary(ctx, req)
 }
 
 // DeleteMatch calls proto.MatchService.DeleteMatch.
@@ -139,7 +139,7 @@ func (c *matchServiceClient) ListAllMatch(ctx context.Context, req *connect.Requ
 // MatchServiceHandler is an implementation of the proto.MatchService service.
 type MatchServiceHandler interface {
 	CreateMatch(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
-	GetMatchByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error)
+	GetMatchById(context.Context, *connect.Request[GetMatchByIdRequest]) (*connect.Response[Match], error)
 	DeleteMatch(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error)
 	ListAllMatch(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error)
 }
@@ -157,10 +157,10 @@ func NewMatchServiceHandler(svc MatchServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(matchServiceMethods.ByName("CreateMatch")),
 		connect.WithHandlerOptions(opts...),
 	)
-	matchServiceGetMatchByIDHandler := connect.NewUnaryHandler(
-		MatchServiceGetMatchByIDProcedure,
-		svc.GetMatchByID,
-		connect.WithSchema(matchServiceMethods.ByName("GetMatchByID")),
+	matchServiceGetMatchByIdHandler := connect.NewUnaryHandler(
+		MatchServiceGetMatchByIdProcedure,
+		svc.GetMatchById,
+		connect.WithSchema(matchServiceMethods.ByName("GetMatchById")),
 		connect.WithHandlerOptions(opts...),
 	)
 	matchServiceDeleteMatchHandler := connect.NewUnaryHandler(
@@ -179,8 +179,8 @@ func NewMatchServiceHandler(svc MatchServiceHandler, opts ...connect.HandlerOpti
 		switch r.URL.Path {
 		case MatchServiceCreateMatchProcedure:
 			matchServiceCreateMatchHandler.ServeHTTP(w, r)
-		case MatchServiceGetMatchByIDProcedure:
-			matchServiceGetMatchByIDHandler.ServeHTTP(w, r)
+		case MatchServiceGetMatchByIdProcedure:
+			matchServiceGetMatchByIdHandler.ServeHTTP(w, r)
 		case MatchServiceDeleteMatchProcedure:
 			matchServiceDeleteMatchHandler.ServeHTTP(w, r)
 		case MatchServiceListAllMatchProcedure:
@@ -198,8 +198,8 @@ func (UnimplementedMatchServiceHandler) CreateMatch(context.Context, *connect.Re
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.CreateMatch is not implemented"))
 }
 
-func (UnimplementedMatchServiceHandler) GetMatchByID(context.Context, *connect.Request[GetMatchByIDRequest]) (*connect.Response[Match], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.GetMatchByID is not implemented"))
+func (UnimplementedMatchServiceHandler) GetMatchById(context.Context, *connect.Request[GetMatchByIdRequest]) (*connect.Response[Match], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.GetMatchById is not implemented"))
 }
 
 func (UnimplementedMatchServiceHandler) DeleteMatch(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {

@@ -11,7 +11,7 @@ import (
 
 
 type Reading struct {
-	ID int64 `json:"ID"`
+	ID int64 `json:"id"`
 	SensorID int32 `json:"sensor_id"`
 	Value float64 `json:"value"`
 	Quality int32 `json:"quality"`
@@ -21,7 +21,7 @@ type Reading struct {
 }
 
 type Sensor struct {
-	ID int32 `json:"ID"`
+	ID int32 `json:"id"`
 	Code string `json:"code"`
 	Label string `json:"label"`
 	Kind string `json:"kind"`
@@ -116,7 +116,7 @@ func (m *Reading) ToProto() *pb.Reading {
 	}
 
 	return &pb.Reading{
-		ID: m.ID,
+		Id: m.ID,
 		SensorId: m.SensorID,
 		Value: m.Value,
 		Quality: m.Quality,
@@ -133,7 +133,7 @@ func (m *Sensor) ToProto() *pb.Sensor {
 	}
 
 	return &pb.Sensor{
-		ID: m.ID,
+		Id: m.ID,
 		Code: m.Code,
 		Label: m.Label,
 		Kind: m.Kind,

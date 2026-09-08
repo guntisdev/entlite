@@ -4,7 +4,7 @@
 
 -- Build is one run of a ci pipeline, recorded when it finishes
 CREATE TABLE IF NOT EXISTS "build"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   -- unique, so it can be a GetBy key and an Upsert target
   commit_sha TEXT UNIQUE NOT NULL,
   -- these repeat across rows, so Distinct has something to deduplicate

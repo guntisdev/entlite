@@ -4,7 +4,7 @@
 
 -- user table
 CREATE TABLE IF NOT EXISTS `user`(
-  ID INT AUTO_INCREMENT PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
   -- Full name, e.g. "Jane Doe"
   name VARCHAR(255) NOT NULL,

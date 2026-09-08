@@ -8,7 +8,7 @@
 -- re-posting a slug keeps the article that is already there, the caller
 -- gets sql.ErrNoRows because nothing was inserted
 INSERT INTO "article" (
-  ID,
+  id,
   slug,
   title,
   author,
@@ -39,10 +39,10 @@ INSERT INTO "article" (
   ?
 )
 ON CONFLICT (slug) DO NOTHING
-RETURNING ID;
+RETURNING id;
 
--- name: GetArticleByID :one
-SELECT * FROM "article" WHERE ID = ?;
+-- name: GetArticleById :one
+SELECT * FROM "article" WHERE id = ?;
 
 -- name: GetArticleBySlug :one
 SELECT * FROM "article" WHERE slug = ?;
@@ -70,9 +70,9 @@ UPDATE "article" SET
   metadata = @metadata,
   is_featured = COALESCE(sqlc.narg('is_featured'), is_featured),
   updated_at = @updated_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteArticle :exec
-DELETE FROM "article" WHERE ID = ?;
+DELETE FROM "article" WHERE id = ?;
 

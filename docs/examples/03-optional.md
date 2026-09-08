@@ -179,7 +179,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 -- article table
 CREATE TABLE IF NOT EXISTS "article"(
   -- uuid primary key, generated on the server and not part of requests
-  ID TEXT PRIMARY KEY,
+  id TEXT PRIMARY KEY,
   -- Human/URL identifier, e.g. hello-world
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS "article"(
 -- re-posting a slug keeps the article that is already there, the caller
 -- gets sql.ErrNoRows because nothing was inserted
 INSERT INTO "article" (
-  ID,
+  id,
   slug,
   title,
   author,
@@ -245,10 +245,10 @@ INSERT INTO "article" (
   ?
 )
 ON CONFLICT (slug) DO NOTHING
-RETURNING ID;
+RETURNING id;
 
--- name: GetArticleByID :one
-SELECT * FROM "article" WHERE ID = ?;
+-- name: GetArticleById :one
+SELECT * FROM "article" WHERE id = ?;
 
 -- name: GetArticleBySlug :one
 SELECT * FROM "article" WHERE slug = ?;
@@ -276,11 +276,11 @@ UPDATE "article" SET
   metadata = @metadata,
   is_featured = COALESCE(sqlc.narg('is_featured'), is_featured),
   updated_at = @updated_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteArticle :exec
-DELETE FROM "article" WHERE ID = ?;
+DELETE FROM "article" WHERE id = ?;
 ```
 
 </details>
@@ -304,7 +304,7 @@ import "buf/validate/validate.proto";
 // Article represents as article entity
 message Article {
   // uuid primary key, generated on the server and not part of requests
-  string ID = 1 [(buf.validate.field).required = true];
+  string id = 1 [(buf.validate.field).required = true];
   // Human/URL identifier, e.g. hello-world
   string slug = 2 [(buf.validate.field).required = true];
   string title = 3 [(buf.validate.field).required = true];
@@ -337,12 +337,12 @@ message CreateArticleRequest {
   optional string metadata = 11;
   optional bool is_featured = 12;
 }
-message GetArticleByIDRequest {
-  string ID = 1 [(buf.validate.field).required = true];
+message GetArticleByIdRequest {
+  string id = 1 [(buf.validate.field).required = true];
 }
 message UpdateArticleRequest {
   // uuid primary key, generated on the server and not part of requests
-  optional string ID = 1;
+  optional string id = 1;
   // Human/URL identifier, e.g. hello-world
   string slug = 2 [(buf.validate.field).required = true];
   string title = 3 [(buf.validate.field).required = true];
@@ -358,7 +358,7 @@ message UpdateArticleRequest {
   optional bool is_featured = 12;
 }
 message DeleteArticleRequest {
-  string ID = 1 [(buf.validate.field).required = true];
+  string id = 1 [(buf.validate.field).required = true];
 }
 message GetArticleBySlugRequest {
   string slug = 2 [(buf.validate.field).required = true];
@@ -398,7 +398,7 @@ service ArticleService {
   // re-posting a slug keeps the article that is already there, the caller
   // gets sql.ErrNoRows because nothing was inserted
   rpc CreateArticle(CreateArticleRequest) returns (Article);
-  rpc GetArticleByID(GetArticleByIDRequest) returns (Article);
+  rpc GetArticleById(GetArticleByIdRequest) returns (Article);
   rpc UpdateArticle(UpdateArticleRequest) returns (Article);
   rpc DeleteArticle(DeleteArticleRequest) returns (google.protobuf.Empty);
   rpc GetArticleBySlug(GetArticleBySlugRequest) returns (Article);

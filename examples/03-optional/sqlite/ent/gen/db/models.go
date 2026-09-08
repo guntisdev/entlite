@@ -11,7 +11,7 @@ import (
 
 
 type Article struct {
-	ID string `json:"ID"`
+	ID string `json:"id"`
 	Slug string `json:"slug"`
 	Title string `json:"title"`
 	Author string `json:"author"`
@@ -80,7 +80,7 @@ func (m *Article) ToProto() *pb.Article {
 	}
 
 	return &pb.Article{
-		ID: m.ID,
+		Id: m.ID,
 		Slug: m.Slug,
 		Title: m.Title,
 		Author: m.Author,

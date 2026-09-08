@@ -5,7 +5,7 @@
 -- article table
 CREATE TABLE IF NOT EXISTS "article"(
   -- uuid primary key, generated on the server and not part of requests
-  ID TEXT PRIMARY KEY,
+  id TEXT PRIMARY KEY,
   -- Human/URL identifier, e.g. hello-world
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,

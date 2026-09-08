@@ -40,9 +40,9 @@ const (
 	// ReadingServiceCreateReadingProcedure is the fully-qualified name of the ReadingService's
 	// CreateReading RPC.
 	ReadingServiceCreateReadingProcedure = "/proto.ReadingService/CreateReading"
-	// ReadingServiceGetReadingByIDProcedure is the fully-qualified name of the ReadingService's
-	// GetReadingByID RPC.
-	ReadingServiceGetReadingByIDProcedure = "/proto.ReadingService/GetReadingByID"
+	// ReadingServiceGetReadingByIdProcedure is the fully-qualified name of the ReadingService's
+	// GetReadingById RPC.
+	ReadingServiceGetReadingByIdProcedure = "/proto.ReadingService/GetReadingById"
 	// ReadingServiceDeleteReadingProcedure is the fully-qualified name of the ReadingService's
 	// DeleteReading RPC.
 	ReadingServiceDeleteReadingProcedure = "/proto.ReadingService/DeleteReading"
@@ -55,9 +55,9 @@ const (
 	// SensorServiceCreateSensorProcedure is the fully-qualified name of the SensorService's
 	// CreateSensor RPC.
 	SensorServiceCreateSensorProcedure = "/proto.SensorService/CreateSensor"
-	// SensorServiceGetSensorByIDProcedure is the fully-qualified name of the SensorService's
-	// GetSensorByID RPC.
-	SensorServiceGetSensorByIDProcedure = "/proto.SensorService/GetSensorByID"
+	// SensorServiceGetSensorByIdProcedure is the fully-qualified name of the SensorService's
+	// GetSensorById RPC.
+	SensorServiceGetSensorByIdProcedure = "/proto.SensorService/GetSensorById"
 	// SensorServiceUpdateSensorProcedure is the fully-qualified name of the SensorService's
 	// UpdateSensor RPC.
 	SensorServiceUpdateSensorProcedure = "/proto.SensorService/UpdateSensor"
@@ -75,7 +75,7 @@ const (
 // ReadingServiceClient is a client for the proto.ReadingService service.
 type ReadingServiceClient interface {
 	CreateReading(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error)
-	GetReadingByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error)
+	GetReadingById(context.Context, *connect.Request[GetReadingByIdRequest]) (*connect.Response[Reading], error)
 	DeleteReading(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error)
 	ListReadingBySensorId(context.Context, *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error)
 	ListReadingFilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
@@ -98,10 +98,10 @@ func NewReadingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(readingServiceMethods.ByName("CreateReading")),
 			connect.WithClientOptions(opts...),
 		),
-		getReadingByID: connect.NewClient[GetReadingByIDRequest, Reading](
+		getReadingById: connect.NewClient[GetReadingByIdRequest, Reading](
 			httpClient,
-			baseURL+ReadingServiceGetReadingByIDProcedure,
-			connect.WithSchema(readingServiceMethods.ByName("GetReadingByID")),
+			baseURL+ReadingServiceGetReadingByIdProcedure,
+			connect.WithSchema(readingServiceMethods.ByName("GetReadingById")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteReading: connect.NewClient[DeleteReadingRequest, emptypb.Empty](
@@ -128,7 +128,7 @@ func NewReadingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 // readingServiceClient implements ReadingServiceClient.
 type readingServiceClient struct {
 	createReading                                *connect.Client[CreateReadingRequest, Reading]
-	getReadingByID                               *connect.Client[GetReadingByIDRequest, Reading]
+	getReadingById                               *connect.Client[GetReadingByIdRequest, Reading]
 	deleteReading                                *connect.Client[DeleteReadingRequest, emptypb.Empty]
 	listReadingBySensorId                        *connect.Client[ListReadingBySensorIdRequest, ListReadingBySensorIdResponse]
 	listReadingFilterBySensorIdRecordedAtFlagged *connect.Client[ListReadingFilterBySensorIdRecordedAtFlaggedRequest, ListReadingFilterBySensorIdRecordedAtFlaggedResponse]
@@ -139,9 +139,9 @@ func (c *readingServiceClient) CreateReading(ctx context.Context, req *connect.R
 	return c.createReading.CallUnary(ctx, req)
 }
 
-// GetReadingByID calls proto.ReadingService.GetReadingByID.
-func (c *readingServiceClient) GetReadingByID(ctx context.Context, req *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error) {
-	return c.getReadingByID.CallUnary(ctx, req)
+// GetReadingById calls proto.ReadingService.GetReadingById.
+func (c *readingServiceClient) GetReadingById(ctx context.Context, req *connect.Request[GetReadingByIdRequest]) (*connect.Response[Reading], error) {
+	return c.getReadingById.CallUnary(ctx, req)
 }
 
 // DeleteReading calls proto.ReadingService.DeleteReading.
@@ -163,7 +163,7 @@ func (c *readingServiceClient) ListReadingFilterBySensorIdRecordedAtFlagged(ctx 
 // ReadingServiceHandler is an implementation of the proto.ReadingService service.
 type ReadingServiceHandler interface {
 	CreateReading(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error)
-	GetReadingByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error)
+	GetReadingById(context.Context, *connect.Request[GetReadingByIdRequest]) (*connect.Response[Reading], error)
 	DeleteReading(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error)
 	ListReadingBySensorId(context.Context, *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error)
 	ListReadingFilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
@@ -182,10 +182,10 @@ func NewReadingServiceHandler(svc ReadingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(readingServiceMethods.ByName("CreateReading")),
 		connect.WithHandlerOptions(opts...),
 	)
-	readingServiceGetReadingByIDHandler := connect.NewUnaryHandler(
-		ReadingServiceGetReadingByIDProcedure,
-		svc.GetReadingByID,
-		connect.WithSchema(readingServiceMethods.ByName("GetReadingByID")),
+	readingServiceGetReadingByIdHandler := connect.NewUnaryHandler(
+		ReadingServiceGetReadingByIdProcedure,
+		svc.GetReadingById,
+		connect.WithSchema(readingServiceMethods.ByName("GetReadingById")),
 		connect.WithHandlerOptions(opts...),
 	)
 	readingServiceDeleteReadingHandler := connect.NewUnaryHandler(
@@ -210,8 +210,8 @@ func NewReadingServiceHandler(svc ReadingServiceHandler, opts ...connect.Handler
 		switch r.URL.Path {
 		case ReadingServiceCreateReadingProcedure:
 			readingServiceCreateReadingHandler.ServeHTTP(w, r)
-		case ReadingServiceGetReadingByIDProcedure:
-			readingServiceGetReadingByIDHandler.ServeHTTP(w, r)
+		case ReadingServiceGetReadingByIdProcedure:
+			readingServiceGetReadingByIdHandler.ServeHTTP(w, r)
 		case ReadingServiceDeleteReadingProcedure:
 			readingServiceDeleteReadingHandler.ServeHTTP(w, r)
 		case ReadingServiceListReadingBySensorIdProcedure:
@@ -231,8 +231,8 @@ func (UnimplementedReadingServiceHandler) CreateReading(context.Context, *connec
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.CreateReading is not implemented"))
 }
 
-func (UnimplementedReadingServiceHandler) GetReadingByID(context.Context, *connect.Request[GetReadingByIDRequest]) (*connect.Response[Reading], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.GetReadingByID is not implemented"))
+func (UnimplementedReadingServiceHandler) GetReadingById(context.Context, *connect.Request[GetReadingByIdRequest]) (*connect.Response[Reading], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.GetReadingById is not implemented"))
 }
 
 func (UnimplementedReadingServiceHandler) DeleteReading(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error) {
@@ -250,7 +250,7 @@ func (UnimplementedReadingServiceHandler) ListReadingFilterBySensorIdRecordedAtF
 // SensorServiceClient is a client for the proto.SensorService service.
 type SensorServiceClient interface {
 	CreateSensor(context.Context, *connect.Request[CreateSensorRequest]) (*connect.Response[Sensor], error)
-	GetSensorByID(context.Context, *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error)
+	GetSensorById(context.Context, *connect.Request[GetSensorByIdRequest]) (*connect.Response[Sensor], error)
 	UpdateSensor(context.Context, *connect.Request[UpdateSensorRequest]) (*connect.Response[Sensor], error)
 	DeleteSensor(context.Context, *connect.Request[DeleteSensorRequest]) (*connect.Response[emptypb.Empty], error)
 	// Look up a sensor by its hardware code
@@ -275,10 +275,10 @@ func NewSensorServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(sensorServiceMethods.ByName("CreateSensor")),
 			connect.WithClientOptions(opts...),
 		),
-		getSensorByID: connect.NewClient[GetSensorByIDRequest, Sensor](
+		getSensorById: connect.NewClient[GetSensorByIdRequest, Sensor](
 			httpClient,
-			baseURL+SensorServiceGetSensorByIDProcedure,
-			connect.WithSchema(sensorServiceMethods.ByName("GetSensorByID")),
+			baseURL+SensorServiceGetSensorByIdProcedure,
+			connect.WithSchema(sensorServiceMethods.ByName("GetSensorById")),
 			connect.WithClientOptions(opts...),
 		),
 		updateSensor: connect.NewClient[UpdateSensorRequest, Sensor](
@@ -311,7 +311,7 @@ func NewSensorServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 // sensorServiceClient implements SensorServiceClient.
 type sensorServiceClient struct {
 	createSensor                      *connect.Client[CreateSensorRequest, Sensor]
-	getSensorByID                     *connect.Client[GetSensorByIDRequest, Sensor]
+	getSensorById                     *connect.Client[GetSensorByIdRequest, Sensor]
 	updateSensor                      *connect.Client[UpdateSensorRequest, Sensor]
 	deleteSensor                      *connect.Client[DeleteSensorRequest, emptypb.Empty]
 	getSensorByCode                   *connect.Client[GetSensorByCodeRequest, Sensor]
@@ -323,9 +323,9 @@ func (c *sensorServiceClient) CreateSensor(ctx context.Context, req *connect.Req
 	return c.createSensor.CallUnary(ctx, req)
 }
 
-// GetSensorByID calls proto.SensorService.GetSensorByID.
-func (c *sensorServiceClient) GetSensorByID(ctx context.Context, req *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error) {
-	return c.getSensorByID.CallUnary(ctx, req)
+// GetSensorById calls proto.SensorService.GetSensorById.
+func (c *sensorServiceClient) GetSensorById(ctx context.Context, req *connect.Request[GetSensorByIdRequest]) (*connect.Response[Sensor], error) {
+	return c.getSensorById.CallUnary(ctx, req)
 }
 
 // UpdateSensor calls proto.SensorService.UpdateSensor.
@@ -351,7 +351,7 @@ func (c *sensorServiceClient) ListSensorFilterByLabelKindActive(ctx context.Cont
 // SensorServiceHandler is an implementation of the proto.SensorService service.
 type SensorServiceHandler interface {
 	CreateSensor(context.Context, *connect.Request[CreateSensorRequest]) (*connect.Response[Sensor], error)
-	GetSensorByID(context.Context, *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error)
+	GetSensorById(context.Context, *connect.Request[GetSensorByIdRequest]) (*connect.Response[Sensor], error)
 	UpdateSensor(context.Context, *connect.Request[UpdateSensorRequest]) (*connect.Response[Sensor], error)
 	DeleteSensor(context.Context, *connect.Request[DeleteSensorRequest]) (*connect.Response[emptypb.Empty], error)
 	// Look up a sensor by its hardware code
@@ -372,10 +372,10 @@ func NewSensorServiceHandler(svc SensorServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(sensorServiceMethods.ByName("CreateSensor")),
 		connect.WithHandlerOptions(opts...),
 	)
-	sensorServiceGetSensorByIDHandler := connect.NewUnaryHandler(
-		SensorServiceGetSensorByIDProcedure,
-		svc.GetSensorByID,
-		connect.WithSchema(sensorServiceMethods.ByName("GetSensorByID")),
+	sensorServiceGetSensorByIdHandler := connect.NewUnaryHandler(
+		SensorServiceGetSensorByIdProcedure,
+		svc.GetSensorById,
+		connect.WithSchema(sensorServiceMethods.ByName("GetSensorById")),
 		connect.WithHandlerOptions(opts...),
 	)
 	sensorServiceUpdateSensorHandler := connect.NewUnaryHandler(
@@ -406,8 +406,8 @@ func NewSensorServiceHandler(svc SensorServiceHandler, opts ...connect.HandlerOp
 		switch r.URL.Path {
 		case SensorServiceCreateSensorProcedure:
 			sensorServiceCreateSensorHandler.ServeHTTP(w, r)
-		case SensorServiceGetSensorByIDProcedure:
-			sensorServiceGetSensorByIDHandler.ServeHTTP(w, r)
+		case SensorServiceGetSensorByIdProcedure:
+			sensorServiceGetSensorByIdHandler.ServeHTTP(w, r)
 		case SensorServiceUpdateSensorProcedure:
 			sensorServiceUpdateSensorHandler.ServeHTTP(w, r)
 		case SensorServiceDeleteSensorProcedure:
@@ -429,8 +429,8 @@ func (UnimplementedSensorServiceHandler) CreateSensor(context.Context, *connect.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.CreateSensor is not implemented"))
 }
 
-func (UnimplementedSensorServiceHandler) GetSensorByID(context.Context, *connect.Request[GetSensorByIDRequest]) (*connect.Response[Sensor], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.GetSensorByID is not implemented"))
+func (UnimplementedSensorServiceHandler) GetSensorById(context.Context, *connect.Request[GetSensorByIdRequest]) (*connect.Response[Sensor], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.GetSensorById is not implemented"))
 }
 
 func (UnimplementedSensorServiceHandler) UpdateSensor(context.Context, *connect.Request[UpdateSensorRequest]) (*connect.Response[Sensor], error) {

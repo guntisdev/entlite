@@ -44,7 +44,7 @@ ON CONFLICT (commit_sha) DO UPDATE SET
   duration_ms = excluded.duration_ms,
   started_at = excluded.started_at,
   failed_tests = excluded.failed_tests
-RETURNING ID
+RETURNING id
 `
 
 type CreateBuildParams struct {
@@ -102,7 +102,7 @@ INSERT INTO "build" (
   ?,
   ?,
   ?
-) RETURNING ID
+) RETURNING id
 `
 
 type CreateBulkBuildParams struct {
@@ -145,7 +145,7 @@ func (q *Queries) DeleteAllBuild(ctx context.Context) error {
 }
 
 const deleteBuild = `-- name: DeleteBuild :exec
-DELETE FROM "build" WHERE ID = ?
+DELETE FROM "build" WHERE id = ?
 `
 
 func (q *Queries) DeleteBuild(ctx context.Context, id int64) error {
@@ -176,13 +176,13 @@ func (q *Queries) GetBuildByCommitSha(ctx context.Context, commitSha string) (Bu
 	return i, err
 }
 
-const getBuildByID = `-- name: GetBuildByID :one
-SELECT id, commit_sha, branch, env, status, author, message, duration_ms, started_at, failed_tests FROM "build" WHERE ID = ?
+const getBuildById = `-- name: GetBuildById :one
+SELECT id, commit_sha, branch, env, status, author, message, duration_ms, started_at, failed_tests FROM "build" WHERE id = ?
 `
 
 // Get() keys on the primary key
-func (q *Queries) GetBuildByID(ctx context.Context, id int64) (Build, error) {
-	row := q.db.QueryRowContext(ctx, getBuildByID, id)
+func (q *Queries) GetBuildById(ctx context.Context, id int64) (Build, error) {
+	row := q.db.QueryRowContext(ctx, getBuildById, id)
 	var i Build
 	err := row.Scan(
 		&i.ID,
@@ -578,7 +578,7 @@ UPDATE "build" SET
   duration_ms = ?7,
   started_at = ?8,
   failed_tests = ?9
-WHERE ID = ?10
+WHERE id = ?10
 RETURNING id, commit_sha, branch, env, status, author, message, duration_ms, started_at, failed_tests
 `
 
@@ -592,7 +592,7 @@ type UpdateBuildParams struct {
 	DurationMs  int64     `json:"duration_ms"`
 	StartedAt   time.Time `json:"started_at"`
 	FailedTests *int64    `json:"failed_tests"`
-	ID          int64     `json:"ID"`
+	ID          int64     `json:"id"`
 }
 
 func (q *Queries) UpdateBuild(ctx context.Context, arg UpdateBuildParams) (Build, error) {

@@ -12,7 +12,7 @@ import "buf/validate/validate.proto";
 
 // Reading is a single measurement captured by a Sensor.
 message Reading {
-  int64 ID = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
   // References sensor.ID
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
@@ -27,7 +27,7 @@ message Reading {
 
 // Sensor is a physical device deployed in the field that emits Readings.
 message Sensor {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // External hardware identifier, e.g. TEMP-A1
   string code = 2 [(buf.validate.field).required = true];
   // Human friendly name
@@ -60,11 +60,11 @@ message CreateReadingRequest {
   // Device measurement time (client-supplied)
   google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
 }
-message GetReadingByIDRequest {
-  int64 ID = 1 [(buf.validate.field).required = true];
+message GetReadingByIdRequest {
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message DeleteReadingRequest {
-  int64 ID = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message ListReadingBySensorIdRequest {
   int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
@@ -92,7 +92,7 @@ message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
 // ReadingService provides CRUD opertions for Reading entities
 service ReadingService {
   rpc CreateReading(CreateReadingRequest) returns (Reading);
-  rpc GetReadingByID(GetReadingByIDRequest) returns (Reading);
+  rpc GetReadingById(GetReadingByIdRequest) returns (Reading);
   rpc DeleteReading(DeleteReadingRequest) returns (google.protobuf.Empty);
   rpc ListReadingBySensorId(ListReadingBySensorIdRequest) returns (ListReadingBySensorIdResponse);
   rpc ListReadingFilterBySensorIdRecordedAtFlagged(ListReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListReadingFilterBySensorIdRecordedAtFlaggedResponse);
@@ -117,11 +117,11 @@ message CreateSensorRequest {
   // Most recent reading value, joined in at the API layer - not stored
   optional double latest_value = 13;
 }
-message GetSensorByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetSensorByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateSensorRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // External hardware identifier, e.g. TEMP-A1
   string code = 2 [(buf.validate.field).required = true];
   // Human friendly name
@@ -139,7 +139,7 @@ message UpdateSensorRequest {
   optional double latest_value = 13;
 }
 message DeleteSensorRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message GetSensorByCodeRequest {
   string code = 2 [(buf.validate.field).required = true];
@@ -160,7 +160,7 @@ message ListSensorFilterByLabelKindActiveResponse {
 // SensorService provides CRUD opertions for Sensor entities
 service SensorService {
   rpc CreateSensor(CreateSensorRequest) returns (Sensor);
-  rpc GetSensorByID(GetSensorByIDRequest) returns (Sensor);
+  rpc GetSensorById(GetSensorByIdRequest) returns (Sensor);
   rpc UpdateSensor(UpdateSensorRequest) returns (Sensor);
   rpc DeleteSensor(DeleteSensorRequest) returns (google.protobuf.Empty);
   // Look up a sensor by its hardware code

@@ -162,7 +162,7 @@ func (q *Queries) DeleteAllUser(ctx context.Context) error {
 }
 
 const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM ` + "`" + `user` + "`" + ` WHERE ID = ?
+DELETE FROM ` + "`" + `user` + "`" + ` WHERE id = ?
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
@@ -195,12 +195,12 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
-const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE ID = ?
+const getUserById = `-- name: GetUserById :one
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM ` + "`" + `user` + "`" + ` WHERE id = ?
 `
 
-func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByID, id)
+func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -387,7 +387,7 @@ UPDATE ` + "`" + `user` + "`" + ` SET
   rating = COALESCE(?, rating),
   preferences = COALESCE(?, preferences),
   updated_at = ?
-WHERE ID = ?
+WHERE id = ?
 `
 
 type UpdateUserParams struct {
@@ -400,7 +400,7 @@ type UpdateUserParams struct {
 	Rating      sql.NullFloat64 `json:"rating"`
 	Preferences json.RawMessage `json:"preferences"`
 	UpdatedAt   time.Time       `json:"updated_at"`
-	ID          int32           `json:"ID"`
+	ID          int32           `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {

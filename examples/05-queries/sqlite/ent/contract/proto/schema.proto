@@ -12,7 +12,7 @@ import "buf/validate/validate.proto";
 
 // Build is one run of a ci pipeline, recorded when it finishes
 message Build {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // unique, so it can be a GetBy key and an Upsert target
   string commit_sha = 2 [(buf.validate.field).required = true];
   // these repeat across rows, so Distinct has something to deduplicate
@@ -60,14 +60,14 @@ message CreateBulkBuildRequest {
 message CreateBulkBuildResponse {
   repeated Build rows = 1;
 }
-message GetBuildByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetBuildByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message GetBuildByCommitShaRequest {
   string commit_sha = 2 [(buf.validate.field).required = true];
 }
 message UpdateBuildRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // unique, so it can be a GetBy key and an Upsert target
   string commit_sha = 2 [(buf.validate.field).required = true];
   // these repeat across rows, so Distinct has something to deduplicate
@@ -81,7 +81,7 @@ message UpdateBuildRequest {
   optional int32 failed_tests = 10;
 }
 message DeleteBuildRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message DeleteAllBuildRequest {
 }
@@ -160,7 +160,7 @@ service BuildService {
   // many rows in one call, the wrapper loops the single row insert
   rpc CreateBulkBuild(CreateBulkBuildRequest) returns (CreateBulkBuildResponse);
   // Get() keys on the primary key
-  rpc GetBuildByID(GetBuildByIDRequest) returns (Build);
+  rpc GetBuildById(GetBuildByIdRequest) returns (Build);
   // GetBy names the columns itself, they have to be unique together
   rpc GetBuildByCommitSha(GetBuildByCommitShaRequest) returns (Build);
   rpc UpdateBuild(UpdateBuildRequest) returns (Build);

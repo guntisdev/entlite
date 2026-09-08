@@ -138,8 +138,8 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (*User, erro
 	return UserFromSQL(&dbResult), nil
 }
 
-func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
-	dbResult, err := (*internal.Queries)(q).GetUserByID(ctx, id)
+func (q *Queries) GetUserById(ctx context.Context, id int32) (*User, error) {
+	dbResult, err := (*internal.Queries)(q).GetUserById(ctx, id)
 	if err != nil {
 		return nil, err
 	}

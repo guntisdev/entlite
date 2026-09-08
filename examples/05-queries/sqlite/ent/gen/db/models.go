@@ -11,7 +11,7 @@ import (
 
 
 type Build struct {
-	ID int32 `json:"ID"`
+	ID int32 `json:"id"`
 	CommitSha string `json:"commit_sha"`
 	Branch string `json:"branch"`
 	Env string `json:"env"`
@@ -68,7 +68,7 @@ func (m *Build) ToProto() *pb.Build {
 	}
 
 	return &pb.Build{
-		ID: m.ID,
+		Id: m.ID,
 		CommitSha: m.CommitSha,
 		Branch: m.Branch,
 		Env: m.Env,

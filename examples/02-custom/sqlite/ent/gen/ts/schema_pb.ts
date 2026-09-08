@@ -15,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIuoBCgdSZWFkaW5nEhIKAklEGAEgASgDQga6SAPIAQESGQoJc2Vuc29yX2lkGAIgASgFQga6SAPIAQESFQoFdmFsdWUYAyABKAFCBrpIA8gBARIXCgdxdWFsaXR5GAQgASgFQga6SAPIAQESDwoHZmxhZ2dlZBgFIAEoCBI3CgtyZWNvcmRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2CgpjcmVhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBIrkDCgZTZW5zb3ISEgoCSUQYASABKAVCBrpIA8gBARIUCgRjb2RlGAIgASgJQga6SAPIAQESFQoFbGFiZWwYAyABKAlCBrpIA8gBARIUCgRraW5kGAQgASgJQga6SAPIAQESFAoEdW5pdBgFIAEoCUIGukgDyAEBEhUKCGxvY2F0aW9uGAYgASgJSACIAQESDgoGYWN0aXZlGAcgASgIEhgKCGZpcm13YXJlGAggASgJQga6SAPIAQESHgoOc2FtcGxlX3JhdGVfbXMYCSABKAVCBrpIA8gBARI4CgxpbnN0YWxsZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKY3JlYXRlZF9hdBgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEhkKDGxhdGVzdF92YWx1ZRgNIAEoAUgBiAEBQgsKCV9sb2NhdGlvbkIPCg1fbGF0ZXN0X3ZhbHVlIrwBChRDcmVhdGVSZWFkaW5nUmVxdWVzdBIZCglzZW5zb3JfaWQYAiABKAVCBrpIA8gBARIVCgV2YWx1ZRgDIAEoAUIGukgDyAEBEhcKB3F1YWxpdHkYBCABKAVCBrpIA8gBARIUCgdmbGFnZ2VkGAUgASgISACIAQESNwoLcmVjb3JkZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQFCCgoIX2ZsYWdnZWQiKwoVR2V0UmVhZGluZ0J5SURSZXF1ZXN0EhIKAklEGAEgASgDQga6SAPIAQEiKgoURGVsZXRlUmVhZGluZ1JlcXVlc3QSEgoCSUQYASABKANCBrpIA8gBASJtChxMaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXF1ZXN0EhkKBWxpbWl0GAEgASgFQgq6SAfIAQEaAigBEhcKBm9mZnNldBgCIAEoBUIHukgEGgIoABIZCglzZW5zb3JfaWQYAyABKAVCBrpIA8gBASI9Ch1MaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXNwb25zZRIcCgRyb3dzGAEgAygLMg4ucHJvdG8uUmVhZGluZyKXAgozTGlzdFJlYWRpbmdGaWx0ZXJCeVNlbnNvcklkUmVjb3JkZWRBdEZsYWdnZWRSZXF1ZXN0EhkKBWxpbWl0GAEgASgFQgq6SAfIAQEaAigBEhcKBm9mZnNldBgCIAEoBUIHukgEGgIoABIZCglzZW5zb3JfaWQYAyABKAVCBrpIA8gBARI7Cg9taW5fcmVjb3JkZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESOwoPbWF4X3JlY29yZGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEhcKB2ZsYWdnZWQYBiABKAhCBrpIA8gBASJoCjRMaXN0UmVhZGluZ0ZpbHRlckJ5U2Vuc29ySWRSZWNvcmRlZEF0RmxhZ2dlZFJlc3BvbnNlEhwKBHJvd3MYASADKAsyDi5wcm90by5SZWFkaW5nEhIKCnRvdGFsX3NpemUYAiABKAMi7AIKE0NyZWF0ZVNlbnNvclJlcXVlc3QSFAoEY29kZRgCIAEoCUIGukgDyAEBEhUKBWxhYmVsGAMgASgJQga6SAPIAQESFAoEa2luZBgEIAEoCUIGukgDyAEBEhQKBHVuaXQYBSABKAlCBrpIA8gBARIVCghsb2NhdGlvbhgGIAEoCUgAiAEBEhMKBmFjdGl2ZRgHIAEoCEgBiAEBEhUKCGZpcm13YXJlGAggASgJSAKIAQESGwoOc2FtcGxlX3JhdGVfbXMYCSABKAVIA4gBARI4CgxpbnN0YWxsZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESGQoMbGF0ZXN0X3ZhbHVlGA0gASgBSASIAQFCCwoJX2xvY2F0aW9uQgkKB19hY3RpdmVCCwoJX2Zpcm13YXJlQhEKD19zYW1wbGVfcmF0ZV9tc0IPCg1fbGF0ZXN0X3ZhbHVlIioKFEdldFNlbnNvckJ5SURSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEixgIKE1VwZGF0ZVNlbnNvclJlcXVlc3QSEgoCSUQYASABKAVCBrpIA8gBARIUCgRjb2RlGAIgASgJQga6SAPIAQESFQoFbGFiZWwYAyABKAlCBrpIA8gBARIUCgRraW5kGAQgASgJQga6SAPIAQESFAoEdW5pdBgFIAEoCUIGukgDyAEBEhUKCGxvY2F0aW9uGAYgASgJSACIAQESEwoGYWN0aXZlGAcgASgISAGIAQESFQoIZmlybXdhcmUYCCABKAlIAogBARIbCg5zYW1wbGVfcmF0ZV9tcxgJIAEoBUgDiAEBEhkKDGxhdGVzdF92YWx1ZRgNIAEoAUgEiAEBQgsKCV9sb2NhdGlvbkIJCgdfYWN0aXZlQgsKCV9maXJtd2FyZUIRCg9fc2FtcGxlX3JhdGVfbXNCDwoNX2xhdGVzdF92YWx1ZSIpChNEZWxldGVTZW5zb3JSZXF1ZXN0EhIKAklEGAEgASgFQga6SAPIAQEiLgoWR2V0U2Vuc29yQnlDb2RlUmVxdWVzdBIUCgRjb2RlGAIgASgJQga6SAPIAQEiqwEKKExpc3RTZW5zb3JGaWx0ZXJCeUxhYmVsS2luZEFjdGl2ZVJlcXVlc3QSGQoFbGltaXQYASABKAVCCrpIB8gBARoCKAESFwoGb2Zmc2V0GAIgASgFQge6SAQaAigAEhUKBWxhYmVsGAMgASgJQga6SAPIAQESFAoEa2luZBgEIAEoCUIGukgDyAEBEhMKBmFjdGl2ZRgFIAEoCEgAiAEBQgkKB19hY3RpdmUiXAopTGlzdFNlbnNvckZpbHRlckJ5TGFiZWxLaW5kQWN0aXZlUmVzcG9uc2USGwoEcm93cxgBIAMoCzINLnByb3RvLlNlbnNvchISCgp0b3RhbF9zaXplGAIgASgDMuIDCg5SZWFkaW5nU2VydmljZRI8Cg1DcmVhdGVSZWFkaW5nEhsucHJvdG8uQ3JlYXRlUmVhZGluZ1JlcXVlc3QaDi5wcm90by5SZWFkaW5nEj4KDkdldFJlYWRpbmdCeUlEEhwucHJvdG8uR2V0UmVhZGluZ0J5SURSZXF1ZXN0Gg4ucHJvdG8uUmVhZGluZxJECg1EZWxldGVSZWFkaW5nEhsucHJvdG8uRGVsZXRlUmVhZGluZ1JlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSYgoVTGlzdFJlYWRpbmdCeVNlbnNvcklkEiMucHJvdG8uTGlzdFJlYWRpbmdCeVNlbnNvcklkUmVxdWVzdBokLnByb3RvLkxpc3RSZWFkaW5nQnlTZW5zb3JJZFJlc3BvbnNlEqcBCixMaXN0UmVhZGluZ0ZpbHRlckJ5U2Vuc29ySWRSZWNvcmRlZEF0RmxhZ2dlZBI6LnByb3RvLkxpc3RSZWFkaW5nRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkUmVxdWVzdBo7LnByb3RvLkxpc3RSZWFkaW5nRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkUmVzcG9uc2Uy0AMKDVNlbnNvclNlcnZpY2USOQoMQ3JlYXRlU2Vuc29yEhoucHJvdG8uQ3JlYXRlU2Vuc29yUmVxdWVzdBoNLnByb3RvLlNlbnNvchI7Cg1HZXRTZW5zb3JCeUlEEhsucHJvdG8uR2V0U2Vuc29yQnlJRFJlcXVlc3QaDS5wcm90by5TZW5zb3ISOQoMVXBkYXRlU2Vuc29yEhoucHJvdG8uVXBkYXRlU2Vuc29yUmVxdWVzdBoNLnByb3RvLlNlbnNvchJCCgxEZWxldGVTZW5zb3ISGi5wcm90by5EZWxldGVTZW5zb3JSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Ej8KD0dldFNlbnNvckJ5Q29kZRIdLnByb3RvLkdldFNlbnNvckJ5Q29kZVJlcXVlc3QaDS5wcm90by5TZW5zb3IShgEKIUxpc3RTZW5zb3JGaWx0ZXJCeUxhYmVsS2luZEFjdGl2ZRIvLnByb3RvLkxpc3RTZW5zb3JGaWx0ZXJCeUxhYmVsS2luZEFjdGl2ZVJlcXVlc3QaMC5wcm90by5MaXN0U2Vuc29yRmlsdGVyQnlMYWJlbEtpbmRBY3RpdmVSZXNwb25zZUJDWkFnaXRodWIuY29tL2d1bnRpc2Rldi9lbnRsaXRlL2V4YW1wbGVzLzAyLWN1c3RvbS9zcWxpdGUvZW50L2dlbi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIuoBCgdSZWFkaW5nEhIKAmlkGAEgASgDQga6SAPIAQESGQoJc2Vuc29yX2lkGAIgASgFQga6SAPIAQESFQoFdmFsdWUYAyABKAFCBrpIA8gBARIXCgdxdWFsaXR5GAQgASgFQga6SAPIAQESDwoHZmxhZ2dlZBgFIAEoCBI3CgtyZWNvcmRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2CgpjcmVhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBIrkDCgZTZW5zb3ISEgoCaWQYASABKAVCBrpIA8gBARIUCgRjb2RlGAIgASgJQga6SAPIAQESFQoFbGFiZWwYAyABKAlCBrpIA8gBARIUCgRraW5kGAQgASgJQga6SAPIAQESFAoEdW5pdBgFIAEoCUIGukgDyAEBEhUKCGxvY2F0aW9uGAYgASgJSACIAQESDgoGYWN0aXZlGAcgASgIEhgKCGZpcm13YXJlGAggASgJQga6SAPIAQESHgoOc2FtcGxlX3JhdGVfbXMYCSABKAVCBrpIA8gBARI4CgxpbnN0YWxsZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKY3JlYXRlZF9hdBgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBARI2Cgp1cGRhdGVkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEhkKDGxhdGVzdF92YWx1ZRgNIAEoAUgBiAEBQgsKCV9sb2NhdGlvbkIPCg1fbGF0ZXN0X3ZhbHVlIrwBChRDcmVhdGVSZWFkaW5nUmVxdWVzdBIZCglzZW5zb3JfaWQYAiABKAVCBrpIA8gBARIVCgV2YWx1ZRgDIAEoAUIGukgDyAEBEhcKB3F1YWxpdHkYBCABKAVCBrpIA8gBARIUCgdmbGFnZ2VkGAUgASgISACIAQESNwoLcmVjb3JkZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQFCCgoIX2ZsYWdnZWQiKwoVR2V0UmVhZGluZ0J5SWRSZXF1ZXN0EhIKAmlkGAEgASgDQga6SAPIAQEiKgoURGVsZXRlUmVhZGluZ1JlcXVlc3QSEgoCaWQYASABKANCBrpIA8gBASJtChxMaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXF1ZXN0EhkKBWxpbWl0GAEgASgFQgq6SAfIAQEaAigBEhcKBm9mZnNldBgCIAEoBUIHukgEGgIoABIZCglzZW5zb3JfaWQYAyABKAVCBrpIA8gBASI9Ch1MaXN0UmVhZGluZ0J5U2Vuc29ySWRSZXNwb25zZRIcCgRyb3dzGAEgAygLMg4ucHJvdG8uUmVhZGluZyKXAgozTGlzdFJlYWRpbmdGaWx0ZXJCeVNlbnNvcklkUmVjb3JkZWRBdEZsYWdnZWRSZXF1ZXN0EhkKBWxpbWl0GAEgASgFQgq6SAfIAQEaAigBEhcKBm9mZnNldBgCIAEoBUIHukgEGgIoABIZCglzZW5zb3JfaWQYAyABKAVCBrpIA8gBARI7Cg9taW5fcmVjb3JkZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESOwoPbWF4X3JlY29yZGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEhcKB2ZsYWdnZWQYBiABKAhCBrpIA8gBASJoCjRMaXN0UmVhZGluZ0ZpbHRlckJ5U2Vuc29ySWRSZWNvcmRlZEF0RmxhZ2dlZFJlc3BvbnNlEhwKBHJvd3MYASADKAsyDi5wcm90by5SZWFkaW5nEhIKCnRvdGFsX3NpemUYAiABKAMi7AIKE0NyZWF0ZVNlbnNvclJlcXVlc3QSFAoEY29kZRgCIAEoCUIGukgDyAEBEhUKBWxhYmVsGAMgASgJQga6SAPIAQESFAoEa2luZBgEIAEoCUIGukgDyAEBEhQKBHVuaXQYBSABKAlCBrpIA8gBARIVCghsb2NhdGlvbhgGIAEoCUgAiAEBEhMKBmFjdGl2ZRgHIAEoCEgBiAEBEhUKCGZpcm13YXJlGAggASgJSAKIAQESGwoOc2FtcGxlX3JhdGVfbXMYCSABKAVIA4gBARI4CgxpbnN0YWxsZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESGQoMbGF0ZXN0X3ZhbHVlGA0gASgBSASIAQFCCwoJX2xvY2F0aW9uQgkKB19hY3RpdmVCCwoJX2Zpcm13YXJlQhEKD19zYW1wbGVfcmF0ZV9tc0IPCg1fbGF0ZXN0X3ZhbHVlIioKFEdldFNlbnNvckJ5SWRSZXF1ZXN0EhIKAmlkGAEgASgFQga6SAPIAQEixgIKE1VwZGF0ZVNlbnNvclJlcXVlc3QSEgoCaWQYASABKAVCBrpIA8gBARIUCgRjb2RlGAIgASgJQga6SAPIAQESFQoFbGFiZWwYAyABKAlCBrpIA8gBARIUCgRraW5kGAQgASgJQga6SAPIAQESFAoEdW5pdBgFIAEoCUIGukgDyAEBEhUKCGxvY2F0aW9uGAYgASgJSACIAQESEwoGYWN0aXZlGAcgASgISAGIAQESFQoIZmlybXdhcmUYCCABKAlIAogBARIbCg5zYW1wbGVfcmF0ZV9tcxgJIAEoBUgDiAEBEhkKDGxhdGVzdF92YWx1ZRgNIAEoAUgEiAEBQgsKCV9sb2NhdGlvbkIJCgdfYWN0aXZlQgsKCV9maXJtd2FyZUIRCg9fc2FtcGxlX3JhdGVfbXNCDwoNX2xhdGVzdF92YWx1ZSIpChNEZWxldGVTZW5zb3JSZXF1ZXN0EhIKAmlkGAEgASgFQga6SAPIAQEiLgoWR2V0U2Vuc29yQnlDb2RlUmVxdWVzdBIUCgRjb2RlGAIgASgJQga6SAPIAQEiqwEKKExpc3RTZW5zb3JGaWx0ZXJCeUxhYmVsS2luZEFjdGl2ZVJlcXVlc3QSGQoFbGltaXQYASABKAVCCrpIB8gBARoCKAESFwoGb2Zmc2V0GAIgASgFQge6SAQaAigAEhUKBWxhYmVsGAMgASgJQga6SAPIAQESFAoEa2luZBgEIAEoCUIGukgDyAEBEhMKBmFjdGl2ZRgFIAEoCEgAiAEBQgkKB19hY3RpdmUiXAopTGlzdFNlbnNvckZpbHRlckJ5TGFiZWxLaW5kQWN0aXZlUmVzcG9uc2USGwoEcm93cxgBIAMoCzINLnByb3RvLlNlbnNvchISCgp0b3RhbF9zaXplGAIgASgDMuIDCg5SZWFkaW5nU2VydmljZRI8Cg1DcmVhdGVSZWFkaW5nEhsucHJvdG8uQ3JlYXRlUmVhZGluZ1JlcXVlc3QaDi5wcm90by5SZWFkaW5nEj4KDkdldFJlYWRpbmdCeUlkEhwucHJvdG8uR2V0UmVhZGluZ0J5SWRSZXF1ZXN0Gg4ucHJvdG8uUmVhZGluZxJECg1EZWxldGVSZWFkaW5nEhsucHJvdG8uRGVsZXRlUmVhZGluZ1JlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSYgoVTGlzdFJlYWRpbmdCeVNlbnNvcklkEiMucHJvdG8uTGlzdFJlYWRpbmdCeVNlbnNvcklkUmVxdWVzdBokLnByb3RvLkxpc3RSZWFkaW5nQnlTZW5zb3JJZFJlc3BvbnNlEqcBCixMaXN0UmVhZGluZ0ZpbHRlckJ5U2Vuc29ySWRSZWNvcmRlZEF0RmxhZ2dlZBI6LnByb3RvLkxpc3RSZWFkaW5nRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkUmVxdWVzdBo7LnByb3RvLkxpc3RSZWFkaW5nRmlsdGVyQnlTZW5zb3JJZFJlY29yZGVkQXRGbGFnZ2VkUmVzcG9uc2Uy0AMKDVNlbnNvclNlcnZpY2USOQoMQ3JlYXRlU2Vuc29yEhoucHJvdG8uQ3JlYXRlU2Vuc29yUmVxdWVzdBoNLnByb3RvLlNlbnNvchI7Cg1HZXRTZW5zb3JCeUlkEhsucHJvdG8uR2V0U2Vuc29yQnlJZFJlcXVlc3QaDS5wcm90by5TZW5zb3ISOQoMVXBkYXRlU2Vuc29yEhoucHJvdG8uVXBkYXRlU2Vuc29yUmVxdWVzdBoNLnByb3RvLlNlbnNvchJCCgxEZWxldGVTZW5zb3ISGi5wcm90by5EZWxldGVTZW5zb3JSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Ej8KD0dldFNlbnNvckJ5Q29kZRIdLnByb3RvLkdldFNlbnNvckJ5Q29kZVJlcXVlc3QaDS5wcm90by5TZW5zb3IShgEKIUxpc3RTZW5zb3JGaWx0ZXJCeUxhYmVsS2luZEFjdGl2ZRIvLnByb3RvLkxpc3RTZW5zb3JGaWx0ZXJCeUxhYmVsS2luZEFjdGl2ZVJlcXVlc3QaMC5wcm90by5MaXN0U2Vuc29yRmlsdGVyQnlMYWJlbEtpbmRBY3RpdmVSZXNwb25zZUJDWkFnaXRodWIuY29tL2d1bnRpc2Rldi9lbnRsaXRlL2V4YW1wbGVzLzAyLWN1c3RvbS9zcWxpdGUvZW50L2dlbi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * Reading is a single measurement captured by a Sensor.
@@ -24,9 +24,9 @@ export const file_schema: GenFile = /*@__PURE__*/
  */
 export type Reading = Message<"proto.Reading"> & {
   /**
-   * @generated from field: int64 ID = 1;
+   * @generated from field: int64 id = 1;
    */
-  ID: bigint;
+  id: bigint;
 
   /**
    * References sensor.ID
@@ -81,9 +81,9 @@ export const ReadingSchema: GenMessage<Reading> = /*@__PURE__*/
  */
 export type Sensor = Message<"proto.Sensor"> & {
   /**
-   * @generated from field: int32 ID = 1;
+   * @generated from field: int32 id = 1;
    */
-  ID: number;
+  id: number;
 
   /**
    * External hardware identifier, e.g. TEMP-A1
@@ -213,20 +213,20 @@ export const CreateReadingRequestSchema: GenMessage<CreateReadingRequest> = /*@_
   messageDesc(file_schema, 2);
 
 /**
- * @generated from message proto.GetReadingByIDRequest
+ * @generated from message proto.GetReadingByIdRequest
  */
-export type GetReadingByIDRequest = Message<"proto.GetReadingByIDRequest"> & {
+export type GetReadingByIdRequest = Message<"proto.GetReadingByIdRequest"> & {
   /**
-   * @generated from field: int64 ID = 1;
+   * @generated from field: int64 id = 1;
    */
-  ID: bigint;
+  id: bigint;
 };
 
 /**
- * Describes the message proto.GetReadingByIDRequest.
- * Use `create(GetReadingByIDRequestSchema)` to create a new message.
+ * Describes the message proto.GetReadingByIdRequest.
+ * Use `create(GetReadingByIdRequestSchema)` to create a new message.
  */
-export const GetReadingByIDRequestSchema: GenMessage<GetReadingByIDRequest> = /*@__PURE__*/
+export const GetReadingByIdRequestSchema: GenMessage<GetReadingByIdRequest> = /*@__PURE__*/
   messageDesc(file_schema, 3);
 
 /**
@@ -234,9 +234,9 @@ export const GetReadingByIDRequestSchema: GenMessage<GetReadingByIDRequest> = /*
  */
 export type DeleteReadingRequest = Message<"proto.DeleteReadingRequest"> & {
   /**
-   * @generated from field: int64 ID = 1;
+   * @generated from field: int64 id = 1;
    */
-  ID: bigint;
+  id: bigint;
 };
 
 /**
@@ -431,20 +431,20 @@ export const CreateSensorRequestSchema: GenMessage<CreateSensorRequest> = /*@__P
   messageDesc(file_schema, 9);
 
 /**
- * @generated from message proto.GetSensorByIDRequest
+ * @generated from message proto.GetSensorByIdRequest
  */
-export type GetSensorByIDRequest = Message<"proto.GetSensorByIDRequest"> & {
+export type GetSensorByIdRequest = Message<"proto.GetSensorByIdRequest"> & {
   /**
-   * @generated from field: int32 ID = 1;
+   * @generated from field: int32 id = 1;
    */
-  ID: number;
+  id: number;
 };
 
 /**
- * Describes the message proto.GetSensorByIDRequest.
- * Use `create(GetSensorByIDRequestSchema)` to create a new message.
+ * Describes the message proto.GetSensorByIdRequest.
+ * Use `create(GetSensorByIdRequestSchema)` to create a new message.
  */
-export const GetSensorByIDRequestSchema: GenMessage<GetSensorByIDRequest> = /*@__PURE__*/
+export const GetSensorByIdRequestSchema: GenMessage<GetSensorByIdRequest> = /*@__PURE__*/
   messageDesc(file_schema, 10);
 
 /**
@@ -452,9 +452,9 @@ export const GetSensorByIDRequestSchema: GenMessage<GetSensorByIDRequest> = /*@_
  */
 export type UpdateSensorRequest = Message<"proto.UpdateSensorRequest"> & {
   /**
-   * @generated from field: int32 ID = 1;
+   * @generated from field: int32 id = 1;
    */
-  ID: number;
+  id: number;
 
   /**
    * External hardware identifier, e.g. TEMP-A1
@@ -526,9 +526,9 @@ export const UpdateSensorRequestSchema: GenMessage<UpdateSensorRequest> = /*@__P
  */
 export type DeleteSensorRequest = Message<"proto.DeleteSensorRequest"> & {
   /**
-   * @generated from field: int32 ID = 1;
+   * @generated from field: int32 id = 1;
    */
-  ID: number;
+  id: number;
 };
 
 /**
@@ -629,11 +629,11 @@ export const ReadingService: GenService<{
     output: typeof ReadingSchema;
   },
   /**
-   * @generated from rpc proto.ReadingService.GetReadingByID
+   * @generated from rpc proto.ReadingService.GetReadingById
    */
-  getReadingByID: {
+  getReadingById: {
     methodKind: "unary";
-    input: typeof GetReadingByIDRequestSchema;
+    input: typeof GetReadingByIdRequestSchema;
     output: typeof ReadingSchema;
   },
   /**
@@ -678,11 +678,11 @@ export const SensorService: GenService<{
     output: typeof SensorSchema;
   },
   /**
-   * @generated from rpc proto.SensorService.GetSensorByID
+   * @generated from rpc proto.SensorService.GetSensorById
    */
-  getSensorByID: {
+  getSensorById: {
     methodKind: "unary";
-    input: typeof GetSensorByIDRequestSchema;
+    input: typeof GetSensorByIdRequestSchema;
     output: typeof SensorSchema;
   },
   /**

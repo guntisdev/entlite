@@ -38,9 +38,9 @@ const (
 	// ArticleServiceCreateArticleProcedure is the fully-qualified name of the ArticleService's
 	// CreateArticle RPC.
 	ArticleServiceCreateArticleProcedure = "/proto.ArticleService/CreateArticle"
-	// ArticleServiceGetArticleByIDProcedure is the fully-qualified name of the ArticleService's
-	// GetArticleByID RPC.
-	ArticleServiceGetArticleByIDProcedure = "/proto.ArticleService/GetArticleByID"
+	// ArticleServiceGetArticleByIdProcedure is the fully-qualified name of the ArticleService's
+	// GetArticleById RPC.
+	ArticleServiceGetArticleByIdProcedure = "/proto.ArticleService/GetArticleById"
 	// ArticleServiceUpdateArticleProcedure is the fully-qualified name of the ArticleService's
 	// UpdateArticle RPC.
 	ArticleServiceUpdateArticleProcedure = "/proto.ArticleService/UpdateArticle"
@@ -66,7 +66,7 @@ type ArticleServiceClient interface {
 	// re-posting a slug keeps the article that is already there, the caller
 	// gets sql.ErrNoRows because nothing was inserted
 	CreateArticle(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
-	GetArticleByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
+	GetArticleById(context.Context, *connect.Request[GetArticleByIdRequest]) (*connect.Response[Article], error)
 	UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error)
 	DeleteArticle(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error)
 	GetArticleBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error)
@@ -92,10 +92,10 @@ func NewArticleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(articleServiceMethods.ByName("CreateArticle")),
 			connect.WithClientOptions(opts...),
 		),
-		getArticleByID: connect.NewClient[GetArticleByIDRequest, Article](
+		getArticleById: connect.NewClient[GetArticleByIdRequest, Article](
 			httpClient,
-			baseURL+ArticleServiceGetArticleByIDProcedure,
-			connect.WithSchema(articleServiceMethods.ByName("GetArticleByID")),
+			baseURL+ArticleServiceGetArticleByIdProcedure,
+			connect.WithSchema(articleServiceMethods.ByName("GetArticleById")),
 			connect.WithClientOptions(opts...),
 		),
 		updateArticle: connect.NewClient[UpdateArticleRequest, Article](
@@ -140,7 +140,7 @@ func NewArticleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 // articleServiceClient implements ArticleServiceClient.
 type articleServiceClient struct {
 	createArticle                                       *connect.Client[CreateArticleRequest, Article]
-	getArticleByID                                      *connect.Client[GetArticleByIDRequest, Article]
+	getArticleById                                      *connect.Client[GetArticleByIdRequest, Article]
 	updateArticle                                       *connect.Client[UpdateArticleRequest, Article]
 	deleteArticle                                       *connect.Client[DeleteArticleRequest, emptypb.Empty]
 	getArticleBySlug                                    *connect.Client[GetArticleBySlugRequest, Article]
@@ -154,9 +154,9 @@ func (c *articleServiceClient) CreateArticle(ctx context.Context, req *connect.R
 	return c.createArticle.CallUnary(ctx, req)
 }
 
-// GetArticleByID calls proto.ArticleService.GetArticleByID.
-func (c *articleServiceClient) GetArticleByID(ctx context.Context, req *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error) {
-	return c.getArticleByID.CallUnary(ctx, req)
+// GetArticleById calls proto.ArticleService.GetArticleById.
+func (c *articleServiceClient) GetArticleById(ctx context.Context, req *connect.Request[GetArticleByIdRequest]) (*connect.Response[Article], error) {
+	return c.getArticleById.CallUnary(ctx, req)
 }
 
 // UpdateArticle calls proto.ArticleService.UpdateArticle.
@@ -195,7 +195,7 @@ type ArticleServiceHandler interface {
 	// re-posting a slug keeps the article that is already there, the caller
 	// gets sql.ErrNoRows because nothing was inserted
 	CreateArticle(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error)
-	GetArticleByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error)
+	GetArticleById(context.Context, *connect.Request[GetArticleByIdRequest]) (*connect.Response[Article], error)
 	UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error)
 	DeleteArticle(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error)
 	GetArticleBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error)
@@ -217,10 +217,10 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 		connect.WithSchema(articleServiceMethods.ByName("CreateArticle")),
 		connect.WithHandlerOptions(opts...),
 	)
-	articleServiceGetArticleByIDHandler := connect.NewUnaryHandler(
-		ArticleServiceGetArticleByIDProcedure,
-		svc.GetArticleByID,
-		connect.WithSchema(articleServiceMethods.ByName("GetArticleByID")),
+	articleServiceGetArticleByIdHandler := connect.NewUnaryHandler(
+		ArticleServiceGetArticleByIdProcedure,
+		svc.GetArticleById,
+		connect.WithSchema(articleServiceMethods.ByName("GetArticleById")),
 		connect.WithHandlerOptions(opts...),
 	)
 	articleServiceUpdateArticleHandler := connect.NewUnaryHandler(
@@ -263,8 +263,8 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 		switch r.URL.Path {
 		case ArticleServiceCreateArticleProcedure:
 			articleServiceCreateArticleHandler.ServeHTTP(w, r)
-		case ArticleServiceGetArticleByIDProcedure:
-			articleServiceGetArticleByIDHandler.ServeHTTP(w, r)
+		case ArticleServiceGetArticleByIdProcedure:
+			articleServiceGetArticleByIdHandler.ServeHTTP(w, r)
 		case ArticleServiceUpdateArticleProcedure:
 			articleServiceUpdateArticleHandler.ServeHTTP(w, r)
 		case ArticleServiceDeleteArticleProcedure:
@@ -290,8 +290,8 @@ func (UnimplementedArticleServiceHandler) CreateArticle(context.Context, *connec
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.CreateArticle is not implemented"))
 }
 
-func (UnimplementedArticleServiceHandler) GetArticleByID(context.Context, *connect.Request[GetArticleByIDRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetArticleByID is not implemented"))
+func (UnimplementedArticleServiceHandler) GetArticleById(context.Context, *connect.Request[GetArticleByIdRequest]) (*connect.Response[Article], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetArticleById is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {

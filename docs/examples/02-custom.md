@@ -107,7 +107,7 @@ func (Reading) Contracts() []entlite.Contract {
 
 func (Reading) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.Int64("ID"),
+		field.Int64("id"),
 		// References sensor.ID
 		field.Int("sensor_id"),
 		field.Float("value"),
@@ -219,7 +219,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 
 -- Reading is a single measurement captured by a Sensor.
 CREATE TABLE IF NOT EXISTS "reading"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   -- References sensor.ID
   sensor_id INTEGER NOT NULL,
   value REAL NOT NULL,
@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS "reading"(
 
 -- Sensor is a physical device deployed in the field that emits Readings.
 CREATE TABLE IF NOT EXISTS "sensor"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   -- External hardware identifier, e.g. TEMP-A1
   code TEXT UNIQUE NOT NULL,
   -- Human friendly name
@@ -282,10 +282,10 @@ INSERT INTO "reading" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetReadingByID :one
-SELECT * FROM "reading" WHERE ID = ?;
+-- name: GetReadingById :one
+SELECT * FROM "reading" WHERE id = ?;
 
 -- name: ListReadingBySensorId :many
 SELECT * FROM "reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -300,11 +300,11 @@ UPDATE "reading" SET
   quality = @quality,
   flagged = COALESCE(sqlc.narg('flagged'), flagged),
   recorded_at = @recorded_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteReading :exec
-DELETE FROM "reading" WHERE ID = ?;
+DELETE FROM "reading" WHERE id = ?;
 
 -- Sensor CRUD operations
 
@@ -333,10 +333,10 @@ INSERT INTO "sensor" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetSensorByID :one
-SELECT * FROM "sensor" WHERE ID = ?;
+-- name: GetSensorById :one
+SELECT * FROM "sensor" WHERE id = ?;
 
 -- name: GetSensorByCode :one
 -- Look up a sensor by its hardware code
@@ -356,11 +356,11 @@ UPDATE "sensor" SET
   firmware = COALESCE(sqlc.narg('firmware'), firmware),
   sample_rate_ms = COALESCE(sqlc.narg('sample_rate_ms'), sample_rate_ms),
   updated_at = @updated_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteSensor :exec
-DELETE FROM "sensor" WHERE ID = ?;
+DELETE FROM "sensor" WHERE id = ?;
 ```
 
 </details>
@@ -383,7 +383,7 @@ import "buf/validate/validate.proto";
 
 // Reading is a single measurement captured by a Sensor.
 message Reading {
-  int64 ID = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
   // References sensor.ID
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
@@ -398,7 +398,7 @@ message Reading {
 
 // Sensor is a physical device deployed in the field that emits Readings.
 message Sensor {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // External hardware identifier, e.g. TEMP-A1
   string code = 2 [(buf.validate.field).required = true];
   // Human friendly name
@@ -431,11 +431,11 @@ message CreateReadingRequest {
   // Device measurement time (client-supplied)
   google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
 }
-message GetReadingByIDRequest {
-  int64 ID = 1 [(buf.validate.field).required = true];
+message GetReadingByIdRequest {
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message DeleteReadingRequest {
-  int64 ID = 1 [(buf.validate.field).required = true];
+  int64 id = 1 [(buf.validate.field).required = true];
 }
 message ListReadingBySensorIdRequest {
   int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
@@ -463,7 +463,7 @@ message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
 // ReadingService provides CRUD opertions for Reading entities
 service ReadingService {
   rpc CreateReading(CreateReadingRequest) returns (Reading);
-  rpc GetReadingByID(GetReadingByIDRequest) returns (Reading);
+  rpc GetReadingById(GetReadingByIdRequest) returns (Reading);
   rpc DeleteReading(DeleteReadingRequest) returns (google.protobuf.Empty);
   rpc ListReadingBySensorId(ListReadingBySensorIdRequest) returns (ListReadingBySensorIdResponse);
   rpc ListReadingFilterBySensorIdRecordedAtFlagged(ListReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListReadingFilterBySensorIdRecordedAtFlaggedResponse);
@@ -488,11 +488,11 @@ message CreateSensorRequest {
   // Most recent reading value, joined in at the API layer - not stored
   optional double latest_value = 13;
 }
-message GetSensorByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetSensorByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateSensorRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // External hardware identifier, e.g. TEMP-A1
   string code = 2 [(buf.validate.field).required = true];
   // Human friendly name
@@ -510,7 +510,7 @@ message UpdateSensorRequest {
   optional double latest_value = 13;
 }
 message DeleteSensorRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message GetSensorByCodeRequest {
   string code = 2 [(buf.validate.field).required = true];
@@ -531,7 +531,7 @@ message ListSensorFilterByLabelKindActiveResponse {
 // SensorService provides CRUD opertions for Sensor entities
 service SensorService {
   rpc CreateSensor(CreateSensorRequest) returns (Sensor);
-  rpc GetSensorByID(GetSensorByIDRequest) returns (Sensor);
+  rpc GetSensorById(GetSensorByIdRequest) returns (Sensor);
   rpc UpdateSensor(UpdateSensorRequest) returns (Sensor);
   rpc DeleteSensor(DeleteSensorRequest) returns (google.protobuf.Empty);
   // Look up a sensor by its hardware code

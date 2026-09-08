@@ -19,10 +19,10 @@ INSERT INTO "reading" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetReadingByID :one
-SELECT * FROM "reading" WHERE ID = ?;
+-- name: GetReadingById :one
+SELECT * FROM "reading" WHERE id = ?;
 
 -- name: ListReadingBySensorId :many
 SELECT * FROM "reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -37,11 +37,11 @@ UPDATE "reading" SET
   quality = @quality,
   flagged = COALESCE(sqlc.narg('flagged'), flagged),
   recorded_at = @recorded_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteReading :exec
-DELETE FROM "reading" WHERE ID = ?;
+DELETE FROM "reading" WHERE id = ?;
 
 -- Sensor CRUD operations
 
@@ -70,10 +70,10 @@ INSERT INTO "sensor" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetSensorByID :one
-SELECT * FROM "sensor" WHERE ID = ?;
+-- name: GetSensorById :one
+SELECT * FROM "sensor" WHERE id = ?;
 
 -- name: GetSensorByCode :one
 -- Look up a sensor by its hardware code
@@ -93,9 +93,9 @@ UPDATE "sensor" SET
   firmware = COALESCE(sqlc.narg('firmware'), firmware),
   sample_rate_ms = COALESCE(sqlc.narg('sample_rate_ms'), sample_rate_ms),
   updated_at = @updated_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteSensor :exec
-DELETE FROM "sensor" WHERE ID = ?;
+DELETE FROM "sensor" WHERE id = ?;
 

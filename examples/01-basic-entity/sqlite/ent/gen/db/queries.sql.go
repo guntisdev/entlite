@@ -139,8 +139,8 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (*User, erro
 	return UserFromSQL(&dbResult), nil
 }
 
-func (q *Queries) GetUserByID(ctx context.Context, id int32) (*User, error) {
-	dbResult, err := (*internal.Queries)(q).GetUserByID(ctx, IntConvert[int32, int64](id))
+func (q *Queries) GetUserById(ctx context.Context, id int32) (*User, error) {
+	dbResult, err := (*internal.Queries)(q).GetUserById(ctx, IntConvert[int32, int64](id))
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ type UpdateUserParams struct {
 	LoginCount *int64 `json:"login_count"`
 	Rating *float64 `json:"rating"`
 	Preferences *string `json:"preferences"`
-	ID int32 `json:"ID"`
+	ID int32 `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {

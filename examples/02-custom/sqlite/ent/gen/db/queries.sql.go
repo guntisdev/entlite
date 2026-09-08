@@ -74,8 +74,8 @@ func (q *Queries) DeleteSensor(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteSensor(ctx, IntConvert[int32, int64](id))
 }
 
-func (q *Queries) GetReadingByID(ctx context.Context, id int64) (*Reading, error) {
-	dbResult, err := (*internal.Queries)(q).GetReadingByID(ctx, id)
+func (q *Queries) GetReadingById(ctx context.Context, id int64) (*Reading, error) {
+	dbResult, err := (*internal.Queries)(q).GetReadingById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -90,8 +90,8 @@ func (q *Queries) GetSensorByCode(ctx context.Context, code string) (*Sensor, er
 	return SensorFromSQL(&dbResult), nil
 }
 
-func (q *Queries) GetSensorByID(ctx context.Context, id int32) (*Sensor, error) {
-	dbResult, err := (*internal.Queries)(q).GetSensorByID(ctx, IntConvert[int32, int64](id))
+func (q *Queries) GetSensorById(ctx context.Context, id int32) (*Sensor, error) {
+	dbResult, err := (*internal.Queries)(q).GetSensorById(ctx, IntConvert[int32, int64](id))
 	if err != nil {
 		return nil, err
 	}
@@ -214,7 +214,7 @@ type UpdateReadingParams struct {
 	Quality int32 `json:"quality"`
 	Flagged *bool `json:"flagged"`
 	RecordedAt time.Time `json:"recorded_at"`
-	ID int64 `json:"ID"`
+	ID int64 `json:"id"`
 }
 
 func (q *Queries) UpdateReading(ctx context.Context, arg UpdateReadingParams) (*Reading, error) {
@@ -246,7 +246,7 @@ type UpdateSensorParams struct {
 	Active *bool `json:"active"`
 	Firmware *string `json:"firmware"`
 	SampleRateMs *int32 `json:"sample_rate_ms"`
-	ID int32 `json:"ID"`
+	ID int32 `json:"id"`
 }
 
 func (q *Queries) UpdateSensor(ctx context.Context, arg UpdateSensorParams) (*Sensor, error) {
