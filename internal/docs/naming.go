@@ -38,28 +38,6 @@ func namingPage() []byte {
 		{code("display_name"), code("display_name"), code("display_name"), code("DisplayName"), code("DisplayName"), code("displayName")},
 	})
 
-	page.Heading(3, "Queries")
-	page.Table([]string{"You write", "SQL name", "Go method", "rpc"}, [][]string{
-		{code(`Create()`), code("CreateMyUser"), code("CreateMyUser(ctx, arg CreateMyUserParams)"), code("CreateMyUser")},
-		{code(`Get()`), code("GetMyUser"), code("GetMyUser(ctx, id int32)"), code("GetMyUser")},
-		{code(`GetBy("display_name")`), code("GetMyUserByDisplayName"), code("GetMyUserByDisplayName(ctx, displayName string)"), code("GetMyUserByDisplayName")},
-		{code(`ListBy("is_active")`), code("ListMyUsersByIsActive"), code("ListMyUsersByIsActive(ctx, isActive bool)"), code("ListMyUsersByIsActive")},
-	})
-	page.Text("An unsuffixed `Get`, `Update` or `Delete` keys on the primary key, a suffix names the " +
-		"fields it looks up instead. Lists and batches say the resource in plural. The `-- name:` in " +
-		"the sql file is PascalCase because sqlc uses it verbatim as the Go method name, it is a Go " +
-		"identifier and not a sql one.")
-
-	page.Heading(3, "Messages")
-	page.Table([]string{"Message", "Holds"}, [][]string{
-		{code("MyUser"), "`id`, `is_active`, `display_name`"},
-		{code("CreateMyUserRequest"), "`is_active`, `display_name`, the database assigns the id"},
-		{code("ListMyUsersByIsActiveRequest"), "`is_active`"},
-		{code("ListMyUsersByIsActiveResponse"), code("repeated MyUser my_users = 1")},
-	})
-	page.Text("A list response names its field after the resource, not `rows`. `Get`, `Create` and " +
-		"`Update` return the resource itself, `Delete` returns `google.protobuf.Empty`.")
-
 	page.Heading(2, "Why the two Go layers differ")
 	page.Text("sqlc applies one initialism, a path segment equal to `id` becomes `ID`. protoc applies " +
 		"none. So `sensor_id` is `SensorID` in `gen/db` and `SensorId` in `gen/pb`, and it stays that " +
@@ -84,14 +62,5 @@ func (MyUser) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.Bool("is_active"),
 		field.String("display_name"),
-	}
-}
-
-func (MyUser) Queries() []entlite.Query {
-	return []entlite.Query{
-		query.Create(),
-		query.Get(),
-		query.GetBy("display_name"),
-		query.ListBy("is_active"),
 	}
 }`

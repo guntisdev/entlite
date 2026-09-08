@@ -28,15 +28,6 @@ func (MyUser) Fields() []entlite.Field {
 		field.String("display_name"),
 	}
 }
-
-func (MyUser) Queries() []entlite.Query {
-	return []entlite.Query{
-		query.Create(),
-		query.Get(),
-		query.GetBy("display_name"),
-		query.ListBy("is_active"),
-	}
-}
 ```
 
 ### Types
@@ -57,28 +48,6 @@ The table is snake_case and singular. Everything else keeps the entity name as w
 | *(auto)* | `id` | `id` | `ID` | `Id` | `id` |
 | `is_active` | `is_active` | `is_active` | `IsActive` | `IsActive` | `isActive` |
 | `display_name` | `display_name` | `display_name` | `DisplayName` | `DisplayName` | `displayName` |
-
-### Queries
-
-| You write | SQL name | Go method | rpc |
-| --- | --- | --- | --- |
-| `Create()` | `CreateMyUser` | `CreateMyUser(ctx, arg CreateMyUserParams)` | `CreateMyUser` |
-| `Get()` | `GetMyUser` | `GetMyUser(ctx, id int32)` | `GetMyUser` |
-| `GetBy("display_name")` | `GetMyUserByDisplayName` | `GetMyUserByDisplayName(ctx, displayName string)` | `GetMyUserByDisplayName` |
-| `ListBy("is_active")` | `ListMyUsersByIsActive` | `ListMyUsersByIsActive(ctx, isActive bool)` | `ListMyUsersByIsActive` |
-
-An unsuffixed `Get`, `Update` or `Delete` keys on the primary key, a suffix names the fields it looks up instead. Lists and batches say the resource in plural. The `-- name:` in the sql file is PascalCase because sqlc uses it verbatim as the Go method name, it is a Go identifier and not a sql one.
-
-### Messages
-
-| Message | Holds |
-| --- | --- |
-| `MyUser` | `id`, `is_active`, `display_name` |
-| `CreateMyUserRequest` | `is_active`, `display_name`, the database assigns the id |
-| `ListMyUsersByIsActiveRequest` | `is_active` |
-| `ListMyUsersByIsActiveResponse` | `repeated MyUser my_users = 1` |
-
-A list response names its field after the resource, not `rows`. `Get`, `Create` and `Update` return the resource itself, `Delete` returns `google.protobuf.Empty`.
 
 ## Why the two Go layers differ
 
