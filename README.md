@@ -8,6 +8,8 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 * Rename to google AIP https://google.aip.dev/
 * Add mcp for visual testing of examples/
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
+* Fix Time().Optional() on postgres/mysql - sqlToGo/goFromSQL have no time case, sqlc gives sql.NullTime but the wrapper declares *time.Time, so the converter does not compile. Needs a NullTimeToPtr helper
+* Add postgres and mysql optional examples
 
 * Implement Queries Sum(), Avg()
 * Implement Limit()
