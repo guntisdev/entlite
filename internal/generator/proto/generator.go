@@ -241,6 +241,11 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}\n\n")
 
+			if query.HasDistinct() {
+				content.WriteString(writeDistinctResponse(entity, query))
+				continue
+			}
+
 			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
 			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			if query.Count {
@@ -250,6 +255,42 @@ func generateResponseMessages(entity schema.Entity) string {
 		}
 
 	}
+
+	return content.String()
+}
+
+func writeDistinctResponse(entity schema.Entity, query schema.Query) string {
+	var content strings.Builder
+
+	if fieldName, ok := query.DistinctField(); ok {
+		field, found := entity.GetFieldByName(fieldName)
+		if !found {
+			return ""
+		}
+		content.WriteString(fmt.Sprintf("message %sResponse {\n", query.Name))
+		content.WriteString(fmt.Sprintf("  repeated %s %s = 1;\n", getProtoType(field.Type), field.Name))
+		content.WriteString("}")
+
+		return content.String()
+	}
+
+	content.WriteString(fmt.Sprintf("message %sRow {\n", query.Name))
+	for i, fieldName := range query.Distinct {
+		field, found := entity.GetFieldByName(fieldName)
+		if !found {
+			continue
+		}
+		optional := ""
+		if field.Optional {
+			optional = "optional "
+		}
+		content.WriteString(fmt.Sprintf("  %s%s %s = %d;\n", optional, getProtoType(field.Type), field.Name, i+1))
+	}
+	content.WriteString("}\n\n")
+
+	content.WriteString(fmt.Sprintf("message %sResponse {\n", query.Name))
+	content.WriteString(fmt.Sprintf("  repeated %sRow rows = 1;\n", query.Name))
+	content.WriteString("}")
 
 	return content.String()
 }

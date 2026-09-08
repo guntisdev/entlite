@@ -162,6 +162,21 @@ type generationContext struct {
 	filterParamsStructs map[string]*ast.StructType
 }
 
+// distinctRowQuery finds the multi column distinct query a sqlc row struct belongs to
+func (ctx *generationContext) distinctRowQuery(structName string) (dslQuery, bool) {
+	queryName, ok := strings.CutSuffix(structName, "Row")
+	if !ok {
+		return dslQuery{}, false
+	}
+
+	target, ok := ctx.dslQueries[queryName]
+	if !ok || len(target.query.Distinct) < 2 {
+		return dslQuery{}, false
+	}
+
+	return target, true
+}
+
 func (ctx *generationContext) filterParamsEntity(structName string) (schema.Entity, bool) {
 	methodName, ok := strings.CutSuffix(structName, "Params")
 	if !ok {
@@ -488,6 +503,12 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 					sb.WriteString(generateUpdateStruct(s.Name.Name, ctx.updateParamsStructs[s.Name.Name], entity))
 					continue
 				}
+			}
+
+			// sqlc's row struct for a distinct query, restated with the wrapper's types
+			if target, ok := ctx.distinctRowQuery(s.Name.Name); ok {
+				sb.WriteString(generateDistinctRowStruct(target.entity, target.query))
+				continue
 			}
 
 			if structType, ok := ctx.filterParamsStructs[s.Name.Name]; ok {

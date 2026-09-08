@@ -39,8 +39,13 @@ func genQueryName(query schema.Query, entityName string) string {
 }
 
 func genListName(query schema.Query, entityName string) string {
+	distinct := ""
+	if query.HasDistinct() {
+		distinct = fmt.Sprintf("Distinct%s", fieldsToStr(query.Distinct))
+	}
+
 	if query.Type == schema.QueryListAll {
-		return fmt.Sprintf("ListAll%s", entityName)
+		return fmt.Sprintf("ListAll%s%s", entityName, distinct)
 	}
 
 	byStr := ""
@@ -53,7 +58,7 @@ func genListName(query schema.Query, entityName string) string {
 		byFilter = fmt.Sprintf("FilterBy%s", filtersStr)
 	}
 
-	return fmt.Sprintf("List%s%s%s", entityName, byStr, byFilter)
+	return fmt.Sprintf("List%s%s%s%s", entityName, distinct, byStr, byFilter)
 }
 
 func fieldsToStr(fields []string) string {

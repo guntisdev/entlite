@@ -306,6 +306,14 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		if query.Count {
 			selectSQL = fmt.Sprintf("SELECT *, %s AS %s FROM %s", g.totalSizeExpr(), schema.TotalSizeColumn, g.quote(tableName))
 		}
+		// Distinct() selects its own columns instead of the whole row
+		if query.HasDistinct() {
+			distinctParts := make([]string, 0, len(query.Distinct))
+			for _, fieldName := range query.Distinct {
+				distinctParts = append(distinctParts, g.column(fieldName))
+			}
+			selectSQL = fmt.Sprintf("SELECT DISTINCT %s FROM %s", strings.Join(distinctParts, ", "), g.quote(tableName))
+		}
 		// ListAll has no filters, so no WHERE clause
 		if len(whereParts) > 0 {
 			selectSQL += " WHERE " + strings.Join(whereParts, " AND ")
