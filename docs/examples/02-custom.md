@@ -11,7 +11,7 @@ Source: [examples/02-custom](../../examples/02-custom)
 - Hand-written `custom.sql` and `custom.proto` live beside the generated files and survive regeneration
 - A hand-written service that reuses a generated proto message
 - Virtual fields: `Contracts(entlite.PROTO())` gives a field with no column, filled in by the server
-- Choosing the key type per entity: `field.Int64("ID")` on a high volume table
+- Choosing the key type per entity: `field.Int64("id")` on a high volume table
 - A foreign key follows the type of the entity it points at
 - Query level `Contracts()`: a query that stays in the database layer and gets no rpc
 - Two entities in one schema
@@ -24,7 +24,7 @@ Source: [examples/02-custom](../../examples/02-custom)
   `Contracts(entlite.PROTO())`. That is a virtual field: no column, no place in
   any generated SQL, but it is in the proto message. The server fills it in.
 - **Reading** — a measurement from a sensor. Declares its own key as
-  `field.Int64("ID")` instead of taking the default int32. Readings are high
+  `field.Int64("id")` instead of taking the default int32. Readings are high
   volume and int32 stops at 2.1B rows. `sensor_id` stays `field.Int` because it
   points at Sensor's int32 key.
 
@@ -52,13 +52,13 @@ converter turns it into the same `pb.Sensor` the CRUD service returns, and
 
 ## int64 key, end to end
 
-The key type travels the whole stack. Proto gets `int64 ID`. SQLite columns are
+The key type travels the whole stack. Proto gets `int64 id`. SQLite columns are
 already 64-bit, so the wrapper drops the narrowing convert it emits for int32
-keys — compare `GetReadingByID` with `GetSensorByID` in
+keys — compare `GetReadingById` with `GetSensorById` in
 [`sqlite/ent/gen/db/queries.sql.go`](../../examples/02-custom/sqlite/ent/gen/db/queries.sql.go).
 
 On the wire an int64 is JSON encoded as a string, so a reading is
-`{"ID":"2", ...}` and a sensor is `{"ID":2, ...}`. In TypeScript it is a
+`{"id":"2", ...}` and a sensor is `{"id":2, ...}`. In TypeScript it is a
 `bigint`, which is why reading IDs in the frontend use `bigIntInput()` and not
 `numberInput()`.
 
@@ -108,7 +108,7 @@ func (Reading) Contracts() []entlite.Contract {
 func (Reading) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.Int64("id"),
-		// References sensor.ID
+		// References sensor.id
 		field.Int("sensor_id"),
 		field.Float("value"),
 		// Signal quality 0-100
@@ -220,7 +220,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 -- Reading is a single measurement captured by a Sensor.
 CREATE TABLE IF NOT EXISTS "reading"(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  -- References sensor.ID
+  -- References sensor.id
   sensor_id INTEGER NOT NULL,
   value REAL NOT NULL,
   -- Signal quality 0-100
@@ -384,7 +384,7 @@ import "buf/validate/validate.proto";
 // Reading is a single measurement captured by a Sensor.
 message Reading {
   int64 id = 1 [(buf.validate.field).required = true];
-  // References sensor.ID
+  // References sensor.id
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100
@@ -421,7 +421,7 @@ message Sensor {
 }
 
 message CreateReadingRequest {
-  // References sensor.ID
+  // References sensor.id
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100

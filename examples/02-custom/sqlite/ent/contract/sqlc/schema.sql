@@ -5,7 +5,7 @@
 -- Reading is a single measurement captured by a Sensor.
 CREATE TABLE IF NOT EXISTS "reading"(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  -- References sensor.ID
+  -- References sensor.id
   sensor_id INTEGER NOT NULL,
   value REAL NOT NULL,
   -- Signal quality 0-100

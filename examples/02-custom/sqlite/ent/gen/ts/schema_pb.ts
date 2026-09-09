@@ -29,7 +29,7 @@ export type Reading = Message<"proto.Reading"> & {
   id: bigint;
 
   /**
-   * References sensor.ID
+   * References sensor.id
    *
    * @generated from field: int32 sensor_id = 2;
    */
@@ -172,7 +172,7 @@ export const SensorSchema: GenMessage<Sensor> = /*@__PURE__*/
  */
 export type CreateReadingRequest = Message<"proto.CreateReadingRequest"> & {
   /**
-   * References sensor.ID
+   * References sensor.id
    *
    * @generated from field: int32 sensor_id = 2;
    */

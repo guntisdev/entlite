@@ -25,7 +25,7 @@ func (Reading) Contracts() []entlite.Contract {
 func (Reading) Fields() []entlite.Field {
 	return []entlite.Field{
 		field.Int64("id"),
-		// References sensor.ID
+		// References sensor.id
 		field.Int("sensor_id"),
 		field.Float("value"),
 		// Signal quality 0-100

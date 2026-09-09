@@ -13,7 +13,7 @@ import "buf/validate/validate.proto";
 // Reading is a single measurement captured by a Sensor.
 message Reading {
   int64 id = 1 [(buf.validate.field).required = true];
-  // References sensor.ID
+  // References sensor.id
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100
@@ -50,7 +50,7 @@ message Sensor {
 }
 
 message CreateReadingRequest {
-  // References sensor.ID
+  // References sensor.id
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100

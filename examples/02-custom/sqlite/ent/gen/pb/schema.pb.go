@@ -32,7 +32,7 @@ type Reading struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// References sensor.ID
+	// References sensor.id
 	SensorId int32   `protobuf:"varint,2,opt,name=sensor_id,json=sensorId,proto3" json:"sensor_id,omitempty"`
 	Value    float64 `protobuf:"fixed64,3,opt,name=value,proto3" json:"value,omitempty"`
 	// Signal quality 0-100
@@ -281,7 +281,7 @@ type CreateReadingRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// References sensor.ID
+	// References sensor.id
 	SensorId int32   `protobuf:"varint,2,opt,name=sensor_id,json=sensorId,proto3" json:"sensor_id,omitempty"`
 	Value    float64 `protobuf:"fixed64,3,opt,name=value,proto3" json:"value,omitempty"`
 	// Signal quality 0-100
