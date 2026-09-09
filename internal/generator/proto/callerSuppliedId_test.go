@@ -7,7 +7,7 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-// the id field gives up the key to index.Primary, so the caller supplies its value
+// index.Primary takes the key from the id field, so the caller sends the id
 func suppliedIdEntity() schema.Entity {
 	contracts := []schema.Contract{{Type: schema.ContractSQLC}, {Type: schema.ContractPROTO}}
 
@@ -46,7 +46,7 @@ func TestCallerSuppliedIdInCreateRequest(t *testing.T) {
 	}
 }
 
-// an id the database assigns never reaches the client on create
+// an id the db makes is never in the create request
 func TestGeneratedIdStaysOutOfCreateRequest(t *testing.T) {
 	entity := suppliedIdEntity()
 	entity.Indexes = nil

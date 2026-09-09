@@ -115,7 +115,7 @@ func (c *validatingHandlerConn) Receive(msg any) error {
 func generateValidateMethod(entity schema.Entity, query schema.Query) string {
 	var content strings.Builder
 	queryType := query.Type
-	content.WriteString(fmt.Sprintf("func (r *%sRequest) Validate() error {\n", query.Name))
+	content.WriteString(fmt.Sprintf("func (r *%s) Validate() error {\n", naming.RequestName(query.Name)))
 
 	// json text is checked before the request reaches the handler
 	for _, field := range entity.Fields {

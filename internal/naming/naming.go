@@ -1,4 +1,4 @@
-// naming rules that turns a schema into sqlc, proto, sglc go, sqlc proto, typescript
+// naming rules that turn a schema into sqlc, proto, sqlc go, proto go, typescript
 package naming
 
 import (
@@ -55,7 +55,7 @@ func ValidateEntityName(name string) error {
 		if !isLetter(name[i]) && !isDigit(name[i]) {
 			return fmt.Errorf("entity %q must be PascalCase, letters and digits only, e.g. MyUser", name)
 		}
-		// two capitals in a row lose the word boundary, MyDB would become the table my_d_b
+		// two capitals in a row break the table name: MyDB -> my_d_b
 		if i > 0 && isUpper(name[i]) && isUpper(name[i-1]) {
 			return fmt.Errorf("entity %q has two capitals in a row, the table name needs one capital per word, write %s", name, PascalSuggestion(name))
 		}
@@ -76,7 +76,7 @@ func ValidateFieldName(name string) error {
 		switch {
 		case isLower(c) || isDigit(c):
 		case c == '_':
-			// a trailing or doubled underscore gives an empty word
+			// _ at the end, or two in a row, gives an empty word
 			if i == len(name)-1 || name[i+1] == '_' {
 				return fmt.Errorf("field %q has an empty word, write the underscores between words, e.g. is_active", name)
 			}
@@ -107,7 +107,7 @@ func PascalSuggestion(name string) string {
 		if isUpper(c) && len(word) > 0 {
 			prev := word[len(word)-1]
 			nextIsLower := i+1 < len(name) && isLower(name[i+1])
-			// a capital after a lowercase starts a word, so does the last capital of a run
+			// a capital after a small letter starts a word. so does the last capital of a run
 			if isLower(prev) || nextIsLower {
 				words = append(words, string(word))
 				word = nil

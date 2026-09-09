@@ -10,8 +10,8 @@ const namingEntity = "MyUser"
 
 var namingFields = []struct {
 	Name    string
-	Written string // what the schema author types, the id field is added for them
-	TS      string // protobuf-es lowerCamelCase, the one column entlite does not generate
+	Written string // what you type. entlite adds the id field
+	TS      string // protobuf-es name. entlite does not make it, so it is written here
 }{
 	{Name: "id", Written: "*(auto)*", TS: "id"},
 	{Name: "is_active", TS: "isActive"},
@@ -41,7 +41,7 @@ func namingPage() []byte {
 	page.Table([]string{"Layer", "Name"}, [][]string{
 		{"SQL table", code(naming.TableName(namingEntity))},
 		{"Proto message", code(namingEntity)},
-		// the round trip: sqlc has to read the entity name back out of the table name
+		// round trip: sqlc must read the entity name back from the table name
 		{"Go, both layers", code(naming.SqlcGoName(naming.TableName(namingEntity)))},
 		{"TypeScript", code(namingEntity)},
 	})
@@ -56,14 +56,42 @@ func namingPage() []byte {
 		}
 		fieldRows = append(fieldRows, []string{
 			written,
-			code(f.Name), // the sql column is the name itself
-			code(f.Name), // and so is the proto field
+			code(f.Name), // sql column is the name itself
+			code(f.Name), // proto field too
 			code(naming.SqlcGoName(f.Name)),
 			code(naming.ProtocGoName(f.Name)),
 			code(f.TS),
 		})
 	}
 	page.Table([]string{"You write", "SQL", "Proto", "Go via sqlc", "Go via protoc", "TypeScript"}, fieldRows)
+
+	page.Heading(3, "Queries")
+	page.Text("A query name is built from the entity, and the layers hang their own suffixes off it. " +
+		"sqlc reads the name out of the `-- name:` line as its Go method, so the name is a Go " +
+		"identifier and not a sql one.")
+
+	createQuery := naming.CreateQueryName(namingEntity)
+	bulkQuery := naming.CreateBulkQueryName(namingEntity)
+	listQuery := naming.ListByQueryName(namingEntity, nil, []string{namingFields[1].Name}, nil)
+
+	page.Table([]string{"You write", "Query name"}, [][]string{
+		{code("query.Create()"), code(createQuery)},
+		{code("query.CreateBulk()"), code(bulkQuery)},
+		{code(`query.ListBy("` + namingFields[1].Name + `")`), code(listQuery)},
+		{code("query.Get()"), code(naming.GetByQueryName(namingEntity, []string{namingFields[0].Name}))},
+		{code("query.Delete()"), code(naming.DeleteQueryName(namingEntity))},
+	})
+
+	page.Heading(3, "What each layer adds")
+	page.Table([]string{"Layer", "Adds", "Gives"}, [][]string{
+		{"sqlc", code(naming.SuffixParams), code(naming.ParamsName(createQuery)) + ", the argument struct, only when the query takes more than one"},
+		{"proto", code(naming.SuffixRequest), code(naming.RequestName(createQuery)) + ", the rpc input"},
+		{"proto", code(naming.SuffixResponse), code(naming.ResponseName(listQuery)) + ", for a list, a create returns the entity itself"},
+		{"proto", code(naming.SuffixRow), code(naming.RowName(bulkQuery)) + ", one row of a bulk insert"},
+		{"proto", code(naming.SuffixService), code(naming.ServiceName(namingEntity)) + ", one service per entity, off the entity and not the query"},
+	})
+	page.Text("A custom `Name()` may not end with any of those suffixes, or the generated message would " +
+		"come out as `ListActiveRequestRequest`.")
 
 	page.Heading(2, "Why the two Go layers differ")
 	page.Text(fmt.Sprintf("sqlc applies one initialism, a path segment equal to `id` becomes `%s`. protoc "+

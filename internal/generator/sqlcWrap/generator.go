@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	internalParser "github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
@@ -164,7 +165,7 @@ type generationContext struct {
 
 // distinctRowQuery finds the multi column distinct query a sqlc row struct belongs to
 func (ctx *generationContext) distinctRowQuery(structName string) (dslQuery, bool) {
-	queryName, ok := strings.CutSuffix(structName, "Row")
+	queryName, ok := strings.CutSuffix(structName, naming.SuffixRow)
 	if !ok {
 		return dslQuery{}, false
 	}
@@ -178,7 +179,7 @@ func (ctx *generationContext) distinctRowQuery(structName string) (dslQuery, boo
 }
 
 func (ctx *generationContext) filterParamsEntity(structName string) (schema.Entity, bool) {
-	methodName, ok := strings.CutSuffix(structName, "Params")
+	methodName, ok := strings.CutSuffix(structName, naming.SuffixParams)
 	if !ok {
 		return schema.Entity{}, false
 	}
@@ -225,10 +226,10 @@ func (ctx *generationContext) collectDeclarations() {
 							}
 							continue
 						}
-						if strings.HasPrefix(typeSpec.Name.Name, "Create") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
+						if strings.HasPrefix(typeSpec.Name.Name, "Create") && strings.HasSuffix(typeSpec.Name.Name, naming.SuffixParams) {
 							ctx.createParamsStructs[typeSpec.Name.Name] = structType
 						}
-						if strings.HasPrefix(typeSpec.Name.Name, "Update") && strings.HasSuffix(typeSpec.Name.Name, "Params") {
+						if strings.HasPrefix(typeSpec.Name.Name, "Update") && strings.HasSuffix(typeSpec.Name.Name, naming.SuffixParams) {
 							ctx.updateParamsStructs[typeSpec.Name.Name] = structType
 						}
 					}
@@ -240,7 +241,7 @@ func (ctx *generationContext) collectDeclarations() {
 
 // paramsQuery resolves a sqlc "<QueryName>Params" struct back to its DSL query.
 func (ctx *generationContext) paramsQuery(structName string) (dslQuery, bool) {
-	queryName, ok := strings.CutSuffix(structName, "Params")
+	queryName, ok := strings.CutSuffix(structName, naming.SuffixParams)
 	if !ok {
 		return dslQuery{}, false
 	}
@@ -481,24 +482,24 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 				}
 			}
 
-			if strings.HasPrefix(s.Name.Name, "CreateBulk") && strings.HasSuffix(s.Name.Name, "Params") {
-				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "CreateBulk"), "Params")
+			if strings.HasPrefix(s.Name.Name, "CreateBulk") && strings.HasSuffix(s.Name.Name, naming.SuffixParams) {
+				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "CreateBulk"), naming.SuffixParams)
 				if entity, ok := ctx.entityMap[entityName]; ok {
 					sb.WriteString(generateCreateStruct(s.Name.Name, ctx.createParamsStructs[s.Name.Name], entity))
 					continue
 				}
 			}
 
-			if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, "Params") {
-				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), "Params")
+			if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, naming.SuffixParams) {
+				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), naming.SuffixParams)
 				if entity, ok := ctx.entityMap[entityName]; ok {
 					sb.WriteString(generateCreateStruct(s.Name.Name, ctx.createParamsStructs[s.Name.Name], entity))
 					continue
 				}
 			}
 
-			if strings.HasPrefix(s.Name.Name, "Update") && strings.HasSuffix(s.Name.Name, "Params") {
-				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Update"), "Params")
+			if strings.HasPrefix(s.Name.Name, "Update") && strings.HasSuffix(s.Name.Name, naming.SuffixParams) {
+				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Update"), naming.SuffixParams)
 				if entity, ok := ctx.entityMap[entityName]; ok {
 					sb.WriteString(generateUpdateStruct(s.Name.Name, ctx.updateParamsStructs[s.Name.Name], entity))
 					continue

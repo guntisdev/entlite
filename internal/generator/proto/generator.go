@@ -115,7 +115,7 @@ func generateServiceProto(entity schema.Entity) string {
 	content.WriteString(generateResponseMessages(entity))
 	content.WriteString("\n\n")
 
-	serviceName := fmt.Sprintf("%sService", entity.Name)
+	serviceName := naming.ServiceName(entity.Name)
 	content.WriteString(fmt.Sprintf("// %s provides CRUD opertions for %s entities\n", serviceName, entity.Name))
 	content.WriteString(fmt.Sprintf("service %s {\n", serviceName))
 
@@ -141,23 +141,23 @@ func generateResponseMessages(entity schema.Entity) string {
 
 		switch query.Type {
 		case schema.QueryCreate:
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.RequestName(messageName)))
 			writeCreateFields(&content, entity)
 			content.WriteString("}")
 		case schema.QueryCreateBulk:
-			content.WriteString(fmt.Sprintf("message %sRow {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.RowName(messageName)))
 			writeCreateFields(&content, entity)
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
-			content.WriteString(fmt.Sprintf("  repeated %sRow rows = 1 %s;\n", messageName, requiredStr))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.RequestName(messageName)))
+			content.WriteString(fmt.Sprintf("  repeated %s rows = 1 %s;\n", naming.RowName(messageName), requiredStr))
 			content.WriteString("}\n\n")
 
-			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.ResponseName(messageName)))
 			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			content.WriteString("}")
 		case schema.QueryGetBy, schema.QueryDelete:
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.RequestName(messageName)))
 
 			for _, fieldName := range query.Fields {
 				field, found := entity.GetFieldByName(fieldName)
@@ -170,7 +170,7 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}")
 		case schema.QueryUpdate:
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.RequestName(messageName)))
 			for _, field := range entity.Fields {
 				canWrite := field.CanApiWrite()
 				if !entity.IsPrimaryKeyField(field) {
@@ -193,10 +193,10 @@ func generateResponseMessages(entity schema.Entity) string {
 			}
 			content.WriteString("}")
 		case schema.QueryDeleteAll:
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.RequestName(messageName)))
 			content.WriteString("}")
 		case schema.QueryListAll, schema.QueryListBy:
-			content.WriteString(fmt.Sprintf("message %sRequest {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.RequestName(messageName)))
 			if query.LimitFromRequest() {
 				content.WriteString(fmt.Sprintf("  int32 limit = 1 [%s, %s];\n", requiredRule, gteRule(1)))
 			}
@@ -247,7 +247,7 @@ func generateResponseMessages(entity schema.Entity) string {
 				continue
 			}
 
-			content.WriteString(fmt.Sprintf("message %sResponse {\n", messageName))
+			content.WriteString(fmt.Sprintf("message %s {\n", naming.ResponseName(messageName)))
 			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			if query.Count {
 				content.WriteString(fmt.Sprintf("  int64 %s = 2;\n", schema.TotalSizeColumn))
@@ -268,14 +268,14 @@ func writeDistinctResponse(entity schema.Entity, query schema.Query) string {
 		if !found {
 			return ""
 		}
-		content.WriteString(fmt.Sprintf("message %sResponse {\n", query.Name))
+		content.WriteString(fmt.Sprintf("message %s {\n", naming.ResponseName(query.Name)))
 		content.WriteString(fmt.Sprintf("  repeated %s %s = 1;\n", getProtoType(field.Type), field.Name))
 		content.WriteString("}")
 
 		return content.String()
 	}
 
-	content.WriteString(fmt.Sprintf("message %sRow {\n", query.Name))
+	content.WriteString(fmt.Sprintf("message %s {\n", naming.RowName(query.Name)))
 	for i, fieldName := range query.Distinct {
 		field, found := entity.GetFieldByName(fieldName)
 		if !found {
@@ -289,8 +289,8 @@ func writeDistinctResponse(entity schema.Entity, query schema.Query) string {
 	}
 	content.WriteString("}\n\n")
 
-	content.WriteString(fmt.Sprintf("message %sResponse {\n", query.Name))
-	content.WriteString(fmt.Sprintf("  repeated %sRow rows = 1;\n", query.Name))
+	content.WriteString(fmt.Sprintf("message %s {\n", naming.ResponseName(query.Name)))
+	content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", naming.RowName(query.Name)))
 	content.WriteString("}")
 
 	return content.String()
@@ -329,7 +329,7 @@ func writeCreateFields(content *strings.Builder, entity schema.Entity) {
 		if !canWrite {
 			continue
 		}
-		// the id is in the request only when the caller supplies it
+		// id is in the request only when the caller sends it
 		if field.IsID() && !entity.CallerSuppliesID() {
 			continue
 		}
@@ -374,17 +374,17 @@ func generateRpc(entity schema.Entity, query schema.Query) string {
 
 	switch query.Type {
 	case schema.QueryCreate:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
+		return fmt.Sprintf("  rpc %s(%s) returns (%s);\n", name, naming.RequestName(name), entity.Name)
 	case schema.QueryCreateBulk:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", name, name, name)
+		return fmt.Sprintf("  rpc %s(%s) returns (%s);\n", name, naming.RequestName(name), naming.ResponseName(name))
 	case schema.QueryGetBy:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
+		return fmt.Sprintf("  rpc %s(%s) returns (%s);\n", name, naming.RequestName(name), entity.Name)
 	case schema.QueryUpdate:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%s);\n", name, name, entity.Name)
+		return fmt.Sprintf("  rpc %s(%s) returns (%s);\n", name, naming.RequestName(name), entity.Name)
 	case schema.QueryDelete, schema.QueryDeleteAll:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (google.protobuf.Empty);\n", name, name)
+		return fmt.Sprintf("  rpc %s(%s) returns (google.protobuf.Empty);\n", name, naming.RequestName(name))
 	case schema.QueryListBy, schema.QueryListAll:
-		return fmt.Sprintf("  rpc %s(%sRequest) returns (%sResponse);\n", name, name, name)
+		return fmt.Sprintf("  rpc %s(%s) returns (%s);\n", name, naming.RequestName(name), naming.ResponseName(name))
 	default:
 		return ""
 	}

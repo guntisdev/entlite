@@ -47,6 +47,30 @@ The table is snake_case and singular. Everything else keeps the entity name as w
 | `is_active` | `is_active` | `is_active` | `IsActive` | `IsActive` | `isActive` |
 | `display_name` | `display_name` | `display_name` | `DisplayName` | `DisplayName` | `displayName` |
 
+### Queries
+
+A query name is built from the entity, and the layers hang their own suffixes off it. sqlc reads the name out of the `-- name:` line as its Go method, so the name is a Go identifier and not a sql one.
+
+| You write | Query name |
+| --- | --- |
+| `query.Create()` | `CreateMyUser` |
+| `query.CreateBulk()` | `CreateBulkMyUser` |
+| `query.ListBy("is_active")` | `ListMyUserByIsActive` |
+| `query.Get()` | `GetMyUserById` |
+| `query.Delete()` | `DeleteMyUser` |
+
+### What each layer adds
+
+| Layer | Adds | Gives |
+| --- | --- | --- |
+| sqlc | `Params` | `CreateMyUserParams`, the argument struct, only when the query takes more than one |
+| proto | `Request` | `CreateMyUserRequest`, the rpc input |
+| proto | `Response` | `ListMyUserByIsActiveResponse`, for a list, a create returns the entity itself |
+| proto | `Row` | `CreateBulkMyUserRow`, one row of a bulk insert |
+| proto | `Service` | `MyUserService`, one service per entity, off the entity and not the query |
+
+A custom `Name()` may not end with any of those suffixes, or the generated message would come out as `ListActiveRequestRequest`.
+
 ## Why the two Go layers differ
 
 sqlc applies one initialism, a path segment equal to `id` becomes `ID`. protoc applies none. So `sensor_id` is `SensorID` in `gen/db` and `SensorId` in `gen/pb`, and it stays that way: each is idiomatic for the generator that wrote it. The converter bridges the two.

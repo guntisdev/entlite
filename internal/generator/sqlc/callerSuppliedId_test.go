@@ -7,7 +7,7 @@ import (
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-// the id field gives up the key to index.Primary, so the caller supplies its value
+// index.Primary takes the key from the id field, so the caller sends the id
 func suppliedIdEntity() schema.Entity {
 	contracts := []schema.Contract{{Type: schema.ContractSQLC}, {Type: schema.ContractPROTO}}
 
@@ -30,7 +30,7 @@ func suppliedIdEntity() schema.Entity {
 	}
 }
 
-// the id is a plain column now, it carries its own NOT NULL and no PRIMARY KEY
+// id is a plain column now: NOT NULL, no PRIMARY KEY
 func TestCallerSuppliedIdTable(t *testing.T) {
 	for _, dialect := range []schema.SQLDialect{schema.PostgreSQL, schema.SQLite, schema.MySQL} {
 		t.Run(string(dialect), func(t *testing.T) {
@@ -45,7 +45,7 @@ func TestCallerSuppliedIdTable(t *testing.T) {
 			if strings.Contains(sql, "AUTOINCREMENT") || strings.Contains(sql, "AUTO_INCREMENT") || strings.Contains(sql, "SERIAL") {
 				t.Errorf("expected no generated key:\n%s", sql)
 			}
-			// the inline PRIMARY KEY belongs to the index, never to the column
+			// PRIMARY KEY belongs to the index, not to the column
 			if strings.Contains(sql, "id TEXT PRIMARY KEY") {
 				t.Errorf("expected the id column to give up the primary key:\n%s", sql)
 			}
@@ -53,7 +53,7 @@ func TestCallerSuppliedIdTable(t *testing.T) {
 	}
 }
 
-// the insert carries the id and returns nothing, the caller already knows it
+// the insert sends the id and returns nothing, the caller knows it already
 func TestCallerSuppliedIdInsert(t *testing.T) {
 	for _, dialect := range []schema.SQLDialect{schema.PostgreSQL, schema.SQLite, schema.MySQL} {
 		t.Run(string(dialect), func(t *testing.T) {
@@ -72,7 +72,7 @@ func TestCallerSuppliedIdInsert(t *testing.T) {
 	}
 }
 
-// an id the database assigns still stays out of the insert
+// an id the db makes still stays out of the insert
 func TestGeneratedIdStaysOutOfInsert(t *testing.T) {
 	contracts := []schema.Contract{{Type: schema.ContractSQLC}, {Type: schema.ContractPROTO}}
 	entity := schema.Entity{

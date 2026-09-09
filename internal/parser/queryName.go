@@ -1,13 +1,11 @@
 package parser
 
 import (
-	"fmt"
-	"strings"
-
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-// names every query that has no custom Name()
+// name every query that has no custom Name()
 func resolveQueryNames(entity *schema.Entity) {
 	for i := range entity.Queries {
 		if entity.Queries[i].Name != "" {
@@ -20,76 +18,31 @@ func resolveQueryNames(entity *schema.Entity) {
 func genQueryName(query schema.Query, entityName string) string {
 	switch query.Type {
 	case schema.QueryCreate:
-		return fmt.Sprintf("Create%s", entityName)
+		return naming.CreateQueryName(entityName)
 	case schema.QueryCreateBulk:
-		return fmt.Sprintf("CreateBulk%s", entityName)
+		return naming.CreateBulkQueryName(entityName)
 	case schema.QueryUpdate:
-		return fmt.Sprintf("Update%s", entityName)
+		return naming.UpdateQueryName(entityName)
 	case schema.QueryDelete:
-		return fmt.Sprintf("Delete%s", entityName)
+		return naming.DeleteQueryName(entityName)
 	case schema.QueryDeleteAll:
-		return fmt.Sprintf("DeleteAll%s", entityName)
+		return naming.DeleteAllQueryName(entityName)
 	case schema.QueryGetBy:
-		return fmt.Sprintf("Get%sBy%s", entityName, fieldsToStr(query.Fields))
-	case schema.QueryListBy, schema.QueryListAll:
-		return genListName(query, entityName)
+		return naming.GetByQueryName(entityName, query.Fields)
+	case schema.QueryListAll:
+		return naming.ListAllQueryName(entityName, query.Distinct)
+	case schema.QueryListBy:
+		return naming.ListByQueryName(entityName, query.Distinct, query.Fields, filterFields(query.Filters))
 	default:
 		return ""
 	}
 }
 
-func genListName(query schema.Query, entityName string) string {
-	distinct := ""
-	if query.HasDistinct() {
-		distinct = fmt.Sprintf("Distinct%s", fieldsToStr(query.Distinct))
-	}
-
-	if query.Type == schema.QueryListAll {
-		return fmt.Sprintf("ListAll%s%s", entityName, distinct)
-	}
-
-	byStr := ""
-	if fieldsStr := fieldsToStr(query.Fields); fieldsStr != "" {
-		byStr = fmt.Sprintf("By%s", fieldsStr)
-	}
-
-	byFilter := ""
-	if filtersStr := filtersToStr(query.Filters); filtersStr != "" {
-		byFilter = fmt.Sprintf("FilterBy%s", filtersStr)
-	}
-
-	return fmt.Sprintf("List%s%s%s%s", entityName, distinct, byStr, byFilter)
-}
-
-func fieldsToStr(fields []string) string {
-	var builder strings.Builder
-	for _, field := range fields {
-		builder.WriteString(toCamelCase(field))
-	}
-
-	return builder.String()
-}
-
-func filtersToStr(filters []schema.QueryFilter) string {
-	var builder strings.Builder
+func filterFields(filters []schema.QueryFilter) []string {
+	fields := make([]string, 0, len(filters))
 	for _, filter := range filters {
-		builder.WriteString(toCamelCase(filter.Field))
+		fields = append(fields, filter.Field)
 	}
 
-	return builder.String()
-}
-
-func toCamelCase(field string) string {
-	var builder strings.Builder
-	for _, part := range strings.Split(field, "_") {
-		if part == "" {
-			continue
-		}
-		builder.WriteString(strings.ToUpper(part[:1]))
-		if len(part) > 1 {
-			builder.WriteString(part[1:])
-		}
-	}
-
-	return builder.String()
+	return fields
 }

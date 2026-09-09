@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
@@ -48,13 +49,13 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 	var sb strings.Builder
 
 	receiverType := formatType(funcDecl.Recv.List[0].Type)
-	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, arg %sParams) ", receiverType, funcDecl.Name.Name, funcDecl.Name.Name))
+	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context, arg %s) ", receiverType, funcDecl.Name.Name, naming.ParamsName(funcDecl.Name.Name)))
 
 	sb.WriteString(fmt.Sprintf("(*%s, error)", entity.Name))
 
 	sb.WriteString(" {\n")
 	sb.WriteString(addValidationChecks(entity, "update", "nil", "arg", "\t"))
-	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%sParams{\n", inputPkg, funcDecl.Name.Name))
+	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%s{\n", inputPkg, naming.ParamsName(funcDecl.Name.Name)))
 
 	defaultFuncFields := make(map[string]schema.Field)
 	defaultValueFields := make(map[string]schema.Field)
@@ -147,7 +148,7 @@ func getByPrimaryKeyArg(entity schema.Entity, inputPkg, getName string) string {
 	}
 
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("%s.%sParams{", inputPkg, getName))
+	sb.WriteString(fmt.Sprintf("%s.%s{", inputPkg, naming.ParamsName(getName)))
 	for i, field := range keyFields {
 		if i > 0 {
 			sb.WriteString(", ")

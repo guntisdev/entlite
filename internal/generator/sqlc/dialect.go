@@ -24,7 +24,7 @@ func (g *Generator) quote(str string) string {
 
 func (g *Generator) getIdFieldSQL(field schema.Field) string {
 	idType := g.getIdFieldType(field.Type, field.Primary)
-	// index.Primary took the key, the id is a plain column and needs its own NOT NULL
+	// index.Primary has the key. id is a plain column now, so it needs NOT NULL
 	if !field.Primary && !field.Optional {
 		return fmt.Sprintf("  %s %s NOT NULL", g.column(field.Name), idType)
 	}

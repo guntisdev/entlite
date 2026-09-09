@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
@@ -126,7 +127,7 @@ func generateDistinctRowStruct(entity schema.Entity, query schema.Query) string 
 }
 
 func distinctRowName(queryName string) string {
-	return queryName + "Row"
+	return naming.RowName(queryName)
 }
 
 func distinctFields(entity schema.Entity, query schema.Query) []schema.Field {

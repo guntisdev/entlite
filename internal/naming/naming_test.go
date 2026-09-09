@@ -2,7 +2,7 @@ package naming
 
 import "testing"
 
-// the values sqlc and protoc actually produce, measured from their output
+// names sqlc and protoc really give, read from their output
 func TestGoNames(t *testing.T) {
 	tests := []struct{ sqlName, sqlc, protoc string }{
 		{"id", "ID", "Id"},
@@ -13,7 +13,7 @@ func TestGoNames(t *testing.T) {
 		{"http_status", "HttpStatus", "HttpStatus"},
 		{"display_name", "DisplayName", "DisplayName"},
 		{"sample_rate_ms", "SampleRateMs", "SampleRateMs"},
-		// sqlc lowercases first, so a capital in the column is lost, protoc keeps it
+		// sqlc lowercases first, so the capital is lost. protoc keeps it
 		{"initCount", "Initcount", "InitCount"},
 	}
 
@@ -107,5 +107,68 @@ func TestPascalSuggestion(t *testing.T) {
 		if err := ValidateEntityName(tt.want); err != nil {
 			t.Errorf("suggested %q is itself invalid: %v", tt.want, err)
 		}
+	}
+}
+
+func TestSuffixNames(t *testing.T) {
+	if got := ServiceName("MyUser"); got != "MyUserService" {
+		t.Errorf("ServiceName = %q", got)
+	}
+	if got := RequestName("CreateMyUser"); got != "CreateMyUserRequest" {
+		t.Errorf("RequestName = %q", got)
+	}
+	if got := ResponseName("ListMyUsers"); got != "ListMyUsersResponse" {
+		t.Errorf("ResponseName = %q", got)
+	}
+	if got := RowName("CreateBulkMyUser"); got != "CreateBulkMyUserRow" {
+		t.Errorf("RowName = %q", got)
+	}
+	if got := ParamsName("CreateMyUser"); got != "CreateMyUserParams" {
+		t.Errorf("ParamsName = %q", got)
+	}
+	// every suffix we add must be one a custom Name() cannot use
+	reserved := map[string]bool{}
+	for _, s := range ReservedSuffixes() {
+		reserved[s] = true
+	}
+	for _, s := range []string{SuffixRequest, SuffixResponse, SuffixRow, SuffixParams} {
+		if !reserved[s] {
+			t.Errorf("suffix %q is appended but not reserved", s)
+		}
+	}
+}
+
+func TestQueryNames(t *testing.T) {
+	const e = "MyUser"
+
+	tests := []struct{ got, want string }{
+		{CreateQueryName(e), "CreateMyUser"},
+		{CreateBulkQueryName(e), "CreateBulkMyUser"},
+		{UpdateQueryName(e), "UpdateMyUser"},
+		{DeleteQueryName(e), "DeleteMyUser"},
+		{DeleteAllQueryName(e), "DeleteAllMyUser"},
+		{GetByQueryName(e, []string{"id"}), "GetMyUserById"},
+		{GetByQueryName(e, []string{"org_id", "email"}), "GetMyUserByOrgIdEmail"},
+		{ListAllQueryName(e, nil), "ListAllMyUser"},
+		{ListAllQueryName(e, []string{"branch"}), "ListAllMyUserDistinctBranch"},
+		{ListByQueryName(e, nil, []string{"is_active"}, nil), "ListMyUserByIsActive"},
+		{ListByQueryName(e, nil, nil, []string{"env", "status"}), "ListMyUserFilterByEnvStatus"},
+		{ListByQueryName(e, []string{"branch"}, nil, nil), "ListMyUserDistinctBranch"},
+	}
+	for _, tt := range tests {
+		if tt.got != tt.want {
+			t.Errorf("got %q, expected %q", tt.got, tt.want)
+		}
+	}
+}
+
+// a query name joins a digit word, protoc splits it
+// so the two rules cannot be one function
+func TestQueryWordsIsNotProtocGoName(t *testing.T) {
+	if got := QueryWords([]string{"field_2"}); got != "Field2" {
+		t.Errorf("QueryWords = %q, expected Field2", got)
+	}
+	if got := ProtocGoName("field_2"); got != "Field_2" {
+		t.Errorf("ProtocGoName = %q, expected Field_2", got)
 	}
 }
