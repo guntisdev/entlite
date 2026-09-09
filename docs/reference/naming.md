@@ -2,7 +2,7 @@
 
 # Naming
 
-One canonical name per concept in the schema. Every generator derives its own spelling from it, nothing is passed through verbatim.
+One canonical name per concept in the schema. Every generator derives its own spelling from it, nothing is passed through verbatim. Every Go column below is read from `internal/naming`, the same code the generators call, so the tables cannot drift from it.
 
 ## The rule
 
@@ -52,7 +52,7 @@ The table is snake_case and singular. Everything else keeps the entity name as w
 sqlc applies one initialism, a path segment equal to `id` becomes `ID`. protoc applies none. So `sensor_id` is `SensorID` in `gen/db` and `SensorId` in `gen/pb`, and it stays that way: each is idiomatic for the generator that wrote it. The converter bridges the two.
 
 ```go
-return &pb.Reading{
+return &pb.SensorReading{
 	SensorId: m.SensorID,
 }
 ```
