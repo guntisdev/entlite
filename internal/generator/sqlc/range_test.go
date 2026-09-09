@@ -14,7 +14,7 @@ func rangeEntity() schema.Entity {
 		Name:      "User",
 		Contracts: contracts,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeInt, Primary: true, Contracts: contracts},
+			{Name: "id", Type: schema.FieldTypeInt, Primary: true, Contracts: contracts},
 			{Name: "name", Type: schema.FieldTypeString, Contracts: contracts},
 			{Name: "age", Type: schema.FieldTypeInt, Contracts: contracts},
 		},

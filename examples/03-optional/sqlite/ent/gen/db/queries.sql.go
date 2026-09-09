@@ -55,8 +55,8 @@ func (q *Queries) DeleteArticle(ctx context.Context, id string) error {
 	return (*internal.Queries)(q).DeleteArticle(ctx, id)
 }
 
-func (q *Queries) GetArticleByID(ctx context.Context, id string) (*Article, error) {
-	dbResult, err := (*internal.Queries)(q).GetArticleByID(ctx, id)
+func (q *Queries) GetArticleById(ctx context.Context, id string) (*Article, error) {
+	dbResult, err := (*internal.Queries)(q).GetArticleById(ctx, id)
 	if err != nil {
 		return nil, err
 	}

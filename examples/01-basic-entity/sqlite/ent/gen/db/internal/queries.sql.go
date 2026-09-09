@@ -45,7 +45,7 @@ ON CONFLICT (email) DO UPDATE SET
   rating = excluded.rating,
   preferences = excluded.preferences,
   updated_at = excluded.updated_at
-RETURNING ID
+RETURNING id
 `
 
 type CreateBulkUserParams struct {
@@ -110,7 +110,7 @@ INSERT INTO "user" (
   ?,
   ?,
   ?
-) RETURNING ID
+) RETURNING id
 `
 
 type CreateUserParams struct {
@@ -159,7 +159,7 @@ func (q *Queries) DeleteAllUser(ctx context.Context) error {
 }
 
 const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM "user" WHERE ID = ?
+DELETE FROM "user" WHERE id = ?
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
@@ -192,12 +192,12 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
-const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE ID = ?
+const getUserById = `-- name: GetUserById :one
+SELECT id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at FROM "user" WHERE id = ?
 `
 
-func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByID, id)
+func (q *Queries) GetUserById(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -384,7 +384,7 @@ UPDATE "user" SET
   rating = COALESCE(?7, rating),
   preferences = COALESCE(?8, preferences),
   updated_at = ?9
-WHERE ID = ?10
+WHERE id = ?10
 RETURNING id, email, name, age, password, api_key, is_active, login_count, rating, preferences, created_at, updated_at
 `
 
@@ -398,7 +398,7 @@ type UpdateUserParams struct {
 	Rating      *float64  `json:"rating"`
 	Preferences *string   `json:"preferences"`
 	UpdatedAt   time.Time `json:"updated_at"`
-	ID          int64     `json:"ID"`
+	ID          int64     `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

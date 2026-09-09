@@ -47,8 +47,8 @@ func main() {
 	)
 	mux.Handle(sensorPath, sensorHandler)
 
-	readingPath, readingHandler := pb.NewReadingServiceHandler(
-		server.NewReadingServiceServer(database),
+	readingPath, readingHandler := pb.NewSensorReadingServiceHandler(
+		server.NewSensorReadingServiceServer(database),
 		interceptors,
 	)
 	mux.Handle(readingPath, readingHandler)

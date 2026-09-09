@@ -84,8 +84,8 @@ func (q *Queries) DeleteMatch(ctx context.Context, id int32) error {
 	return (*internal.Queries)(q).DeleteMatch(ctx, IntConvert[int32, int64](id))
 }
 
-func (q *Queries) GetMatchByID(ctx context.Context, id int32) (*Match, error) {
-	dbResult, err := (*internal.Queries)(q).GetMatchByID(ctx, IntConvert[int32, int64](id))
+func (q *Queries) GetMatchById(ctx context.Context, id int32) (*Match, error) {
+	dbResult, err := (*internal.Queries)(q).GetMatchById(ctx, IntConvert[int32, int64](id))
 	if err != nil {
 		return nil, err
 	}

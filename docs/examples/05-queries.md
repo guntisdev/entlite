@@ -286,7 +286,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 
 -- Build is one run of a ci pipeline, recorded when it finishes
 CREATE TABLE IF NOT EXISTS "build"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   -- unique, so it can be a GetBy key and an Upsert target
   commit_sha TEXT UNIQUE NOT NULL,
   -- these repeat across rows, so Distinct has something to deduplicate
@@ -346,7 +346,7 @@ ON CONFLICT (commit_sha) DO UPDATE SET
   duration_ms = excluded.duration_ms,
   started_at = excluded.started_at,
   failed_tests = excluded.failed_tests
-RETURNING ID;
+RETURNING id;
 
 -- name: CreateBulkBuild :one
 -- many rows in one call, the wrapper loops the single row insert
@@ -370,11 +370,11 @@ INSERT INTO "build" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetBuildByID :one
+-- name: GetBuildById :one
 -- Get() keys on the primary key
-SELECT * FROM "build" WHERE ID = ?;
+SELECT * FROM "build" WHERE id = ?;
 
 -- name: GetBuildByCommitSha :one
 -- GetBy names the columns itself, they have to be unique together
@@ -429,11 +429,11 @@ UPDATE "build" SET
   duration_ms = @duration_ms,
   started_at = @started_at,
   failed_tests = @failed_tests
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteBuild :exec
-DELETE FROM "build" WHERE ID = ?;
+DELETE FROM "build" WHERE id = ?;
 
 -- name: DeleteAllBuild :exec
 DELETE FROM "build";
@@ -459,7 +459,7 @@ import "buf/validate/validate.proto";
 
 // Build is one run of a ci pipeline, recorded when it finishes
 message Build {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // unique, so it can be a GetBy key and an Upsert target
   string commit_sha = 2 [(buf.validate.field).required = true];
   // these repeat across rows, so Distinct has something to deduplicate
@@ -507,14 +507,14 @@ message CreateBulkBuildRequest {
 message CreateBulkBuildResponse {
   repeated Build rows = 1;
 }
-message GetBuildByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetBuildByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message GetBuildByCommitShaRequest {
   string commit_sha = 2 [(buf.validate.field).required = true];
 }
 message UpdateBuildRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // unique, so it can be a GetBy key and an Upsert target
   string commit_sha = 2 [(buf.validate.field).required = true];
   // these repeat across rows, so Distinct has something to deduplicate
@@ -528,7 +528,7 @@ message UpdateBuildRequest {
   optional int32 failed_tests = 10;
 }
 message DeleteBuildRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message DeleteAllBuildRequest {
 }
@@ -607,7 +607,7 @@ service BuildService {
   // many rows in one call, the wrapper loops the single row insert
   rpc CreateBulkBuild(CreateBulkBuildRequest) returns (CreateBulkBuildResponse);
   // Get() keys on the primary key
-  rpc GetBuildByID(GetBuildByIDRequest) returns (Build);
+  rpc GetBuildById(GetBuildByIdRequest) returns (Build);
   // GetBy names the columns itself, they have to be unique together
   rpc GetBuildByCommitSha(GetBuildByCommitShaRequest) returns (Build);
   rpc UpdateBuild(UpdateBuildRequest) returns (Build);

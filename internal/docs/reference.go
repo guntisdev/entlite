@@ -31,6 +31,7 @@ func reference(p *Pipeline) error {
 	p.Write(p.Out("reference", "filters.md"), filtersPage(api["filter"]))
 	p.Write(p.Out("reference", "indexes.md"), indexesPage(api["index"]))
 	p.Write(p.Out("reference", "contracts.md"), contractsPage(api["entlite"]))
+	p.Write(p.Out("reference", "naming.md"), namingPage())
 	p.Write(p.Out("reference", "type-mapping.md"), typeMappingPage())
 	p.Write(p.Out("reference", "cli.md"), cli)
 

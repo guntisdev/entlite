@@ -120,8 +120,8 @@ func (q *Queries) GetBuildByCommitSha(ctx context.Context, commitSha string) (*B
 	return BuildFromSQL(&dbResult), nil
 }
 
-func (q *Queries) GetBuildByID(ctx context.Context, id int32) (*Build, error) {
-	dbResult, err := (*internal.Queries)(q).GetBuildByID(ctx, IntConvert[int32, int64](id))
+func (q *Queries) GetBuildById(ctx context.Context, id int32) (*Build, error) {
+	dbResult, err := (*internal.Queries)(q).GetBuildById(ctx, IntConvert[int32, int64](id))
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +307,7 @@ type UpdateBuildParams struct {
 	DurationMs int64 `json:"duration_ms"`
 	StartedAt time.Time `json:"started_at"`
 	FailedTests *int32 `json:"failed_tests"`
-	ID int32 `json:"ID"`
+	ID int32 `json:"id"`
 }
 
 func (q *Queries) UpdateBuild(ctx context.Context, arg UpdateBuildParams) (*Build, error) {

@@ -47,13 +47,13 @@ function log(message: string, data?: any) {
 // prefills the id inputs with the last created ID
 function rememberID(article: Article) {
     for (const id of ["getArticleId", "updateArticleId", "deleteArticleId"]) {
-        (document.getElementById(id) as HTMLInputElement).value = article.ID;
+        (document.getElementById(id) as HTMLInputElement).value = article.id;
     }
 }
 
 function describeArticle(article: Article): string {
     const publishedAt = article.publishedAt ? timestampDate(article.publishedAt).toISOString() : "draft";
-    return `ID: ${article.ID} ${article.slug} "${article.title}" by ${article.author} | ${publishedAt}`;
+    return `ID: ${article.id} ${article.slug} "${article.title}" by ${article.author} | ${publishedAt}`;
 }
 
 // unset optional fields are absent, not zero values
@@ -168,14 +168,14 @@ function createBlankTitle() {
 
 // --- Read ------------------------------------------------------------------
 
-function getByID() {
+function getById() {
     const id = textInput("getArticleId");
     if (id === "") {
         log("✗ Invalid article ID");
         return;
     }
     log(`Getting article ${id}...`);
-    articleClient.getArticleByID({ ID: id })
+    articleClient.getArticleById({ id: id })
         .then((response) => {
             logArticle("✓ Article retrieved:", response);
         })
@@ -210,10 +210,10 @@ function updateArticle() {
         return;
     }
     log(`Updating article ${id}...`);
-    articleClient.getArticleByID({ ID: id })
+    articleClient.getArticleById({ id: id })
         .then((article) => {
             const request: StrictMessageInput<UpdateArticleRequest> = {
-                ID: article.ID,
+                id: article.id,
                 slug: article.slug,
                 title: `${article.title} (${createHash(3)})`,
                 author: article.author,
@@ -245,10 +245,10 @@ function clearOptionals() {
         return;
     }
     log(`Clearing optional fields of article ${id}...`);
-    articleClient.getArticleByID({ ID: id })
+    articleClient.getArticleById({ id: id })
         .then((article) => {
             const request: StrictMessageInput<UpdateArticleRequest> = {
-                ID: article.ID,
+                id: article.id,
                 slug: article.slug,
                 title: article.title,
                 author: article.author,
@@ -273,7 +273,7 @@ function deleteArticle() {
         return;
     }
     log(`Deleting article ${id}...`);
-    articleClient.deleteArticle({ ID: id })
+    articleClient.deleteArticle({ id: id })
         .then((response) => {
             log("✓ Article deleted:", response);
         })
@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("createInvalidJsonBtn")!.addEventListener("click", createInvalidJSON);
     document.getElementById("createBlankTitleBtn")!.addEventListener("click", createBlankTitle);
 
-    document.getElementById("getArticleBtn")!.addEventListener("click", getByID);
+    document.getElementById("getArticleBtn")!.addEventListener("click", getById);
     document.getElementById("getArticleSlugBtn")!.addEventListener("click", getBySlug);
 
     document.getElementById("updateArticleBtn")!.addEventListener("click", updateArticle);

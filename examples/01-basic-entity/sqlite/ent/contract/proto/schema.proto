@@ -12,7 +12,7 @@ import "buf/validate/validate.proto";
 
 // User represents as user entity
 message User {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // Full name, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
@@ -40,11 +40,11 @@ message CreateUserRequest {
   // UI preferences, e.g. {"theme":"dark"}
   optional string preferences = 10;
 }
-message GetUserByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetUserByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // Full name, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
@@ -57,7 +57,7 @@ message UpdateUserRequest {
   optional string preferences = 10;
 }
 message DeleteUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message CreateBulkUserRow {
   string email = 2 [(buf.validate.field).required = true];
@@ -116,7 +116,7 @@ message ListUserFilterByAgeNameResponse {
 // UserService provides CRUD opertions for User entities
 service UserService {
   rpc CreateUser(CreateUserRequest) returns (User);
-  rpc GetUserByID(GetUserByIDRequest) returns (User);
+  rpc GetUserById(GetUserByIdRequest) returns (User);
   rpc UpdateUser(UpdateUserRequest) returns (User);
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
   // re-importing the same users overwrites the row that shares the email

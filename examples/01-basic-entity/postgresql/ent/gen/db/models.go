@@ -11,7 +11,7 @@ import (
 
 
 type User struct {
-	ID int32 `json:"ID"`
+	ID int32 `json:"id"`
 	Email string `json:"email"`
 	Name string `json:"name"`
 	Age *int32 `json:"age"`
@@ -74,7 +74,7 @@ func (m *User) ToProto() *pb.User {
 	}
 
 	return &pb.User{
-		ID: m.ID,
+		Id: m.ID,
 		Email: m.Email,
 		Name: m.Name,
 		Age: m.Age,

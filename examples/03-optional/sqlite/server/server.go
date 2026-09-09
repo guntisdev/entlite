@@ -55,7 +55,7 @@ func (s *ArticleServer) CreateArticle(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create article: %w", err))
 	}
 
-	article, err := queries.GetArticleByID(ctx, articleID)
+	article, err := queries.GetArticleById(ctx, articleID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created article: %w", err))
 	}
@@ -63,15 +63,15 @@ func (s *ArticleServer) CreateArticle(
 	return connect.NewResponse(article.ToProto()), nil
 }
 
-func (s *ArticleServer) GetArticleByID(
+func (s *ArticleServer) GetArticleById(
 	ctx context.Context,
-	req *connect.Request[pb.GetArticleByIDRequest],
+	req *connect.Request[pb.GetArticleByIdRequest],
 ) (*connect.Response[pb.Article], error) {
-	log.Printf("Get article: ID=%s", req.Msg.ID)
+	log.Printf("Get article: ID=%s", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	article, err := queries.GetArticleByID(ctx, req.Msg.ID)
+	article, err := queries.GetArticleById(ctx, req.Msg.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("article not found"))
@@ -105,11 +105,11 @@ func (s *ArticleServer) UpdateArticle(
 	ctx context.Context,
 	req *connect.Request[pb.UpdateArticleRequest],
 ) (*connect.Response[pb.Article], error) {
-	log.Printf("Update article: ID=%s, %+v", req.Msg.GetID(), req.Msg)
+	log.Printf("Update article: ID=%s, %+v", req.Msg.GetId(), req.Msg)
 
 	queries := db.New(s.db)
 
-	// TODO db.UpdateArticleParams has no ID field, so req.Msg.ID cannot be passed
+	// TODO db.UpdateArticleParams has no ID field, so req.Msg.Id cannot be passed
 	article, err := queries.UpdateArticle(ctx, db.UpdateArticleParams{
 		Slug:           req.Msg.Slug,
 		Title:          req.Msg.Title,
@@ -137,11 +137,11 @@ func (s *ArticleServer) DeleteArticle(
 	ctx context.Context,
 	req *connect.Request[pb.DeleteArticleRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	log.Printf("Delete article: ID=%s", req.Msg.ID)
+	log.Printf("Delete article: ID=%s", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	if err := queries.DeleteArticle(ctx, req.Msg.ID); err != nil {
+	if err := queries.DeleteArticle(ctx, req.Msg.Id); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete article: %w", err))
 	}
 

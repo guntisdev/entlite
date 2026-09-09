@@ -41,9 +41,9 @@ const (
 	// BuildServiceCreateBulkBuildProcedure is the fully-qualified name of the BuildService's
 	// CreateBulkBuild RPC.
 	BuildServiceCreateBulkBuildProcedure = "/proto.BuildService/CreateBulkBuild"
-	// BuildServiceGetBuildByIDProcedure is the fully-qualified name of the BuildService's GetBuildByID
+	// BuildServiceGetBuildByIdProcedure is the fully-qualified name of the BuildService's GetBuildById
 	// RPC.
-	BuildServiceGetBuildByIDProcedure = "/proto.BuildService/GetBuildByID"
+	BuildServiceGetBuildByIdProcedure = "/proto.BuildService/GetBuildById"
 	// BuildServiceGetBuildByCommitShaProcedure is the fully-qualified name of the BuildService's
 	// GetBuildByCommitSha RPC.
 	BuildServiceGetBuildByCommitShaProcedure = "/proto.BuildService/GetBuildByCommitSha"
@@ -90,7 +90,7 @@ type BuildServiceClient interface {
 	// many rows in one call, the wrapper loops the single row insert
 	CreateBulkBuild(context.Context, *connect.Request[CreateBulkBuildRequest]) (*connect.Response[CreateBulkBuildResponse], error)
 	// Get() keys on the primary key
-	GetBuildByID(context.Context, *connect.Request[GetBuildByIDRequest]) (*connect.Response[Build], error)
+	GetBuildById(context.Context, *connect.Request[GetBuildByIdRequest]) (*connect.Response[Build], error)
 	// GetBy names the columns itself, they have to be unique together
 	GetBuildByCommitSha(context.Context, *connect.Request[GetBuildByCommitShaRequest]) (*connect.Response[Build], error)
 	UpdateBuild(context.Context, *connect.Request[UpdateBuildRequest]) (*connect.Response[Build], error)
@@ -139,10 +139,10 @@ func NewBuildServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(buildServiceMethods.ByName("CreateBulkBuild")),
 			connect.WithClientOptions(opts...),
 		),
-		getBuildByID: connect.NewClient[GetBuildByIDRequest, Build](
+		getBuildById: connect.NewClient[GetBuildByIdRequest, Build](
 			httpClient,
-			baseURL+BuildServiceGetBuildByIDProcedure,
-			connect.WithSchema(buildServiceMethods.ByName("GetBuildByID")),
+			baseURL+BuildServiceGetBuildByIdProcedure,
+			connect.WithSchema(buildServiceMethods.ByName("GetBuildById")),
 			connect.WithClientOptions(opts...),
 		),
 		getBuildByCommitSha: connect.NewClient[GetBuildByCommitShaRequest, Build](
@@ -224,7 +224,7 @@ func NewBuildServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 type buildServiceClient struct {
 	createBuild             *connect.Client[CreateBuildRequest, Build]
 	createBulkBuild         *connect.Client[CreateBulkBuildRequest, CreateBulkBuildResponse]
-	getBuildByID            *connect.Client[GetBuildByIDRequest, Build]
+	getBuildById            *connect.Client[GetBuildByIdRequest, Build]
 	getBuildByCommitSha     *connect.Client[GetBuildByCommitShaRequest, Build]
 	updateBuild             *connect.Client[UpdateBuildRequest, Build]
 	deleteBuild             *connect.Client[DeleteBuildRequest, emptypb.Empty]
@@ -249,9 +249,9 @@ func (c *buildServiceClient) CreateBulkBuild(ctx context.Context, req *connect.R
 	return c.createBulkBuild.CallUnary(ctx, req)
 }
 
-// GetBuildByID calls proto.BuildService.GetBuildByID.
-func (c *buildServiceClient) GetBuildByID(ctx context.Context, req *connect.Request[GetBuildByIDRequest]) (*connect.Response[Build], error) {
-	return c.getBuildByID.CallUnary(ctx, req)
+// GetBuildById calls proto.BuildService.GetBuildById.
+func (c *buildServiceClient) GetBuildById(ctx context.Context, req *connect.Request[GetBuildByIdRequest]) (*connect.Response[Build], error) {
+	return c.getBuildById.CallUnary(ctx, req)
 }
 
 // GetBuildByCommitSha calls proto.BuildService.GetBuildByCommitSha.
@@ -322,7 +322,7 @@ type BuildServiceHandler interface {
 	// many rows in one call, the wrapper loops the single row insert
 	CreateBulkBuild(context.Context, *connect.Request[CreateBulkBuildRequest]) (*connect.Response[CreateBulkBuildResponse], error)
 	// Get() keys on the primary key
-	GetBuildByID(context.Context, *connect.Request[GetBuildByIDRequest]) (*connect.Response[Build], error)
+	GetBuildById(context.Context, *connect.Request[GetBuildByIdRequest]) (*connect.Response[Build], error)
 	// GetBy names the columns itself, they have to be unique together
 	GetBuildByCommitSha(context.Context, *connect.Request[GetBuildByCommitShaRequest]) (*connect.Response[Build], error)
 	UpdateBuild(context.Context, *connect.Request[UpdateBuildRequest]) (*connect.Response[Build], error)
@@ -367,10 +367,10 @@ func NewBuildServiceHandler(svc BuildServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(buildServiceMethods.ByName("CreateBulkBuild")),
 		connect.WithHandlerOptions(opts...),
 	)
-	buildServiceGetBuildByIDHandler := connect.NewUnaryHandler(
-		BuildServiceGetBuildByIDProcedure,
-		svc.GetBuildByID,
-		connect.WithSchema(buildServiceMethods.ByName("GetBuildByID")),
+	buildServiceGetBuildByIdHandler := connect.NewUnaryHandler(
+		BuildServiceGetBuildByIdProcedure,
+		svc.GetBuildById,
+		connect.WithSchema(buildServiceMethods.ByName("GetBuildById")),
 		connect.WithHandlerOptions(opts...),
 	)
 	buildServiceGetBuildByCommitShaHandler := connect.NewUnaryHandler(
@@ -451,8 +451,8 @@ func NewBuildServiceHandler(svc BuildServiceHandler, opts ...connect.HandlerOpti
 			buildServiceCreateBuildHandler.ServeHTTP(w, r)
 		case BuildServiceCreateBulkBuildProcedure:
 			buildServiceCreateBulkBuildHandler.ServeHTTP(w, r)
-		case BuildServiceGetBuildByIDProcedure:
-			buildServiceGetBuildByIDHandler.ServeHTTP(w, r)
+		case BuildServiceGetBuildByIdProcedure:
+			buildServiceGetBuildByIdHandler.ServeHTTP(w, r)
 		case BuildServiceGetBuildByCommitShaProcedure:
 			buildServiceGetBuildByCommitShaHandler.ServeHTTP(w, r)
 		case BuildServiceUpdateBuildProcedure:
@@ -494,8 +494,8 @@ func (UnimplementedBuildServiceHandler) CreateBulkBuild(context.Context, *connec
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.CreateBulkBuild is not implemented"))
 }
 
-func (UnimplementedBuildServiceHandler) GetBuildByID(context.Context, *connect.Request[GetBuildByIDRequest]) (*connect.Response[Build], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.GetBuildByID is not implemented"))
+func (UnimplementedBuildServiceHandler) GetBuildById(context.Context, *connect.Request[GetBuildByIdRequest]) (*connect.Response[Build], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.GetBuildById is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) GetBuildByCommitSha(context.Context, *connect.Request[GetBuildByCommitShaRequest]) (*connect.Response[Build], error) {

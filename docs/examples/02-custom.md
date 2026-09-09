@@ -11,10 +11,11 @@ Source: [examples/02-custom](../../examples/02-custom)
 - Hand-written `custom.sql` and `custom.proto` live beside the generated files and survive regeneration
 - A hand-written service that reuses a generated proto message
 - Virtual fields: `Contracts(entlite.PROTO())` gives a field with no column, filled in by the server
-- Choosing the key type per entity: `field.Int64("ID")` on a high volume table
+- Choosing the key type per entity: `field.Int64("id")` on a high volume table
 - A foreign key follows the type of the entity it points at
 - Query level `Contracts()`: a query that stays in the database layer and gets no rpc
 - Two entities in one schema
+- A multi-word entity name: `SensorReading` becomes the table `sensor_reading`, which sqlc reads back as the Go type `SensorReading`
 
 ## Entities
 
@@ -23,12 +24,12 @@ Source: [examples/02-custom](../../examples/02-custom)
 - **Sensor** — a device in the field. Also declares `latest_value` as
   `Contracts(entlite.PROTO())`. That is a virtual field: no column, no place in
   any generated SQL, but it is in the proto message. The server fills it in.
-- **Reading** — a measurement from a sensor. Declares its own key as
-  `field.Int64("ID")` instead of taking the default int32. Readings are high
+- **SensorReading** — a measurement from a sensor. Declares its own key as
+  `field.Int64("id")` instead of taking the default int32. Readings are high
   volume and int32 stops at 2.1B rows. `sensor_id` stays `field.Int` because it
   points at Sensor's int32 key.
 
-Reading's `Update()` is `Contracts(entlite.SQLC())`. A reading is a recorded
+SensorReading's `Update()` is `Contracts(entlite.SQLC())`. A reading is a recorded
 fact, so clients never edit it. The database query exists, the rpc does not.
 
 ## Hand-written files
@@ -52,13 +53,13 @@ converter turns it into the same `pb.Sensor` the CRUD service returns, and
 
 ## int64 key, end to end
 
-The key type travels the whole stack. Proto gets `int64 ID`. SQLite columns are
+The key type travels the whole stack. Proto gets `int64 id`. SQLite columns are
 already 64-bit, so the wrapper drops the narrowing convert it emits for int32
-keys — compare `GetReadingByID` with `GetSensorByID` in
+keys — compare `GetSensorReadingById` with `GetSensorById` in
 [`sqlite/ent/gen/db/queries.sql.go`](../../examples/02-custom/sqlite/ent/gen/db/queries.sql.go).
 
 On the wire an int64 is JSON encoded as a string, so a reading is
-`{"ID":"2", ...}` and a sensor is `{"ID":2, ...}`. In TypeScript it is a
+`{"id":"2", ...}` and a sensor is `{"id":2, ...}`. In TypeScript it is a
 `bigint`, which is why reading IDs in the frontend use `bigIntInput()` and not
 `numberInput()`.
 
@@ -78,65 +79,6 @@ parameters it never received. `custom.sql` writes its ranges the same way.
 
 The dsl input, from the `sqlite` variant.
 
-### [reading.go](../../examples/02-custom/sqlite/ent/schema/reading.go)
-
-```go
-package schema
-
-import (
-	"time"
-
-	"github.com/guntisdev/entlite/examples/02-custom/sqlite/ent/logic"
-	"github.com/guntisdev/entlite/pkg/entlite"
-	"github.com/guntisdev/entlite/pkg/entlite/field"
-	"github.com/guntisdev/entlite/pkg/entlite/filter"
-	"github.com/guntisdev/entlite/pkg/entlite/query"
-)
-
-// Reading is a single measurement captured by a Sensor.
-type Reading struct {
-	entlite.Schema
-}
-
-func (Reading) Contracts() []entlite.Contract {
-	return []entlite.Contract{
-		entlite.SQLC(),
-		entlite.PROTO(),
-	}
-}
-
-func (Reading) Fields() []entlite.Field {
-	return []entlite.Field{
-		field.Int64("ID"),
-		// References sensor.ID
-		field.Int("sensor_id"),
-		field.Float("value"),
-		// Signal quality 0-100
-		field.Int("quality").Validate(logic.IsPercentage),
-		// Marked as anomalous by ingestion
-		field.Bool("flagged").Default(false),
-		// Device measurement time (client-supplied)
-		field.Time("recorded_at"),
-		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
-	}
-}
-
-func (Reading) Queries() []entlite.Query {
-	return []entlite.Query{
-		query.Create(),
-		query.Get(),
-		query.Update().Contracts(entlite.SQLC()), // a recorded fact, clients never edit it, no proto rpc
-		query.Delete(),
-		query.ListBy("sensor_id").Limit().Offset(),
-		query.ListBy(
-			filter.Eq("sensor_id"),
-			filter.Range("recorded_at"),
-			filter.Eq("flagged"),
-		).Count().Asc("recorded_at").Limit().Offset(),
-	}
-}
-```
-
 ### [sensor.go](../../examples/02-custom/sqlite/ent/schema/sensor.go)
 
 ```go
@@ -152,7 +94,7 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
-// Sensor is a physical device deployed in the field that emits Readings.
+// Sensor is a physical device deployed in the field that emits SensorReadings.
 type Sensor struct {
 	entlite.Schema
 }
@@ -205,6 +147,65 @@ func (Sensor) Queries() []entlite.Query {
 }
 ```
 
+### [sensorReading.go](../../examples/02-custom/sqlite/ent/schema/sensorReading.go)
+
+```go
+package schema
+
+import (
+	"time"
+
+	"github.com/guntisdev/entlite/examples/02-custom/sqlite/ent/logic"
+	"github.com/guntisdev/entlite/pkg/entlite"
+	"github.com/guntisdev/entlite/pkg/entlite/field"
+	"github.com/guntisdev/entlite/pkg/entlite/filter"
+	"github.com/guntisdev/entlite/pkg/entlite/query"
+)
+
+// SensorReading is a single measurement captured by a Sensor.
+type SensorReading struct {
+	entlite.Schema
+}
+
+func (SensorReading) Contracts() []entlite.Contract {
+	return []entlite.Contract{
+		entlite.SQLC(),
+		entlite.PROTO(),
+	}
+}
+
+func (SensorReading) Fields() []entlite.Field {
+	return []entlite.Field{
+		field.Int64("id"),
+		// References sensor.id
+		field.Int("sensor_id"),
+		field.Float("value"),
+		// Signal quality 0-100
+		field.Int("quality").Validate(logic.IsPercentage),
+		// Marked as anomalous by ingestion
+		field.Bool("flagged").Default(false),
+		// Device measurement time (client-supplied)
+		field.Time("recorded_at"),
+		field.Time("created_at").Contracts(entlite.SQLC(), entlite.PROTO().ReadOnly()).DefaultFunc(time.Now).Immutable(),
+	}
+}
+
+func (SensorReading) Queries() []entlite.Query {
+	return []entlite.Query{
+		query.Create(),
+		query.Get(),
+		query.Update().Contracts(entlite.SQLC()), // a recorded fact, clients never edit it, no proto rpc
+		query.Delete(),
+		query.ListBy("sensor_id").Limit().Offset(),
+		query.ListBy(
+			filter.Eq("sensor_id"),
+			filter.Range("recorded_at"),
+			filter.Eq("flagged"),
+		).Count().Asc("recorded_at").Limit().Offset(),
+	}
+}
+```
+
 ## Generated contract
 
 What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/02-custom/sqlite) for the other variants.
@@ -217,24 +218,9 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 
 -- Table definitions for all entities
 
--- Reading is a single measurement captured by a Sensor.
-CREATE TABLE IF NOT EXISTS "reading"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
-  -- References sensor.ID
-  sensor_id INTEGER NOT NULL,
-  value REAL NOT NULL,
-  -- Signal quality 0-100
-  quality INTEGER NOT NULL,
-  -- Marked as anomalous by ingestion
-  flagged INTEGER DEFAULT false NOT NULL,
-  -- Device measurement time (client-supplied)
-  recorded_at DATETIME NOT NULL,
-  created_at DATETIME NOT NULL
-);
-
--- Sensor is a physical device deployed in the field that emits Readings.
+-- Sensor is a physical device deployed in the field that emits SensorReadings.
 CREATE TABLE IF NOT EXISTS "sensor"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   -- External hardware identifier, e.g. TEMP-A1
   code TEXT UNIQUE NOT NULL,
   -- Human friendly name
@@ -253,6 +239,21 @@ CREATE TABLE IF NOT EXISTS "sensor"(
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
 );
+
+-- SensorReading is a single measurement captured by a Sensor.
+CREATE TABLE IF NOT EXISTS "sensor_reading"(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  -- References sensor.id
+  sensor_id INTEGER NOT NULL,
+  value REAL NOT NULL,
+  -- Signal quality 0-100
+  quality INTEGER NOT NULL,
+  -- Marked as anomalous by ingestion
+  flagged INTEGER DEFAULT false NOT NULL,
+  -- Device measurement time (client-supplied)
+  recorded_at DATETIME NOT NULL,
+  created_at DATETIME NOT NULL
+);
 ```
 
 </details>
@@ -264,47 +265,6 @@ CREATE TABLE IF NOT EXISTS "sensor"(
 -- Code generated by entlite. DO NOT EDIT.
 
 -- SQLC compatible query definitions
-
--- Reading CRUD operations
-
--- name: CreateReading :one
-INSERT INTO "reading" (
-  sensor_id,
-  value,
-  quality,
-  flagged,
-  recorded_at,
-  created_at
-) VALUES (
-  ?,
-  ?,
-  ?,
-  ?,
-  ?,
-  ?
-) RETURNING ID;
-
--- name: GetReadingByID :one
-SELECT * FROM "reading" WHERE ID = ?;
-
--- name: ListReadingBySensorId :many
-SELECT * FROM "reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
-
--- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT *, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = @sensor_id AND recorded_at >= @min_recorded_at AND recorded_at <= @max_recorded_at AND flagged = @flagged ORDER BY recorded_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
-
--- name: UpdateReading :one
-UPDATE "reading" SET
-  sensor_id = @sensor_id,
-  value = @value,
-  quality = @quality,
-  flagged = COALESCE(sqlc.narg('flagged'), flagged),
-  recorded_at = @recorded_at
-WHERE ID = @ID
-RETURNING *;
-
--- name: DeleteReading :exec
-DELETE FROM "reading" WHERE ID = ?;
 
 -- Sensor CRUD operations
 
@@ -333,10 +293,10 @@ INSERT INTO "sensor" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetSensorByID :one
-SELECT * FROM "sensor" WHERE ID = ?;
+-- name: GetSensorById :one
+SELECT * FROM "sensor" WHERE id = ?;
 
 -- name: GetSensorByCode :one
 -- Look up a sensor by its hardware code
@@ -356,11 +316,52 @@ UPDATE "sensor" SET
   firmware = COALESCE(sqlc.narg('firmware'), firmware),
   sample_rate_ms = COALESCE(sqlc.narg('sample_rate_ms'), sample_rate_ms),
   updated_at = @updated_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteSensor :exec
-DELETE FROM "sensor" WHERE ID = ?;
+DELETE FROM "sensor" WHERE id = ?;
+
+-- SensorReading CRUD operations
+
+-- name: CreateSensorReading :one
+INSERT INTO "sensor_reading" (
+  sensor_id,
+  value,
+  quality,
+  flagged,
+  recorded_at,
+  created_at
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?
+) RETURNING id;
+
+-- name: GetSensorReadingById :one
+SELECT * FROM "sensor_reading" WHERE id = ?;
+
+-- name: ListSensorReadingBySensorId :many
+SELECT * FROM "sensor_reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+
+-- name: ListSensorReadingFilterBySensorIdRecordedAtFlagged :many
+SELECT *, COUNT(*) OVER() AS total_size FROM "sensor_reading" WHERE sensor_id = @sensor_id AND recorded_at >= @min_recorded_at AND recorded_at <= @max_recorded_at AND flagged = @flagged ORDER BY recorded_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+
+-- name: UpdateSensorReading :one
+UPDATE "sensor_reading" SET
+  sensor_id = @sensor_id,
+  value = @value,
+  quality = @quality,
+  flagged = COALESCE(sqlc.narg('flagged'), flagged),
+  recorded_at = @recorded_at
+WHERE id = @id
+RETURNING *;
+
+-- name: DeleteSensorReading :exec
+DELETE FROM "sensor_reading" WHERE id = ?;
 ```
 
 </details>
@@ -381,24 +382,9 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "buf/validate/validate.proto";
 
-// Reading is a single measurement captured by a Sensor.
-message Reading {
-  int64 ID = 1 [(buf.validate.field).required = true];
-  // References sensor.ID
-  int32 sensor_id = 2 [(buf.validate.field).required = true];
-  double value = 3 [(buf.validate.field).required = true];
-  // Signal quality 0-100
-  int32 quality = 4 [(buf.validate.field).required = true];
-  // Marked as anomalous by ingestion
-  bool flagged = 5;
-  // Device measurement time (client-supplied)
-  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp created_at = 7 [(buf.validate.field).required = true];
-}
-
-// Sensor is a physical device deployed in the field that emits Readings.
+// Sensor is a physical device deployed in the field that emits SensorReadings.
 message Sensor {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // External hardware identifier, e.g. TEMP-A1
   string code = 2 [(buf.validate.field).required = true];
   // Human friendly name
@@ -420,53 +406,19 @@ message Sensor {
   optional double latest_value = 13;
 }
 
-message CreateReadingRequest {
-  // References sensor.ID
+// SensorReading is a single measurement captured by a Sensor.
+message SensorReading {
+  int64 id = 1 [(buf.validate.field).required = true];
+  // References sensor.id
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100
   int32 quality = 4 [(buf.validate.field).required = true];
   // Marked as anomalous by ingestion
-  optional bool flagged = 5;
+  bool flagged = 5;
   // Device measurement time (client-supplied)
   google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
-}
-message GetReadingByIDRequest {
-  int64 ID = 1 [(buf.validate.field).required = true];
-}
-message DeleteReadingRequest {
-  int64 ID = 1 [(buf.validate.field).required = true];
-}
-message ListReadingBySensorIdRequest {
-  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
-  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
-  int32 sensor_id = 3 [(buf.validate.field).required = true];
-}
-
-message ListReadingBySensorIdResponse {
-  repeated Reading rows = 1;
-}
-message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
-  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
-  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
-  int32 sensor_id = 3 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp min_recorded_at = 4 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp max_recorded_at = 5 [(buf.validate.field).required = true];
-  bool flagged = 6 [(buf.validate.field).required = true];
-}
-
-message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
-  repeated Reading rows = 1;
-  int64 total_size = 2;
-}
-
-// ReadingService provides CRUD opertions for Reading entities
-service ReadingService {
-  rpc CreateReading(CreateReadingRequest) returns (Reading);
-  rpc GetReadingByID(GetReadingByIDRequest) returns (Reading);
-  rpc DeleteReading(DeleteReadingRequest) returns (google.protobuf.Empty);
-  rpc ListReadingBySensorId(ListReadingBySensorIdRequest) returns (ListReadingBySensorIdResponse);
-  rpc ListReadingFilterBySensorIdRecordedAtFlagged(ListReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListReadingFilterBySensorIdRecordedAtFlaggedResponse);
+  google.protobuf.Timestamp created_at = 7 [(buf.validate.field).required = true];
 }
 
 message CreateSensorRequest {
@@ -488,11 +440,11 @@ message CreateSensorRequest {
   // Most recent reading value, joined in at the API layer - not stored
   optional double latest_value = 13;
 }
-message GetSensorByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetSensorByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateSensorRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   // External hardware identifier, e.g. TEMP-A1
   string code = 2 [(buf.validate.field).required = true];
   // Human friendly name
@@ -510,7 +462,7 @@ message UpdateSensorRequest {
   optional double latest_value = 13;
 }
 message DeleteSensorRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message GetSensorByCodeRequest {
   string code = 2 [(buf.validate.field).required = true];
@@ -531,12 +483,61 @@ message ListSensorFilterByLabelKindActiveResponse {
 // SensorService provides CRUD opertions for Sensor entities
 service SensorService {
   rpc CreateSensor(CreateSensorRequest) returns (Sensor);
-  rpc GetSensorByID(GetSensorByIDRequest) returns (Sensor);
+  rpc GetSensorById(GetSensorByIdRequest) returns (Sensor);
   rpc UpdateSensor(UpdateSensorRequest) returns (Sensor);
   rpc DeleteSensor(DeleteSensorRequest) returns (google.protobuf.Empty);
   // Look up a sensor by its hardware code
   rpc GetSensorByCode(GetSensorByCodeRequest) returns (Sensor);
   rpc ListSensorFilterByLabelKindActive(ListSensorFilterByLabelKindActiveRequest) returns (ListSensorFilterByLabelKindActiveResponse);
+}
+
+message CreateSensorReadingRequest {
+  // References sensor.id
+  int32 sensor_id = 2 [(buf.validate.field).required = true];
+  double value = 3 [(buf.validate.field).required = true];
+  // Signal quality 0-100
+  int32 quality = 4 [(buf.validate.field).required = true];
+  // Marked as anomalous by ingestion
+  optional bool flagged = 5;
+  // Device measurement time (client-supplied)
+  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
+}
+message GetSensorReadingByIdRequest {
+  int64 id = 1 [(buf.validate.field).required = true];
+}
+message DeleteSensorReadingRequest {
+  int64 id = 1 [(buf.validate.field).required = true];
+}
+message ListSensorReadingBySensorIdRequest {
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
+  int32 sensor_id = 3 [(buf.validate.field).required = true];
+}
+
+message ListSensorReadingBySensorIdResponse {
+  repeated SensorReading rows = 1;
+}
+message ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest {
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
+  int32 sensor_id = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp min_recorded_at = 4 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp max_recorded_at = 5 [(buf.validate.field).required = true];
+  bool flagged = 6 [(buf.validate.field).required = true];
+}
+
+message ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse {
+  repeated SensorReading rows = 1;
+  int64 total_size = 2;
+}
+
+// SensorReadingService provides CRUD opertions for SensorReading entities
+service SensorReadingService {
+  rpc CreateSensorReading(CreateSensorReadingRequest) returns (SensorReading);
+  rpc GetSensorReadingById(GetSensorReadingByIdRequest) returns (SensorReading);
+  rpc DeleteSensorReading(DeleteSensorReadingRequest) returns (google.protobuf.Empty);
+  rpc ListSensorReadingBySensorId(ListSensorReadingBySensorIdRequest) returns (ListSensorReadingBySensorIdResponse);
+  rpc ListSensorReadingFilterBySensorIdRecordedAtFlagged(ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse);
 }
 ```
 

@@ -66,8 +66,8 @@ ON DUPLICATE KEY UPDATE
   rating = VALUES(rating),
   preferences = VALUES(preferences),
   updated_at = VALUES(updated_at);
--- name: GetUserByID :one
-SELECT * FROM `user` WHERE ID = ?;
+-- name: GetUserById :one
+SELECT * FROM `user` WHERE id = ?;
 
 -- name: GetUserByEmail :one
 -- Look up a user by email address
@@ -93,10 +93,10 @@ UPDATE `user` SET
   rating = COALESCE(sqlc.narg('rating'), rating),
   preferences = COALESCE(sqlc.narg('preferences'), preferences),
   updated_at = sqlc.arg('updated_at')
-WHERE ID = sqlc.arg('ID');
+WHERE id = sqlc.arg('id');
 
 -- name: DeleteUser :exec
-DELETE FROM `user` WHERE ID = ?;
+DELETE FROM `user` WHERE id = ?;
 
 -- name: DeleteAllUser :exec
 DELETE FROM `user`;

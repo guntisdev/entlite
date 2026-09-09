@@ -15,7 +15,7 @@ INSERT INTO "audit" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
 -- name: ListAllAudit :many
 SELECT * FROM "audit";
@@ -39,16 +39,16 @@ INSERT INTO "match" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetMatchByID :one
-SELECT * FROM "match" WHERE ID = ?;
+-- name: GetMatchById :one
+SELECT * FROM "match" WHERE id = ?;
 
 -- name: ListAllMatch :many
 SELECT * FROM "match";
 
 -- name: DeleteMatch :exec
-DELETE FROM "match" WHERE ID = ?;
+DELETE FROM "match" WHERE id = ?;
 
 -- name: DeleteAllMatch :exec
 DELETE FROM "match";

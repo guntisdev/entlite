@@ -12,7 +12,7 @@ import "buf/validate/validate.proto";
 
 // Match represents as match entity
 message Match {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string white = 2 [(buf.validate.field).required = true];
   string black = 3 [(buf.validate.field).required = true];
   // 1-0 | 0-1 | 1/2-1/2
@@ -37,7 +37,7 @@ message Player {
 // Standing represents as standing entity
 message Standing {
   // Place in the table, 1 is best
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string player = 2 [(buf.validate.field).required = true];
   int32 played = 3 [(buf.validate.field).required = true];
   int32 wins = 4 [(buf.validate.field).required = true];
@@ -57,11 +57,11 @@ message CreateMatchRequest {
   int32 moves = 6 [(buf.validate.field).required = true];
   optional google.protobuf.Timestamp played_at = 7;
 }
-message GetMatchByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetMatchByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message DeleteMatchRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message ListAllMatchRequest {
 }
@@ -73,7 +73,7 @@ message ListAllMatchResponse {
 // MatchService provides CRUD opertions for Match entities
 service MatchService {
   rpc CreateMatch(CreateMatchRequest) returns (Match);
-  rpc GetMatchByID(GetMatchByIDRequest) returns (Match);
+  rpc GetMatchById(GetMatchByIdRequest) returns (Match);
   rpc DeleteMatch(DeleteMatchRequest) returns (google.protobuf.Empty);
   rpc ListAllMatch(ListAllMatchRequest) returns (ListAllMatchResponse);
 }

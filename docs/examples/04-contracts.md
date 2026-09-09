@@ -307,7 +307,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 
 -- audit table
 CREATE TABLE IF NOT EXISTS "audit"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   -- created | deleted
   "action" TEXT NOT NULL,
   match_id INTEGER NOT NULL,
@@ -317,7 +317,7 @@ CREATE TABLE IF NOT EXISTS "audit"(
 
 -- match table
 CREATE TABLE IF NOT EXISTS "match"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   white TEXT NOT NULL,
   black TEXT NOT NULL,
   -- 1-0 | 0-1 | 1/2-1/2
@@ -364,7 +364,7 @@ INSERT INTO "audit" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
 -- name: ListAllAudit :many
 SELECT * FROM "audit";
@@ -388,16 +388,16 @@ INSERT INTO "match" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetMatchByID :one
-SELECT * FROM "match" WHERE ID = ?;
+-- name: GetMatchById :one
+SELECT * FROM "match" WHERE id = ?;
 
 -- name: ListAllMatch :many
 SELECT * FROM "match";
 
 -- name: DeleteMatch :exec
-DELETE FROM "match" WHERE ID = ?;
+DELETE FROM "match" WHERE id = ?;
 
 -- name: DeleteAllMatch :exec
 DELETE FROM "match";
@@ -443,7 +443,7 @@ import "buf/validate/validate.proto";
 
 // Match represents as match entity
 message Match {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string white = 2 [(buf.validate.field).required = true];
   string black = 3 [(buf.validate.field).required = true];
   // 1-0 | 0-1 | 1/2-1/2
@@ -468,7 +468,7 @@ message Player {
 // Standing represents as standing entity
 message Standing {
   // Place in the table, 1 is best
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string player = 2 [(buf.validate.field).required = true];
   int32 played = 3 [(buf.validate.field).required = true];
   int32 wins = 4 [(buf.validate.field).required = true];
@@ -488,11 +488,11 @@ message CreateMatchRequest {
   int32 moves = 6 [(buf.validate.field).required = true];
   optional google.protobuf.Timestamp played_at = 7;
 }
-message GetMatchByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetMatchByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message DeleteMatchRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message ListAllMatchRequest {
 }
@@ -504,7 +504,7 @@ message ListAllMatchResponse {
 // MatchService provides CRUD opertions for Match entities
 service MatchService {
   rpc CreateMatch(CreateMatchRequest) returns (Match);
-  rpc GetMatchByID(GetMatchByIDRequest) returns (Match);
+  rpc GetMatchById(GetMatchByIdRequest) returns (Match);
   rpc DeleteMatch(DeleteMatchRequest) returns (google.protobuf.Empty);
   rpc ListAllMatch(ListAllMatchRequest) returns (ListAllMatchResponse);
 }

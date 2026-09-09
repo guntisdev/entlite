@@ -64,7 +64,7 @@ function createBulkUsers() {
         });
 }
 
-function getUserByID() {
+function getUserById() {
     const idInput = document.getElementById("getId") as HTMLInputElement;
     const id = parseInt(idInput.value);
     if (isNaN(id) || id <= 0) {
@@ -72,7 +72,7 @@ function getUserByID() {
         return;
     }
     log(`Getting user ${id}...`);
-    client.getUserByID({ ID: id })
+    client.getUserById({ id: id })
         .then((response) => {
             log("✓ User retrieved:", response);
         })
@@ -88,7 +88,7 @@ function listAllUsers() {
         .then((response) => {
             log(`✓ Users listed (${response.rows.length} users):`);
             response.rows.forEach((user, index) => {
-                log(`ID: ${user.ID} ${user.name} ${user.age} ${user.email}`);
+                log(`ID: ${user.id} ${user.name} ${user.age} ${user.email}`);
             });
         })
         .catch((error) => {
@@ -109,7 +109,7 @@ function listActiveUsers() {
         .then((response) => {
             log(`✓ Active users listed (${response.rows.length} users):`);
             response.rows.forEach((user) => {
-                log(`ID: ${user.ID} ${user.name} ${user.age} ${user.email}`);
+                log(`ID: ${user.id} ${user.name} ${user.age} ${user.email}`);
             });
         })
         .catch((error) => {
@@ -132,7 +132,7 @@ function filterUsersByAgeName() {
         .then((response) => {
             log(`✓ Users filtered (${response.rows.length} users):`);
             response.rows.forEach((user) => {
-                log(`ID: ${user.ID} ${user.name} ${user.age} ${user.email}`);
+                log(`ID: ${user.id} ${user.name} ${user.age} ${user.email}`);
             });
         })
         .catch((error) => {
@@ -151,7 +151,7 @@ function updateUser() {
     const email = `${fullName.split(" ")[0].toLowerCase()}_${createHash()}@example.com`;
     log(`Updating user ${id}...`);
     const request: StrictMessageInput<UpdateUserRequest> = {
-        ID: id,
+        id: id,
         email: email,
         name: fullName,
         age: Math.ceil(Math.random() * 100),
@@ -175,7 +175,7 @@ function deleteUser() {
         return;
     }
     log(`Deleting user ${id}...`);
-    client.deleteUser({ ID: id })
+    client.deleteUser({ id: id })
         .then((response) => {
             log("✓ User deleted:", response);
         })
@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("DOMContentLoaded", document.getElementById("createBtn"));
     document.getElementById("createBtn")!.addEventListener("click", createUser);
     document.getElementById("createBulkBtn")!.addEventListener("click", createBulkUsers);
-    document.getElementById("getBtn")!.addEventListener("click", getUserByID);
+    document.getElementById("getBtn")!.addEventListener("click", getUserById);
     document.getElementById("listBtn")!.addEventListener("click", listAllUsers);
     document.getElementById("listActiveBtn")!.addEventListener("click", listActiveUsers);
     document.getElementById("filterBtn")!.addEventListener("click", filterUsersByAgeName);

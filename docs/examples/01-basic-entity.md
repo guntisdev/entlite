@@ -155,7 +155,7 @@ What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/0
 
 -- user table
 CREATE TABLE IF NOT EXISTS "user"(
-  ID INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL,
   -- Full name, e.g. "Jane Doe"
   name TEXT NOT NULL,
@@ -214,7 +214,7 @@ INSERT INTO "user" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
 -- name: CreateBulkUser :one
 -- re-importing the same users overwrites the row that shares the email
@@ -252,10 +252,10 @@ ON CONFLICT (email) DO UPDATE SET
   rating = excluded.rating,
   preferences = excluded.preferences,
   updated_at = excluded.updated_at
-RETURNING ID;
+RETURNING id;
 
--- name: GetUserByID :one
-SELECT * FROM "user" WHERE ID = ?;
+-- name: GetUserById :one
+SELECT * FROM "user" WHERE id = ?;
 
 -- name: GetUserByEmail :one
 -- Look up a user by email address
@@ -281,11 +281,11 @@ UPDATE "user" SET
   rating = COALESCE(sqlc.narg('rating'), rating),
   preferences = COALESCE(sqlc.narg('preferences'), preferences),
   updated_at = @updated_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteUser :exec
-DELETE FROM "user" WHERE ID = ?;
+DELETE FROM "user" WHERE id = ?;
 
 -- name: DeleteAllUser :exec
 DELETE FROM "user";
@@ -311,7 +311,7 @@ import "buf/validate/validate.proto";
 
 // User represents as user entity
 message User {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // Full name, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
@@ -339,11 +339,11 @@ message CreateUserRequest {
   // UI preferences, e.g. {"theme":"dark"}
   optional string preferences = 10;
 }
-message GetUserByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetUserByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // Full name, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
@@ -356,7 +356,7 @@ message UpdateUserRequest {
   optional string preferences = 10;
 }
 message DeleteUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message CreateBulkUserRow {
   string email = 2 [(buf.validate.field).required = true];
@@ -415,7 +415,7 @@ message ListUserFilterByAgeNameResponse {
 // UserService provides CRUD opertions for User entities
 service UserService {
   rpc CreateUser(CreateUserRequest) returns (User);
-  rpc GetUserByID(GetUserByIDRequest) returns (User);
+  rpc GetUserById(GetUserByIdRequest) returns (User);
   rpc UpdateUser(UpdateUserRequest) returns (User);
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
   // re-importing the same users overwrites the row that shares the email

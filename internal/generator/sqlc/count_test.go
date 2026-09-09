@@ -14,7 +14,7 @@ func countEntity() schema.Entity {
 		Name:      "Post",
 		Contracts: contracts,
 		Fields: []schema.Field{
-			{Name: "ID", Type: schema.FieldTypeInt, Primary: true, Contracts: contracts},
+			{Name: "id", Type: schema.FieldTypeInt, Primary: true, Contracts: contracts},
 			{Name: "title", Type: schema.FieldTypeString, Contracts: contracts},
 		},
 		Queries: []schema.Query{

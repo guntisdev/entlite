@@ -37,7 +37,7 @@ ON CONFLICT (commit_sha) DO UPDATE SET
   duration_ms = excluded.duration_ms,
   started_at = excluded.started_at,
   failed_tests = excluded.failed_tests
-RETURNING ID;
+RETURNING id;
 
 -- name: CreateBulkBuild :one
 -- many rows in one call, the wrapper loops the single row insert
@@ -61,11 +61,11 @@ INSERT INTO "build" (
   ?,
   ?,
   ?
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetBuildByID :one
+-- name: GetBuildById :one
 -- Get() keys on the primary key
-SELECT * FROM "build" WHERE ID = ?;
+SELECT * FROM "build" WHERE id = ?;
 
 -- name: GetBuildByCommitSha :one
 -- GetBy names the columns itself, they have to be unique together
@@ -120,11 +120,11 @@ UPDATE "build" SET
   duration_ms = @duration_ms,
   started_at = @started_at,
   failed_tests = @failed_tests
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteBuild :exec
-DELETE FROM "build" WHERE ID = ?;
+DELETE FROM "build" WHERE id = ?;
 
 -- name: DeleteAllBuild :exec
 DELETE FROM "build";

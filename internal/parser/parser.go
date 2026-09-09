@@ -8,6 +8,7 @@ import (
 	"go/token"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
@@ -115,6 +116,10 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 		return entity, err
 	}
 
+	if err := validateNames(entity); err != nil {
+		return entity, err
+	}
+
 	// runs after the indexes are known, an index.Primary drops the auto generated id
 	entity.Fields = addFieldNumbers(entity.Fields, needsIdField(entity))
 	applyPrimaryIndexOverride(&entity)
@@ -150,6 +155,20 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 	}
 
 	return entity, nil
+}
+
+func validateNames(entity schema.Entity) error {
+	if err := naming.ValidateEntityName(entity.Name); err != nil {
+		return err
+	}
+
+	for _, field := range entity.Fields {
+		if err := naming.ValidateFieldName(field.Name); err != nil {
+			return fmt.Errorf("entity %q: %w", entity.Name, err)
+		}
+	}
+
+	return nil
 }
 
 // contracts are always explicit, an entity without them generates nothing

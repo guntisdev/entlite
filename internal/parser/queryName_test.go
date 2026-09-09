@@ -101,7 +101,7 @@ func TestGeneratedQueryName(t *testing.T) {
 		{
 			name:    "default crud",
 			queries: `query.DefaultCRUD(),`,
-			want:    []string{"CreateUser", "GetUserByID", "UpdateUser", "DeleteUser"},
+			want:    []string{"CreateUser", "GetUserById", "UpdateUser", "DeleteUser"},
 		},
 		{
 			name:    "create bulk and delete all",

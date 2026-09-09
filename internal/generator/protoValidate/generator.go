@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
@@ -114,7 +115,7 @@ func (c *validatingHandlerConn) Receive(msg any) error {
 func generateValidateMethod(entity schema.Entity, query schema.Query) string {
 	var content strings.Builder
 	queryType := query.Type
-	content.WriteString(fmt.Sprintf("func (r *%sRequest) Validate() error {\n", query.Name))
+	content.WriteString(fmt.Sprintf("func (r *%s) Validate() error {\n", naming.RequestName(query.Name)))
 
 	// json text is checked before the request reaches the handler
 	for _, field := range entity.Fields {
@@ -202,19 +203,5 @@ func hasValidateField(entity schema.Entity) bool {
 }
 
 func toProtoFieldName(field schema.Field) string {
-	if field.IsID() {
-		return strings.ToUpper(field.Name[:1]) + field.Name[1:]
-	}
-	return snakeToCamelCase(field.Name)
-}
-
-func snakeToCamelCase(s string) string {
-	parts := strings.Split(s, "_")
-	result := ""
-	for _, part := range parts {
-		if len(part) > 0 {
-			result += strings.ToUpper(part[:1]) + part[1:]
-		}
-	}
-	return result
+	return naming.ProtocGoName(field.Name)
 }

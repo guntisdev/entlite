@@ -10,22 +10,22 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
-// Reading is a single measurement captured by a Sensor.
-type Reading struct {
+// SensorReading is a single measurement captured by a Sensor.
+type SensorReading struct {
 	entlite.Schema
 }
 
-func (Reading) Contracts() []entlite.Contract {
+func (SensorReading) Contracts() []entlite.Contract {
 	return []entlite.Contract{
 		entlite.SQLC(),
 		entlite.PROTO(),
 	}
 }
 
-func (Reading) Fields() []entlite.Field {
+func (SensorReading) Fields() []entlite.Field {
 	return []entlite.Field{
-		field.Int64("ID"),
-		// References sensor.ID
+		field.Int64("id"),
+		// References sensor.id
 		field.Int("sensor_id"),
 		field.Float("value"),
 		// Signal quality 0-100
@@ -38,7 +38,7 @@ func (Reading) Fields() []entlite.Field {
 	}
 }
 
-func (Reading) Queries() []entlite.Query {
+func (SensorReading) Queries() []entlite.Query {
 	return []entlite.Query{
 		query.Create(),
 		query.Get(),

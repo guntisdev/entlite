@@ -15,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file schema.proto.
  */
 export const file_schema: GenFile = /*@__PURE__*/
-  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIokCCgVNYXRjaBISCgJJRBgBIAEoBUIGukgDyAEBEhUKBXdoaXRlGAIgASgJQga6SAPIAQESFQoFYmxhY2sYAyABKAlCBrpIA8gBARIWCgZyZXN1bHQYBCABKAlCBrpIA8gBARIUCgdvcGVuaW5nGAUgASgJSACIAQESFQoFbW92ZXMYBiABKAVCBrpIA8gBARI1CglwbGF5ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIKCghfb3BlbmluZyKLAQoGUGxheWVyEhQKBG5hbWUYASABKAlCBrpIA8gBARIWCgZyYXRpbmcYAiABKAVCBrpIA8gBARISCgV0aXRsZRgDIAEoCUgAiAEBEjUKCWpvaW5lZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIICgZfdGl0bGUiqwEKCFN0YW5kaW5nEhIKAklEGAEgASgFQga6SAPIAQESFgoGcGxheWVyGAIgASgJQga6SAPIAQESFgoGcGxheWVkGAMgASgFQga6SAPIAQESFAoEd2lucxgEIAEoBUIGukgDyAEBEhUKBWRyYXdzGAUgASgFQga6SAPIAQESFgoGbG9zc2VzGAYgASgFQga6SAPIAQESFgoGcG9pbnRzGAcgASgBQga6SAPIAQEi1QEKEkNyZWF0ZU1hdGNoUmVxdWVzdBIVCgV3aGl0ZRgCIAEoCUIGukgDyAEBEhUKBWJsYWNrGAMgASgJQga6SAPIAQESFgoGcmVzdWx0GAQgASgJQga6SAPIAQESFAoHb3BlbmluZxgFIAEoCUgAiAEBEhUKBW1vdmVzGAYgASgFQga6SAPIAQESMgoJcGxheWVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBQgoKCF9vcGVuaW5nQgwKCl9wbGF5ZWRfYXQiKQoTR2V0TWF0Y2hCeUlEUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIigKEkRlbGV0ZU1hdGNoUmVxdWVzdBISCgJJRBgBIAEoBUIGukgDyAEBIhUKE0xpc3RBbGxNYXRjaFJlcXVlc3QiMgoUTGlzdEFsbE1hdGNoUmVzcG9uc2USGgoEcm93cxgBIAMoCzIMLnByb3RvLk1hdGNoIi4KFkdldFBsYXllckJ5TmFtZVJlcXVlc3QSFAoEbmFtZRgBIAEoCUIGukgDyAEBIhYKFExpc3RBbGxQbGF5ZXJSZXF1ZXN0IjQKFUxpc3RBbGxQbGF5ZXJSZXNwb25zZRIbCgRyb3dzGAEgAygLMg0ucHJvdG8uUGxheWVyIhgKFkxpc3RBbGxTdGFuZGluZ1JlcXVlc3QiOAoXTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2USHQoEcm93cxgBIAMoCzIPLnByb3RvLlN0YW5kaW5nMosCCgxNYXRjaFNlcnZpY2USNgoLQ3JlYXRlTWF0Y2gSGS5wcm90by5DcmVhdGVNYXRjaFJlcXVlc3QaDC5wcm90by5NYXRjaBI4CgxHZXRNYXRjaEJ5SUQSGi5wcm90by5HZXRNYXRjaEJ5SURSZXF1ZXN0GgwucHJvdG8uTWF0Y2gSQAoLRGVsZXRlTWF0Y2gSGS5wcm90by5EZWxldGVNYXRjaFJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSRwoMTGlzdEFsbE1hdGNoEhoucHJvdG8uTGlzdEFsbE1hdGNoUmVxdWVzdBobLnByb3RvLkxpc3RBbGxNYXRjaFJlc3BvbnNlMpwBCg1QbGF5ZXJTZXJ2aWNlEj8KD0dldFBsYXllckJ5TmFtZRIdLnByb3RvLkdldFBsYXllckJ5TmFtZVJlcXVlc3QaDS5wcm90by5QbGF5ZXISSgoNTGlzdEFsbFBsYXllchIbLnByb3RvLkxpc3RBbGxQbGF5ZXJSZXF1ZXN0GhwucHJvdG8uTGlzdEFsbFBsYXllclJlc3BvbnNlMmMKD1N0YW5kaW5nU2VydmljZRJQCg9MaXN0QWxsU3RhbmRpbmcSHS5wcm90by5MaXN0QWxsU3RhbmRpbmdSZXF1ZXN0Gh4ucHJvdG8uTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2VCRlpEZ2l0aHViLmNvbS9ndW50aXNkZXYvZW50bGl0ZS9leGFtcGxlcy8wNC1jb250cmFjdHMvc3FsaXRlL2VudC9nZW4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
+  fileDesc("CgxzY2hlbWEucHJvdG8SBXByb3RvIokCCgVNYXRjaBISCgJpZBgBIAEoBUIGukgDyAEBEhUKBXdoaXRlGAIgASgJQga6SAPIAQESFQoFYmxhY2sYAyABKAlCBrpIA8gBARIWCgZyZXN1bHQYBCABKAlCBrpIA8gBARIUCgdvcGVuaW5nGAUgASgJSACIAQESFQoFbW92ZXMYBiABKAVCBrpIA8gBARI1CglwbGF5ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQga6SAPIAQESNgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIKCghfb3BlbmluZyKLAQoGUGxheWVyEhQKBG5hbWUYASABKAlCBrpIA8gBARIWCgZyYXRpbmcYAiABKAVCBrpIA8gBARISCgV0aXRsZRgDIAEoCUgAiAEBEjUKCWpvaW5lZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBAUIICgZfdGl0bGUiqwEKCFN0YW5kaW5nEhIKAmlkGAEgASgFQga6SAPIAQESFgoGcGxheWVyGAIgASgJQga6SAPIAQESFgoGcGxheWVkGAMgASgFQga6SAPIAQESFAoEd2lucxgEIAEoBUIGukgDyAEBEhUKBWRyYXdzGAUgASgFQga6SAPIAQESFgoGbG9zc2VzGAYgASgFQga6SAPIAQESFgoGcG9pbnRzGAcgASgBQga6SAPIAQEi1QEKEkNyZWF0ZU1hdGNoUmVxdWVzdBIVCgV3aGl0ZRgCIAEoCUIGukgDyAEBEhUKBWJsYWNrGAMgASgJQga6SAPIAQESFgoGcmVzdWx0GAQgASgJQga6SAPIAQESFAoHb3BlbmluZxgFIAEoCUgAiAEBEhUKBW1vdmVzGAYgASgFQga6SAPIAQESMgoJcGxheWVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBQgoKCF9vcGVuaW5nQgwKCl9wbGF5ZWRfYXQiKQoTR2V0TWF0Y2hCeUlkUmVxdWVzdBISCgJpZBgBIAEoBUIGukgDyAEBIigKEkRlbGV0ZU1hdGNoUmVxdWVzdBISCgJpZBgBIAEoBUIGukgDyAEBIhUKE0xpc3RBbGxNYXRjaFJlcXVlc3QiMgoUTGlzdEFsbE1hdGNoUmVzcG9uc2USGgoEcm93cxgBIAMoCzIMLnByb3RvLk1hdGNoIi4KFkdldFBsYXllckJ5TmFtZVJlcXVlc3QSFAoEbmFtZRgBIAEoCUIGukgDyAEBIhYKFExpc3RBbGxQbGF5ZXJSZXF1ZXN0IjQKFUxpc3RBbGxQbGF5ZXJSZXNwb25zZRIbCgRyb3dzGAEgAygLMg0ucHJvdG8uUGxheWVyIhgKFkxpc3RBbGxTdGFuZGluZ1JlcXVlc3QiOAoXTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2USHQoEcm93cxgBIAMoCzIPLnByb3RvLlN0YW5kaW5nMosCCgxNYXRjaFNlcnZpY2USNgoLQ3JlYXRlTWF0Y2gSGS5wcm90by5DcmVhdGVNYXRjaFJlcXVlc3QaDC5wcm90by5NYXRjaBI4CgxHZXRNYXRjaEJ5SWQSGi5wcm90by5HZXRNYXRjaEJ5SWRSZXF1ZXN0GgwucHJvdG8uTWF0Y2gSQAoLRGVsZXRlTWF0Y2gSGS5wcm90by5EZWxldGVNYXRjaFJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSRwoMTGlzdEFsbE1hdGNoEhoucHJvdG8uTGlzdEFsbE1hdGNoUmVxdWVzdBobLnByb3RvLkxpc3RBbGxNYXRjaFJlc3BvbnNlMpwBCg1QbGF5ZXJTZXJ2aWNlEj8KD0dldFBsYXllckJ5TmFtZRIdLnByb3RvLkdldFBsYXllckJ5TmFtZVJlcXVlc3QaDS5wcm90by5QbGF5ZXISSgoNTGlzdEFsbFBsYXllchIbLnByb3RvLkxpc3RBbGxQbGF5ZXJSZXF1ZXN0GhwucHJvdG8uTGlzdEFsbFBsYXllclJlc3BvbnNlMmMKD1N0YW5kaW5nU2VydmljZRJQCg9MaXN0QWxsU3RhbmRpbmcSHS5wcm90by5MaXN0QWxsU3RhbmRpbmdSZXF1ZXN0Gh4ucHJvdG8uTGlzdEFsbFN0YW5kaW5nUmVzcG9uc2VCRlpEZ2l0aHViLmNvbS9ndW50aXNkZXYvZW50bGl0ZS9leGFtcGxlcy8wNC1jb250cmFjdHMvc3FsaXRlL2VudC9nZW4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_google_protobuf_empty, file_buf_validate_validate]);
 
 /**
  * Match represents as match entity
@@ -24,9 +24,9 @@ export const file_schema: GenFile = /*@__PURE__*/
  */
 export type Match = Message<"proto.Match"> & {
   /**
-   * @generated from field: int32 ID = 1;
+   * @generated from field: int32 id = 1;
    */
-  ID: number;
+  id: number;
 
   /**
    * @generated from field: string white = 2;
@@ -122,9 +122,9 @@ export type Standing = Message<"proto.Standing"> & {
   /**
    * Place in the table, 1 is best
    *
-   * @generated from field: int32 ID = 1;
+   * @generated from field: int32 id = 1;
    */
-  ID: number;
+  id: number;
 
   /**
    * @generated from field: string player = 2;
@@ -213,20 +213,20 @@ export const CreateMatchRequestSchema: GenMessage<CreateMatchRequest> = /*@__PUR
   messageDesc(file_schema, 3);
 
 /**
- * @generated from message proto.GetMatchByIDRequest
+ * @generated from message proto.GetMatchByIdRequest
  */
-export type GetMatchByIDRequest = Message<"proto.GetMatchByIDRequest"> & {
+export type GetMatchByIdRequest = Message<"proto.GetMatchByIdRequest"> & {
   /**
-   * @generated from field: int32 ID = 1;
+   * @generated from field: int32 id = 1;
    */
-  ID: number;
+  id: number;
 };
 
 /**
- * Describes the message proto.GetMatchByIDRequest.
- * Use `create(GetMatchByIDRequestSchema)` to create a new message.
+ * Describes the message proto.GetMatchByIdRequest.
+ * Use `create(GetMatchByIdRequestSchema)` to create a new message.
  */
-export const GetMatchByIDRequestSchema: GenMessage<GetMatchByIDRequest> = /*@__PURE__*/
+export const GetMatchByIdRequestSchema: GenMessage<GetMatchByIdRequest> = /*@__PURE__*/
   messageDesc(file_schema, 4);
 
 /**
@@ -234,9 +234,9 @@ export const GetMatchByIDRequestSchema: GenMessage<GetMatchByIDRequest> = /*@__P
  */
 export type DeleteMatchRequest = Message<"proto.DeleteMatchRequest"> & {
   /**
-   * @generated from field: int32 ID = 1;
+   * @generated from field: int32 id = 1;
    */
-  ID: number;
+  id: number;
 };
 
 /**
@@ -368,11 +368,11 @@ export const MatchService: GenService<{
     output: typeof MatchSchema;
   },
   /**
-   * @generated from rpc proto.MatchService.GetMatchByID
+   * @generated from rpc proto.MatchService.GetMatchById
    */
-  getMatchByID: {
+  getMatchById: {
     methodKind: "unary";
-    input: typeof GetMatchByIDRequestSchema;
+    input: typeof GetMatchByIdRequestSchema;
     output: typeof MatchSchema;
   },
   /**

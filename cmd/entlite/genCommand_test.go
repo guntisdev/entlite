@@ -97,7 +97,7 @@ import "buf/validate/validate.proto";
 
 // User represents as user entity
 message User {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
@@ -123,11 +123,11 @@ message CreateUserRequest {
   optional bytes api_key = 11;
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
-message GetUserByIDRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+message GetUserByIdRequest {
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message UpdateUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
   string email = 2 [(buf.validate.field).required = true];
   // First name and surname, e.g. "Jane Doe"
   string name = 3 [(buf.validate.field).required = true];
@@ -139,7 +139,7 @@ message UpdateUserRequest {
   int64 last_login_ms = 12 [(buf.validate.field).required = true];
 }
 message DeleteUserRequest {
-  int32 ID = 1 [(buf.validate.field).required = true];
+  int32 id = 1 [(buf.validate.field).required = true];
 }
 message ListUserByNameAgeRequest {
   int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
@@ -155,7 +155,7 @@ message ListUserByNameAgeResponse {
 // UserService provides CRUD opertions for User entities
 service UserService {
   rpc CreateUser(CreateUserRequest) returns (User);
-  rpc GetUserByID(GetUserByIDRequest) returns (User);
+  rpc GetUserById(GetUserByIdRequest) returns (User);
   rpc UpdateUser(UpdateUserRequest) returns (User);
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
   rpc ListUserByNameAge(ListUserByNameAgeRequest) returns (ListUserByNameAgeResponse);
@@ -176,7 +176,7 @@ service UserService {
 
 -- user table
 CREATE TABLE IF NOT EXISTS "user"(
-  ID SERIAL PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   -- First name and surname, e.g. "Jane Doe"
   name TEXT NOT NULL,
@@ -231,10 +231,10 @@ INSERT INTO "user" (
   $9,
   $10,
   $11
-) RETURNING ID;
+) RETURNING id;
 
--- name: GetUserByID :one
-SELECT * FROM "user" WHERE ID = $1;
+-- name: GetUserById :one
+SELECT * FROM "user" WHERE id = $1;
 
 -- name: ListUserByNameAge :many
 SELECT * FROM "user" WHERE name = @name AND age = @age LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -250,11 +250,11 @@ UPDATE "user" SET
   api_key = COALESCE(sqlc.narg('api_key'), api_key),
   last_login_ms = @last_login_ms,
   updated_at = @updated_at
-WHERE ID = @ID
+WHERE id = @id
 RETURNING *;
 
 -- name: DeleteUser :exec
-DELETE FROM "user" WHERE ID = $1;`
+DELETE FROM "user" WHERE id = $1;`
 
 	if content, err := os.ReadFile(sqlQueriesPath); err != nil {
 		t.Fatalf("Failed to read SQL queries file: %v", err)

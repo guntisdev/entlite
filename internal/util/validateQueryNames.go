@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
-// So custom Name() wouldn't produce ListActiveRequestRequest.
-var reservedNameSuffixes = []string{"Request", "Response", "Row", "Params"}
-
 func ReservedNameSuffix(name string) string {
-	for _, suffix := range reservedNameSuffixes {
+	for _, suffix := range naming.ReservedSuffixes() {
 		if strings.HasSuffix(name, suffix) {
 			return suffix
 		}

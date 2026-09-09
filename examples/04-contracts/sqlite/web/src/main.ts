@@ -37,13 +37,13 @@ function log(message: string, data?: any) {
 // prefills the id inputs with the last created ID
 function rememberID(match: Match) {
     for (const id of ["getMatchId", "deleteMatchId"]) {
-        (document.getElementById(id) as HTMLInputElement).value = String(match.ID);
+        (document.getElementById(id) as HTMLInputElement).value = String(match.id);
     }
 }
 
 function describeMatch(match: Match): string {
     const playedAt = match.playedAt ? timestampDate(match.playedAt).toISOString().slice(0, 10) : "?";
-    return `#${match.ID} ${match.white} vs ${match.black} ${match.result} `
+    return `#${match.id} ${match.white} vs ${match.black} ${match.result} `
         + `(${match.moves} moves, ${match.opening ?? "no opening"}, ${playedAt})`;
 }
 
@@ -55,7 +55,7 @@ function describePlayer(player: Player): string {
 }
 
 function describeStanding(standing: Standing): string {
-    return `${standing.ID}. ${standing.player} ${standing.points} pts `
+    return `${standing.id}. ${standing.player} ${standing.points} pts `
         + `(${standing.played} played, +${standing.wins} =${standing.draws} -${standing.losses})`;
 }
 
@@ -104,7 +104,7 @@ function createInvalidMatch() {
 function getMatch() {
     const id = numberInput("getMatchId");
     log(`Getting match #${id}...`);
-    matchClient.getMatchByID({ ID: id })
+    matchClient.getMatchById({ id: id })
         .then((response) => {
             log("✓ Match:", response);
             log(describeMatch(response));
@@ -117,7 +117,7 @@ function getMatch() {
 function deleteMatch() {
     const id = numberInput("deleteMatchId");
     log(`Deleting match #${id}...`);
-    matchClient.deleteMatch({ ID: id })
+    matchClient.deleteMatch({ id: id })
         .then(() => {
             log(`✓ Match #${id} deleted, the server wrote an audit row for it`);
         })

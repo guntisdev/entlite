@@ -37,8 +37,8 @@ const (
 const (
 	// UserServiceCreateUserProcedure is the fully-qualified name of the UserService's CreateUser RPC.
 	UserServiceCreateUserProcedure = "/proto.UserService/CreateUser"
-	// UserServiceGetUserByIDProcedure is the fully-qualified name of the UserService's GetUserByID RPC.
-	UserServiceGetUserByIDProcedure = "/proto.UserService/GetUserByID"
+	// UserServiceGetUserByIdProcedure is the fully-qualified name of the UserService's GetUserById RPC.
+	UserServiceGetUserByIdProcedure = "/proto.UserService/GetUserById"
 	// UserServiceUpdateUserProcedure is the fully-qualified name of the UserService's UpdateUser RPC.
 	UserServiceUpdateUserProcedure = "/proto.UserService/UpdateUser"
 	// UserServiceDeleteUserProcedure is the fully-qualified name of the UserService's DeleteUser RPC.
@@ -64,7 +64,7 @@ const (
 // UserServiceClient is a client for the proto.UserService service.
 type UserServiceClient interface {
 	CreateUser(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error)
-	GetUserByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error)
+	GetUserById(context.Context, *connect.Request[GetUserByIdRequest]) (*connect.Response[User], error)
 	UpdateUser(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	DeleteUser(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	// re-importing the same users overwrites the row that shares the email
@@ -94,10 +94,10 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("CreateUser")),
 			connect.WithClientOptions(opts...),
 		),
-		getUserByID: connect.NewClient[GetUserByIDRequest, User](
+		getUserById: connect.NewClient[GetUserByIdRequest, User](
 			httpClient,
-			baseURL+UserServiceGetUserByIDProcedure,
-			connect.WithSchema(userServiceMethods.ByName("GetUserByID")),
+			baseURL+UserServiceGetUserByIdProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetUserById")),
 			connect.WithClientOptions(opts...),
 		),
 		updateUser: connect.NewClient[UpdateUserRequest, User](
@@ -154,7 +154,7 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
 	createUser              *connect.Client[CreateUserRequest, User]
-	getUserByID             *connect.Client[GetUserByIDRequest, User]
+	getUserById             *connect.Client[GetUserByIdRequest, User]
 	updateUser              *connect.Client[UpdateUserRequest, User]
 	deleteUser              *connect.Client[DeleteUserRequest, emptypb.Empty]
 	createBulkUser          *connect.Client[CreateBulkUserRequest, CreateBulkUserResponse]
@@ -170,9 +170,9 @@ func (c *userServiceClient) CreateUser(ctx context.Context, req *connect.Request
 	return c.createUser.CallUnary(ctx, req)
 }
 
-// GetUserByID calls proto.UserService.GetUserByID.
-func (c *userServiceClient) GetUserByID(ctx context.Context, req *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error) {
-	return c.getUserByID.CallUnary(ctx, req)
+// GetUserById calls proto.UserService.GetUserById.
+func (c *userServiceClient) GetUserById(ctx context.Context, req *connect.Request[GetUserByIdRequest]) (*connect.Response[User], error) {
+	return c.getUserById.CallUnary(ctx, req)
 }
 
 // UpdateUser calls proto.UserService.UpdateUser.
@@ -218,7 +218,7 @@ func (c *userServiceClient) ListUserFilterByAgeName(ctx context.Context, req *co
 // UserServiceHandler is an implementation of the proto.UserService service.
 type UserServiceHandler interface {
 	CreateUser(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error)
-	GetUserByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error)
+	GetUserById(context.Context, *connect.Request[GetUserByIdRequest]) (*connect.Response[User], error)
 	UpdateUser(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error)
 	DeleteUser(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error)
 	// re-importing the same users overwrites the row that shares the email
@@ -244,10 +244,10 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("CreateUser")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceGetUserByIDHandler := connect.NewUnaryHandler(
-		UserServiceGetUserByIDProcedure,
-		svc.GetUserByID,
-		connect.WithSchema(userServiceMethods.ByName("GetUserByID")),
+	userServiceGetUserByIdHandler := connect.NewUnaryHandler(
+		UserServiceGetUserByIdProcedure,
+		svc.GetUserById,
+		connect.WithSchema(userServiceMethods.ByName("GetUserById")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceUpdateUserHandler := connect.NewUnaryHandler(
@@ -302,8 +302,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		switch r.URL.Path {
 		case UserServiceCreateUserProcedure:
 			userServiceCreateUserHandler.ServeHTTP(w, r)
-		case UserServiceGetUserByIDProcedure:
-			userServiceGetUserByIDHandler.ServeHTTP(w, r)
+		case UserServiceGetUserByIdProcedure:
+			userServiceGetUserByIdHandler.ServeHTTP(w, r)
 		case UserServiceUpdateUserProcedure:
 			userServiceUpdateUserHandler.ServeHTTP(w, r)
 		case UserServiceDeleteUserProcedure:
@@ -333,8 +333,8 @@ func (UnimplementedUserServiceHandler) CreateUser(context.Context, *connect.Requ
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.CreateUser is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) GetUserByID(context.Context, *connect.Request[GetUserByIDRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.GetUserByID is not implemented"))
+func (UnimplementedUserServiceHandler) GetUserById(context.Context, *connect.Request[GetUserByIdRequest]) (*connect.Response[User], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.GetUserById is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) UpdateUser(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error) {

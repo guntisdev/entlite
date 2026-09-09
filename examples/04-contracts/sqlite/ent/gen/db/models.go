@@ -11,7 +11,7 @@ import (
 
 
 type Audit struct {
-	ID int32 `json:"ID"`
+	ID int32 `json:"id"`
 	Action string `json:"action"`
 	MatchID int32 `json:"match_id"`
 	Detail string `json:"detail"`
@@ -19,7 +19,7 @@ type Audit struct {
 }
 
 type Match struct {
-	ID int32 `json:"ID"`
+	ID int32 `json:"id"`
 	White string `json:"white"`
 	Black string `json:"black"`
 	Result string `json:"result"`
@@ -131,7 +131,7 @@ func (m *Match) ToProto() *pb.Match {
 	}
 
 	return &pb.Match{
-		ID: m.ID,
+		Id: m.ID,
 		White: m.White,
 		Black: m.Black,
 		Result: m.Result,
