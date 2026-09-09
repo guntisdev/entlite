@@ -94,6 +94,7 @@ func Generate(inputFilePath string, pbDir string, parsedEntities []schema.Entity
 		parsedEntities:      parsedEntities,
 		entityImports:       entityImports,
 		sqlDialect:          sqlDialect,
+		methods:             make(map[string]*ast.FuncDecl),
 		createParamsStructs: make(map[string]*ast.StructType),
 		updateParamsStructs: make(map[string]*ast.StructType),
 		filterParamsStructs: make(map[string]*ast.StructType),
@@ -158,6 +159,7 @@ type generationContext struct {
 	parsedEntities      []schema.Entity
 	entityImports       map[string]internalParser.ImportInfo
 	sqlDialect          schema.SQLDialect
+	methods             map[string]*ast.FuncDecl
 	createParamsStructs map[string]*ast.StructType
 	updateParamsStructs map[string]*ast.StructType
 	filterParamsStructs map[string]*ast.StructType
@@ -192,22 +194,23 @@ func (ctx *generationContext) filterParamsEntity(structName string) (schema.Enti
 		}
 	}
 
-	if strings.HasPrefix(methodName, "List") {
-		return ctx.findEntityForListMethod(methodName)
-	}
-	if strings.HasPrefix(methodName, "Get") {
-		return ctx.findEntityForGetMethod(methodName)
-	}
-	if name, ok := strings.CutPrefix(methodName, "Delete"); ok {
-		if entity, found := ctx.entityMap[name]; found {
-			return entity, true
-		}
+	// a custom query only gets the entity's params struct when its wrapper fits
+	switch entity, kind := ctx.namedEntityWrap(methodName); kind {
+	case wrapGet, wrapList, wrapDelete:
+		return entity, true
 	}
 
 	return schema.Entity{}, false
 }
 
 func (ctx *generationContext) collectDeclarations() {
+	// methods first, the struct rules below read their signatures
+	for _, decl := range ctx.node.Decls {
+		if funcDecl, ok := decl.(*ast.FuncDecl); ok && funcDecl.Recv != nil {
+			ctx.methods[funcDecl.Name.Name] = funcDecl
+		}
+	}
+
 	for _, decl := range ctx.node.Decls {
 		switch d := decl.(type) {
 		case *ast.GenDecl:
@@ -226,11 +229,13 @@ func (ctx *generationContext) collectDeclarations() {
 							}
 							continue
 						}
-						if strings.HasPrefix(typeSpec.Name.Name, "Create") && strings.HasSuffix(typeSpec.Name.Name, naming.SuffixParams) {
-							ctx.createParamsStructs[typeSpec.Name.Name] = structType
-						}
-						if strings.HasPrefix(typeSpec.Name.Name, "Update") && strings.HasSuffix(typeSpec.Name.Name, naming.SuffixParams) {
-							ctx.updateParamsStructs[typeSpec.Name.Name] = structType
+						if methodName, ok := strings.CutSuffix(typeSpec.Name.Name, naming.SuffixParams); ok {
+							switch _, kind := ctx.namedEntityWrap(methodName); kind {
+							case wrapCreate, wrapCreateBulk:
+								ctx.createParamsStructs[typeSpec.Name.Name] = structType
+							case wrapUpdate:
+								ctx.updateParamsStructs[typeSpec.Name.Name] = structType
+							}
 						}
 					}
 				}
@@ -482,25 +487,13 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 				}
 			}
 
-			if strings.HasPrefix(s.Name.Name, "CreateBulk") && strings.HasSuffix(s.Name.Name, naming.SuffixParams) {
-				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "CreateBulk"), naming.SuffixParams)
-				if entity, ok := ctx.entityMap[entityName]; ok {
+			if methodName, ok := strings.CutSuffix(s.Name.Name, naming.SuffixParams); ok {
+				entity, kind := ctx.namedEntityWrap(methodName)
+				switch kind {
+				case wrapCreate, wrapCreateBulk:
 					sb.WriteString(generateCreateStruct(s.Name.Name, ctx.createParamsStructs[s.Name.Name], entity))
 					continue
-				}
-			}
-
-			if strings.HasPrefix(s.Name.Name, "Create") && strings.HasSuffix(s.Name.Name, naming.SuffixParams) {
-				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Create"), naming.SuffixParams)
-				if entity, ok := ctx.entityMap[entityName]; ok {
-					sb.WriteString(generateCreateStruct(s.Name.Name, ctx.createParamsStructs[s.Name.Name], entity))
-					continue
-				}
-			}
-
-			if strings.HasPrefix(s.Name.Name, "Update") && strings.HasSuffix(s.Name.Name, naming.SuffixParams) {
-				entityName := strings.TrimSuffix(strings.TrimPrefix(s.Name.Name, "Update"), naming.SuffixParams)
-				if entity, ok := ctx.entityMap[entityName]; ok {
+				case wrapUpdate:
 					sb.WriteString(generateUpdateStruct(s.Name.Name, ctx.updateParamsStructs[s.Name.Name], entity))
 					continue
 				}
@@ -559,57 +552,33 @@ func (ctx *generationContext) processQueryFunc(sb *strings.Builder, funcDecl *as
 			}
 		}
 
-		// CRUD method overrides
-		if strings.HasPrefix(funcDecl.Name.Name, "CreateBulk") {
-			entityName := strings.TrimPrefix(funcDecl.Name.Name, "CreateBulk")
-			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateCreateBulkQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
-				return
-			}
-		}
-		if strings.HasPrefix(funcDecl.Name.Name, "Create") {
-			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Create")
-			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateCreateQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
-				return
-			}
-		}
-		if strings.HasPrefix(funcDecl.Name.Name, "Update") {
-			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Update")
-			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateUpdateQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
-				return
-			}
-		}
-		if strings.HasPrefix(funcDecl.Name.Name, "Get") {
-			if entity, ok := ctx.findEntityForGetMethod(funcDecl.Name.Name); ok {
-				sb.WriteString(ctx.generateGetQuery(funcDecl, entity))
-				return
-			}
-		}
-		if strings.HasPrefix(funcDecl.Name.Name, "List") {
-			if entity, ok := ctx.findEntityForListMethod(funcDecl.Name.Name); ok {
-				sb.WriteString(ctx.generateListQuery(funcDecl, entity))
-				return
-			}
-		}
-		if strings.HasPrefix(funcDecl.Name.Name, "DeleteAll") {
-			entityName := strings.TrimPrefix(funcDecl.Name.Name, "DeleteAll")
-			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(generateDeleteAllQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
-				return
-			}
-		}
-		if strings.HasPrefix(funcDecl.Name.Name, "Delete") {
-			entityName := strings.TrimPrefix(funcDecl.Name.Name, "Delete")
-			if entity, ok := ctx.entityMap[entityName]; ok {
-				sb.WriteString(ctx.generateDeleteQuery(funcDecl, entity))
-				return
-			}
+		// a query named like a crud query, but written by hand, is wrapped only when its
+		// signature fits the entity
+		switch entity, kind := ctx.namedEntityWrap(funcDecl.Name.Name); kind {
+		case wrapCreateBulk:
+			sb.WriteString(generateCreateBulkQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+			return
+		case wrapCreate:
+			sb.WriteString(generateCreateQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+			return
+		case wrapUpdate:
+			sb.WriteString(generateUpdateQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+			return
+		case wrapGet:
+			sb.WriteString(ctx.generateGetQuery(funcDecl, entity))
+			return
+		case wrapList:
+			sb.WriteString(ctx.generateListQuery(funcDecl, entity))
+			return
+		case wrapDeleteAll:
+			sb.WriteString(generateDeleteAllQuery(funcDecl, entity, ctx.inputPackageName, ctx.sqlDialect))
+			return
+		case wrapDelete:
+			sb.WriteString(ctx.generateDeleteQuery(funcDecl, entity))
+			return
 		}
 
-		// anything else, custom queries included, is forwarded so the wrapper keeps
-		// every method sqlc has
+		// anything else, custom queries included is forwarded
 		if funcDecl.Name.IsExported() {
 			sb.WriteString(ctx.generateForwarder(funcDecl))
 		}

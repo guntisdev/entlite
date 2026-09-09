@@ -41,6 +41,16 @@ Step 4 wraps them: pointers instead of null types, `time.Time` instead of the
 driver type, and converters between the database row and the proto message. The
 raw output stays in `gen/db/internal`, so you never import it.
 
+## What happens to custom.sql
+
+Step 4 wraps the queries the dsl generated. A query you wrote in `custom.sql` is
+forwarded as it is, with sqlc's own row type, which the wrapper re-exports so you
+can name it. The name alone never decides: `ListCasinoByUsage` reads like a list
+of casinos, but if it selects an aggregate then sqlc gives it a
+`ListCasinoByUsageRow`, and the wrapper forwards it instead of converting it to
+`[]*Casino`. A custom query that does select the whole table, so sqlc returns the
+entity type, gets the same wrapper a dsl query would.
+
 ## Why a separate validate step
 
 `Validate()` on a field is a Go func, and proto has no way to carry it. Step 5
