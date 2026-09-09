@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
 )
@@ -90,7 +91,7 @@ func writeColumnComment(content *strings.Builder, comment string) {
 func (g *Generator) generateTableSQL(entity schema.Entity) string {
 	var content strings.Builder
 
-	tableName := strings.ToLower(entity.Name)
+	tableName := naming.TableName(entity.Name)
 	writeTableComment(&content, entity, tableName)
 	content.WriteString(fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s(\n", g.quote(tableName)))
 
@@ -155,7 +156,7 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 func (g *Generator) generateIndexSQL(entity schema.Entity) string {
 	var content strings.Builder
 
-	tableName := strings.ToLower(entity.Name)
+	tableName := naming.TableName(entity.Name)
 
 	for _, idx := range entity.Indexes {
 		if idx.Type != schema.IndexRegular {
@@ -230,7 +231,7 @@ func (g *Generator) generateQueries(entities []schema.Entity, dir string) error 
 func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 	var content strings.Builder
 
-	tableName := strings.ToLower(entity.Name)
+	tableName := naming.TableName(entity.Name)
 	keyFields := entity.PrimaryKeyFields()
 
 	var createQuery *schema.Query
@@ -415,7 +416,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 }
 
 func (g *Generator) writeInsertQuery(content *strings.Builder, entity schema.Entity, query schema.Query) {
-	tableName := strings.ToLower(entity.Name)
+	tableName := naming.TableName(entity.Name)
 
 	// nothing to return when there is no id, or when the caller already sent it
 	switch {

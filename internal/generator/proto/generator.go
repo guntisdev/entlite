@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
 )
@@ -304,7 +305,7 @@ func gteRule(min int) string {
 
 func writeMessageComment(content *strings.Builder, entity schema.Entity) {
 	if entity.Comment == "" {
-		fmt.Fprintf(content, "// %s represents as %s entity\n", entity.Name, strings.ToLower(entity.Name))
+		fmt.Fprintf(content, "// %s represents as %s entity\n", entity.Name, naming.TableName(entity.Name))
 		return
 	}
 	for line := range strings.SplitSeq(entity.Comment, "\n") {

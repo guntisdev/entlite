@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/parser"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
@@ -202,16 +203,5 @@ func hasValidateField(entity schema.Entity) bool {
 }
 
 func toProtoFieldName(field schema.Field) string {
-	return snakeToCamelCase(field.Name)
-}
-
-func snakeToCamelCase(s string) string {
-	parts := strings.Split(s, "_")
-	result := ""
-	for _, part := range parts {
-		if len(part) > 0 {
-			result += strings.ToUpper(part[:1]) + part[1:]
-		}
-	}
-	return result
+	return naming.ProtocGoName(field.Name)
 }

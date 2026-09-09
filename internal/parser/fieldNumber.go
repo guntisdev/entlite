@@ -15,7 +15,6 @@ func addFieldNumbers(fields []schema.Field, addIdField bool) []schema.Field {
 	// checks if there is id field with protoField number
 	for i := range fields {
 		if fields[i].IsID() {
-			fields[i].Name = "id"
 			fields[i].Primary = true
 			hasIdField = true
 		}

@@ -4,7 +4,7 @@ Entity-first generator for SQLC and Proto files. Maps DB and Protobuf types auto
 Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getting-started.md), [reference](docs/README.md#reference), [examples](docs/README.md#examples).
 
 ## TODO
-* Figure out naming conventions DSL -> sqlc | proto -> golang | typescript
+* Wire buf lint into the pipeline, it needs the proto package and rpc response type decisions first
 * Implement DefaultFunc for sql generation
 * Explore google AIP https://google.aip.dev/ - read it through first and decide which parts fit, query and rpc naming is the open one
 * Add mcp for visual testing of examples/

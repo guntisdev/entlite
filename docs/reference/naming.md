@@ -4,8 +4,6 @@
 
 One canonical name per concept in the schema. Every generator derives its own spelling from it, nothing is passed through verbatim.
 
-> Status: the convention entlite is moving to. The generators do not follow all of it yet.
-
 ## The rule
 
 | Concept | You write | Why |
@@ -65,4 +63,3 @@ return &pb.Reading{
 | --- | --- |
 | Parser | an entity that is not exported PascalCase, a field that is not lower snake_case |
 | Round trip test | a generated Go name that does not match what sqlc or protoc would write |
-| `buf lint` | a proto message or field that drifts from the convention |
