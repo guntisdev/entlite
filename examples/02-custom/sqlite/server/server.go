@@ -174,28 +174,28 @@ func (s *SensorServer) ListSensorFilterByLabelKindActive(
 	}), nil
 }
 
-// --- Reading: generated CRUD ------------------------------------------------
-type ReadingServer struct {
+// --- SensorReading: generated CRUD ------------------------------------------------
+type SensorReadingServer struct {
 	db *sql.DB
 }
 
-var _ pb.ReadingServiceHandler = (*ReadingServer)(nil)
+var _ pb.SensorReadingServiceHandler = (*SensorReadingServer)(nil)
 
-func NewReadingServiceServer(db *sql.DB) *ReadingServer {
-	return &ReadingServer{
+func NewSensorReadingServiceServer(db *sql.DB) *SensorReadingServer {
+	return &SensorReadingServer{
 		db: db,
 	}
 }
 
-func (s *ReadingServer) CreateReading(
+func (s *SensorReadingServer) CreateSensorReading(
 	ctx context.Context,
-	req *connect.Request[pb.CreateReadingRequest],
-) (*connect.Response[pb.Reading], error) {
+	req *connect.Request[pb.CreateSensorReadingRequest],
+) (*connect.Response[pb.SensorReading], error) {
 	log.Printf("Create reading: %+v", req.Msg)
 
 	queries := db.New(s.db)
 
-	readingID, err := queries.CreateReading(ctx, db.CreateReadingParams{
+	readingID, err := queries.CreateSensorReading(ctx, db.CreateSensorReadingParams{
 		SensorID:   req.Msg.SensorId,
 		Value:      req.Msg.Value,
 		Quality:    req.Msg.Quality,
@@ -206,7 +206,7 @@ func (s *ReadingServer) CreateReading(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create reading: %w", err))
 	}
 
-	reading, err := queries.GetReadingById(ctx, readingID)
+	reading, err := queries.GetSensorReadingById(ctx, readingID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get created reading: %w", err))
 	}
@@ -214,15 +214,15 @@ func (s *ReadingServer) CreateReading(
 	return connect.NewResponse(reading.ToProto()), nil
 }
 
-func (s *ReadingServer) GetReadingById(
+func (s *SensorReadingServer) GetSensorReadingById(
 	ctx context.Context,
-	req *connect.Request[pb.GetReadingByIdRequest],
-) (*connect.Response[pb.Reading], error) {
+	req *connect.Request[pb.GetSensorReadingByIdRequest],
+) (*connect.Response[pb.SensorReading], error) {
 	log.Printf("Get reading: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	reading, err := queries.GetReadingById(ctx, req.Msg.Id)
+	reading, err := queries.GetSensorReadingById(ctx, req.Msg.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("reading not found"))
@@ -233,30 +233,30 @@ func (s *ReadingServer) GetReadingById(
 	return connect.NewResponse(reading.ToProto()), nil
 }
 
-func (s *ReadingServer) DeleteReading(
+func (s *SensorReadingServer) DeleteSensorReading(
 	ctx context.Context,
-	req *connect.Request[pb.DeleteReadingRequest],
+	req *connect.Request[pb.DeleteSensorReadingRequest],
 ) (*connect.Response[emptypb.Empty], error) {
 	log.Printf("Delete reading: ID=%d", req.Msg.Id)
 
 	queries := db.New(s.db)
 
-	if err := queries.DeleteReading(ctx, req.Msg.Id); err != nil {
+	if err := queries.DeleteSensorReading(ctx, req.Msg.Id); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to delete reading: %w", err))
 	}
 
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
-func (s *ReadingServer) ListReadingBySensorId(
+func (s *SensorReadingServer) ListSensorReadingBySensorId(
 	ctx context.Context,
-	req *connect.Request[pb.ListReadingBySensorIdRequest],
-) (*connect.Response[pb.ListReadingBySensorIdResponse], error) {
+	req *connect.Request[pb.ListSensorReadingBySensorIdRequest],
+) (*connect.Response[pb.ListSensorReadingBySensorIdResponse], error) {
 	log.Printf("List readings: sensor_id=%d", req.Msg.SensorId)
 
 	queries := db.New(s.db)
 
-	dbReadings, err := queries.ListReadingBySensorId(ctx, db.ListReadingBySensorIdParams{
+	dbSensorReadings, err := queries.ListSensorReadingBySensorId(ctx, db.ListSensorReadingBySensorIdParams{
 		SensorID: req.Msg.SensorId,
 		Limit:    req.Msg.GetLimit(),
 		Offset:   req.Msg.GetOffset(),
@@ -265,21 +265,21 @@ func (s *ReadingServer) ListReadingBySensorId(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list readings: %w", err))
 	}
 
-	return connect.NewResponse(&pb.ListReadingBySensorIdResponse{
-		Rows: toProtoReadings(dbReadings),
+	return connect.NewResponse(&pb.ListSensorReadingBySensorIdResponse{
+		Rows: toProtoSensorReadings(dbSensorReadings),
 	}), nil
 }
 
-func (s *ReadingServer) ListReadingFilterBySensorIdRecordedAtFlagged(
+func (s *SensorReadingServer) ListSensorReadingFilterBySensorIdRecordedAtFlagged(
 	ctx context.Context,
-	req *connect.Request[pb.ListReadingFilterBySensorIdRecordedAtFlaggedRequest],
-) (*connect.Response[pb.ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {
+	req *connect.Request[pb.ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest],
+) (*connect.Response[pb.ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {
 	log.Printf("Filter readings: sensor_id=%d, recorded_at=%s..%s, flagged=%t",
 		req.Msg.SensorId, req.Msg.MinRecordedAt.AsTime(), req.Msg.MaxRecordedAt.AsTime(), req.Msg.Flagged)
 
 	queries := db.New(s.db)
 
-	dbReadings, totalSize, err := queries.ListReadingFilterBySensorIdRecordedAtFlagged(ctx, db.ListReadingFilterBySensorIdRecordedAtFlaggedParams{
+	dbSensorReadings, totalSize, err := queries.ListSensorReadingFilterBySensorIdRecordedAtFlagged(ctx, db.ListSensorReadingFilterBySensorIdRecordedAtFlaggedParams{
 		SensorID:      req.Msg.SensorId,
 		MinRecordedAt: req.Msg.MinRecordedAt.AsTime(),
 		MaxRecordedAt: req.Msg.MaxRecordedAt.AsTime(),
@@ -291,18 +291,18 @@ func (s *ReadingServer) ListReadingFilterBySensorIdRecordedAtFlagged(
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to list readings: %w", err))
 	}
 
-	return connect.NewResponse(&pb.ListReadingFilterBySensorIdRecordedAtFlaggedResponse{
-		Rows:      toProtoReadings(dbReadings),
+	return connect.NewResponse(&pb.ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse{
+		Rows:      toProtoSensorReadings(dbSensorReadings),
 		TotalSize: totalSize,
 	}), nil
 }
 
-func toProtoReadings(dbReadings []*db.Reading) []*pb.Reading {
-	pbReadings := make([]*pb.Reading, len(dbReadings))
-	for i, dbReading := range dbReadings {
-		pbReadings[i] = dbReading.ToProto()
+func toProtoSensorReadings(dbSensorReadings []*db.SensorReading) []*pb.SensorReading {
+	pbSensorReadings := make([]*pb.SensorReading, len(dbSensorReadings))
+	for i, dbSensorReading := range dbSensorReadings {
+		pbSensorReadings[i] = dbSensorReading.ToProto()
 	}
-	return pbReadings
+	return pbSensorReadings
 }
 
 // --- Sensor analytics: hand-written custom.sql + custom.proto ---------------
@@ -322,7 +322,7 @@ func (s *AnalyticsServer) GetReadingStats(
 	ctx context.Context,
 	req *connect.Request[pb.GetSensorReadingStatsRequest],
 ) (*connect.Response[pb.SensorReadingStats], error) {
-	log.Printf("Reading stats: sensor_id=%d, %s..%s",
+	log.Printf("SensorReading stats: sensor_id=%d, %s..%s",
 		req.Msg.SensorId, req.Msg.FromTs.AsTime(), req.Msg.ToTs.AsTime())
 
 	queries := db.New(s.db)

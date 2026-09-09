@@ -1,11 +1,11 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
-import { ReadingService, SensorService } from "../../ent/gen/ts/schema_pb.js";
+import { SensorReadingService, SensorService } from "../../ent/gen/ts/schema_pb.js";
 import type {
-    CreateReadingRequest,
+    CreateSensorReadingRequest,
     CreateSensorRequest,
-    ListReadingFilterBySensorIdRecordedAtFlaggedRequest,
+    ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest,
     ListSensorFilterByLabelKindActiveRequest,
     Sensor,
     UpdateSensorRequest,
@@ -38,7 +38,7 @@ const transport = createConnectTransport({
 });
 
 const sensorClient = createClient(SensorService, transport);
-const readingClient = createClient(ReadingService, transport);
+const sensorReadingClient = createClient(SensorReadingService, transport);
 const analyticsClient = createClient(SensorAnalyticsService, transport);
 
 function log(message: string, data?: any) {
@@ -200,9 +200,9 @@ function filterSensors() {
         });
 }
 
-// --- ReadingService: generated from the DSL --------------------------------
+// --- SensorReadingService: generated from the DSL --------------------------------
 
-function createReading() {
+function createSensorReading() {
     const sensorId = numberInput("readingSensorId");
     if (isNaN(sensorId) || sensorId <= 0) {
         log("✗ Invalid sensor ID");
@@ -212,17 +212,17 @@ function createReading() {
     // Look the sensor up first so the value matches its kind
     sensorClient.getSensorById({ id: sensorId })
         .then((sensor) => {
-            const request: StrictMessageInput<CreateReadingRequest> = {
+            const request: StrictMessageInput<CreateSensorReadingRequest> = {
                 sensorId: sensor.id,
                 value: randomValue(sensor.kind as any),
                 quality: 50 + Math.floor(Math.random() * 51),
                 flagged: Math.random() < 0.2,
                 recordedAt: timestampFromDate(daysAgo(Math.random() * 14)),
             };
-            return readingClient.createReading(request);
+            return sensorReadingClient.createSensorReading(request);
         })
         .then((response) => {
-            log("✓ Reading created:", response);
+            log("✓ SensorReading created:", response);
         })
         .catch((error) => {
             log("✗ Error creating reading:", error);
@@ -232,47 +232,47 @@ function createReading() {
 function createInvalidReading() {
     const sensorId = numberInput("readingSensorId");
     log(`Creating reading with quality 150 (rejected by logic.IsPercentage)...`);
-    const request: StrictMessageInput<CreateReadingRequest> = {
+    const request: StrictMessageInput<CreateSensorReadingRequest> = {
         sensorId: isNaN(sensorId) ? 1 : sensorId,
         value: 1,
         quality: 150,
         recordedAt: timestampFromDate(new Date()),
     };
-    readingClient.createReading(request)
+    sensorReadingClient.createSensorReading(request)
         .then((response) => {
-            log("✓ Reading created (unexpected):", response);
+            log("✓ SensorReading created (unexpected):", response);
         })
         .catch((error) => {
             log("✗ Rejected by the Validate() interceptor:", error);
         });
 }
 
-function getReadingById() {
+function getSensorReadingById() {
     const id = bigIntInput("getReadingId");
     if (id <= 0n) {
         log("✗ Invalid reading ID");
         return;
     }
     log(`Getting reading ${id}...`);
-    readingClient.getReadingById({ id: id })
+    sensorReadingClient.getSensorReadingById({ id: id })
         .then((response) => {
-            log("✓ Reading retrieved:", response);
+            log("✓ SensorReading retrieved:", response);
         })
         .catch((error) => {
             log("✗ Error getting reading:", error);
         });
 }
 
-function deleteReading() {
+function deleteSensorReading() {
     const id = bigIntInput("deleteReadingId");
     if (id <= 0n) {
         log("✗ Invalid reading ID");
         return;
     }
     log(`Deleting reading ${id}...`);
-    readingClient.deleteReading({ id: id })
+    sensorReadingClient.deleteSensorReading({ id: id })
         .then((response) => {
-            log("✓ Reading deleted:", response);
+            log("✓ SensorReading deleted:", response);
         })
         .catch((error) => {
             log("✗ Error deleting reading:", error);
@@ -286,7 +286,7 @@ function listReadings() {
         return;
     }
     log(`Listing readings of sensor ${sensorId}...`);
-    readingClient.listReadingBySensorId({ limit: 50, offset: 0, sensorId: sensorId })
+    sensorReadingClient.listSensorReadingBySensorId({ limit: 50, offset: 0, sensorId: sensorId })
         .then((response) => {
             log(`✓ Readings listed (${response.rows.length} readings):`);
             response.rows.forEach((reading) => {
@@ -306,7 +306,7 @@ function filterReadings() {
         return;
     }
     log(`Filtering readings of sensor ${sensorId} over the last 30 days...`);
-    const request: StrictMessageInput<ListReadingFilterBySensorIdRecordedAtFlaggedRequest> = {
+    const request: StrictMessageInput<ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest> = {
         limit: 50,
         offset: 0,
         sensorId: sensorId,
@@ -314,7 +314,7 @@ function filterReadings() {
         maxRecordedAt: timestampFromDate(new Date()),
         flagged: true,
     };
-    readingClient.listReadingFilterBySensorIdRecordedAtFlagged(request)
+    sensorReadingClient.listSensorReadingFilterBySensorIdRecordedAtFlagged(request)
         .then((response) => {
             log(`✓ Readings filtered (${response.rows.length} readings):`, response);
         })
@@ -395,12 +395,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("deleteSensorBtn")!.addEventListener("click", deleteSensor);
     document.getElementById("filterSensorBtn")!.addEventListener("click", filterSensors);
 
-    document.getElementById("createReadingBtn")!.addEventListener("click", createReading);
+    document.getElementById("createReadingBtn")!.addEventListener("click", createSensorReading);
     document.getElementById("createInvalidReadingBtn")!.addEventListener("click", createInvalidReading);
     document.getElementById("listReadingBtn")!.addEventListener("click", listReadings);
     document.getElementById("filterReadingBtn")!.addEventListener("click", filterReadings);
-    document.getElementById("getReadingBtn")!.addEventListener("click", getReadingById);
-    document.getElementById("deleteReadingBtn")!.addEventListener("click", deleteReading);
+    document.getElementById("getReadingBtn")!.addEventListener("click", getSensorReadingById);
+    document.getElementById("deleteReadingBtn")!.addEventListener("click", deleteSensorReading);
 
     document.getElementById("latestBtn")!.addEventListener("click", listWithLatestReading);
     document.getElementById("statsBtn")!.addEventListener("click", getReadingStats);
@@ -411,5 +411,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     log("Entlite Custom Demo Ready!");
-    log("SensorService and ReadingService come from the DSL, SensorAnalyticsService from custom.proto + custom.sql");
+    log("SensorService and SensorReadingService come from the DSL, SensorAnalyticsService from custom.proto + custom.sql");
 });

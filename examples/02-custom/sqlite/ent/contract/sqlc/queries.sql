@@ -2,47 +2,6 @@
 
 -- SQLC compatible query definitions
 
--- Reading CRUD operations
-
--- name: CreateReading :one
-INSERT INTO "reading" (
-  sensor_id,
-  value,
-  quality,
-  flagged,
-  recorded_at,
-  created_at
-) VALUES (
-  ?,
-  ?,
-  ?,
-  ?,
-  ?,
-  ?
-) RETURNING id;
-
--- name: GetReadingById :one
-SELECT * FROM "reading" WHERE id = ?;
-
--- name: ListReadingBySensorId :many
-SELECT * FROM "reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
-
--- name: ListReadingFilterBySensorIdRecordedAtFlagged :many
-SELECT *, COUNT(*) OVER() AS total_size FROM "reading" WHERE sensor_id = @sensor_id AND recorded_at >= @min_recorded_at AND recorded_at <= @max_recorded_at AND flagged = @flagged ORDER BY recorded_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
-
--- name: UpdateReading :one
-UPDATE "reading" SET
-  sensor_id = @sensor_id,
-  value = @value,
-  quality = @quality,
-  flagged = COALESCE(sqlc.narg('flagged'), flagged),
-  recorded_at = @recorded_at
-WHERE id = @id
-RETURNING *;
-
--- name: DeleteReading :exec
-DELETE FROM "reading" WHERE id = ?;
-
 -- Sensor CRUD operations
 
 -- name: CreateSensor :one
@@ -98,4 +57,45 @@ RETURNING *;
 
 -- name: DeleteSensor :exec
 DELETE FROM "sensor" WHERE id = ?;
+
+-- SensorReading CRUD operations
+
+-- name: CreateSensorReading :one
+INSERT INTO "sensor_reading" (
+  sensor_id,
+  value,
+  quality,
+  flagged,
+  recorded_at,
+  created_at
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?
+) RETURNING id;
+
+-- name: GetSensorReadingById :one
+SELECT * FROM "sensor_reading" WHERE id = ?;
+
+-- name: ListSensorReadingBySensorId :many
+SELECT * FROM "sensor_reading" WHERE sensor_id = @sensor_id LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+
+-- name: ListSensorReadingFilterBySensorIdRecordedAtFlagged :many
+SELECT *, COUNT(*) OVER() AS total_size FROM "sensor_reading" WHERE sensor_id = @sensor_id AND recorded_at >= @min_recorded_at AND recorded_at <= @max_recorded_at AND flagged = @flagged ORDER BY recorded_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+
+-- name: UpdateSensorReading :one
+UPDATE "sensor_reading" SET
+  sensor_id = @sensor_id,
+  value = @value,
+  quality = @quality,
+  flagged = COALESCE(sqlc.narg('flagged'), flagged),
+  recorded_at = @recorded_at
+WHERE id = @id
+RETURNING *;
+
+-- name: DeleteSensorReading :exec
+DELETE FROM "sensor_reading" WHERE id = ?;
 

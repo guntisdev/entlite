@@ -10,22 +10,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 import "buf/validate/validate.proto";
 
-// Reading is a single measurement captured by a Sensor.
-message Reading {
-  int64 id = 1 [(buf.validate.field).required = true];
-  // References sensor.id
-  int32 sensor_id = 2 [(buf.validate.field).required = true];
-  double value = 3 [(buf.validate.field).required = true];
-  // Signal quality 0-100
-  int32 quality = 4 [(buf.validate.field).required = true];
-  // Marked as anomalous by ingestion
-  bool flagged = 5;
-  // Device measurement time (client-supplied)
-  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp created_at = 7 [(buf.validate.field).required = true];
-}
-
-// Sensor is a physical device deployed in the field that emits Readings.
+// Sensor is a physical device deployed in the field that emits SensorReadings.
 message Sensor {
   int32 id = 1 [(buf.validate.field).required = true];
   // External hardware identifier, e.g. TEMP-A1
@@ -49,53 +34,19 @@ message Sensor {
   optional double latest_value = 13;
 }
 
-message CreateReadingRequest {
+// SensorReading is a single measurement captured by a Sensor.
+message SensorReading {
+  int64 id = 1 [(buf.validate.field).required = true];
   // References sensor.id
   int32 sensor_id = 2 [(buf.validate.field).required = true];
   double value = 3 [(buf.validate.field).required = true];
   // Signal quality 0-100
   int32 quality = 4 [(buf.validate.field).required = true];
   // Marked as anomalous by ingestion
-  optional bool flagged = 5;
+  bool flagged = 5;
   // Device measurement time (client-supplied)
   google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
-}
-message GetReadingByIdRequest {
-  int64 id = 1 [(buf.validate.field).required = true];
-}
-message DeleteReadingRequest {
-  int64 id = 1 [(buf.validate.field).required = true];
-}
-message ListReadingBySensorIdRequest {
-  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
-  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
-  int32 sensor_id = 3 [(buf.validate.field).required = true];
-}
-
-message ListReadingBySensorIdResponse {
-  repeated Reading rows = 1;
-}
-message ListReadingFilterBySensorIdRecordedAtFlaggedRequest {
-  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
-  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
-  int32 sensor_id = 3 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp min_recorded_at = 4 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp max_recorded_at = 5 [(buf.validate.field).required = true];
-  bool flagged = 6 [(buf.validate.field).required = true];
-}
-
-message ListReadingFilterBySensorIdRecordedAtFlaggedResponse {
-  repeated Reading rows = 1;
-  int64 total_size = 2;
-}
-
-// ReadingService provides CRUD opertions for Reading entities
-service ReadingService {
-  rpc CreateReading(CreateReadingRequest) returns (Reading);
-  rpc GetReadingById(GetReadingByIdRequest) returns (Reading);
-  rpc DeleteReading(DeleteReadingRequest) returns (google.protobuf.Empty);
-  rpc ListReadingBySensorId(ListReadingBySensorIdRequest) returns (ListReadingBySensorIdResponse);
-  rpc ListReadingFilterBySensorIdRecordedAtFlagged(ListReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListReadingFilterBySensorIdRecordedAtFlaggedResponse);
+  google.protobuf.Timestamp created_at = 7 [(buf.validate.field).required = true];
 }
 
 message CreateSensorRequest {
@@ -166,4 +117,53 @@ service SensorService {
   // Look up a sensor by its hardware code
   rpc GetSensorByCode(GetSensorByCodeRequest) returns (Sensor);
   rpc ListSensorFilterByLabelKindActive(ListSensorFilterByLabelKindActiveRequest) returns (ListSensorFilterByLabelKindActiveResponse);
+}
+
+message CreateSensorReadingRequest {
+  // References sensor.id
+  int32 sensor_id = 2 [(buf.validate.field).required = true];
+  double value = 3 [(buf.validate.field).required = true];
+  // Signal quality 0-100
+  int32 quality = 4 [(buf.validate.field).required = true];
+  // Marked as anomalous by ingestion
+  optional bool flagged = 5;
+  // Device measurement time (client-supplied)
+  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
+}
+message GetSensorReadingByIdRequest {
+  int64 id = 1 [(buf.validate.field).required = true];
+}
+message DeleteSensorReadingRequest {
+  int64 id = 1 [(buf.validate.field).required = true];
+}
+message ListSensorReadingBySensorIdRequest {
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
+  int32 sensor_id = 3 [(buf.validate.field).required = true];
+}
+
+message ListSensorReadingBySensorIdResponse {
+  repeated SensorReading rows = 1;
+}
+message ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest {
+  int32 limit = 1 [(buf.validate.field).required = true, (buf.validate.field).int32.gte = 1];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
+  int32 sensor_id = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp min_recorded_at = 4 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp max_recorded_at = 5 [(buf.validate.field).required = true];
+  bool flagged = 6 [(buf.validate.field).required = true];
+}
+
+message ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse {
+  repeated SensorReading rows = 1;
+  int64 total_size = 2;
+}
+
+// SensorReadingService provides CRUD opertions for SensorReading entities
+service SensorReadingService {
+  rpc CreateSensorReading(CreateSensorReadingRequest) returns (SensorReading);
+  rpc GetSensorReadingById(GetSensorReadingByIdRequest) returns (SensorReading);
+  rpc DeleteSensorReading(DeleteSensorReadingRequest) returns (google.protobuf.Empty);
+  rpc ListSensorReadingBySensorId(ListSensorReadingBySensorIdRequest) returns (ListSensorReadingBySensorIdResponse);
+  rpc ListSensorReadingFilterBySensorIdRecordedAtFlagged(ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest) returns (ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse);
 }

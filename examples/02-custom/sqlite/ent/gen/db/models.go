@@ -10,16 +10,6 @@ import (
 )
 
 
-type Reading struct {
-	ID int64 `json:"id"`
-	SensorID int32 `json:"sensor_id"`
-	Value float64 `json:"value"`
-	Quality int32 `json:"quality"`
-	Flagged bool `json:"flagged"`
-	RecordedAt time.Time `json:"recorded_at"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
 type Sensor struct {
 	ID int32 `json:"id"`
 	Code string `json:"code"`
@@ -35,36 +25,14 @@ type Sensor struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (m *Reading) ReadingToSQL() *internal.Reading {
-	if m == nil {
-		return nil
-	}
-
-	return &internal.Reading{
-		ID: m.ID,
-		SensorID: IntConvert[int32, int64](m.SensorID),
-		Value: m.Value,
-		Quality: IntConvert[int32, int64](m.Quality),
-		Flagged: SQLiteBoolToInt(m.Flagged),
-		RecordedAt: m.RecordedAt,
-		CreatedAt: m.CreatedAt,
-	}
-}
-
-func ReadingFromSQL(db *internal.Reading) *Reading {
-	if db == nil {
-		return nil
-	}
-
-	return &Reading{
-		ID: db.ID,
-		SensorID: IntConvert[int64, int32](db.SensorID),
-		Value: db.Value,
-		Quality: IntConvert[int64, int32](db.Quality),
-		Flagged: SQLiteIntToBool(db.Flagged),
-		RecordedAt: db.RecordedAt,
-		CreatedAt: db.CreatedAt,
-	}
+type SensorReading struct {
+	ID int64 `json:"id"`
+	SensorID int32 `json:"sensor_id"`
+	Value float64 `json:"value"`
+	Quality int32 `json:"quality"`
+	Flagged bool `json:"flagged"`
+	RecordedAt time.Time `json:"recorded_at"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (m *Sensor) SensorToSQL() *internal.Sensor {
@@ -109,20 +77,35 @@ func SensorFromSQL(db *internal.Sensor) *Sensor {
 	}
 }
 
-// ToProto converts Reading to proto format
-func (m *Reading) ToProto() *pb.Reading {
+func (m *SensorReading) SensorReadingToSQL() *internal.SensorReading {
 	if m == nil {
 		return nil
 	}
 
-	return &pb.Reading{
-		Id: m.ID,
-		SensorId: m.SensorID,
+	return &internal.SensorReading{
+		ID: m.ID,
+		SensorID: IntConvert[int32, int64](m.SensorID),
 		Value: m.Value,
-		Quality: m.Quality,
-		Flagged: m.Flagged,
-		RecordedAt: timestamppb.New(m.RecordedAt),
-		CreatedAt: timestamppb.New(m.CreatedAt),
+		Quality: IntConvert[int32, int64](m.Quality),
+		Flagged: SQLiteBoolToInt(m.Flagged),
+		RecordedAt: m.RecordedAt,
+		CreatedAt: m.CreatedAt,
+	}
+}
+
+func SensorReadingFromSQL(db *internal.SensorReading) *SensorReading {
+	if db == nil {
+		return nil
+	}
+
+	return &SensorReading{
+		ID: db.ID,
+		SensorID: IntConvert[int64, int32](db.SensorID),
+		Value: db.Value,
+		Quality: IntConvert[int64, int32](db.Quality),
+		Flagged: SQLiteIntToBool(db.Flagged),
+		RecordedAt: db.RecordedAt,
+		CreatedAt: db.CreatedAt,
 	}
 }
 
@@ -146,6 +129,23 @@ func (m *Sensor) ToProto() *pb.Sensor {
 		CreatedAt: timestamppb.New(m.CreatedAt),
 		UpdatedAt: timestamppb.New(m.UpdatedAt),
 		LatestValue: nil,
+	}
+}
+
+// ToProto converts SensorReading to proto format
+func (m *SensorReading) ToProto() *pb.SensorReading {
+	if m == nil {
+		return nil
+	}
+
+	return &pb.SensorReading{
+		Id: m.ID,
+		SensorId: m.SensorID,
+		Value: m.Value,
+		Quality: m.Quality,
+		Flagged: m.Flagged,
+		RecordedAt: timestamppb.New(m.RecordedAt),
+		CreatedAt: timestamppb.New(m.CreatedAt),
 	}
 }
 

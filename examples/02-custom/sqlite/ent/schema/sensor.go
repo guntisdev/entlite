@@ -10,7 +10,7 @@ import (
 	"github.com/guntisdev/entlite/pkg/entlite/query"
 )
 
-// Sensor is a physical device deployed in the field that emits Readings.
+// Sensor is a physical device deployed in the field that emits SensorReadings.
 type Sensor struct {
 	entlite.Schema
 }

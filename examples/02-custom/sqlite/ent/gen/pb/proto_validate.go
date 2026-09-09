@@ -9,13 +9,6 @@ import (
 	"github.com/guntisdev/entlite/examples/02-custom/sqlite/ent/logic"
 )
 
-func (r *CreateReadingRequest) Validate() error {
-	if !logic.IsPercentage(r.Quality) {
-		return fmt.Errorf("Validation failed for field name: Quality")
-	}
-	return nil
-}
-
 func (r *CreateSensorRequest) Validate() error {
 	if !logic.IsKnownSensorKind(r.Kind) {
 		return fmt.Errorf("Validation failed for field name: Kind")
@@ -26,6 +19,13 @@ func (r *CreateSensorRequest) Validate() error {
 func (r *UpdateSensorRequest) Validate() error {
 	if !logic.IsKnownSensorKind(r.Kind) {
 		return fmt.Errorf("Validation failed for field name: Kind")
+	}
+	return nil
+}
+
+func (r *CreateSensorReadingRequest) Validate() error {
+	if !logic.IsPercentage(r.Quality) {
+		return fmt.Errorf("Validation failed for field name: Quality")
 	}
 	return nil
 }

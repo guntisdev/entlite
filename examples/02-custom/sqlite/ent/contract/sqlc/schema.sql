@@ -2,22 +2,7 @@
 
 -- Table definitions for all entities
 
--- Reading is a single measurement captured by a Sensor.
-CREATE TABLE IF NOT EXISTS "reading"(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  -- References sensor.id
-  sensor_id INTEGER NOT NULL,
-  value REAL NOT NULL,
-  -- Signal quality 0-100
-  quality INTEGER NOT NULL,
-  -- Marked as anomalous by ingestion
-  flagged INTEGER DEFAULT false NOT NULL,
-  -- Device measurement time (client-supplied)
-  recorded_at DATETIME NOT NULL,
-  created_at DATETIME NOT NULL
-);
-
--- Sensor is a physical device deployed in the field that emits Readings.
+-- Sensor is a physical device deployed in the field that emits SensorReadings.
 CREATE TABLE IF NOT EXISTS "sensor"(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   -- External hardware identifier, e.g. TEMP-A1
@@ -37,5 +22,20 @@ CREATE TABLE IF NOT EXISTS "sensor"(
   installed_at DATETIME NOT NULL,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL
+);
+
+-- SensorReading is a single measurement captured by a Sensor.
+CREATE TABLE IF NOT EXISTS "sensor_reading"(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  -- References sensor.id
+  sensor_id INTEGER NOT NULL,
+  value REAL NOT NULL,
+  -- Signal quality 0-100
+  quality INTEGER NOT NULL,
+  -- Marked as anomalous by ingestion
+  flagged INTEGER DEFAULT false NOT NULL,
+  -- Device measurement time (client-supplied)
+  recorded_at DATETIME NOT NULL,
+  created_at DATETIME NOT NULL
 );
 

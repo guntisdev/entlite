@@ -17,7 +17,7 @@ SELECT
   AVG(value) AS avg_value,
   MIN(value) AS min_value,
   MAX(value) AS max_value
-FROM "reading"
+FROM "sensor_reading"
 WHERE sensor_id = ?1
   AND recorded_at >= ?2 AND recorded_at <= ?3
 `
@@ -58,11 +58,11 @@ SELECT
   r.value       AS latest_value,
   r.recorded_at AS latest_recorded_at
 FROM "sensor" s
-LEFT JOIN "reading" r
-  ON r.ID = (
-    SELECT r2.ID
-    FROM "reading" r2
-    WHERE r2.sensor_id = s.ID
+LEFT JOIN "sensor_reading" r
+  ON r.id = (
+    SELECT r2.id
+    FROM "sensor_reading" r2
+    WHERE r2.sensor_id = s.id
     ORDER BY r2.recorded_at DESC
     LIMIT 1
   )
@@ -124,7 +124,7 @@ func (q *Queries) ListSensorsWithLatestReading(ctx context.Context, arg ListSens
 }
 
 const pruneReadingsOlderThan = `-- name: PruneReadingsOlderThan :execrows
-DELETE FROM "reading" WHERE recorded_at < ?1
+DELETE FROM "sensor_reading" WHERE recorded_at < ?1
 `
 
 // Drops readings older than a cutoff.

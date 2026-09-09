@@ -23,10 +23,10 @@ import (
 const _ = connect.IsAtLeastVersion1_13_0
 
 const (
-	// ReadingServiceName is the fully-qualified name of the ReadingService service.
-	ReadingServiceName = "proto.ReadingService"
 	// SensorServiceName is the fully-qualified name of the SensorService service.
 	SensorServiceName = "proto.SensorService"
+	// SensorReadingServiceName is the fully-qualified name of the SensorReadingService service.
+	SensorReadingServiceName = "proto.SensorReadingService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -37,21 +37,6 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// ReadingServiceCreateReadingProcedure is the fully-qualified name of the ReadingService's
-	// CreateReading RPC.
-	ReadingServiceCreateReadingProcedure = "/proto.ReadingService/CreateReading"
-	// ReadingServiceGetReadingByIdProcedure is the fully-qualified name of the ReadingService's
-	// GetReadingById RPC.
-	ReadingServiceGetReadingByIdProcedure = "/proto.ReadingService/GetReadingById"
-	// ReadingServiceDeleteReadingProcedure is the fully-qualified name of the ReadingService's
-	// DeleteReading RPC.
-	ReadingServiceDeleteReadingProcedure = "/proto.ReadingService/DeleteReading"
-	// ReadingServiceListReadingBySensorIdProcedure is the fully-qualified name of the ReadingService's
-	// ListReadingBySensorId RPC.
-	ReadingServiceListReadingBySensorIdProcedure = "/proto.ReadingService/ListReadingBySensorId"
-	// ReadingServiceListReadingFilterBySensorIdRecordedAtFlaggedProcedure is the fully-qualified name
-	// of the ReadingService's ListReadingFilterBySensorIdRecordedAtFlagged RPC.
-	ReadingServiceListReadingFilterBySensorIdRecordedAtFlaggedProcedure = "/proto.ReadingService/ListReadingFilterBySensorIdRecordedAtFlagged"
 	// SensorServiceCreateSensorProcedure is the fully-qualified name of the SensorService's
 	// CreateSensor RPC.
 	SensorServiceCreateSensorProcedure = "/proto.SensorService/CreateSensor"
@@ -70,182 +55,23 @@ const (
 	// SensorServiceListSensorFilterByLabelKindActiveProcedure is the fully-qualified name of the
 	// SensorService's ListSensorFilterByLabelKindActive RPC.
 	SensorServiceListSensorFilterByLabelKindActiveProcedure = "/proto.SensorService/ListSensorFilterByLabelKindActive"
+	// SensorReadingServiceCreateSensorReadingProcedure is the fully-qualified name of the
+	// SensorReadingService's CreateSensorReading RPC.
+	SensorReadingServiceCreateSensorReadingProcedure = "/proto.SensorReadingService/CreateSensorReading"
+	// SensorReadingServiceGetSensorReadingByIdProcedure is the fully-qualified name of the
+	// SensorReadingService's GetSensorReadingById RPC.
+	SensorReadingServiceGetSensorReadingByIdProcedure = "/proto.SensorReadingService/GetSensorReadingById"
+	// SensorReadingServiceDeleteSensorReadingProcedure is the fully-qualified name of the
+	// SensorReadingService's DeleteSensorReading RPC.
+	SensorReadingServiceDeleteSensorReadingProcedure = "/proto.SensorReadingService/DeleteSensorReading"
+	// SensorReadingServiceListSensorReadingBySensorIdProcedure is the fully-qualified name of the
+	// SensorReadingService's ListSensorReadingBySensorId RPC.
+	SensorReadingServiceListSensorReadingBySensorIdProcedure = "/proto.SensorReadingService/ListSensorReadingBySensorId"
+	// SensorReadingServiceListSensorReadingFilterBySensorIdRecordedAtFlaggedProcedure is the
+	// fully-qualified name of the SensorReadingService's
+	// ListSensorReadingFilterBySensorIdRecordedAtFlagged RPC.
+	SensorReadingServiceListSensorReadingFilterBySensorIdRecordedAtFlaggedProcedure = "/proto.SensorReadingService/ListSensorReadingFilterBySensorIdRecordedAtFlagged"
 )
-
-// ReadingServiceClient is a client for the proto.ReadingService service.
-type ReadingServiceClient interface {
-	CreateReading(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error)
-	GetReadingById(context.Context, *connect.Request[GetReadingByIdRequest]) (*connect.Response[Reading], error)
-	DeleteReading(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error)
-	ListReadingBySensorId(context.Context, *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error)
-	ListReadingFilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
-}
-
-// NewReadingServiceClient constructs a client for the proto.ReadingService service. By default, it
-// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
-// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
-// connect.WithGRPCWeb() options.
-//
-// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
-// http://api.acme.com or https://acme.com/grpc).
-func NewReadingServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ReadingServiceClient {
-	baseURL = strings.TrimRight(baseURL, "/")
-	readingServiceMethods := File_schema_proto.Services().ByName("ReadingService").Methods()
-	return &readingServiceClient{
-		createReading: connect.NewClient[CreateReadingRequest, Reading](
-			httpClient,
-			baseURL+ReadingServiceCreateReadingProcedure,
-			connect.WithSchema(readingServiceMethods.ByName("CreateReading")),
-			connect.WithClientOptions(opts...),
-		),
-		getReadingById: connect.NewClient[GetReadingByIdRequest, Reading](
-			httpClient,
-			baseURL+ReadingServiceGetReadingByIdProcedure,
-			connect.WithSchema(readingServiceMethods.ByName("GetReadingById")),
-			connect.WithClientOptions(opts...),
-		),
-		deleteReading: connect.NewClient[DeleteReadingRequest, emptypb.Empty](
-			httpClient,
-			baseURL+ReadingServiceDeleteReadingProcedure,
-			connect.WithSchema(readingServiceMethods.ByName("DeleteReading")),
-			connect.WithClientOptions(opts...),
-		),
-		listReadingBySensorId: connect.NewClient[ListReadingBySensorIdRequest, ListReadingBySensorIdResponse](
-			httpClient,
-			baseURL+ReadingServiceListReadingBySensorIdProcedure,
-			connect.WithSchema(readingServiceMethods.ByName("ListReadingBySensorId")),
-			connect.WithClientOptions(opts...),
-		),
-		listReadingFilterBySensorIdRecordedAtFlagged: connect.NewClient[ListReadingFilterBySensorIdRecordedAtFlaggedRequest, ListReadingFilterBySensorIdRecordedAtFlaggedResponse](
-			httpClient,
-			baseURL+ReadingServiceListReadingFilterBySensorIdRecordedAtFlaggedProcedure,
-			connect.WithSchema(readingServiceMethods.ByName("ListReadingFilterBySensorIdRecordedAtFlagged")),
-			connect.WithClientOptions(opts...),
-		),
-	}
-}
-
-// readingServiceClient implements ReadingServiceClient.
-type readingServiceClient struct {
-	createReading                                *connect.Client[CreateReadingRequest, Reading]
-	getReadingById                               *connect.Client[GetReadingByIdRequest, Reading]
-	deleteReading                                *connect.Client[DeleteReadingRequest, emptypb.Empty]
-	listReadingBySensorId                        *connect.Client[ListReadingBySensorIdRequest, ListReadingBySensorIdResponse]
-	listReadingFilterBySensorIdRecordedAtFlagged *connect.Client[ListReadingFilterBySensorIdRecordedAtFlaggedRequest, ListReadingFilterBySensorIdRecordedAtFlaggedResponse]
-}
-
-// CreateReading calls proto.ReadingService.CreateReading.
-func (c *readingServiceClient) CreateReading(ctx context.Context, req *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error) {
-	return c.createReading.CallUnary(ctx, req)
-}
-
-// GetReadingById calls proto.ReadingService.GetReadingById.
-func (c *readingServiceClient) GetReadingById(ctx context.Context, req *connect.Request[GetReadingByIdRequest]) (*connect.Response[Reading], error) {
-	return c.getReadingById.CallUnary(ctx, req)
-}
-
-// DeleteReading calls proto.ReadingService.DeleteReading.
-func (c *readingServiceClient) DeleteReading(ctx context.Context, req *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error) {
-	return c.deleteReading.CallUnary(ctx, req)
-}
-
-// ListReadingBySensorId calls proto.ReadingService.ListReadingBySensorId.
-func (c *readingServiceClient) ListReadingBySensorId(ctx context.Context, req *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error) {
-	return c.listReadingBySensorId.CallUnary(ctx, req)
-}
-
-// ListReadingFilterBySensorIdRecordedAtFlagged calls
-// proto.ReadingService.ListReadingFilterBySensorIdRecordedAtFlagged.
-func (c *readingServiceClient) ListReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, req *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {
-	return c.listReadingFilterBySensorIdRecordedAtFlagged.CallUnary(ctx, req)
-}
-
-// ReadingServiceHandler is an implementation of the proto.ReadingService service.
-type ReadingServiceHandler interface {
-	CreateReading(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error)
-	GetReadingById(context.Context, *connect.Request[GetReadingByIdRequest]) (*connect.Response[Reading], error)
-	DeleteReading(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error)
-	ListReadingBySensorId(context.Context, *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error)
-	ListReadingFilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
-}
-
-// NewReadingServiceHandler builds an HTTP handler from the service implementation. It returns the
-// path on which to mount the handler and the handler itself.
-//
-// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
-// and JSON codecs. They also support gzip compression.
-func NewReadingServiceHandler(svc ReadingServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	readingServiceMethods := File_schema_proto.Services().ByName("ReadingService").Methods()
-	readingServiceCreateReadingHandler := connect.NewUnaryHandler(
-		ReadingServiceCreateReadingProcedure,
-		svc.CreateReading,
-		connect.WithSchema(readingServiceMethods.ByName("CreateReading")),
-		connect.WithHandlerOptions(opts...),
-	)
-	readingServiceGetReadingByIdHandler := connect.NewUnaryHandler(
-		ReadingServiceGetReadingByIdProcedure,
-		svc.GetReadingById,
-		connect.WithSchema(readingServiceMethods.ByName("GetReadingById")),
-		connect.WithHandlerOptions(opts...),
-	)
-	readingServiceDeleteReadingHandler := connect.NewUnaryHandler(
-		ReadingServiceDeleteReadingProcedure,
-		svc.DeleteReading,
-		connect.WithSchema(readingServiceMethods.ByName("DeleteReading")),
-		connect.WithHandlerOptions(opts...),
-	)
-	readingServiceListReadingBySensorIdHandler := connect.NewUnaryHandler(
-		ReadingServiceListReadingBySensorIdProcedure,
-		svc.ListReadingBySensorId,
-		connect.WithSchema(readingServiceMethods.ByName("ListReadingBySensorId")),
-		connect.WithHandlerOptions(opts...),
-	)
-	readingServiceListReadingFilterBySensorIdRecordedAtFlaggedHandler := connect.NewUnaryHandler(
-		ReadingServiceListReadingFilterBySensorIdRecordedAtFlaggedProcedure,
-		svc.ListReadingFilterBySensorIdRecordedAtFlagged,
-		connect.WithSchema(readingServiceMethods.ByName("ListReadingFilterBySensorIdRecordedAtFlagged")),
-		connect.WithHandlerOptions(opts...),
-	)
-	return "/proto.ReadingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case ReadingServiceCreateReadingProcedure:
-			readingServiceCreateReadingHandler.ServeHTTP(w, r)
-		case ReadingServiceGetReadingByIdProcedure:
-			readingServiceGetReadingByIdHandler.ServeHTTP(w, r)
-		case ReadingServiceDeleteReadingProcedure:
-			readingServiceDeleteReadingHandler.ServeHTTP(w, r)
-		case ReadingServiceListReadingBySensorIdProcedure:
-			readingServiceListReadingBySensorIdHandler.ServeHTTP(w, r)
-		case ReadingServiceListReadingFilterBySensorIdRecordedAtFlaggedProcedure:
-			readingServiceListReadingFilterBySensorIdRecordedAtFlaggedHandler.ServeHTTP(w, r)
-		default:
-			http.NotFound(w, r)
-		}
-	})
-}
-
-// UnimplementedReadingServiceHandler returns CodeUnimplemented from all methods.
-type UnimplementedReadingServiceHandler struct{}
-
-func (UnimplementedReadingServiceHandler) CreateReading(context.Context, *connect.Request[CreateReadingRequest]) (*connect.Response[Reading], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.CreateReading is not implemented"))
-}
-
-func (UnimplementedReadingServiceHandler) GetReadingById(context.Context, *connect.Request[GetReadingByIdRequest]) (*connect.Response[Reading], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.GetReadingById is not implemented"))
-}
-
-func (UnimplementedReadingServiceHandler) DeleteReading(context.Context, *connect.Request[DeleteReadingRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.DeleteReading is not implemented"))
-}
-
-func (UnimplementedReadingServiceHandler) ListReadingBySensorId(context.Context, *connect.Request[ListReadingBySensorIdRequest]) (*connect.Response[ListReadingBySensorIdResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.ListReadingBySensorId is not implemented"))
-}
-
-func (UnimplementedReadingServiceHandler) ListReadingFilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ReadingService.ListReadingFilterBySensorIdRecordedAtFlagged is not implemented"))
-}
 
 // SensorServiceClient is a client for the proto.SensorService service.
 type SensorServiceClient interface {
@@ -447,4 +273,179 @@ func (UnimplementedSensorServiceHandler) GetSensorByCode(context.Context, *conne
 
 func (UnimplementedSensorServiceHandler) ListSensorFilterByLabelKindActive(context.Context, *connect.Request[ListSensorFilterByLabelKindActiveRequest]) (*connect.Response[ListSensorFilterByLabelKindActiveResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorService.ListSensorFilterByLabelKindActive is not implemented"))
+}
+
+// SensorReadingServiceClient is a client for the proto.SensorReadingService service.
+type SensorReadingServiceClient interface {
+	CreateSensorReading(context.Context, *connect.Request[CreateSensorReadingRequest]) (*connect.Response[SensorReading], error)
+	GetSensorReadingById(context.Context, *connect.Request[GetSensorReadingByIdRequest]) (*connect.Response[SensorReading], error)
+	DeleteSensorReading(context.Context, *connect.Request[DeleteSensorReadingRequest]) (*connect.Response[emptypb.Empty], error)
+	ListSensorReadingBySensorId(context.Context, *connect.Request[ListSensorReadingBySensorIdRequest]) (*connect.Response[ListSensorReadingBySensorIdResponse], error)
+	ListSensorReadingFilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
+}
+
+// NewSensorReadingServiceClient constructs a client for the proto.SensorReadingService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
+//
+// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
+// http://api.acme.com or https://acme.com/grpc).
+func NewSensorReadingServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) SensorReadingServiceClient {
+	baseURL = strings.TrimRight(baseURL, "/")
+	sensorReadingServiceMethods := File_schema_proto.Services().ByName("SensorReadingService").Methods()
+	return &sensorReadingServiceClient{
+		createSensorReading: connect.NewClient[CreateSensorReadingRequest, SensorReading](
+			httpClient,
+			baseURL+SensorReadingServiceCreateSensorReadingProcedure,
+			connect.WithSchema(sensorReadingServiceMethods.ByName("CreateSensorReading")),
+			connect.WithClientOptions(opts...),
+		),
+		getSensorReadingById: connect.NewClient[GetSensorReadingByIdRequest, SensorReading](
+			httpClient,
+			baseURL+SensorReadingServiceGetSensorReadingByIdProcedure,
+			connect.WithSchema(sensorReadingServiceMethods.ByName("GetSensorReadingById")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteSensorReading: connect.NewClient[DeleteSensorReadingRequest, emptypb.Empty](
+			httpClient,
+			baseURL+SensorReadingServiceDeleteSensorReadingProcedure,
+			connect.WithSchema(sensorReadingServiceMethods.ByName("DeleteSensorReading")),
+			connect.WithClientOptions(opts...),
+		),
+		listSensorReadingBySensorId: connect.NewClient[ListSensorReadingBySensorIdRequest, ListSensorReadingBySensorIdResponse](
+			httpClient,
+			baseURL+SensorReadingServiceListSensorReadingBySensorIdProcedure,
+			connect.WithSchema(sensorReadingServiceMethods.ByName("ListSensorReadingBySensorId")),
+			connect.WithClientOptions(opts...),
+		),
+		listSensorReadingFilterBySensorIdRecordedAtFlagged: connect.NewClient[ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest, ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse](
+			httpClient,
+			baseURL+SensorReadingServiceListSensorReadingFilterBySensorIdRecordedAtFlaggedProcedure,
+			connect.WithSchema(sensorReadingServiceMethods.ByName("ListSensorReadingFilterBySensorIdRecordedAtFlagged")),
+			connect.WithClientOptions(opts...),
+		),
+	}
+}
+
+// sensorReadingServiceClient implements SensorReadingServiceClient.
+type sensorReadingServiceClient struct {
+	createSensorReading                                *connect.Client[CreateSensorReadingRequest, SensorReading]
+	getSensorReadingById                               *connect.Client[GetSensorReadingByIdRequest, SensorReading]
+	deleteSensorReading                                *connect.Client[DeleteSensorReadingRequest, emptypb.Empty]
+	listSensorReadingBySensorId                        *connect.Client[ListSensorReadingBySensorIdRequest, ListSensorReadingBySensorIdResponse]
+	listSensorReadingFilterBySensorIdRecordedAtFlagged *connect.Client[ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest, ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse]
+}
+
+// CreateSensorReading calls proto.SensorReadingService.CreateSensorReading.
+func (c *sensorReadingServiceClient) CreateSensorReading(ctx context.Context, req *connect.Request[CreateSensorReadingRequest]) (*connect.Response[SensorReading], error) {
+	return c.createSensorReading.CallUnary(ctx, req)
+}
+
+// GetSensorReadingById calls proto.SensorReadingService.GetSensorReadingById.
+func (c *sensorReadingServiceClient) GetSensorReadingById(ctx context.Context, req *connect.Request[GetSensorReadingByIdRequest]) (*connect.Response[SensorReading], error) {
+	return c.getSensorReadingById.CallUnary(ctx, req)
+}
+
+// DeleteSensorReading calls proto.SensorReadingService.DeleteSensorReading.
+func (c *sensorReadingServiceClient) DeleteSensorReading(ctx context.Context, req *connect.Request[DeleteSensorReadingRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteSensorReading.CallUnary(ctx, req)
+}
+
+// ListSensorReadingBySensorId calls proto.SensorReadingService.ListSensorReadingBySensorId.
+func (c *sensorReadingServiceClient) ListSensorReadingBySensorId(ctx context.Context, req *connect.Request[ListSensorReadingBySensorIdRequest]) (*connect.Response[ListSensorReadingBySensorIdResponse], error) {
+	return c.listSensorReadingBySensorId.CallUnary(ctx, req)
+}
+
+// ListSensorReadingFilterBySensorIdRecordedAtFlagged calls
+// proto.SensorReadingService.ListSensorReadingFilterBySensorIdRecordedAtFlagged.
+func (c *sensorReadingServiceClient) ListSensorReadingFilterBySensorIdRecordedAtFlagged(ctx context.Context, req *connect.Request[ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {
+	return c.listSensorReadingFilterBySensorIdRecordedAtFlagged.CallUnary(ctx, req)
+}
+
+// SensorReadingServiceHandler is an implementation of the proto.SensorReadingService service.
+type SensorReadingServiceHandler interface {
+	CreateSensorReading(context.Context, *connect.Request[CreateSensorReadingRequest]) (*connect.Response[SensorReading], error)
+	GetSensorReadingById(context.Context, *connect.Request[GetSensorReadingByIdRequest]) (*connect.Response[SensorReading], error)
+	DeleteSensorReading(context.Context, *connect.Request[DeleteSensorReadingRequest]) (*connect.Response[emptypb.Empty], error)
+	ListSensorReadingBySensorId(context.Context, *connect.Request[ListSensorReadingBySensorIdRequest]) (*connect.Response[ListSensorReadingBySensorIdResponse], error)
+	ListSensorReadingFilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse], error)
+}
+
+// NewSensorReadingServiceHandler builds an HTTP handler from the service implementation. It returns
+// the path on which to mount the handler and the handler itself.
+//
+// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
+// and JSON codecs. They also support gzip compression.
+func NewSensorReadingServiceHandler(svc SensorReadingServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	sensorReadingServiceMethods := File_schema_proto.Services().ByName("SensorReadingService").Methods()
+	sensorReadingServiceCreateSensorReadingHandler := connect.NewUnaryHandler(
+		SensorReadingServiceCreateSensorReadingProcedure,
+		svc.CreateSensorReading,
+		connect.WithSchema(sensorReadingServiceMethods.ByName("CreateSensorReading")),
+		connect.WithHandlerOptions(opts...),
+	)
+	sensorReadingServiceGetSensorReadingByIdHandler := connect.NewUnaryHandler(
+		SensorReadingServiceGetSensorReadingByIdProcedure,
+		svc.GetSensorReadingById,
+		connect.WithSchema(sensorReadingServiceMethods.ByName("GetSensorReadingById")),
+		connect.WithHandlerOptions(opts...),
+	)
+	sensorReadingServiceDeleteSensorReadingHandler := connect.NewUnaryHandler(
+		SensorReadingServiceDeleteSensorReadingProcedure,
+		svc.DeleteSensorReading,
+		connect.WithSchema(sensorReadingServiceMethods.ByName("DeleteSensorReading")),
+		connect.WithHandlerOptions(opts...),
+	)
+	sensorReadingServiceListSensorReadingBySensorIdHandler := connect.NewUnaryHandler(
+		SensorReadingServiceListSensorReadingBySensorIdProcedure,
+		svc.ListSensorReadingBySensorId,
+		connect.WithSchema(sensorReadingServiceMethods.ByName("ListSensorReadingBySensorId")),
+		connect.WithHandlerOptions(opts...),
+	)
+	sensorReadingServiceListSensorReadingFilterBySensorIdRecordedAtFlaggedHandler := connect.NewUnaryHandler(
+		SensorReadingServiceListSensorReadingFilterBySensorIdRecordedAtFlaggedProcedure,
+		svc.ListSensorReadingFilterBySensorIdRecordedAtFlagged,
+		connect.WithSchema(sensorReadingServiceMethods.ByName("ListSensorReadingFilterBySensorIdRecordedAtFlagged")),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/proto.SensorReadingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case SensorReadingServiceCreateSensorReadingProcedure:
+			sensorReadingServiceCreateSensorReadingHandler.ServeHTTP(w, r)
+		case SensorReadingServiceGetSensorReadingByIdProcedure:
+			sensorReadingServiceGetSensorReadingByIdHandler.ServeHTTP(w, r)
+		case SensorReadingServiceDeleteSensorReadingProcedure:
+			sensorReadingServiceDeleteSensorReadingHandler.ServeHTTP(w, r)
+		case SensorReadingServiceListSensorReadingBySensorIdProcedure:
+			sensorReadingServiceListSensorReadingBySensorIdHandler.ServeHTTP(w, r)
+		case SensorReadingServiceListSensorReadingFilterBySensorIdRecordedAtFlaggedProcedure:
+			sensorReadingServiceListSensorReadingFilterBySensorIdRecordedAtFlaggedHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+}
+
+// UnimplementedSensorReadingServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedSensorReadingServiceHandler struct{}
+
+func (UnimplementedSensorReadingServiceHandler) CreateSensorReading(context.Context, *connect.Request[CreateSensorReadingRequest]) (*connect.Response[SensorReading], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorReadingService.CreateSensorReading is not implemented"))
+}
+
+func (UnimplementedSensorReadingServiceHandler) GetSensorReadingById(context.Context, *connect.Request[GetSensorReadingByIdRequest]) (*connect.Response[SensorReading], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorReadingService.GetSensorReadingById is not implemented"))
+}
+
+func (UnimplementedSensorReadingServiceHandler) DeleteSensorReading(context.Context, *connect.Request[DeleteSensorReadingRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorReadingService.DeleteSensorReading is not implemented"))
+}
+
+func (UnimplementedSensorReadingServiceHandler) ListSensorReadingBySensorId(context.Context, *connect.Request[ListSensorReadingBySensorIdRequest]) (*connect.Response[ListSensorReadingBySensorIdResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorReadingService.ListSensorReadingBySensorId is not implemented"))
+}
+
+func (UnimplementedSensorReadingServiceHandler) ListSensorReadingFilterBySensorIdRecordedAtFlagged(context.Context, *connect.Request[ListSensorReadingFilterBySensorIdRecordedAtFlaggedRequest]) (*connect.Response[ListSensorReadingFilterBySensorIdRecordedAtFlaggedResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.SensorReadingService.ListSensorReadingFilterBySensorIdRecordedAtFlagged is not implemented"))
 }

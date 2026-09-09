@@ -11,6 +11,7 @@ next to the generated files, and both halves compile into one typed API.
 - A foreign key follows the type of the entity it points at
 - Query level `Contracts()`: a query that stays in the database layer and gets no rpc
 - Two entities in one schema
+- A multi-word entity name: `SensorReading` becomes the table `sensor_reading`, which sqlc reads back as the Go type `SensorReading`
 <!-- teaches:end -->
 
 ## Entities
@@ -20,12 +21,12 @@ next to the generated files, and both halves compile into one typed API.
 - **Sensor** — a device in the field. Also declares `latest_value` as
   `Contracts(entlite.PROTO())`. That is a virtual field: no column, no place in
   any generated SQL, but it is in the proto message. The server fills it in.
-- **Reading** — a measurement from a sensor. Declares its own key as
+- **SensorReading** — a measurement from a sensor. Declares its own key as
   `field.Int64("id")` instead of taking the default int32. Readings are high
   volume and int32 stops at 2.1B rows. `sensor_id` stays `field.Int` because it
   points at Sensor's int32 key.
 
-Reading's `Update()` is `Contracts(entlite.SQLC())`. A reading is a recorded
+SensorReading's `Update()` is `Contracts(entlite.SQLC())`. A reading is a recorded
 fact, so clients never edit it. The database query exists, the rpc does not.
 
 ## Hand-written files
@@ -51,7 +52,7 @@ converter turns it into the same `pb.Sensor` the CRUD service returns, and
 
 The key type travels the whole stack. Proto gets `int64 id`. SQLite columns are
 already 64-bit, so the wrapper drops the narrowing convert it emits for int32
-keys — compare `GetReadingById` with `GetSensorById` in
+keys — compare `GetSensorReadingById` with `GetSensorById` in
 [`sqlite/ent/gen/db/queries.sql.go`](sqlite/ent/gen/db/queries.sql.go).
 
 On the wire an int64 is JSON encoded as a string, so a reading is
