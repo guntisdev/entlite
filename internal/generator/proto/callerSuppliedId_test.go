@@ -12,7 +12,7 @@ func suppliedIdEntity() schema.Entity {
 	contracts := []schema.Contract{{Type: schema.ContractSQLC}, {Type: schema.ContractPROTO}}
 
 	return schema.Entity{
-		Name:      "Casino",
+		Name:      "Service",
 		Contracts: contracts,
 		Fields: []schema.Field{
 			{Name: "id", Type: schema.FieldTypeString, ProtoField: 1, Unique: true, Immutable: true, Contracts: contracts},
@@ -24,8 +24,8 @@ func suppliedIdEntity() schema.Entity {
 			Columns: []schema.IndexColumn{{Name: "id"}, {Name: "env"}},
 		}},
 		Queries: []schema.Query{
-			{Type: schema.QueryCreate, Name: "CreateCasino", Contracts: contracts},
-			{Type: schema.QueryCreateBulk, Name: "CreateBulkCasino", Contracts: contracts},
+			{Type: schema.QueryCreate, Name: "CreateService", Contracts: contracts},
+			{Type: schema.QueryCreateBulk, Name: "CreateBulkService", Contracts: contracts},
 		},
 	}
 }
@@ -33,13 +33,13 @@ func suppliedIdEntity() schema.Entity {
 func TestCallerSuppliedIdInCreateRequest(t *testing.T) {
 	content := generateSchemaProto([]schema.Entity{suppliedIdEntity()}, "example/gen/pb")
 
-	create := `message CreateCasinoRequest {
+	create := `message CreateServiceRequest {
   string id = 1 [(buf.validate.field).required = true];`
 	if !strings.Contains(content, create) {
 		t.Errorf("expected the create request to require the id:\n%s", content)
 	}
 
-	bulk := `message CreateBulkCasinoRow {
+	bulk := `message CreateBulkServiceRow {
   string id = 1 [(buf.validate.field).required = true];`
 	if !strings.Contains(content, bulk) {
 		t.Errorf("expected the bulk row to require the id:\n%s", content)
@@ -54,7 +54,7 @@ func TestGeneratedIdStaysOutOfCreateRequest(t *testing.T) {
 
 	content := generateSchemaProto([]schema.Entity{entity}, "example/gen/pb")
 
-	create := `message CreateCasinoRequest {
+	create := `message CreateServiceRequest {
   string env = 2`
 	if !strings.Contains(content, create) {
 		t.Errorf("expected the create request to start after the id:\n%s", content)

@@ -53,13 +53,13 @@ func parseNamedEntity(t *testing.T, entityName, fields string) error {
 const okFields = `field.String("env"),`
 
 func TestEntityNameIsChecked(t *testing.T) {
-	if err := parseNamedEntity(t, "PopularCasino", okFields); err != nil {
+	if err := parseNamedEntity(t, "PopularProduct", okFields); err != nil {
 		t.Fatalf("expected PascalCase to be accepted, got: %v", err)
 	}
 
 	rejected := map[string]string{
-		"popularCasino":  "must start with a capital",
-		"Popular_Casino": "must be PascalCase",
+		"popularProduct":  "must start with a capital",
+		"Popular_Product": "must be PascalCase",
 		"HTTPServer":     "two capitals in a row",
 	}
 	for name, want := range rejected {

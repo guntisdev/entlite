@@ -12,7 +12,7 @@ func suppliedIdEntity() schema.Entity {
 	contracts := []schema.Contract{{Type: schema.ContractSQLC}, {Type: schema.ContractPROTO}}
 
 	return schema.Entity{
-		Name:      "Casino",
+		Name:      "Service",
 		Contracts: contracts,
 		Fields: []schema.Field{
 			{Name: "id", Type: schema.FieldTypeString, Unique: true, Immutable: true, Contracts: contracts},
@@ -24,8 +24,8 @@ func suppliedIdEntity() schema.Entity {
 			Columns: []schema.IndexColumn{{Name: "id"}, {Name: "env"}},
 		}},
 		Queries: []schema.Query{
-			{Type: schema.QueryCreate, Name: "CreateCasino", Contracts: contracts},
-			{Type: schema.QueryGetBy, Name: "GetCasinoByIDEnv", Fields: []string{"ID", "env"}, PrimaryKey: true, Contracts: contracts},
+			{Type: schema.QueryCreate, Name: "CreateService", Contracts: contracts},
+			{Type: schema.QueryGetBy, Name: "GetServiceByIDEnv", Fields: []string{"ID", "env"}, PrimaryKey: true, Contracts: contracts},
 		},
 	}
 }
@@ -59,7 +59,7 @@ func TestCallerSuppliedIdInsert(t *testing.T) {
 		t.Run(string(dialect), func(t *testing.T) {
 			sql := NewGenerator(dialect).generateCRUDQueries(suppliedIdEntity())
 
-			if !strings.Contains(sql, "-- name: CreateCasino :exec") {
+			if !strings.Contains(sql, "-- name: CreateService :exec") {
 				t.Errorf("expected the insert to return nothing:\n%s", sql)
 			}
 			if !strings.Contains(sql, " id,") {
