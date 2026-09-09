@@ -31,7 +31,7 @@ func TestTableName(t *testing.T) {
 	tests := []struct{ entity, table string }{
 		{"User", "user"},
 		{"MyUser", "my_user"},
-		{"PopularCasino", "popular_casino"},
+		{"PopularProduct", "popular_product"},
 		{"User2Factor", "user2_factor"},
 	}
 
@@ -43,7 +43,7 @@ func TestTableName(t *testing.T) {
 }
 
 func TestTableNameRoundTrips(t *testing.T) {
-	names := []string{"User", "MyUser", "PopularCasino", "Build", "User2Factor", "TableConfig"}
+	names := []string{"User", "MyUser", "PopularProduct", "Build", "User2Factor", "TableConfig"}
 
 	for _, name := range names {
 		table := TableName(name)
@@ -54,7 +54,7 @@ func TestTableNameRoundTrips(t *testing.T) {
 }
 
 func TestValidateEntityName(t *testing.T) {
-	valid := []string{"User", "MyUser", "PopularCasino", "User2Factor"}
+	valid := []string{"User", "MyUser", "PopularProduct", "User2Factor"}
 	for _, name := range valid {
 		if err := ValidateEntityName(name); err != nil {
 			t.Errorf("expected %q to be valid, got: %v", name, err)
@@ -87,9 +87,9 @@ func TestValidateFieldName(t *testing.T) {
 
 func TestPascalSuggestion(t *testing.T) {
 	tests := []struct{ in, want string }{
-		{"popular_casino", "PopularCasino"},
-		{"popularCasino", "PopularCasino"},
-		{"Popular_Casino", "PopularCasino"},
+		{"popular_product", "PopularProduct"},
+		{"popularProduct", "PopularProduct"},
+		{"Popular_Product", "PopularProduct"},
 		{"HTTPServer", "HttpServer"},
 		{"UserID", "UserId"},
 		{"MyDB", "MyDb"},

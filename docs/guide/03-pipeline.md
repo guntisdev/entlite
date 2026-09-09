@@ -45,11 +45,13 @@ raw output stays in `gen/db/internal`, so you never import it.
 
 Step 4 wraps the queries the dsl generated. A query you wrote in `custom.sql` is
 forwarded as it is, with sqlc's own row type, which the wrapper re-exports so you
-can name it. The name alone never decides: `ListCasinoByUsage` reads like a list
-of casinos, but if it selects an aggregate then sqlc gives it a
-`ListCasinoByUsageRow`, and the wrapper forwards it instead of converting it to
-`[]*Casino`. A custom query that does select the whole table, so sqlc returns the
-entity type, gets the same wrapper a dsl query would.
+can name it. The name alone never decides: `ListProductByUsage` reads like a list
+of products, but if it selects an aggregate then sqlc gives it a
+`ListProductByUsageRow`, and the wrapper forwards it instead of converting it to
+`[]*Product`. A `CreateCountry` that ends in `RETURNING *` is forwarded for the same
+reason: entlite's own insert returns the id, or nothing, never the row. A custom
+query whose signature does match, so sqlc returns the entity type, gets the same
+wrapper a dsl query would.
 
 ## Why a separate validate step
 

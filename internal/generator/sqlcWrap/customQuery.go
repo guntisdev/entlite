@@ -33,14 +33,14 @@ func (ctx *generationContext) namedEntityWrap(methodName string) (schema.Entity,
 	}
 
 	if name, ok := strings.CutPrefix(methodName, "CreateBulk"); ok {
-		if entity, found := ctx.entityMap[name]; found && createResultFits(funcDecl, entity) {
+		if entity, found := ctx.entityMap[name]; found && ctx.createResultFits(funcDecl, entity) {
 			return entity, wrapCreateBulk
 		}
 		return schema.Entity{}, wrapNone
 	}
 
 	if name, ok := strings.CutPrefix(methodName, "Create"); ok {
-		if entity, found := ctx.entityMap[name]; found && createResultFits(funcDecl, entity) {
+		if entity, found := ctx.entityMap[name]; found && ctx.createResultFits(funcDecl, entity) {
 			return entity, wrapCreate
 		}
 		return schema.Entity{}, wrapNone
@@ -85,14 +85,24 @@ func (ctx *generationContext) namedEntityWrap(methodName string) (schema.Entity,
 }
 
 // the create wrapper hands sqlc's result back unchanged
-func createResultFits(funcDecl *ast.FuncDecl, entity schema.Entity) bool {
+func (ctx *generationContext) createResultFits(funcDecl *ast.FuncDecl, entity schema.Entity) bool {
 	types := resultTypes(funcDecl)
 
 	if !entity.InsertReturnsID() {
 		return len(types) == 1 && types[0] == errorOnlyReturn
 	}
 
-	return len(types) == 2 && types[1] == errorOnlyReturn
+	if len(types) != 2 || types[1] != errorOnlyReturn {
+		return false
+	}
+
+	idType := entity.GetIdField().Type
+	if types[0] == string(idType) {
+		return true
+	}
+
+	return idType == schema.FieldTypeInt && types[0] == "int64" &&
+		(ctx.sqlDialect == schema.SQLite || ctx.sqlDialect == schema.MySQL)
 }
 
 func (ctx *generationContext) updateResultFits(funcDecl *ast.FuncDecl, entity schema.Entity) bool {
