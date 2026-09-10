@@ -13,6 +13,30 @@ type BufGenConfig struct {
 	ProtoTypesDir string
 }
 
+// localPlugin accepts buf's two forms for a "local" plugin
+// `local: protoc-gen-go` vs `local: [go, run, some/pkg]`.
+type localPlugin string
+
+func (l *localPlugin) UnmarshalYAML(value *yaml.Node) error {
+	switch value.Kind {
+	case yaml.ScalarNode:
+		var s string
+		if err := value.Decode(&s); err != nil {
+			return err
+		}
+		*l = localPlugin(s)
+	case yaml.SequenceNode:
+		var parts []string
+		if err := value.Decode(&parts); err != nil {
+			return err
+		}
+		*l = localPlugin(strings.Join(parts, " "))
+	default:
+		return fmt.Errorf("local: unsupported yaml node kind %v", value.Kind)
+	}
+	return nil
+}
+
 func GetBufConfigFromYaml(bufYamlPath string) (*BufGenConfig, error) {
 	data, err := os.ReadFile(bufYamlPath)
 	if err != nil {
@@ -21,9 +45,9 @@ func GetBufConfigFromYaml(bufYamlPath string) (*BufGenConfig, error) {
 
 	var config struct {
 		Plugins []struct {
-			Remote string `yaml:"remote"`
-			Local  string `yaml:"local"`
-			Out    string `yaml:"out"`
+			Remote string      `yaml:"remote"`
+			Local  localPlugin `yaml:"local"`
+			Out    string      `yaml:"out"`
 		} `yaml:"plugins"`
 	}
 
@@ -38,7 +62,7 @@ func GetBufConfigFromYaml(bufYamlPath string) (*BufGenConfig, error) {
 	for _, plugin := range config.Plugins {
 		name := plugin.Remote
 		if name == "" {
-			name = plugin.Local
+			name = string(plugin.Local)
 		}
 		if strings.Contains(name, "protocolbuffers/go") {
 			if plugin.Out == "" {
