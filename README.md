@@ -16,7 +16,6 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 
 * Implement Queries Having()
 * Aggregate a row count per group, Count() already means the total next to a page
-* Order a grouped query by an aggregate, it needs a name for the aggregate column first
 * Min()/Max() of a time column, sqlite cannot cast a timestamp back, postgres and mysql can
 * DeleteBy(...) query
 * Create queries example with complicated edge case queries

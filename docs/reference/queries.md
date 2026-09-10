@@ -47,7 +47,7 @@ Exposes the modifiers available on a ListAll query.
 | --- | --- |
 | `Count() ListAllOperations` | Also returns how many rows match, counted before Limit. An empty page reports 0. |
 | `Distinct(fields ...string) ListAllOperations` | Returns the deduplicated values of the given columns instead of whole rows. Every column is part of the key, so sorting is limited to them. |
-| `GroupBy(fields ...string) ListAllOperations` | Returns one row per distinct combination of the given columns, an aggregate folds each group. Sorting is limited to the grouped columns. |
+| `GroupBy(fields ...string) ListAllOperations` | Returns one row per distinct combination of the given columns, an aggregate folds each group. Sort by a grouped column or by an aggregate column, which is named like sum_duration_ms. |
 | `Sum(field string) ListAllOperations` | Adds up the given column, per group or over the whole table without a GroupBy. |
 | `Avg(field string) ListAllOperations` | Averages the given column, per group or over the whole table without a GroupBy. |
 | `Min(field string) ListAllOperations` | Takes the smallest value of the given column, per group or over the whole table. |
@@ -67,7 +67,7 @@ Exposes the modifiers available on a ListBy query.
 | --- | --- |
 | `Count() ListByOperations` | Also returns how many rows match, counted before Limit. An empty page reports 0. |
 | `Distinct(fields ...string) ListByOperations` | Returns the deduplicated values of the given columns instead of whole rows. Every column is part of the key, so sorting is limited to them. |
-| `GroupBy(fields ...string) ListByOperations` | Returns one row per distinct combination of the given columns, an aggregate folds each group. Sorting is limited to the grouped columns. |
+| `GroupBy(fields ...string) ListByOperations` | Returns one row per distinct combination of the given columns, an aggregate folds each group. Sort by a grouped column or by an aggregate column, which is named like sum_duration_ms. |
 | `Sum(field string) ListByOperations` | Adds up the given column, per group or over the whole table without a GroupBy. |
 | `Avg(field string) ListByOperations` | Averages the given column, per group or over the whole table without a GroupBy. |
 | `Min(field string) ListByOperations` | Takes the smallest value of the given column, per group or over the whole table. |

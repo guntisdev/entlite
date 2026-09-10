@@ -50,6 +50,7 @@ func aggregateEntity() schema.Entity {
 			{Type: schema.QueryListAll, Name: "TopBranches",
 				GroupBy:    []string{"branch"},
 				Aggregates: []schema.Aggregate{{Func: schema.AggregateSum, Field: "duration_ms"}},
+				OrderBy:    []schema.OrderColumn{{Name: "sum_duration_ms", Desc: true}, {Name: "branch"}},
 				HasLimit:   true, HasOffset: true, Contracts: contracts},
 		},
 	}
@@ -66,7 +67,7 @@ func TestAggregateSelect(t *testing.T) {
 			`SELECT CAST(COALESCE(SUM(duration_ms), 0) AS BIGINT) AS sum_duration_ms FROM "build";`,
 			`SELECT CAST(COALESCE(SUM(coverage), 0) AS DOUBLE PRECISION) AS sum_coverage FROM "build";`,
 			`SELECT CAST(COALESCE(MAX("order"), 0) AS BIGINT) AS max_order FROM "build";`,
-			`SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS BIGINT) AS sum_duration_ms FROM "build" GROUP BY branch LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');`,
+			`SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS BIGINT) AS sum_duration_ms FROM "build" GROUP BY branch ORDER BY sum_duration_ms DESC, branch LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');`,
 		}},
 		{schema.SQLite, []string{
 			`SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms FROM "build" WHERE env = @env GROUP BY branch ORDER BY branch;`,

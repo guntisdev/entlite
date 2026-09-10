@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 	"github.com/guntisdev/entlite/internal/util"
 )
@@ -698,6 +699,17 @@ func aggregateMethod(fn schema.AggregateFunc) string {
 func validateOrderColumns(entity schema.Entity, query schema.Query) error {
 	seen := make(map[string]bool, len(query.OrderBy))
 	for _, column := range query.OrderBy {
+		lower := strings.ToLower(column.Name)
+		if seen[lower] {
+			return fmt.Errorf("entity %q query %q order by repeats field %q", entity.Name, query.Type, column.Name)
+		}
+		seen[lower] = true
+
+		// an aggregate has no field, it is sorted by the column it selects
+		if hasAggregateColumn(query, column.Name) {
+			continue
+		}
+
 		if !entityHasField(entity, column.Name) {
 			return fmt.Errorf("entity %q query %q order by references nonexisting field %q", entity.Name, query.Type, column.Name)
 		}
@@ -712,14 +724,19 @@ func validateOrderColumns(entity schema.Entity, query schema.Query) error {
 		if query.HasGroupBy() && !containsFold(query.GroupBy, column.Name) {
 			return fmt.Errorf("entity %q query %q sorts by field %q, which GroupBy() does not group by", entity.Name, query.Type, column.Name)
 		}
-		lower := strings.ToLower(column.Name)
-		if seen[lower] {
-			return fmt.Errorf("entity %q query %q order by repeats field %q", entity.Name, query.Type, column.Name)
-		}
-		seen[lower] = true
 	}
 
 	return nil
+}
+
+func hasAggregateColumn(query schema.Query, name string) bool {
+	for _, aggregate := range query.Aggregates {
+		if strings.EqualFold(naming.AggregateColumn(string(aggregate.Func), aggregate.Field), name) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func containsFold(values []string, name string) bool {

@@ -127,10 +127,11 @@ all-NULL group has to fold into a zero instead of failing the scan. That is why
 
 The rest of the rules: an aggregate query needs `Name()`, because the generated
 name says nothing about what it folds. Integers widen to `int64` and `Avg()` is
-always a `double`. Sorting is limited to the grouped columns, since the
-aggregates have no column of their own to sort by. `Count()` does not combine
-with an aggregate, and `Min()`/`Max()` do not take a time column — sqlite cannot
-cast a timestamp back without turning it into a number.
+always a `double`. Sorting takes a grouped column or an aggregate column, so
+`Desc("sum_duration_ms")` gives the biggest group first and pairs with `Limit()`
+for a top N. `Count()` does not combine with an aggregate, and `Min()`/`Max()` do
+not take a time column — sqlite cannot cast a timestamp back without turning it
+into a number.
 
 **A query with no rpc.** `ListBuildsForCleanup` uses
 `Contracts(entlite.SQLC())`, so it exists as a Go method for the server to call

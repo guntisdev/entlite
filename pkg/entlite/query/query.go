@@ -69,7 +69,8 @@ type ListAllOperations interface {
 	// rows. Every column is part of the key, so sorting is limited to them.
 	Distinct(fields ...string) ListAllOperations
 	// GroupBy returns one row per distinct combination of the given columns, an
-	// aggregate folds each group. Sorting is limited to the grouped columns.
+	// aggregate folds each group. Sort by a grouped column or by an aggregate
+	// column, which is named like sum_duration_ms.
 	GroupBy(fields ...string) ListAllOperations
 	// Sum adds up the given column, per group or over the whole table without a GroupBy.
 	Sum(field string) ListAllOperations
@@ -102,7 +103,8 @@ type ListByOperations interface {
 	// rows. Every column is part of the key, so sorting is limited to them.
 	Distinct(fields ...string) ListByOperations
 	// GroupBy returns one row per distinct combination of the given columns, an
-	// aggregate folds each group. Sorting is limited to the grouped columns.
+	// aggregate folds each group. Sort by a grouped column or by an aggregate
+	// column, which is named like sum_duration_ms.
 	GroupBy(fields ...string) ListByOperations
 	// Sum adds up the given column, per group or over the whole table without a GroupBy.
 	Sum(field string) ListByOperations

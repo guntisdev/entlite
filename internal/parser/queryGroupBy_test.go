@@ -82,6 +82,21 @@ func TestParseQueryGroupBy(t *testing.T) {
 			wantErr: `sorts by field "env", which GroupBy() does not group by`,
 		},
 		{
+			name:    "sorted by the aggregate column",
+			queries: `query.ListAll().GroupBy("name").Sum("age").Desc("sum_age").Asc("name").Limit().Name("Folded"),`,
+			want:    []string{"name"},
+		},
+		{
+			name:    "sorted by an aggregate the query does not select",
+			queries: `query.ListAll().GroupBy("name").Sum("age").Desc("avg_age").Name("Folded"),`,
+			wantErr: `order by references nonexisting field "avg_age"`,
+		},
+		{
+			name:    "sorted by the same aggregate twice",
+			queries: `query.ListAll().GroupBy("name").Sum("age").Desc("sum_age").Asc("sum_age").Name("Folded"),`,
+			wantErr: `order by repeats field "sum_age"`,
+		},
+		{
 			name:    "sorted and paged by the grouped column",
 			queries: `query.ListAll().GroupBy("name").Sum("age").Asc("name").Limit().Offset().Name("Folded"),`,
 			want:    []string{"name"},
