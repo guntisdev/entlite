@@ -137,7 +137,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	query := queries[0]
 	switch selExpr.Sel.Name {
 	case "Name", "Contracts":
-	case "Count", "Distinct", "Limit", "Offset", "Asc", "Desc":
+	case "Count", "Distinct", "GroupBy", "Limit", "Offset", "Asc", "Desc":
 		if !query.IsList() {
 			return nil, true, fmt.Errorf("%s is only supported for list queries", selExpr.Sel.Name)
 		}
@@ -164,6 +164,15 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return nil, true, fmt.Errorf("Distinct expects at least one field name")
 		}
 		query.Distinct = fields
+	case "GroupBy":
+		fields, err := parseStringArgs(callExpr.Args)
+		if err != nil {
+			return nil, true, fmt.Errorf("GroupBy expects string field args: %w", err)
+		}
+		if len(fields) == 0 {
+			return nil, true, fmt.Errorf("GroupBy expects at least one field name")
+		}
+		query.GroupBy = fields
 	case "Asc", "Desc":
 		field, err := parseColumnArg(callExpr.Args, selExpr.Sel.Name)
 		if err != nil {

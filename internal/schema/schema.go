@@ -541,6 +541,7 @@ type Query struct {
 	Filters      []QueryFilter
 	Count        bool     // Count() asks for the number of matching rows
 	Distinct     []string // Distinct() selects only these columns, deduplicated
+	GroupBy      []string // GroupBy() folds the rows into one row per column combination
 	OrderBy      []OrderColumn
 	HasLimit     bool
 	Limit        int // fixed row count, 0 means the caller sets it
@@ -563,12 +564,14 @@ func (q Query) LimitFromRequest() bool {
 	return q.HasLimit && q.Limit == 0
 }
 
-// HasDistinct reports if the query selects deduplicated columns instead of whole rows.
 func (q Query) HasDistinct() bool {
 	return len(q.Distinct) > 0
 }
 
-// DistinctField returns the single distinct column, ok is false when there are several.
+func (q Query) HasGroupBy() bool {
+	return len(q.GroupBy) > 0
+}
+
 func (q Query) DistinctField() (string, bool) {
 	if len(q.Distinct) != 1 {
 		return "", false

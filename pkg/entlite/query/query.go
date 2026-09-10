@@ -68,6 +68,9 @@ type ListAllOperations interface {
 	// Distinct returns the deduplicated values of the given columns instead of whole
 	// rows. Every column is part of the key, so sorting is limited to them.
 	Distinct(fields ...string) ListAllOperations
+	// GroupBy returns one row per distinct combination of the given columns, an
+	// aggregate folds each group. Sorting is limited to the grouped columns.
+	GroupBy(fields ...string) ListAllOperations
 	// Asc appends a sort column, ascending.
 	Asc(field string) ListAllOperations
 	// Desc appends a sort column, descending.
@@ -90,6 +93,9 @@ type ListByOperations interface {
 	// Distinct returns the deduplicated values of the given columns instead of whole
 	// rows. Every column is part of the key, so sorting is limited to them.
 	Distinct(fields ...string) ListByOperations
+	// GroupBy returns one row per distinct combination of the given columns, an
+	// aggregate folds each group. Sorting is limited to the grouped columns.
+	GroupBy(fields ...string) ListByOperations
 	// Asc appends a sort column, ascending.
 	Asc(field string) ListByOperations
 	// Desc appends a sort column, descending.
@@ -123,6 +129,7 @@ type Query struct {
 	filters      []filter.Filter // For ListBy: list of filters
 	count        bool            // For list queries: whether to count matching rows
 	distinct     []string        // For list queries: the columns selected deduplicated
+	groupBy      []string        // For list queries: the columns the rows are grouped by
 	orderBy      []OrderColumn   // For list queries: sort columns, in order
 	hasLimit     bool            // For list queries: whether LIMIT is set
 	limit        int             // For list queries: fixed limit, 0 means the caller sets it
@@ -212,6 +219,12 @@ func (q listAllQuery) Distinct(fields ...string) ListAllOperations {
 	return q
 }
 
+// GroupBy groups the rows of the ListAll query by the given columns
+func (q listAllQuery) GroupBy(fields ...string) ListAllOperations {
+	q.base.groupBy = fields
+	return q
+}
+
 // Asc appends a sort column to the ListAll query, ascending
 func (q listAllQuery) Asc(field string) ListAllOperations {
 	q.base.addOrder(field, false)
@@ -264,6 +277,12 @@ func (q listByQuery) Count() ListByOperations {
 // Distinct selects the deduplicated values of the given columns of the ListBy query
 func (q listByQuery) Distinct(fields ...string) ListByOperations {
 	q.base.distinct = fields
+	return q
+}
+
+// GroupBy groups the rows of the ListBy query by the given columns
+func (q listByQuery) GroupBy(fields ...string) ListByOperations {
+	q.base.groupBy = fields
 	return q
 }
 
@@ -390,6 +409,11 @@ func (q Query) HasCount() bool {
 // GetDistinct returns the deduplicated columns, or nil when the query returns rows.
 func (q Query) GetDistinct() []string {
 	return q.distinct
+}
+
+// GetGroupBy returns the grouped columns, or nil when the query returns rows.
+func (q Query) GetGroupBy() []string {
+	return q.groupBy
 }
 
 // GetOrderBy returns the sort columns in order, or nil when there is none.

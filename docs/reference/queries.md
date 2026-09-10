@@ -47,6 +47,7 @@ Exposes the modifiers available on a ListAll query.
 | --- | --- |
 | `Count() ListAllOperations` | Also returns how many rows match, counted before Limit. An empty page reports 0. |
 | `Distinct(fields ...string) ListAllOperations` | Returns the deduplicated values of the given columns instead of whole rows. Every column is part of the key, so sorting is limited to them. |
+| `GroupBy(fields ...string) ListAllOperations` | Returns one row per distinct combination of the given columns, an aggregate folds each group. Sorting is limited to the grouped columns. |
 | `Asc(field string) ListAllOperations` | Appends a sort column, ascending. |
 | `Desc(field string) ListAllOperations` | Appends a sort column, descending. |
 | `Limit(rows ...int) ListAllOperations` | Takes the row count from the caller, Limit(rows) sets it in the query. |
@@ -62,6 +63,7 @@ Exposes the modifiers available on a ListBy query.
 | --- | --- |
 | `Count() ListByOperations` | Also returns how many rows match, counted before Limit. An empty page reports 0. |
 | `Distinct(fields ...string) ListByOperations` | Returns the deduplicated values of the given columns instead of whole rows. Every column is part of the key, so sorting is limited to them. |
+| `GroupBy(fields ...string) ListByOperations` | Returns one row per distinct combination of the given columns, an aggregate folds each group. Sorting is limited to the grouped columns. |
 | `Asc(field string) ListByOperations` | Appends a sort column, ascending. |
 | `Desc(field string) ListByOperations` | Appends a sort column, descending. |
 | `Limit(rows ...int) ListByOperations` | Takes the row count from the caller, Limit(rows) sets it in the query. |
