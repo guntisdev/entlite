@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// validation of the grouped columns lives with the aggregates, this only covers parsing
 func TestParseQueryGroupBy(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -19,12 +18,12 @@ func TestParseQueryGroupBy(t *testing.T) {
 		},
 		{
 			name:    "one column",
-			queries: `query.ListBy("env").GroupBy("name"),`,
+			queries: `query.ListBy("env").GroupBy("name").Sum("age"),`,
 			want:    []string{"name"},
 		},
 		{
 			name:    "several columns keep the given order",
-			queries: `query.ListAll().GroupBy("name", "env"),`,
+			queries: `query.ListAll().GroupBy("name", "env").Sum("age"),`,
 			want:    []string{"name", "env"},
 		},
 		{
@@ -42,11 +41,56 @@ func TestParseQueryGroupBy(t *testing.T) {
 			queries: `query.ListAll().GroupBy(3),`,
 			wantErr: "GroupBy expects string field args",
 		},
+		{
+			name:    "group by without an aggregate is a distinct",
+			queries: `query.ListAll().GroupBy("name"),`,
+			wantErr: "has GroupBy() without an aggregate",
+		},
+		{
+			name:    "group by together with distinct",
+			queries: `query.ListAll().Distinct("env").GroupBy("name").Sum("age"),`,
+			wantErr: "has both Distinct() and GroupBy()",
+		},
+		{
+			name:    "group by with count",
+			queries: `query.ListAll().GroupBy("name").Sum("age").Count(),`,
+			wantErr: "has an aggregate with Count()",
+		},
+		{
+			name:    "nonexisting column",
+			queries: `query.ListAll().GroupBy("nope").Sum("age"),`,
+			wantErr: `GroupBy references nonexisting field "nope"`,
+		},
+		{
+			name:    "repeated column",
+			queries: `query.ListAll().GroupBy("name", "name").Sum("age"),`,
+			wantErr: `GroupBy repeats field "name"`,
+		},
+		{
+			name:    "the primary key makes every group hold one row",
+			queries: `query.ListAll().GroupBy("id", "name").Sum("age"),`,
+			wantErr: "GroupBy groups by the unique key (id)",
+		},
+		{
+			name:    "a unique column makes every group hold one row",
+			queries: `query.ListAll().GroupBy("email").Sum("age"),`,
+			wantErr: "GroupBy groups by the unique key (email)",
+		},
+		{
+			name:    "sorted by a column the group does not hold",
+			queries: `query.ListAll().GroupBy("name").Sum("age").Asc("env"),`,
+			wantErr: `sorts by field "env", which GroupBy() does not group by`,
+		},
+		{
+			name:    "sorted and paged by the grouped column",
+			queries: `query.ListAll().GroupBy("name").Sum("age").Asc("name").Limit().Offset(),`,
+			want:    []string{"name"},
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			entity, err := parseDistinctEntity(t, bothContracts, "", test.queries)
+			entity, err := parseDistinctEntity(t, bothContracts, `field.Int("age"),`, test.queries)
 
 			if test.wantErr != "" {
 				if err == nil || !strings.Contains(err.Error(), test.wantErr) {

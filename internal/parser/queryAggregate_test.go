@@ -64,10 +64,72 @@ func TestParseQueryAggregates(t *testing.T) {
 			queries: `query.ListAll().Max(3),`,
 			wantErr: "Max expects exactly one string field",
 		},
+		{
+			name:    "nonexisting column",
+			queries: `query.ListAll().Sum("nope"),`,
+			wantErr: `Sum() references nonexisting field "nope"`,
+		},
+		{
+			name:    "sum of a string",
+			queries: `query.ListAll().Sum("email"),`,
+			wantErr: `Sum() cannot fold field "email" of type string`,
+		},
+		{
+			name:    "avg of a time",
+			queries: `query.ListAll().Avg("seen_at"),`,
+			wantErr: `Avg() cannot fold field "seen_at" of type time`,
+		},
+		{
+			name:    "min of a string orders it",
+			queries: `query.ListAll().Min("email"),`,
+			want:    []schema.Aggregate{{Func: schema.AggregateMin, Field: "email"}},
+		},
+		{
+			name:    "max of a time orders it",
+			queries: `query.ListAll().Max("seen_at"),`,
+			want:    []schema.Aggregate{{Func: schema.AggregateMax, Field: "seen_at"}},
+		},
+		{
+			name:    "max of a bool",
+			queries: `query.ListAll().Max("active"),`,
+			wantErr: `Max() cannot fold field "active" of type bool`,
+		},
+		{
+			name:    "the same aggregate twice",
+			queries: `query.ListAll().Sum("age").Sum("age"),`,
+			wantErr: `repeats Sum() of field "age"`,
+		},
+		{
+			name:    "folding the grouped column",
+			queries: `query.ListAll().GroupBy("env").Sum("env"),`,
+			wantErr: `Sum() cannot fold field "env" of type string`,
+		},
+		{
+			name:    "folding a column the group already holds",
+			queries: `query.ListAll().GroupBy("age").Sum("age"),`,
+			wantErr: `Sum() folds field "age", which GroupBy() already groups by`,
+		},
+		{
+			name:    "paging one row",
+			queries: `query.ListAll().Sum("age").Limit(),`,
+			wantErr: "has Limit() on an aggregate without GroupBy()",
+		},
+		{
+			name:    "sorting one row",
+			queries: `query.ListAll().Sum("age").Desc("age"),`,
+			wantErr: "sorts an aggregate without GroupBy()",
+		},
+		{
+			name:    "aggregate with distinct",
+			queries: `query.ListAll().Distinct("env").Sum("age"),`,
+			wantErr: "has an aggregate with Distinct()",
+		},
 	}
 
 	const fields = `field.Int("age"),
-		field.Float("score"),`
+		field.Float("score"),
+		field.Bool("active"),
+		field.Time("seen_at"),`
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

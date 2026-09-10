@@ -481,6 +481,32 @@ func validateQueryFields(entity schema.Entity) error {
 			return fmt.Errorf("entity %q query %q has Ignore() without Upsert()", entity.Name, query.Type)
 		}
 
+		if query.HasDistinct() && query.HasGroupBy() {
+			return fmt.Errorf("entity %q query %q has both Distinct() and GroupBy(), they both fold the rows, so pick one", entity.Name, query.Type)
+		}
+
+		if query.HasGroupBy() && !query.HasAggregates() {
+			return fmt.Errorf("entity %q query %q has GroupBy() without an aggregate, use Distinct() to select the column values alone", entity.Name, query.Type)
+		}
+
+		if query.HasAggregates() && query.HasDistinct() {
+			return fmt.Errorf("entity %q query %q has an aggregate with Distinct(), group the rows with GroupBy() instead", entity.Name, query.Type)
+		}
+
+		if query.HasAggregates() && query.Count {
+			return fmt.Errorf("entity %q query %q has an aggregate with Count(), the aggregate replaces the rows Count() totals", entity.Name, query.Type)
+		}
+
+		// without a group the aggregate folds the whole table into one row
+		if query.HasAggregates() && !query.HasGroupBy() {
+			if query.HasLimit {
+				return fmt.Errorf("entity %q query %q has Limit() on an aggregate without GroupBy(), the query returns one row", entity.Name, query.Type)
+			}
+			if len(query.OrderBy) > 0 {
+				return fmt.Errorf("entity %q query %q sorts an aggregate without GroupBy(), the query returns one row", entity.Name, query.Type)
+			}
+		}
+
 		if query.Upsert {
 			if err := validateUpsertTarget(entity, query); err != nil {
 				return err
@@ -488,6 +514,14 @@ func validateQueryFields(entity schema.Entity) error {
 		}
 
 		if err := validateDistinctColumns(entity, query); err != nil {
+			return err
+		}
+
+		if err := validateGroupColumns(entity, query); err != nil {
+			return err
+		}
+
+		if err := validateAggregates(entity, query); err != nil {
 			return err
 		}
 
@@ -576,6 +610,89 @@ func validateDistinctColumns(entity schema.Entity, query schema.Query) error {
 	return nil
 }
 
+// validateGroupColumns checks every GroupBy() column is a real column the group can key on
+func validateGroupColumns(entity schema.Entity, query schema.Query) error {
+	if !query.HasGroupBy() {
+		return nil
+	}
+
+	if key, found := entity.ContainsUniqueKey(query.GroupBy); found {
+		return fmt.Errorf("entity %q query %q GroupBy groups by the unique key (%s), which every row has a different value of, so every group holds one row", entity.Name, query.Type, strings.Join(key, ", "))
+	}
+
+	seen := make(map[string]bool, len(query.GroupBy))
+	for _, fieldName := range query.GroupBy {
+		field, found := entity.GetFieldByName(fieldName)
+		if !found {
+			return fmt.Errorf("entity %q query %q GroupBy references nonexisting field %q", entity.Name, query.Type, fieldName)
+		}
+		if entity.IsFieldVirtual(field) {
+			return fmt.Errorf("entity %q query %q GroupBy references virtual field %q, which has no database column", entity.Name, query.Type, fieldName)
+		}
+		if query.HasContract(schema.ContractPROTO) && !field.CanApiRead() {
+			return fmt.Errorf("entity %q query %q GroupBy returns field %q, which the proto contract cannot read", entity.Name, query.Type, fieldName)
+		}
+		lower := strings.ToLower(fieldName)
+		if seen[lower] {
+			return fmt.Errorf("entity %q query %q GroupBy repeats field %q", entity.Name, query.Type, fieldName)
+		}
+		seen[lower] = true
+	}
+
+	return nil
+}
+
+// validateAggregates checks every Sum()/Avg()/Min()/Max() folds a column of a type it can fold
+func validateAggregates(entity schema.Entity, query schema.Query) error {
+	seen := make(map[string]bool, len(query.Aggregates))
+	for _, aggregate := range query.Aggregates {
+		method := aggregateMethod(aggregate.Func)
+
+		field, found := entity.GetFieldByName(aggregate.Field)
+		if !found {
+			return fmt.Errorf("entity %q query %q %s() references nonexisting field %q", entity.Name, query.Type, method, aggregate.Field)
+		}
+		if entity.IsFieldVirtual(field) {
+			return fmt.Errorf("entity %q query %q %s() references virtual field %q, which has no database column", entity.Name, query.Type, method, aggregate.Field)
+		}
+		if query.HasContract(schema.ContractPROTO) && !field.CanApiRead() {
+			return fmt.Errorf("entity %q query %q %s() returns field %q, which the proto contract cannot read", entity.Name, query.Type, method, aggregate.Field)
+		}
+		if !aggregateAcceptsType(aggregate.Func, field.Type) {
+			return fmt.Errorf("entity %q query %q %s() cannot fold field %q of type %s", entity.Name, query.Type, method, aggregate.Field, field.Type)
+		}
+		if containsFold(query.GroupBy, aggregate.Field) {
+			return fmt.Errorf("entity %q query %q %s() folds field %q, which GroupBy() already groups by, so every group holds one value", entity.Name, query.Type, method, aggregate.Field)
+		}
+		key := string(aggregate.Func) + ":" + strings.ToLower(aggregate.Field)
+		if seen[key] {
+			return fmt.Errorf("entity %q query %q repeats %s() of field %q", entity.Name, query.Type, method, aggregate.Field)
+		}
+		seen[key] = true
+	}
+
+	return nil
+}
+
+// Sum and Avg need a number, Min and Max also order strings and times
+func aggregateAcceptsType(fn schema.AggregateFunc, fieldType schema.FieldType) bool {
+	switch fieldType {
+	case schema.FieldTypeInt, schema.FieldTypeInt64, schema.FieldTypeFloat:
+		return true
+	case schema.FieldTypeString, schema.FieldTypeTime:
+		return fn == schema.AggregateMin || fn == schema.AggregateMax
+	}
+
+	return false
+}
+
+// sum -> Sum
+func aggregateMethod(fn schema.AggregateFunc) string {
+	name := string(fn)
+
+	return strings.ToUpper(name[:1]) + name[1:]
+}
+
 // validateOrderColumns checks every Asc()/Desc() column is a real column, named once
 func validateOrderColumns(entity schema.Entity, query schema.Query) error {
 	seen := make(map[string]bool, len(query.OrderBy))
@@ -589,6 +706,10 @@ func validateOrderColumns(entity schema.Entity, query schema.Query) error {
 		// a distinct select only holds its own columns, so nothing else can be sorted
 		if query.HasDistinct() && !containsFold(query.Distinct, column.Name) {
 			return fmt.Errorf("entity %q query %q sorts by field %q, which Distinct() does not select", entity.Name, query.Type, column.Name)
+		}
+		// grouped select only holds its key, the aggregates have no field name to sort by
+		if query.HasGroupBy() && !containsFold(query.GroupBy, column.Name) {
+			return fmt.Errorf("entity %q query %q sorts by field %q, which GroupBy() does not group by", entity.Name, query.Type, column.Name)
 		}
 		lower := strings.ToLower(column.Name)
 		if seen[lower] {
