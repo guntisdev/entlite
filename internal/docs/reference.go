@@ -185,7 +185,11 @@ func queriesPage(pkg apiPackage) []byte {
 
 	page.Heading(2, "Query types")
 	page.Text("The kind stored on a parsed query, it shows up in the generated method names.")
-	page.ConstTable("query", pkg.Consts)
+	page.ConstTable("query", "Type", pkg.Consts)
+
+	page.Heading(2, "Aggregate functions")
+	page.Text("The function stored on an aggregate, one of Sum(), Avg(), Min() or Max().")
+	page.ConstTable("query", "Func", pkg.Consts)
 
 	return page.Bytes()
 }
@@ -229,7 +233,7 @@ func indexesPage(pkg apiPackage) []byte {
 	}
 
 	page.Heading(2, "Index types")
-	page.ConstTable("index", pkg.Consts)
+	page.ConstTable("index", "Type", pkg.Consts)
 
 	return page.Bytes()
 }

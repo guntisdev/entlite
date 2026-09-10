@@ -71,6 +71,14 @@ type ListAllOperations interface {
 	// GroupBy returns one row per distinct combination of the given columns, an
 	// aggregate folds each group. Sorting is limited to the grouped columns.
 	GroupBy(fields ...string) ListAllOperations
+	// Sum adds up the given column, per group or over the whole table without a GroupBy.
+	Sum(field string) ListAllOperations
+	// Avg averages the given column, per group or over the whole table without a GroupBy.
+	Avg(field string) ListAllOperations
+	// Min takes the smallest value of the given column, per group or over the whole table.
+	Min(field string) ListAllOperations
+	// Max takes the largest value of the given column, per group or over the whole table.
+	Max(field string) ListAllOperations
 	// Asc appends a sort column, ascending.
 	Asc(field string) ListAllOperations
 	// Desc appends a sort column, descending.
@@ -96,6 +104,14 @@ type ListByOperations interface {
 	// GroupBy returns one row per distinct combination of the given columns, an
 	// aggregate folds each group. Sorting is limited to the grouped columns.
 	GroupBy(fields ...string) ListByOperations
+	// Sum adds up the given column, per group or over the whole table without a GroupBy.
+	Sum(field string) ListByOperations
+	// Avg averages the given column, per group or over the whole table without a GroupBy.
+	Avg(field string) ListByOperations
+	// Min takes the smallest value of the given column, per group or over the whole table.
+	Min(field string) ListByOperations
+	// Max takes the largest value of the given column, per group or over the whole table.
+	Max(field string) ListByOperations
 	// Asc appends a sort column, ascending.
 	Asc(field string) ListByOperations
 	// Desc appends a sort column, descending.
@@ -109,6 +125,32 @@ type ListByOperations interface {
 	// Contracts limits the query to the given layers, sqlc or proto.
 	Contracts(contracts ...entlite.Layer) ListByOperations
 }
+
+// Func tells which sql aggregate folds a column.
+type Func string
+
+const (
+	// FuncSum adds up the column values, SUM().
+	FuncSum Func = "sum"
+	// FuncAvg averages the column values, AVG().
+	FuncAvg Func = "avg"
+	// FuncMin takes the smallest column value, MIN().
+	FuncMin Func = "min"
+	// FuncMax takes the largest column value, MAX().
+	FuncMax Func = "max"
+)
+
+// Aggregate is one aggregate function over one column.
+type Aggregate struct {
+	fn    Func
+	field string
+}
+
+// GetFunc returns the aggregate function.
+func (a Aggregate) GetFunc() Func { return a.fn }
+
+// GetField returns the aggregated column name.
+func (a Aggregate) GetField() string { return a.field }
 
 // OrderColumn is a single sort column together with its direction.
 type OrderColumn struct {
@@ -130,6 +172,7 @@ type Query struct {
 	count        bool            // For list queries: whether to count matching rows
 	distinct     []string        // For list queries: the columns selected deduplicated
 	groupBy      []string        // For list queries: the columns the rows are grouped by
+	aggregates   []Aggregate     // For list queries: the aggregate functions, in chain order
 	orderBy      []OrderColumn   // For list queries: sort columns, in order
 	hasLimit     bool            // For list queries: whether LIMIT is set
 	limit        int             // For list queries: fixed limit, 0 means the caller sets it
@@ -225,6 +268,30 @@ func (q listAllQuery) GroupBy(fields ...string) ListAllOperations {
 	return q
 }
 
+// Sum adds up the given column of the ListAll query
+func (q listAllQuery) Sum(field string) ListAllOperations {
+	q.base.addAggregate(FuncSum, field)
+	return q
+}
+
+// Avg averages the given column of the ListAll query
+func (q listAllQuery) Avg(field string) ListAllOperations {
+	q.base.addAggregate(FuncAvg, field)
+	return q
+}
+
+// Min takes the smallest value of the given column of the ListAll query
+func (q listAllQuery) Min(field string) ListAllOperations {
+	q.base.addAggregate(FuncMin, field)
+	return q
+}
+
+// Max takes the largest value of the given column of the ListAll query
+func (q listAllQuery) Max(field string) ListAllOperations {
+	q.base.addAggregate(FuncMax, field)
+	return q
+}
+
 // Asc appends a sort column to the ListAll query, ascending
 func (q listAllQuery) Asc(field string) ListAllOperations {
 	q.base.addOrder(field, false)
@@ -286,6 +353,30 @@ func (q listByQuery) GroupBy(fields ...string) ListByOperations {
 	return q
 }
 
+// Sum adds up the given column of the ListBy query
+func (q listByQuery) Sum(field string) ListByOperations {
+	q.base.addAggregate(FuncSum, field)
+	return q
+}
+
+// Avg averages the given column of the ListBy query
+func (q listByQuery) Avg(field string) ListByOperations {
+	q.base.addAggregate(FuncAvg, field)
+	return q
+}
+
+// Min takes the smallest value of the given column of the ListBy query
+func (q listByQuery) Min(field string) ListByOperations {
+	q.base.addAggregate(FuncMin, field)
+	return q
+}
+
+// Max takes the largest value of the given column of the ListBy query
+func (q listByQuery) Max(field string) ListByOperations {
+	q.base.addAggregate(FuncMax, field)
+	return q
+}
+
 // Asc appends a sort column to the ListBy query, ascending
 func (q listByQuery) Asc(field string) ListByOperations {
 	q.base.addOrder(field, false)
@@ -308,6 +399,11 @@ func (q listByQuery) Limit(rows ...int) ListByOperations {
 func (q listByQuery) Offset() ListByOperations {
 	q.base.hasOffset = true
 	return q
+}
+
+// addAggregate appends one aggregate, the chain order is the column order
+func (q *Query) addAggregate(fn Func, field string) {
+	q.aggregates = append(q.aggregates, Aggregate{fn: fn, field: field})
 }
 
 // addOrder appends one sort column, the chain order is the sort order
@@ -414,6 +510,11 @@ func (q Query) GetDistinct() []string {
 // GetGroupBy returns the grouped columns, or nil when the query returns rows.
 func (q Query) GetGroupBy() []string {
 	return q.groupBy
+}
+
+// GetAggregates returns the aggregates in chain order, or nil when there is none.
+func (q Query) GetAggregates() []Aggregate {
+	return q.aggregates
 }
 
 // GetOrderBy returns the sort columns in order, or nil when there is none.

@@ -137,7 +137,7 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 	query := queries[0]
 	switch selExpr.Sel.Name {
 	case "Name", "Contracts":
-	case "Count", "Distinct", "GroupBy", "Limit", "Offset", "Asc", "Desc":
+	case "Count", "Distinct", "GroupBy", "Sum", "Avg", "Min", "Max", "Limit", "Offset", "Asc", "Desc":
 		if !query.IsList() {
 			return nil, true, fmt.Errorf("%s is only supported for list queries", selExpr.Sel.Name)
 		}
@@ -173,6 +173,18 @@ func parseQueryCall(callExpr *ast.CallExpr) ([]schema.Query, bool, error) {
 			return nil, true, fmt.Errorf("GroupBy expects at least one field name")
 		}
 		query.GroupBy = fields
+	case "Sum", "Avg", "Min", "Max":
+		field, err := parseColumnArg(callExpr.Args, selExpr.Sel.Name)
+		if err != nil {
+			return nil, true, err
+		}
+		if field == "" {
+			return nil, true, fmt.Errorf("%s expects a field name", selExpr.Sel.Name)
+		}
+		query.Aggregates = append(query.Aggregates, schema.Aggregate{
+			Func:  aggregateFunc(selExpr.Sel.Name),
+			Field: field,
+		})
 	case "Asc", "Desc":
 		field, err := parseColumnArg(callExpr.Args, selExpr.Sel.Name)
 		if err != nil {
@@ -285,6 +297,22 @@ func parseStringArgs(args []ast.Expr) ([]string, error) {
 }
 
 // parseColumnArg reads the single field name of an Asc()/Desc() call
+// the dsl method name is the aggregate function
+func aggregateFunc(method string) schema.AggregateFunc {
+	switch method {
+	case "Sum":
+		return schema.AggregateSum
+	case "Avg":
+		return schema.AggregateAvg
+	case "Min":
+		return schema.AggregateMin
+	case "Max":
+		return schema.AggregateMax
+	}
+
+	panic("unreachable: unknown aggregate method " + method)
+}
+
 func parseColumnArg(args []ast.Expr, method string) (string, error) {
 	if len(args) != 1 {
 		return "", fmt.Errorf("%s expects exactly one string field", method)

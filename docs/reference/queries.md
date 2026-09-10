@@ -48,6 +48,10 @@ Exposes the modifiers available on a ListAll query.
 | `Count() ListAllOperations` | Also returns how many rows match, counted before Limit. An empty page reports 0. |
 | `Distinct(fields ...string) ListAllOperations` | Returns the deduplicated values of the given columns instead of whole rows. Every column is part of the key, so sorting is limited to them. |
 | `GroupBy(fields ...string) ListAllOperations` | Returns one row per distinct combination of the given columns, an aggregate folds each group. Sorting is limited to the grouped columns. |
+| `Sum(field string) ListAllOperations` | Adds up the given column, per group or over the whole table without a GroupBy. |
+| `Avg(field string) ListAllOperations` | Averages the given column, per group or over the whole table without a GroupBy. |
+| `Min(field string) ListAllOperations` | Takes the smallest value of the given column, per group or over the whole table. |
+| `Max(field string) ListAllOperations` | Takes the largest value of the given column, per group or over the whole table. |
 | `Asc(field string) ListAllOperations` | Appends a sort column, ascending. |
 | `Desc(field string) ListAllOperations` | Appends a sort column, descending. |
 | `Limit(rows ...int) ListAllOperations` | Takes the row count from the caller, Limit(rows) sets it in the query. |
@@ -64,6 +68,10 @@ Exposes the modifiers available on a ListBy query.
 | `Count() ListByOperations` | Also returns how many rows match, counted before Limit. An empty page reports 0. |
 | `Distinct(fields ...string) ListByOperations` | Returns the deduplicated values of the given columns instead of whole rows. Every column is part of the key, so sorting is limited to them. |
 | `GroupBy(fields ...string) ListByOperations` | Returns one row per distinct combination of the given columns, an aggregate folds each group. Sorting is limited to the grouped columns. |
+| `Sum(field string) ListByOperations` | Adds up the given column, per group or over the whole table without a GroupBy. |
+| `Avg(field string) ListByOperations` | Averages the given column, per group or over the whole table without a GroupBy. |
+| `Min(field string) ListByOperations` | Takes the smallest value of the given column, per group or over the whole table. |
+| `Max(field string) ListByOperations` | Takes the largest value of the given column, per group or over the whole table. |
 | `Asc(field string) ListByOperations` | Appends a sort column, ascending. |
 | `Desc(field string) ListByOperations` | Appends a sort column, descending. |
 | `Limit(rows ...int) ListByOperations` | Takes the row count from the caller, Limit(rows) sets it in the query. |
@@ -87,3 +95,14 @@ The kind stored on a parsed query, it shows up in the generated method names.
 | `query.TypeListAll` | `list_all` | Reads every row of the table. |
 | `query.TypeGetBy` | `get_by` | Reads one row by the given fields. |
 | `query.TypeListBy` | `list_by` | Reads many rows by the given filters. |
+
+## Aggregate functions
+
+The function stored on an aggregate, one of Sum(), Avg(), Min() or Max().
+
+| Constant | Value | Description |
+| --- | --- | --- |
+| `query.FuncSum` | `sum` | Adds up the column values, SUM(). |
+| `query.FuncAvg` | `avg` | Averages the column values, AVG(). |
+| `query.FuncMin` | `min` | Takes the smallest column value, MIN(). |
+| `query.FuncMax` | `max` | Takes the largest column value, MAX(). |

@@ -43,6 +43,7 @@ type apiFunc struct {
 
 type apiConst struct {
 	Name  string
+	Type  string // the declared type, consts of one type make one table
 	Value string
 	Doc   string
 }
@@ -235,8 +236,14 @@ func newAPIConsts(fset *token.FileSet, genDecl *ast.GenDecl) []apiConst {
 			value = strings.Trim(exprString(fset, valueSpec.Values[0]), `"`)
 		}
 
+		typeName := ""
+		if valueSpec.Type != nil {
+			typeName = exprString(fset, valueSpec.Type)
+		}
+
 		consts = append(consts, apiConst{
 			Name:  valueSpec.Names[0].Name,
+			Type:  typeName,
 			Value: value,
 			Doc:   docLine(valueSpec.Names[0].Name, valueSpec.Doc.Text()),
 		})

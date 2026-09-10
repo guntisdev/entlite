@@ -539,9 +539,10 @@ type Query struct {
 	Type         QueryType
 	Fields       []string
 	Filters      []QueryFilter
-	Count        bool     // Count() asks for the number of matching rows
-	Distinct     []string // Distinct() selects only these columns, deduplicated
-	GroupBy      []string // GroupBy() folds the rows into one row per column combination
+	Count        bool        // Count() asks for the number of matching rows
+	Distinct     []string    // Distinct() selects only these columns, deduplicated
+	GroupBy      []string    // GroupBy() folds the rows into one row per column combination
+	Aggregates   []Aggregate // Sum(), Avg(), Min() and Max() fold a column, in chain order
 	OrderBy      []OrderColumn
 	HasLimit     bool
 	Limit        int // fixed row count, 0 means the caller sets it
@@ -553,6 +554,22 @@ type Query struct {
 	Upsert       bool     // Upsert() updates the row the insert collides with
 	UpsertFields []string // the conflict target, empty means the primary key
 	UpsertIgnore bool     // Ignore() keeps the existing row instead of updating it
+}
+
+// AggregateFunc tells which sql aggregate folds a column.
+type AggregateFunc string
+
+const (
+	AggregateSum AggregateFunc = "sum"
+	AggregateAvg AggregateFunc = "avg"
+	AggregateMin AggregateFunc = "min"
+	AggregateMax AggregateFunc = "max"
+)
+
+// Aggregate is one aggregate function over one column.
+type Aggregate struct {
+	Func  AggregateFunc
+	Field string
 }
 
 type OrderColumn struct {
@@ -570,6 +587,10 @@ func (q Query) HasDistinct() bool {
 
 func (q Query) HasGroupBy() bool {
 	return len(q.GroupBy) > 0
+}
+
+func (q Query) HasAggregates() bool {
+	return len(q.Aggregates) > 0
 }
 
 func (q Query) DistinctField() (string, bool) {
