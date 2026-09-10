@@ -80,6 +80,15 @@ const (
 	// BuildServiceListBranchStatusesProcedure is the fully-qualified name of the BuildService's
 	// ListBranchStatuses RPC.
 	BuildServiceListBranchStatusesProcedure = "/proto.BuildService/ListBranchStatuses"
+	// BuildServiceBuildTotalsProcedure is the fully-qualified name of the BuildService's BuildTotals
+	// RPC.
+	BuildServiceBuildTotalsProcedure = "/proto.BuildService/BuildTotals"
+	// BuildServiceBranchDurationsProcedure is the fully-qualified name of the BuildService's
+	// BranchDurations RPC.
+	BuildServiceBranchDurationsProcedure = "/proto.BuildService/BranchDurations"
+	// BuildServiceListEnvBranchDurationsProcedure is the fully-qualified name of the BuildService's
+	// ListEnvBranchDurations RPC.
+	BuildServiceListEnvBranchDurationsProcedure = "/proto.BuildService/ListEnvBranchDurations"
 )
 
 // BuildServiceClient is a client for the proto.BuildService service.
@@ -114,6 +123,12 @@ type BuildServiceClient interface {
 	ListEnvBranches(context.Context, *connect.Request[ListEnvBranchesRequest]) (*connect.Response[ListEnvBranchesResponse], error)
 	// several columns dedupe on the tuple and return a row struct
 	ListBranchStatuses(context.Context, *connect.Request[ListBranchStatusesRequest]) (*connect.Response[ListBranchStatusesResponse], error)
+	// without a GroupBy the aggregates fold the whole table into one row
+	BuildTotals(context.Context, *connect.Request[BuildTotalsRequest]) (*connect.Response[BuildTotalsResponse], error)
+	// GroupBy returns one row per branch, an aggregate query names itself
+	BranchDurations(context.Context, *connect.Request[BranchDurationsRequest]) (*connect.Response[BranchDurationsResponse], error)
+	// the groups take filters, sorting and paging like any other list
+	ListEnvBranchDurations(context.Context, *connect.Request[ListEnvBranchDurationsRequest]) (*connect.Response[ListEnvBranchDurationsResponse], error)
 }
 
 // NewBuildServiceClient constructs a client for the proto.BuildService service. By default, it uses
@@ -217,6 +232,24 @@ func NewBuildServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(buildServiceMethods.ByName("ListBranchStatuses")),
 			connect.WithClientOptions(opts...),
 		),
+		buildTotals: connect.NewClient[BuildTotalsRequest, BuildTotalsResponse](
+			httpClient,
+			baseURL+BuildServiceBuildTotalsProcedure,
+			connect.WithSchema(buildServiceMethods.ByName("BuildTotals")),
+			connect.WithClientOptions(opts...),
+		),
+		branchDurations: connect.NewClient[BranchDurationsRequest, BranchDurationsResponse](
+			httpClient,
+			baseURL+BuildServiceBranchDurationsProcedure,
+			connect.WithSchema(buildServiceMethods.ByName("BranchDurations")),
+			connect.WithClientOptions(opts...),
+		),
+		listEnvBranchDurations: connect.NewClient[ListEnvBranchDurationsRequest, ListEnvBranchDurationsResponse](
+			httpClient,
+			baseURL+BuildServiceListEnvBranchDurationsProcedure,
+			connect.WithSchema(buildServiceMethods.ByName("ListEnvBranchDurations")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -237,6 +270,9 @@ type buildServiceClient struct {
 	listBranches            *connect.Client[ListBranchesRequest, ListBranchesResponse]
 	listEnvBranches         *connect.Client[ListEnvBranchesRequest, ListEnvBranchesResponse]
 	listBranchStatuses      *connect.Client[ListBranchStatusesRequest, ListBranchStatusesResponse]
+	buildTotals             *connect.Client[BuildTotalsRequest, BuildTotalsResponse]
+	branchDurations         *connect.Client[BranchDurationsRequest, BranchDurationsResponse]
+	listEnvBranchDurations  *connect.Client[ListEnvBranchDurationsRequest, ListEnvBranchDurationsResponse]
 }
 
 // CreateBuild calls proto.BuildService.CreateBuild.
@@ -314,6 +350,21 @@ func (c *buildServiceClient) ListBranchStatuses(ctx context.Context, req *connec
 	return c.listBranchStatuses.CallUnary(ctx, req)
 }
 
+// BuildTotals calls proto.BuildService.BuildTotals.
+func (c *buildServiceClient) BuildTotals(ctx context.Context, req *connect.Request[BuildTotalsRequest]) (*connect.Response[BuildTotalsResponse], error) {
+	return c.buildTotals.CallUnary(ctx, req)
+}
+
+// BranchDurations calls proto.BuildService.BranchDurations.
+func (c *buildServiceClient) BranchDurations(ctx context.Context, req *connect.Request[BranchDurationsRequest]) (*connect.Response[BranchDurationsResponse], error) {
+	return c.branchDurations.CallUnary(ctx, req)
+}
+
+// ListEnvBranchDurations calls proto.BuildService.ListEnvBranchDurations.
+func (c *buildServiceClient) ListEnvBranchDurations(ctx context.Context, req *connect.Request[ListEnvBranchDurationsRequest]) (*connect.Response[ListEnvBranchDurationsResponse], error) {
+	return c.listEnvBranchDurations.CallUnary(ctx, req)
+}
+
 // BuildServiceHandler is an implementation of the proto.BuildService service.
 type BuildServiceHandler interface {
 	// re-running the same commit overwrites the row instead of failing on the
@@ -346,6 +397,12 @@ type BuildServiceHandler interface {
 	ListEnvBranches(context.Context, *connect.Request[ListEnvBranchesRequest]) (*connect.Response[ListEnvBranchesResponse], error)
 	// several columns dedupe on the tuple and return a row struct
 	ListBranchStatuses(context.Context, *connect.Request[ListBranchStatusesRequest]) (*connect.Response[ListBranchStatusesResponse], error)
+	// without a GroupBy the aggregates fold the whole table into one row
+	BuildTotals(context.Context, *connect.Request[BuildTotalsRequest]) (*connect.Response[BuildTotalsResponse], error)
+	// GroupBy returns one row per branch, an aggregate query names itself
+	BranchDurations(context.Context, *connect.Request[BranchDurationsRequest]) (*connect.Response[BranchDurationsResponse], error)
+	// the groups take filters, sorting and paging like any other list
+	ListEnvBranchDurations(context.Context, *connect.Request[ListEnvBranchDurationsRequest]) (*connect.Response[ListEnvBranchDurationsResponse], error)
 }
 
 // NewBuildServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -445,6 +502,24 @@ func NewBuildServiceHandler(svc BuildServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(buildServiceMethods.ByName("ListBranchStatuses")),
 		connect.WithHandlerOptions(opts...),
 	)
+	buildServiceBuildTotalsHandler := connect.NewUnaryHandler(
+		BuildServiceBuildTotalsProcedure,
+		svc.BuildTotals,
+		connect.WithSchema(buildServiceMethods.ByName("BuildTotals")),
+		connect.WithHandlerOptions(opts...),
+	)
+	buildServiceBranchDurationsHandler := connect.NewUnaryHandler(
+		BuildServiceBranchDurationsProcedure,
+		svc.BranchDurations,
+		connect.WithSchema(buildServiceMethods.ByName("BranchDurations")),
+		connect.WithHandlerOptions(opts...),
+	)
+	buildServiceListEnvBranchDurationsHandler := connect.NewUnaryHandler(
+		BuildServiceListEnvBranchDurationsProcedure,
+		svc.ListEnvBranchDurations,
+		connect.WithSchema(buildServiceMethods.ByName("ListEnvBranchDurations")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/proto.BuildService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BuildServiceCreateBuildProcedure:
@@ -477,6 +552,12 @@ func NewBuildServiceHandler(svc BuildServiceHandler, opts ...connect.HandlerOpti
 			buildServiceListEnvBranchesHandler.ServeHTTP(w, r)
 		case BuildServiceListBranchStatusesProcedure:
 			buildServiceListBranchStatusesHandler.ServeHTTP(w, r)
+		case BuildServiceBuildTotalsProcedure:
+			buildServiceBuildTotalsHandler.ServeHTTP(w, r)
+		case BuildServiceBranchDurationsProcedure:
+			buildServiceBranchDurationsHandler.ServeHTTP(w, r)
+		case BuildServiceListEnvBranchDurationsProcedure:
+			buildServiceListEnvBranchDurationsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -544,4 +625,16 @@ func (UnimplementedBuildServiceHandler) ListEnvBranches(context.Context, *connec
 
 func (UnimplementedBuildServiceHandler) ListBranchStatuses(context.Context, *connect.Request[ListBranchStatusesRequest]) (*connect.Response[ListBranchStatusesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListBranchStatuses is not implemented"))
+}
+
+func (UnimplementedBuildServiceHandler) BuildTotals(context.Context, *connect.Request[BuildTotalsRequest]) (*connect.Response[BuildTotalsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.BuildTotals is not implemented"))
+}
+
+func (UnimplementedBuildServiceHandler) BranchDurations(context.Context, *connect.Request[BranchDurationsRequest]) (*connect.Response[BranchDurationsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.BranchDurations is not implemented"))
+}
+
+func (UnimplementedBuildServiceHandler) ListEnvBranchDurations(context.Context, *connect.Request[ListEnvBranchDurationsRequest]) (*connect.Response[ListEnvBranchDurationsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListEnvBranchDurations is not implemented"))
 }

@@ -109,6 +109,18 @@ SELECT DISTINCT branch, status FROM "build" ORDER BY branch, status;
 -- query level Contracts() drops the rpc, only the database method is generated
 SELECT * FROM "build" WHERE started_at >= @min_started_at AND started_at <= @max_started_at;
 
+-- name: BuildTotals :one
+-- without a GroupBy the aggregates fold the whole table into one row
+SELECT CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms, CAST(COALESCE(AVG(duration_ms), 0) AS REAL) AS avg_duration_ms, CAST(COALESCE(MAX(failed_tests), 0) AS INTEGER) AS max_failed_tests FROM "build";
+
+-- name: BranchDurations :many
+-- GroupBy returns one row per branch, an aggregate query names itself
+SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms FROM "build" GROUP BY branch ORDER BY branch;
+
+-- name: ListEnvBranchDurations :many
+-- the groups take filters, sorting and paging like any other list
+SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms, CAST(COALESCE(AVG(duration_ms), 0) AS REAL) AS avg_duration_ms FROM "build" WHERE env = @env GROUP BY branch ORDER BY branch LIMIT 3;
+
 -- name: UpdateBuild :one
 UPDATE "build" SET
   commit_sha = @commit_sha,

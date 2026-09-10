@@ -107,12 +107,22 @@ func (Build) Queries() []entlite.Query {
 		query.ListBy(filter.Range("started_at")).
 			Name("ListBuildsForCleanup").Contracts(entlite.SQLC()),
 
+		// ---- aggregates instead of rows ----
+
+		// without a GroupBy the aggregates fold the whole table into one row
+		query.ListAll().Name("BuildTotals").
+			Sum("duration_ms").Avg("duration_ms").Max("failed_tests"),
+		// GroupBy returns one row per branch, an aggregate query names itself
+		query.ListAll().Name("BranchDurations").
+			GroupBy("branch").Sum("duration_ms").Asc("branch"),
+		// the groups take filters, sorting and paging like any other list
+		query.ListBy(filter.Eq("env")).Name("ListEnvBranchDurations").
+			GroupBy("branch").Sum("duration_ms").Avg("duration_ms").Asc("branch").Limit(3),
+
 		// ---- not generated yet, see the TODO list in the repository readme ----
 		//
-		// query.ListAll().Sum("duration_ms")      // one aggregate over the matched rows
-		// query.ListAll().Avg("duration_ms")
-		// query.ListAll().GroupBy("branch")       // one row per group
-		// query.ListBy("branch").Having(...)      // filter the groups
-		// query.DeleteBy("branch")                // delete by filter, not by key
+		// query.ListAll().GroupBy("branch").CountRows()  // rows per group
+		// query.ListBy("branch").Having(...)             // filter the groups
+		// query.DeleteBy("branch")                       // delete by filter, not by key
 	}
 }

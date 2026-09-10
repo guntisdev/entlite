@@ -151,6 +151,38 @@ message ListBranchStatusesRow {
 message ListBranchStatusesResponse {
   repeated ListBranchStatusesRow rows = 1;
 }
+message BuildTotalsRequest {
+}
+
+message BuildTotalsResponse {
+  int64 sum_duration_ms = 1;
+  double avg_duration_ms = 2;
+  int64 max_failed_tests = 3;
+}
+message BranchDurationsRequest {
+}
+
+message BranchDurationsRow {
+  string branch = 1;
+  int64 sum_duration_ms = 2;
+}
+
+message BranchDurationsResponse {
+  repeated BranchDurationsRow rows = 1;
+}
+message ListEnvBranchDurationsRequest {
+  string env = 3 [(buf.validate.field).required = true];
+}
+
+message ListEnvBranchDurationsRow {
+  string branch = 1;
+  int64 sum_duration_ms = 2;
+  double avg_duration_ms = 3;
+}
+
+message ListEnvBranchDurationsResponse {
+  repeated ListEnvBranchDurationsRow rows = 1;
+}
 
 // BuildService provides CRUD opertions for Build entities
 service BuildService {
@@ -184,4 +216,10 @@ service BuildService {
   rpc ListEnvBranches(ListEnvBranchesRequest) returns (ListEnvBranchesResponse);
   // several columns dedupe on the tuple and return a row struct
   rpc ListBranchStatuses(ListBranchStatusesRequest) returns (ListBranchStatusesResponse);
+  // without a GroupBy the aggregates fold the whole table into one row
+  rpc BuildTotals(BuildTotalsRequest) returns (BuildTotalsResponse);
+  // GroupBy returns one row per branch, an aggregate query names itself
+  rpc BranchDurations(BranchDurationsRequest) returns (BranchDurationsResponse);
+  // the groups take filters, sorting and paging like any other list
+  rpc ListEnvBranchDurations(ListEnvBranchDurationsRequest) returns (ListEnvBranchDurationsResponse);
 }

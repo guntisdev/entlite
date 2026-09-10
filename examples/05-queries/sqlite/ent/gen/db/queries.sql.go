@@ -8,6 +8,44 @@ import (
 	internal "github.com/guntisdev/entlite/examples/05-queries/sqlite/ent/gen/db/internal"
 )
 
+type BranchDurationsRow struct {
+	Branch string
+	SumDurationMs int64
+}
+
+func (q *Queries) BranchDurations(ctx context.Context) ([]BranchDurationsRow, error) {
+	dbResult, err := (*internal.Queries)(q).BranchDurations(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]BranchDurationsRow, len(dbResult))
+	for i := range dbResult {
+		result[i] = BranchDurationsRow{
+			Branch: dbResult[i].Branch,
+			SumDurationMs: dbResult[i].SumDurationMs,
+		}
+	}
+	return result, nil
+}
+
+type BuildTotalsRow struct {
+	SumDurationMs int64
+	AvgDurationMs float64
+	MaxFailedTests int64
+}
+
+func (q *Queries) BuildTotals(ctx context.Context) (BuildTotalsRow, error) {
+	dbResult, err := (*internal.Queries)(q).BuildTotals(ctx)
+	if err != nil {
+		return BuildTotalsRow{}, err
+	}
+	return BuildTotalsRow{
+		SumDurationMs: dbResult.SumDurationMs,
+		AvgDurationMs: dbResult.AvgDurationMs,
+		MaxFailedTests: dbResult.MaxFailedTests,
+	}, nil
+}
+
 type CreateBuildParams struct {
 	CommitSha string `json:"commit_sha"`
 	Branch string `json:"branch"`
@@ -222,6 +260,28 @@ func (q *Queries) ListBuildsForCleanup(ctx context.Context, arg ListBuildsForCle
 	result := make([]*Build, len(dbResults))
 	for i := range dbResults {
 		result[i] = BuildFromSQL(&dbResults[i])
+	}
+	return result, nil
+}
+
+type ListEnvBranchDurationsRow struct {
+	Branch string
+	SumDurationMs int64
+	AvgDurationMs float64
+}
+
+func (q *Queries) ListEnvBranchDurations(ctx context.Context, env string) ([]ListEnvBranchDurationsRow, error) {
+	dbResult, err := (*internal.Queries)(q).ListEnvBranchDurations(ctx, env)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]ListEnvBranchDurationsRow, len(dbResult))
+	for i := range dbResult {
+		result[i] = ListEnvBranchDurationsRow{
+			Branch: dbResult[i].Branch,
+			SumDurationMs: dbResult[i].SumDurationMs,
+			AvgDurationMs: dbResult[i].AvgDurationMs,
+		}
 	}
 	return result, nil
 }
