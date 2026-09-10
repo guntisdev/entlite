@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 )
 
@@ -296,6 +297,49 @@ func (g *Generator) limitOffsetArgs() (limit, offset string) {
 	case schema.PostgreSQL, schema.SQLite:
 		// limit and offset are reserved, so namedArg gives the sqlc.arg() form
 		return g.namedArg("limit"), g.namedArg("offset")
+	}
+
+	panic("unreachable: invalid SQL dialect")
+}
+
+func (g *Generator) aggregateExpr(entity schema.Entity, aggregate schema.Aggregate) string {
+	expr := fmt.Sprintf("%s(%s)", strings.ToUpper(string(aggregate.Func)), g.column(aggregate.Field))
+
+	field, found := entity.GetFieldByName(aggregate.Field)
+	if found {
+		if cast := g.aggregateCast(aggregate.Func, field.Type); cast != "" {
+			expr = fmt.Sprintf("CAST(%s AS %s)", expr, cast)
+		}
+	}
+
+	return fmt.Sprintf("%s AS %s", expr, g.column(naming.AggregateColumn(string(aggregate.Func), aggregate.Field)))
+}
+
+func (g *Generator) aggregateCast(fn schema.AggregateFunc, fieldType schema.FieldType) string {
+	if fn == schema.AggregateMin || fn == schema.AggregateMax {
+		return ""
+	}
+
+	if fn == schema.AggregateAvg || fieldType == schema.FieldTypeFloat {
+		switch g.sqlDialect {
+		case schema.MySQL:
+			return "DOUBLE"
+		case schema.PostgreSQL:
+			return "DOUBLE PRECISION"
+		case schema.SQLite:
+			return "REAL"
+		}
+
+		panic("unreachable: invalid SQL dialect")
+	}
+
+	switch g.sqlDialect {
+	case schema.MySQL:
+		return "SIGNED"
+	case schema.PostgreSQL:
+		return "BIGINT"
+	case schema.SQLite:
+		return "INTEGER"
 	}
 
 	panic("unreachable: invalid SQL dialect")

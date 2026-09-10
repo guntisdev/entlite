@@ -124,6 +124,10 @@ func parseEntityFromFile(discovered DiscoveredEntity) (schema.Entity, error) {
 	entity.Fields = addFieldNumbers(entity.Fields, needsIdField(entity))
 	applyPrimaryIndexOverride(&entity)
 	resolvePrimaryKeyQueries(&entity)
+	if err := validateAggregateNames(entity); err != nil {
+		return entity, err
+	}
+
 	resolveQueryNames(&entity)
 
 	fields, err := applyFieldContracts(entity)
