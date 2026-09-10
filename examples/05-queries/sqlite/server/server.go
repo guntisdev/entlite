@@ -362,6 +362,77 @@ func (s *BuildServer) ListBranchStatuses(
 	return connect.NewResponse(&pb.ListBranchStatusesResponse{Rows: rows}), nil
 }
 
+// without a GroupBy the aggregates fold the whole table into one row
+func (s *BuildServer) BuildTotals(
+	ctx context.Context,
+	req *connect.Request[pb.BuildTotalsRequest],
+) (*connect.Response[pb.BuildTotalsResponse], error) {
+	log.Printf("Build totals")
+
+	queries := db.New(s.db)
+
+	totals, err := queries.BuildTotals(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to read build totals: %w", err))
+	}
+
+	return connect.NewResponse(&pb.BuildTotalsResponse{
+		SumDurationMs:  totals.SumDurationMs,
+		AvgDurationMs:  totals.AvgDurationMs,
+		MaxFailedTests: totals.MaxFailedTests,
+	}), nil
+}
+
+// a grouped query comes back as the query's own row struct, one row per group
+func (s *BuildServer) BranchDurations(
+	ctx context.Context,
+	req *connect.Request[pb.BranchDurationsRequest],
+) (*connect.Response[pb.BranchDurationsResponse], error) {
+	log.Printf("Durations per branch")
+
+	queries := db.New(s.db)
+
+	durations, err := queries.BranchDurations(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to read branch durations: %w", err))
+	}
+
+	rows := make([]*pb.BranchDurationsRow, len(durations))
+	for i, duration := range durations {
+		rows[i] = &pb.BranchDurationsRow{
+			Branch:        duration.Branch,
+			SumDurationMs: duration.SumDurationMs,
+		}
+	}
+
+	return connect.NewResponse(&pb.BranchDurationsResponse{Rows: rows}), nil
+}
+
+func (s *BuildServer) ListEnvBranchDurations(
+	ctx context.Context,
+	req *connect.Request[pb.ListEnvBranchDurationsRequest],
+) (*connect.Response[pb.ListEnvBranchDurationsResponse], error) {
+	log.Printf("Durations per branch of one env: env=%s", req.Msg.Env)
+
+	queries := db.New(s.db)
+
+	durations, err := queries.ListEnvBranchDurations(ctx, req.Msg.Env)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to read env branch durations: %w", err))
+	}
+
+	rows := make([]*pb.ListEnvBranchDurationsRow, len(durations))
+	for i, duration := range durations {
+		rows[i] = &pb.ListEnvBranchDurationsRow{
+			Branch:        duration.Branch,
+			SumDurationMs: duration.SumDurationMs,
+			AvgDurationMs: duration.AvgDurationMs,
+		}
+	}
+
+	return connect.NewResponse(&pb.ListEnvBranchDurationsResponse{Rows: rows}), nil
+}
+
 func toProtoBuilds(dbBuilds []*db.Build) []*pb.Build {
 	builds := make([]*pb.Build, len(dbBuilds))
 	for i, dbBuild := range dbBuilds {

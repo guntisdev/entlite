@@ -539,8 +539,10 @@ type Query struct {
 	Type         QueryType
 	Fields       []string
 	Filters      []QueryFilter
-	Count        bool     // Count() asks for the number of matching rows
-	Distinct     []string // Distinct() selects only these columns, deduplicated
+	Count        bool        // Count() asks for the number of matching rows
+	Distinct     []string    // Distinct() selects only these columns, deduplicated
+	GroupBy      []string    // GroupBy() folds the rows into one row per column combination
+	Aggregates   []Aggregate // Sum(), Avg(), Min() and Max() fold a column, in chain order
 	OrderBy      []OrderColumn
 	HasLimit     bool
 	Limit        int // fixed row count, 0 means the caller sets it
@@ -554,6 +556,34 @@ type Query struct {
 	UpsertIgnore bool     // Ignore() keeps the existing row instead of updating it
 }
 
+// AggregateFunc tells which sql aggregate folds a column.
+type AggregateFunc string
+
+const (
+	AggregateSum AggregateFunc = "sum"
+	AggregateAvg AggregateFunc = "avg"
+	AggregateMin AggregateFunc = "min"
+	AggregateMax AggregateFunc = "max"
+)
+
+// Aggregate is one aggregate function over one column.
+type Aggregate struct {
+	Func  AggregateFunc
+	Field string
+}
+
+func AggregateResultType(fn AggregateFunc, fieldType FieldType) FieldType {
+	if fn == AggregateAvg {
+		return FieldTypeFloat
+	}
+
+	if fieldType == FieldTypeInt || fieldType == FieldTypeInt64 {
+		return FieldTypeInt64
+	}
+
+	return fieldType
+}
+
 type OrderColumn struct {
 	Name string
 	Desc bool // false = ASC (default), true = DESC
@@ -563,12 +593,18 @@ func (q Query) LimitFromRequest() bool {
 	return q.HasLimit && q.Limit == 0
 }
 
-// HasDistinct reports if the query selects deduplicated columns instead of whole rows.
 func (q Query) HasDistinct() bool {
 	return len(q.Distinct) > 0
 }
 
-// DistinctField returns the single distinct column, ok is false when there are several.
+func (q Query) HasGroupBy() bool {
+	return len(q.GroupBy) > 0
+}
+
+func (q Query) HasAggregates() bool {
+	return len(q.Aggregates) > 0
+}
+
 func (q Query) DistinctField() (string, bool) {
 	if len(q.Distinct) != 1 {
 		return "", false

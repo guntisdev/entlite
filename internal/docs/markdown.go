@@ -82,9 +82,13 @@ func (p *page) FuncTable(header string, pkgName string, funcs []apiFunc) {
 	p.Table([]string{header, "Description"}, rows)
 }
 
-func (p *page) ConstTable(pkgName string, consts []apiConst) {
+// only the consts of typeName, so one table does not mix two const types
+func (p *page) ConstTable(pkgName, typeName string, consts []apiConst) {
 	rows := make([][]string, 0, len(consts))
 	for _, c := range consts {
+		if c.Type != typeName {
+			continue
+		}
 		rows = append(rows, []string{code(pkgName + "." + c.Name), code(c.Value), c.Doc})
 	}
 	p.Table([]string{"Constant", "Value", "Description"}, rows)

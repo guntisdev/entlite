@@ -180,6 +180,24 @@ func (ctx *generationContext) distinctRowQuery(structName string) (dslQuery, boo
 	return target, true
 }
 
+// sqlc writes aggregate query when the result has more than one column
+func (ctx *generationContext) aggregateRowQuery(structName string) (dslQuery, bool) {
+	queryName, ok := strings.CutSuffix(structName, naming.SuffixRow)
+	if !ok {
+		return dslQuery{}, false
+	}
+
+	target, ok := ctx.dslQueries[queryName]
+	if !ok || !target.query.HasAggregates() {
+		return dslQuery{}, false
+	}
+	if len(aggregateRowFields(target.entity, target.query)) < 2 {
+		return dslQuery{}, false
+	}
+
+	return target, true
+}
+
 func (ctx *generationContext) filterParamsEntity(structName string) (schema.Entity, bool) {
 	methodName, ok := strings.CutSuffix(structName, naming.SuffixParams)
 	if !ok {
@@ -502,6 +520,11 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 			// sqlc's row struct for a distinct query, restated with the wrapper's types
 			if target, ok := ctx.distinctRowQuery(s.Name.Name); ok {
 				sb.WriteString(generateDistinctRowStruct(target.entity, target.query))
+				continue
+			}
+
+			if target, ok := ctx.aggregateRowQuery(s.Name.Name); ok {
+				sb.WriteString(generateAggregateRowStruct(target.entity, target.query))
 				continue
 			}
 

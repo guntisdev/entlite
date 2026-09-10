@@ -10,6 +10,57 @@ import (
 	"time"
 )
 
+const branchDurations = `-- name: BranchDurations :many
+SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms FROM "build" GROUP BY branch ORDER BY branch
+`
+
+type BranchDurationsRow struct {
+	Branch        string `json:"branch"`
+	SumDurationMs int64  `json:"sum_duration_ms"`
+}
+
+// GroupBy returns one row per branch, an aggregate query names itself
+func (q *Queries) BranchDurations(ctx context.Context) ([]BranchDurationsRow, error) {
+	rows, err := q.db.QueryContext(ctx, branchDurations)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []BranchDurationsRow
+	for rows.Next() {
+		var i BranchDurationsRow
+		if err := rows.Scan(&i.Branch, &i.SumDurationMs); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const buildTotals = `-- name: BuildTotals :one
+SELECT CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms, CAST(COALESCE(AVG(duration_ms), 0) AS REAL) AS avg_duration_ms, CAST(COALESCE(MAX(failed_tests), 0) AS INTEGER) AS max_failed_tests FROM "build"
+`
+
+type BuildTotalsRow struct {
+	SumDurationMs  int64   `json:"sum_duration_ms"`
+	AvgDurationMs  float64 `json:"avg_duration_ms"`
+	MaxFailedTests int64   `json:"max_failed_tests"`
+}
+
+// without a GroupBy the aggregates fold the whole table into one row
+func (q *Queries) BuildTotals(ctx context.Context) (BuildTotalsRow, error) {
+	row := q.db.QueryRowContext(ctx, buildTotals)
+	var i BuildTotalsRow
+	err := row.Scan(&i.SumDurationMs, &i.AvgDurationMs, &i.MaxFailedTests)
+	return i, err
+}
+
 const createBuild = `-- name: CreateBuild :one
 
 
@@ -414,6 +465,40 @@ func (q *Queries) ListBuildsForCleanup(ctx context.Context, arg ListBuildsForCle
 			&i.StartedAt,
 			&i.FailedTests,
 		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listEnvBranchDurations = `-- name: ListEnvBranchDurations :many
+SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms, CAST(COALESCE(AVG(duration_ms), 0) AS REAL) AS avg_duration_ms FROM "build" WHERE env = ?1 GROUP BY branch ORDER BY branch LIMIT 3
+`
+
+type ListEnvBranchDurationsRow struct {
+	Branch        string  `json:"branch"`
+	SumDurationMs int64   `json:"sum_duration_ms"`
+	AvgDurationMs float64 `json:"avg_duration_ms"`
+}
+
+// the groups take filters, sorting and paging like any other list
+func (q *Queries) ListEnvBranchDurations(ctx context.Context, env string) ([]ListEnvBranchDurationsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listEnvBranchDurations, env)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListEnvBranchDurationsRow
+	for rows.Next() {
+		var i ListEnvBranchDurationsRow
+		if err := rows.Scan(&i.Branch, &i.SumDurationMs, &i.AvgDurationMs); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

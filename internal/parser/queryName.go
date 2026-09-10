@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/guntisdev/entlite/internal/naming"
 	"github.com/guntisdev/entlite/internal/schema"
 )
@@ -13,6 +15,16 @@ func resolveQueryNames(entity *schema.Entity) {
 		}
 		entity.Queries[i].Name = genQueryName(entity.Queries[i], entity.Name)
 	}
+}
+
+func validateAggregateNames(entity schema.Entity) error {
+	for _, query := range entity.Queries {
+		if query.HasAggregates() && query.Name == "" {
+			return fmt.Errorf("entity %q query %q has an aggregate without Name(), name it after what it folds", entity.Name, query.Type)
+		}
+	}
+
+	return nil
 }
 
 func genQueryName(query schema.Query, entityName string) string {

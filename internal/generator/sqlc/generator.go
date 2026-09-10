@@ -285,7 +285,12 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 
 	// LIST
 	for _, query := range listQueries {
-		writeQueryHeader(&content, query, "many")
+		kind := "many"
+		// an aggregate without a group folds the whole table into one row
+		if query.HasAggregates() && !query.HasGroupBy() {
+			kind = "one"
+		}
+		writeQueryHeader(&content, query, kind)
 		var whereParts []string
 		for _, fieldName := range query.Fields {
 			whereParts = append(whereParts, fmt.Sprintf("%s = %s", g.column(fieldName), g.namedArg(fieldName)))
@@ -315,9 +320,28 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			}
 			selectSQL = fmt.Sprintf("SELECT DISTINCT %s FROM %s", strings.Join(distinctParts, ", "), g.quote(tableName))
 		}
+		// Sum()/Avg()/Min()/Max() select the grouped columns and the folded ones
+		if query.HasAggregates() {
+			selectParts := make([]string, 0, len(query.GroupBy)+len(query.Aggregates))
+			for _, fieldName := range query.GroupBy {
+				selectParts = append(selectParts, g.column(fieldName))
+			}
+			for _, aggregate := range query.Aggregates {
+				selectParts = append(selectParts, g.aggregateExpr(entity, aggregate))
+			}
+			selectSQL = fmt.Sprintf("SELECT %s FROM %s", strings.Join(selectParts, ", "), g.quote(tableName))
+		}
 		// ListAll has no filters, so no WHERE clause
 		if len(whereParts) > 0 {
 			selectSQL += " WHERE " + strings.Join(whereParts, " AND ")
+		}
+		// GroupBy() folds the rows the WHERE clause kept
+		if query.HasGroupBy() {
+			groupParts := make([]string, 0, len(query.GroupBy))
+			for _, fieldName := range query.GroupBy {
+				groupParts = append(groupParts, g.column(fieldName))
+			}
+			selectSQL += " GROUP BY " + strings.Join(groupParts, ", ")
 		}
 		// Asc()/Desc() sort the rows, they have to come before LIMIT
 		if len(query.OrderBy) > 0 {

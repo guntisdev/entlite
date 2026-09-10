@@ -12,6 +12,8 @@ the SQL, the proto and the Go method each one produces.
 - `Count()` returns the total before `LIMIT`, next to the page of rows
 - `Distinct("branch")` returns column values, not rows, so the method gives `[]string`
 - `Distinct("branch", "status")` dedupes on the tuple and returns the query's own row struct
+- `GroupBy("branch")` with `Sum()` returns one row per group, in the query's own row struct
+- `Sum()`, `Avg()`, `Min()`, `Max()` without a `GroupBy` fold the whole table into one row
 - `Contracts(entlite.SQLC())` on a query keeps it out of the API, only the database method is generated
 - A comment directly above a query becomes the comment of the generated SQL and rpc
 <!-- teaches:end -->
@@ -27,7 +29,7 @@ work with:
 | `commit_sha` | `Unique()`, so it can be a `GetBy` key and an `Upsert` target |
 | `branch`, `env`, `status` | repeat across rows, so `Distinct` has something to deduplicate |
 | `author`, `message` | text to search with `LIKE` |
-| `duration_ms` | a number to sort by, and where `Sum()`/`Avg()` would go |
+| `duration_ms` | a number to sort by, and what `Sum()`/`Avg()` fold |
 | `started_at` | a timestamp for `Range` filters and `Desc()` sorting |
 | `failed_tests` | `Optional()`, so it is a nullable column and a pointer in Go |
 
@@ -92,6 +94,42 @@ dedupes on the pair and returns a row struct of those two columns, with a
 columns, and `Count()` does not combine with `Distinct()`, because the count is
 evaluated before the rows are deduplicated.
 
+**Aggregates.** `Sum()`, `Avg()`, `Min()` and `Max()` fold a column instead of
+returning it. With a `GroupBy` you get one row per group:
+
+```sql
+-- BranchDurations
+SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms
+FROM "build" GROUP BY branch ORDER BY branch;
+```
+
+```go
+durations, err := queries.BranchDurations(ctx) // []BranchDurationsRow{Branch, SumDurationMs}
+```
+
+```proto
+message BranchDurationsRow {
+  string branch = 1;
+  int64 sum_duration_ms = 2;
+}
+```
+
+Without a `GroupBy` the whole table folds into one row, so `BuildTotals` returns
+a single row and its response carries the values directly, with no `rows`.
+
+The `CAST` and the `COALESCE` are not decoration. sqlc types an uncast aggregate
+as `interface{}`, and it types a cast one as non-null, so an empty table or an
+all-NULL group has to fold into a zero instead of failing the scan. That is why
+`Max("failed_tests")` reads a nullable column and still returns a plain `int64`.
+
+The rest of the rules: an aggregate query needs `Name()`, because the generated
+name says nothing about what it folds. Integers widen to `int64` and `Avg()` is
+always a `double`. Sorting takes a grouped column or an aggregate column, so
+`Desc("sum_duration_ms")` gives the biggest group first and pairs with `Limit()`
+for a top N. `Count()` does not combine with an aggregate, and `Min()`/`Max()` do
+not take a time column — sqlite cannot cast a timestamp back without turning it
+into a number.
+
 **A query with no rpc.** `ListBuildsForCleanup` uses
 `Contracts(entlite.SQLC())`, so it exists as a Go method for the server to call
 and never reaches the proto contract.
@@ -100,9 +138,9 @@ and never reaches the proto contract.
 
 The end of `Queries()` lists what is on the TODO list in the
 [repository readme](../../README.md), commented out so you can see the shape
-that is planned: `Sum()`, `Avg()`, `GroupBy()`, `Having()` and `DeleteBy()`.
-Until then, a query the DSL cannot express goes in a hand-written `.sql` file
-next to the generated one — that is what [02-custom](../02-custom) is about.
+that is planned: a row count per group, `Having()` and `DeleteBy()`. Until then,
+a query the DSL cannot express goes in a hand-written `.sql` file next to the
+generated one — that is what [02-custom](../02-custom) is about.
 
 ## Run
 
@@ -136,7 +174,22 @@ curl -X POST http://localhost:8080/proto.BuildService/SearchBuilds \
   -d '{"env":"prod","status":"failed","message":"%",
        "min_started_at":"2020-01-01T00:00:00Z",
        "max_started_at":"2030-01-01T00:00:00Z","limit":1,"offset":0}'
-# {"rows":[{...}],"totalSize":2}
+# {"rows":[{...}],"totalSize":"2"}
+
+# the whole table folded into one row
+curl -X POST http://localhost:8080/proto.BuildService/BuildTotals \
+  -H 'Content-Type: application/json' -d '{}'
+# {"sumDurationMs":"698000","avgDurationMs":116333.33333333333,"maxFailedTests":"11"}
+
+# one row per branch
+curl -X POST http://localhost:8080/proto.BuildService/BranchDurations \
+  -H 'Content-Type: application/json' -d '{}'
+# {"rows":[{"branch":"feature-search","sumDurationMs":"203000"}, ...]}
+
+# the groups of one env, sorted and capped at three
+curl -X POST http://localhost:8080/proto.BuildService/ListEnvBranchDurations \
+  -H 'Content-Type: application/json' -d '{"env":"prod"}'
+# {"rows":[{"branch":"hotfix-auth","sumDurationMs":"44000","avgDurationMs":44000}, ...]}
 ```
 
 `message` is a `LIKE` pattern, so `%` matches everything and `release%` matches

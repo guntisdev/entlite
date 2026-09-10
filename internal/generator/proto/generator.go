@@ -247,6 +247,11 @@ func generateResponseMessages(entity schema.Entity) string {
 				continue
 			}
 
+			if query.HasAggregates() {
+				content.WriteString(writeAggregateResponse(entity, query))
+				continue
+			}
+
 			content.WriteString(fmt.Sprintf("message %s {\n", naming.ResponseName(messageName)))
 			content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", entity.Name))
 			if query.Count {
@@ -289,6 +294,53 @@ func writeDistinctResponse(entity schema.Entity, query schema.Query) string {
 	}
 	content.WriteString("}\n\n")
 
+	content.WriteString(fmt.Sprintf("message %s {\n", naming.ResponseName(query.Name)))
+	content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", naming.RowName(query.Name)))
+	content.WriteString("}")
+
+	return content.String()
+}
+
+// without a group the aggregates fold into one row
+func writeAggregateResponse(entity schema.Entity, query schema.Query) string {
+	var content strings.Builder
+
+	rowName := naming.RowName(query.Name)
+	if !query.HasGroupBy() {
+		rowName = naming.ResponseName(query.Name)
+	}
+
+	content.WriteString(fmt.Sprintf("message %s {\n", rowName))
+	number := 1
+	for _, fieldName := range query.GroupBy {
+		field, found := entity.GetFieldByName(fieldName)
+		if !found {
+			continue
+		}
+		optional := ""
+		if field.Optional {
+			optional = "optional "
+		}
+		content.WriteString(fmt.Sprintf("  %s%s %s = %d;\n", optional, getProtoType(field.Type), field.Name, number))
+		number++
+	}
+	for _, aggregate := range query.Aggregates {
+		field, found := entity.GetFieldByName(aggregate.Field)
+		if !found {
+			continue
+		}
+		protoType := getProtoType(schema.AggregateResultType(aggregate.Func, field.Type))
+		column := naming.AggregateColumn(string(aggregate.Func), aggregate.Field)
+		content.WriteString(fmt.Sprintf("  %s %s = %d;\n", protoType, column, number))
+		number++
+	}
+	content.WriteString("}")
+
+	if !query.HasGroupBy() {
+		return content.String()
+	}
+
+	content.WriteString("\n\n")
 	content.WriteString(fmt.Sprintf("message %s {\n", naming.ResponseName(query.Name)))
 	content.WriteString(fmt.Sprintf("  repeated %s rows = 1;\n", naming.RowName(query.Name)))
 	content.WriteString("}")

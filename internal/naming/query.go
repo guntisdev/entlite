@@ -44,6 +44,10 @@ func ListByQueryName(entity string, distinct, fields, filters []string) string {
 	return name
 }
 
+func AggregateColumn(fn, field string) string {
+	return fn + "_" + field
+}
+
 func distinctWords(distinct []string) string {
 	if len(distinct) == 0 {
 		return ""
