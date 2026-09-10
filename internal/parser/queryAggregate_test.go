@@ -85,9 +85,9 @@ func TestParseQueryAggregates(t *testing.T) {
 			want:    []schema.Aggregate{{Func: schema.AggregateMin, Field: "email"}},
 		},
 		{
-			name:    "max of a time orders it",
+			name:    "max of a time",
 			queries: `query.ListAll().Max("seen_at").Name("Folded"),`,
-			want:    []schema.Aggregate{{Func: schema.AggregateMax, Field: "seen_at"}},
+			wantErr: `Max() cannot fold field "seen_at" of type time`,
 		},
 		{
 			name:    "max of a bool",

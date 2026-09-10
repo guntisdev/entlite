@@ -674,12 +674,13 @@ func validateAggregates(entity schema.Entity, query schema.Query) error {
 	return nil
 }
 
-// Sum and Avg need a number, Min and Max also order strings and times
+// Sum and Avg need a number, Min and Max also order strings. a time is out, sqlite cannot
+// cast one back without turning it into a number and sqlc needs the cast to type the column
 func aggregateAcceptsType(fn schema.AggregateFunc, fieldType schema.FieldType) bool {
 	switch fieldType {
 	case schema.FieldTypeInt, schema.FieldTypeInt64, schema.FieldTypeFloat:
 		return true
-	case schema.FieldTypeString, schema.FieldTypeTime:
+	case schema.FieldTypeString:
 		return fn == schema.AggregateMin || fn == schema.AggregateMax
 	}
 

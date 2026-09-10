@@ -302,25 +302,38 @@ func (g *Generator) limitOffsetArgs() (limit, offset string) {
 	panic("unreachable: invalid SQL dialect")
 }
 
+// COALESCE folds an empty table or an all null group into a zero instead of a failed scan
 func (g *Generator) aggregateExpr(entity schema.Entity, aggregate schema.Aggregate) string {
 	expr := fmt.Sprintf("%s(%s)", strings.ToUpper(string(aggregate.Func)), g.column(aggregate.Field))
+	alias := g.column(naming.AggregateColumn(string(aggregate.Func), aggregate.Field))
 
 	field, found := entity.GetFieldByName(aggregate.Field)
-	if found {
-		if cast := g.aggregateCast(aggregate.Func, field.Type); cast != "" {
-			expr = fmt.Sprintf("CAST(%s AS %s)", expr, cast)
-		}
+	if !found {
+		return fmt.Sprintf("%s AS %s", expr, alias)
 	}
 
-	return fmt.Sprintf("%s AS %s", expr, g.column(naming.AggregateColumn(string(aggregate.Func), aggregate.Field)))
+	resultType := schema.AggregateResultType(aggregate.Func, field.Type)
+	zero := "0"
+	if resultType == schema.FieldTypeString {
+		zero = "''"
+	}
+	expr = fmt.Sprintf("COALESCE(%s, %s)", expr, zero)
+
+	return fmt.Sprintf("%s AS %s", g.aggregateTyped(expr, resultType), alias)
 }
 
-func (g *Generator) aggregateCast(fn schema.AggregateFunc, fieldType schema.FieldType) string {
-	if fn == schema.AggregateMin || fn == schema.AggregateMax {
-		return ""
+// mysql only types a string aggregate through CONCAT, a CAST leaves it interface{}
+func (g *Generator) aggregateTyped(expr string, resultType schema.FieldType) string {
+	if resultType == schema.FieldTypeString && g.sqlDialect == schema.MySQL {
+		return fmt.Sprintf("CONCAT(%s)", expr)
 	}
 
-	if fn == schema.AggregateAvg || fieldType == schema.FieldTypeFloat {
+	return fmt.Sprintf("CAST(%s AS %s)", expr, g.aggregateCastType(resultType))
+}
+
+func (g *Generator) aggregateCastType(resultType schema.FieldType) string {
+	switch resultType {
+	case schema.FieldTypeFloat:
 		switch g.sqlDialect {
 		case schema.MySQL:
 			return "DOUBLE"
@@ -329,17 +342,20 @@ func (g *Generator) aggregateCast(fn schema.AggregateFunc, fieldType schema.Fiel
 		case schema.SQLite:
 			return "REAL"
 		}
-
-		panic("unreachable: invalid SQL dialect")
-	}
-
-	switch g.sqlDialect {
-	case schema.MySQL:
-		return "SIGNED"
-	case schema.PostgreSQL:
-		return "BIGINT"
-	case schema.SQLite:
-		return "INTEGER"
+	case schema.FieldTypeString:
+		switch g.sqlDialect {
+		case schema.PostgreSQL, schema.SQLite:
+			return "TEXT"
+		}
+	default:
+		switch g.sqlDialect {
+		case schema.MySQL:
+			return "SIGNED"
+		case schema.PostgreSQL:
+			return "BIGINT"
+		case schema.SQLite:
+			return "INTEGER"
+		}
 	}
 
 	panic("unreachable: invalid SQL dialect")

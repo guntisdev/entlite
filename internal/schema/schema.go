@@ -572,6 +572,18 @@ type Aggregate struct {
 	Field string
 }
 
+func AggregateResultType(fn AggregateFunc, fieldType FieldType) FieldType {
+	if fn == AggregateAvg {
+		return FieldTypeFloat
+	}
+
+	if fieldType == FieldTypeInt || fieldType == FieldTypeInt64 {
+		return FieldTypeInt64
+	}
+
+	return fieldType
+}
+
 type OrderColumn struct {
 	Name string
 	Desc bool // false = ASC (default), true = DESC

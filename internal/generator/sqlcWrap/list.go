@@ -21,6 +21,9 @@ func (ctx *generationContext) generateListQuery(funcDecl *ast.FuncDecl, entity s
 		if target.query.HasDistinct() {
 			return ctx.generateDistinctListQuery(funcDecl, target)
 		}
+		if target.query.HasAggregates() {
+			return ctx.generateAggregateQuery(funcDecl, target)
+		}
 	}
 
 	params, args, prelude := ctx.wrapFilterParams(funcDecl, entity)
@@ -112,6 +115,119 @@ func (ctx *generationContext) generateDistinctListQuery(funcDecl *ast.FuncDecl, 
 	sb.WriteString("}\n\n")
 
 	return sb.String()
+}
+
+// grouped query returns one row per group, without a group the aggregates returns single value
+func (ctx *generationContext) generateAggregateQuery(funcDecl *ast.FuncDecl, target dslQuery) string {
+	var sb strings.Builder
+	query := target.query
+	fields := aggregateRowFields(target.entity, query)
+	params, args, prelude := ctx.wrapFilterParams(funcDecl, target.entity)
+	receiverType := formatType(funcDecl.Recv.List[0].Type)
+	rowType := naming.RowName(query.Name)
+
+	scalar := ""
+	if !query.HasGroupBy() && len(fields) == 1 {
+		scalar = fieldToGoType(fields[0])
+	}
+
+	results := fmt.Sprintf("([]%s, error)", rowType)
+	zero := "nil"
+	switch {
+	case scalar != "":
+		results = fmt.Sprintf("(%s, error)", scalar)
+		zero = zeroValue(fields[0])
+	case !query.HasGroupBy():
+		results = fmt.Sprintf("(%s, error)", rowType)
+		zero = rowType + "{}"
+	}
+
+	sb.WriteString(fmt.Sprintf("func (q %s) %s(ctx context.Context%s) %s {\n", receiverType, funcDecl.Name.Name, params, results))
+	sb.WriteString(prelude)
+
+	sb.WriteString(fmt.Sprintf("\tdbResult, err := (*%s.Queries)(q).%s(ctx%s)\n", ctx.inputPackageName, funcDecl.Name.Name, args))
+	sb.WriteString("\tif err != nil {\n")
+	sb.WriteString(fmt.Sprintf("\t\treturn %s, err\n", zero))
+	sb.WriteString("\t}\n")
+
+	if scalar != "" {
+		sb.WriteString(fmt.Sprintf("\treturn %s, nil\n}\n\n", goFromSQL(fields[0], "dbResult", ctx.sqlDialect)))
+		return sb.String()
+	}
+
+	if !query.HasGroupBy() {
+		sb.WriteString(fmt.Sprintf("\treturn %s", rowType))
+		sb.WriteString(ctx.aggregateRowLiteral(fields, "dbResult", "\t"))
+		sb.WriteString(", nil\n}\n\n")
+		return sb.String()
+	}
+
+	sb.WriteString(fmt.Sprintf("\tresult := make([]%s, len(dbResult))\n", rowType))
+	sb.WriteString("\tfor i := range dbResult {\n")
+	sb.WriteString(fmt.Sprintf("\t\tresult[i] = %s", rowType))
+	sb.WriteString(ctx.aggregateRowLiteral(fields, "dbResult[i]", "\t\t"))
+	sb.WriteString("\n\t}\n")
+	sb.WriteString("\treturn result, nil\n}\n\n")
+
+	return sb.String()
+}
+
+func (ctx *generationContext) aggregateRowLiteral(fields []schema.Field, dbRef, indent string) string {
+	var sb strings.Builder
+
+	sb.WriteString("{\n")
+	for _, field := range fields {
+		fieldName := toDBFieldName(field)
+		value := goFromSQL(field, fmt.Sprintf("%s.%s", dbRef, fieldName), ctx.sqlDialect)
+		sb.WriteString(fmt.Sprintf("%s\t%s: %s,\n", indent, fieldName, value))
+	}
+	sb.WriteString(indent + "}")
+
+	return sb.String()
+}
+
+func generateAggregateRowStruct(entity schema.Entity, query schema.Query) string {
+	var sb strings.Builder
+
+	sb.WriteString(fmt.Sprintf("type %s struct {\n", naming.RowName(query.Name)))
+	for _, field := range aggregateRowFields(entity, query) {
+		sb.WriteString(fmt.Sprintf("\t%s %s\n", toDBFieldName(field), fieldToGoType(field)))
+	}
+	sb.WriteString("}\n\n")
+
+	return sb.String()
+}
+
+// grouped columns keep their own type, aggregate takes the type it folds into
+func aggregateRowFields(entity schema.Entity, query schema.Query) []schema.Field {
+	fields := make([]schema.Field, 0, len(query.GroupBy)+len(query.Aggregates))
+
+	for _, fieldName := range query.GroupBy {
+		if field, ok := entity.GetFieldByName(fieldName); ok {
+			fields = append(fields, field)
+		}
+	}
+
+	for _, aggregate := range query.Aggregates {
+		field, ok := entity.GetFieldByName(aggregate.Field)
+		if !ok {
+			continue
+		}
+		fields = append(fields, schema.Field{
+			Name: naming.AggregateColumn(string(aggregate.Func), aggregate.Field),
+			Type: schema.AggregateResultType(aggregate.Func, field.Type),
+		})
+	}
+
+	return fields
+}
+
+func zeroValue(field schema.Field) string {
+	if field.Type == schema.FieldTypeString {
+		return `""`
+	}
+
+	return "0"
 }
 
 func generateDistinctRowStruct(entity schema.Entity, query schema.Query) string {

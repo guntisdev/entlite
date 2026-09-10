@@ -31,11 +31,11 @@ func aggregateEntity() schema.Entity {
 				OrderBy:    []schema.OrderColumn{{Name: "branch"}}, Contracts: contracts},
 			// several aggregates over several columns, in chain order
 			{Type: schema.QueryListAll, Name: "BranchStats",
-				GroupBy: []string{"branch", "env"},
+				GroupBy: []string{"branch"},
 				Aggregates: []schema.Aggregate{
 					{Func: schema.AggregateAvg, Field: "duration_ms"},
-					{Func: schema.AggregateMin, Field: "started_at"},
-					{Func: schema.AggregateMax, Field: "started_at"},
+					{Func: schema.AggregateMin, Field: "env"},
+					{Func: schema.AggregateMax, Field: "coverage"},
 				}, Contracts: contracts},
 			// no group folds the whole table into one row
 			{Type: schema.QueryListAll, Name: "TotalDuration",
@@ -61,24 +61,24 @@ func TestAggregateSelect(t *testing.T) {
 		want    []string
 	}{
 		{schema.PostgreSQL, []string{
-			`SELECT branch, CAST(SUM(duration_ms) AS BIGINT) AS sum_duration_ms FROM "build" WHERE env = @env GROUP BY branch ORDER BY branch;`,
-			`SELECT branch, env, CAST(AVG(duration_ms) AS DOUBLE PRECISION) AS avg_duration_ms, MIN(started_at) AS min_started_at, MAX(started_at) AS max_started_at FROM "build" GROUP BY branch, env;`,
-			`SELECT CAST(SUM(duration_ms) AS BIGINT) AS sum_duration_ms FROM "build";`,
-			`SELECT CAST(SUM(coverage) AS DOUBLE PRECISION) AS sum_coverage FROM "build";`,
-			`SELECT MAX("order") AS max_order FROM "build";`,
-			`SELECT branch, CAST(SUM(duration_ms) AS BIGINT) AS sum_duration_ms FROM "build" GROUP BY branch LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');`,
+			`SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS BIGINT) AS sum_duration_ms FROM "build" WHERE env = @env GROUP BY branch ORDER BY branch;`,
+			`SELECT branch, CAST(COALESCE(AVG(duration_ms), 0) AS DOUBLE PRECISION) AS avg_duration_ms, CAST(COALESCE(MIN(env), '') AS TEXT) AS min_env, CAST(COALESCE(MAX(coverage), 0) AS DOUBLE PRECISION) AS max_coverage FROM "build" GROUP BY branch;`,
+			`SELECT CAST(COALESCE(SUM(duration_ms), 0) AS BIGINT) AS sum_duration_ms FROM "build";`,
+			`SELECT CAST(COALESCE(SUM(coverage), 0) AS DOUBLE PRECISION) AS sum_coverage FROM "build";`,
+			`SELECT CAST(COALESCE(MAX("order"), 0) AS BIGINT) AS max_order FROM "build";`,
+			`SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS BIGINT) AS sum_duration_ms FROM "build" GROUP BY branch LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');`,
 		}},
 		{schema.SQLite, []string{
-			`SELECT branch, CAST(SUM(duration_ms) AS INTEGER) AS sum_duration_ms FROM "build" WHERE env = @env GROUP BY branch ORDER BY branch;`,
-			`SELECT branch, env, CAST(AVG(duration_ms) AS REAL) AS avg_duration_ms, MIN(started_at) AS min_started_at, MAX(started_at) AS max_started_at FROM "build" GROUP BY branch, env;`,
-			`SELECT CAST(SUM(coverage) AS REAL) AS sum_coverage FROM "build";`,
-			`SELECT MAX("order") AS max_order FROM "build";`,
+			`SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS INTEGER) AS sum_duration_ms FROM "build" WHERE env = @env GROUP BY branch ORDER BY branch;`,
+			`SELECT branch, CAST(COALESCE(AVG(duration_ms), 0) AS REAL) AS avg_duration_ms, CAST(COALESCE(MIN(env), '') AS TEXT) AS min_env, CAST(COALESCE(MAX(coverage), 0) AS REAL) AS max_coverage FROM "build" GROUP BY branch;`,
+			`SELECT CAST(COALESCE(SUM(coverage), 0) AS REAL) AS sum_coverage FROM "build";`,
+			`SELECT CAST(COALESCE(MAX("order"), 0) AS INTEGER) AS max_order FROM "build";`,
 		}},
 		{schema.MySQL, []string{
-			"SELECT branch, CAST(SUM(duration_ms) AS SIGNED) AS sum_duration_ms FROM `build` WHERE env = sqlc.arg('env') GROUP BY branch ORDER BY branch;",
-			"SELECT branch, env, CAST(AVG(duration_ms) AS DOUBLE) AS avg_duration_ms, MIN(started_at) AS min_started_at, MAX(started_at) AS max_started_at FROM `build` GROUP BY branch, env;",
-			"SELECT CAST(SUM(coverage) AS DOUBLE) AS sum_coverage FROM `build`;",
-			"SELECT MAX(`order`) AS max_order FROM `build`;",
+			"SELECT branch, CAST(COALESCE(SUM(duration_ms), 0) AS SIGNED) AS sum_duration_ms FROM `build` WHERE env = sqlc.arg('env') GROUP BY branch ORDER BY branch;",
+			"SELECT branch, CAST(COALESCE(AVG(duration_ms), 0) AS DOUBLE) AS avg_duration_ms, CONCAT(COALESCE(MIN(env), '')) AS min_env, CAST(COALESCE(MAX(coverage), 0) AS DOUBLE) AS max_coverage FROM `build` GROUP BY branch;",
+			"SELECT CAST(COALESCE(SUM(coverage), 0) AS DOUBLE) AS sum_coverage FROM `build`;",
+			"SELECT CAST(COALESCE(MAX(`order`), 0) AS SIGNED) AS max_order FROM `build`;",
 		}},
 	}
 
