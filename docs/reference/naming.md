@@ -71,6 +71,19 @@ A query name is built from the entity, and the layers hang their own suffixes of
 
 A custom `Name()` may not end with any of those suffixes, or the generated message would come out as `ListActiveRequestRequest`.
 
+### Aggregate columns
+
+`Sum()`, `Avg()`, `Min()` and `Max()` select a column of their own, named after the function and the column it folds. The name is fixed, only the query itself is renamed, with `Name()`.
+
+| You write | SQL | Go via sqlc | Proto | Go via protoc |
+| --- | --- | --- | --- | --- |
+| `Sum("duration_ms")` | `sum_duration_ms` | `SumDurationMs` | `sum_duration_ms` | `SumDurationMs` |
+| `Avg("duration_ms")` | `avg_duration_ms` | `AvgDurationMs` | `avg_duration_ms` | `AvgDurationMs` |
+| `Min("duration_ms")` | `min_duration_ms` | `MinDurationMs` | `min_duration_ms` | `MinDurationMs` |
+| `Max("duration_ms")` | `max_duration_ms` | `MaxDurationMs` | `max_duration_ms` | `MaxDurationMs` |
+
+A grouped query selects the grouped columns first and the aggregates after them, in chain order, and both the row struct and the row message follow that order.
+
 ## Why the two Go layers differ
 
 sqlc applies one initialism, a path segment equal to `id` becomes `ID`. protoc applies none. So `sensor_id` is `SensorID` in `gen/db` and `SensorId` in `gen/pb`, and it stays that way: each is idiomatic for the generator that wrote it. The converter bridges the two.

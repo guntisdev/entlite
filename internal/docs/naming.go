@@ -93,6 +93,26 @@ func namingPage() []byte {
 	page.Text("A custom `Name()` may not end with any of those suffixes, or the generated message would " +
 		"come out as `ListActiveRequestRequest`.")
 
+	page.Heading(3, "Aggregate columns")
+	page.Text("`Sum()`, `Avg()`, `Min()` and `Max()` select a column of their own, named after the " +
+		"function and the column it folds. The name is fixed, only the query itself is renamed, with `Name()`.")
+
+	aggregates := []struct{ method, fn string }{{"Sum", "sum"}, {"Avg", "avg"}, {"Min", "min"}, {"Max", "max"}}
+	aggregateRows := make([][]string, 0, len(aggregates))
+	for _, aggregate := range aggregates {
+		column := naming.AggregateColumn(aggregate.fn, namingAggregateField)
+		aggregateRows = append(aggregateRows, []string{
+			code(fmt.Sprintf("%s(%q)", aggregate.method, namingAggregateField)),
+			code(column),
+			code(naming.SqlcGoName(column)),
+			code(column),
+			code(naming.ProtocGoName(column)),
+		})
+	}
+	page.Table([]string{"You write", "SQL", "Go via sqlc", "Proto", "Go via protoc"}, aggregateRows)
+	page.Text("A grouped query selects the grouped columns first and the aggregates after them, in chain " +
+		"order, and both the row struct and the row message follow that order.")
+
 	page.Heading(2, "Why the two Go layers differ")
 	page.Text(fmt.Sprintf("sqlc applies one initialism, a path segment equal to `id` becomes `%s`. protoc "+
 		"applies none. So `%s` is `%s` in `gen/db` and `%s` in `gen/pb`, and it stays that way: each is "+
@@ -112,6 +132,8 @@ func namingPage() []byte {
 }
 
 const namingForeignKey = "sensor_id"
+
+const namingAggregateField = "duration_ms"
 
 const namingExample = `type MyUser struct {
 	entlite.Schema
