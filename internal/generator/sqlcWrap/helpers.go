@@ -387,7 +387,11 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect
 		if sqlDialect == schema.PostgreSQL {
 			return fmt.Sprintf("PtrToNullRawMessage(%s)", pbFieldRef)
 		}
-		return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
+		// mysql: real Optional() got TEXT (jsonCheck); Default() stays JSON
+		if field.DefaultValue == nil {
+			return fmt.Sprintf("PtrToNullString(%s)", pbFieldRef)
+		}
+		return fmt.Sprintf("PtrToRawMessage(%s)", pbFieldRef)
 	}
 
 	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
@@ -446,7 +450,10 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect schema.SQLDiale
 		if sqlDialect == schema.PostgreSQL {
 			return fmt.Sprintf("NullRawMessageToPtr(%s)", dbFieldRef)
 		}
-		return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
+		if field.DefaultValue == nil {
+			return fmt.Sprintf("NullStringToPtr(%s)", dbFieldRef)
+		}
+		return fmt.Sprintf("RawMessageToPtr(%s)", dbFieldRef)
 	}
 
 	if field.Optional && (sqlDialect == schema.PostgreSQL || sqlDialect == schema.MySQL) {
