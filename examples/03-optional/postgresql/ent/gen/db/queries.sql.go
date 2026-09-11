@@ -42,7 +42,7 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (s
 		LastViewedMs: PtrToNullInt64(arg.LastViewedMs),
 		Rating: PtrToNullFloat64(arg.Rating),
 		CoverImage: PtrToNullBytes(arg.CoverImage),
-		PublishedAt: arg.PublishedAt,
+		PublishedAt: PtrToNullTime(arg.PublishedAt),
 		Metadata: PtrToNullRawMessage(arg.Metadata),
 		IsFeatured: OptionalWithFallback(arg.IsFeatured, false),
 		CreatedAt: time.Now(),
@@ -121,8 +121,8 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 	internalArg := internal.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams{
 		Author: arg.Author,
 		IsFeatured: arg.IsFeatured,
-		MinPublishedAt: arg.MinPublishedAt,
-		MaxPublishedAt: arg.MaxPublishedAt,
+		MinPublishedAt: PtrToNullTime(arg.MinPublishedAt),
+		MaxPublishedAt: PtrToNullTime(arg.MaxPublishedAt),
 		Title: arg.Title,
 		Offset: arg.Offset,
 		Limit: arg.Limit,
@@ -143,7 +143,7 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 			LastViewedMs: NullInt64ToPtr(dbResults[i].LastViewedMs),
 			Rating: NullFloat64ToPtr(dbResults[i].Rating),
 			CoverImage: NullBytesToPtr(dbResults[i].CoverImage),
-			PublishedAt: dbResults[i].PublishedAt,
+			PublishedAt: NullTimeToPtr(dbResults[i].PublishedAt),
 			Metadata: NullRawMessageToPtr(dbResults[i].Metadata),
 			IsFeatured: dbResults[i].IsFeatured,
 			CreatedAt: dbResults[i].CreatedAt,
@@ -169,6 +169,7 @@ type UpdateArticleParams struct {
 	PublishedAt *time.Time `json:"published_at"`
 	Metadata *string `json:"metadata"`
 	IsFeatured *bool `json:"is_featured"`
+	ID string `json:"id"`
 }
 
 func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (*Article, error) {
@@ -179,7 +180,7 @@ func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (*
 		return nil, fmt.Errorf("Failed update: incorrect value for 'Article' in field 'title', validated by 'logic.NotBlank'")
 	}
 	internalArg := internal.UpdateArticleParams{
-		ID: logic.NewUUID(),
+		ID: arg.ID,
 		Slug: arg.Slug,
 		Title: arg.Title,
 		Author: arg.Author,
@@ -188,7 +189,7 @@ func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (*
 		LastViewedMs: PtrToNullInt64(arg.LastViewedMs),
 		Rating: PtrToNullFloat64(arg.Rating),
 		CoverImage: PtrToNullBytes(arg.CoverImage),
-		PublishedAt: arg.PublishedAt,
+		PublishedAt: PtrToNullTime(arg.PublishedAt),
 		Metadata: PtrToNullRawMessage(arg.Metadata),
 		IsFeatured: PtrToNullBool(arg.IsFeatured),
 		UpdatedAt: time.Now(),

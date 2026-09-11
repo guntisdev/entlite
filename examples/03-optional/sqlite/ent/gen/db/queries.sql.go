@@ -169,6 +169,7 @@ type UpdateArticleParams struct {
 	PublishedAt *time.Time `json:"published_at"`
 	Metadata *string `json:"metadata"`
 	IsFeatured *bool `json:"is_featured"`
+	ID string `json:"id"`
 }
 
 func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (*Article, error) {
@@ -179,7 +180,7 @@ func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (*
 		return nil, fmt.Errorf("Failed update: incorrect value for 'Article' in field 'title', validated by 'logic.NotBlank'")
 	}
 	internalArg := internal.UpdateArticleParams{
-		ID: logic.NewUUID(),
+		ID: arg.ID,
 		Slug: arg.Slug,
 		Title: arg.Title,
 		Author: arg.Author,

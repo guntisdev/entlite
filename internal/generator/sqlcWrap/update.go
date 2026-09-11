@@ -22,15 +22,18 @@ func generateUpdateStruct(structName string, structType *ast.StructType, entity 
 			}
 			field := *fieldPtr
 
+			isPrimaryKey := entity.IsPrimaryKeyField(field)
 			canApiWrite := entity.CanFieldWrite(field)
-			if !canApiWrite {
+			if !canApiWrite && !isPrimaryKey {
 				continue
 			}
 
-			// write-only fields, e.g. a password, are optional in update
-			canApiRead := entity.CanFieldRead(field)
-			if field.DefaultFunc != nil || field.DefaultValue != nil || !canApiRead {
-				field.Optional = true
+			if !isPrimaryKey {
+				// write-only fields, e.g. a password, are optional in update
+				canApiRead := entity.CanFieldRead(field)
+				if field.DefaultFunc != nil || field.DefaultValue != nil || !canApiRead {
+					field.Optional = true
+				}
 			}
 
 			sb.WriteString(fmt.Sprintf("\t%s %s", fieldName, fieldToGoType(field)))
@@ -90,7 +93,10 @@ func generateUpdateQuery(funcDecl *ast.FuncDecl, entity schema.Entity, inputPkg 
 		if field.Type == schema.FieldTypeByte && sqlDialect == schema.MySQL {
 			pointerStr = "*"
 		}
-		if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
+		if entity.IsPrimaryKeyField(field) {
+			convertField := sqlToGo(field, fmt.Sprintf("arg.%s", exportedName), sqlDialect)
+			sb.WriteString(fmt.Sprintf("\t\t%s: %s,\n", exportedName, convertField))
+		} else if _, hasDefaultFunc := defaultFuncFields[exportedName]; hasDefaultFunc {
 			funcName := field.DefaultFunc().(string)
 			if canApiWrite {
 				field.Optional = true

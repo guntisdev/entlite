@@ -402,6 +402,8 @@ func sqlToGo(field schema.Field, pbFieldRef string, sqlDialect schema.SQLDialect
 			return fmt.Sprintf("PtrToNullFloat64(%s)", pbFieldRef)
 		case schema.FieldTypeBool:
 			return fmt.Sprintf("PtrToNullBool(%s)", pbFieldRef)
+		case schema.FieldTypeTime:
+			return fmt.Sprintf("PtrToNullTime(%s)", pbFieldRef)
 		}
 	}
 
@@ -454,6 +456,8 @@ func goFromSQL(field schema.Field, dbFieldRef string, sqlDialect schema.SQLDiale
 			return fmt.Sprintf("NullFloat64ToPtr(%s)", dbFieldRef)
 		case schema.FieldTypeBool:
 			return fmt.Sprintf("NullBoolToPtr(%s)", dbFieldRef)
+		case schema.FieldTypeTime:
+			return fmt.Sprintf("NullTimeToPtr(%s)", dbFieldRef)
 		}
 	}
 

@@ -107,10 +107,14 @@ func (s *ArticleServer) UpdateArticle(
 ) (*connect.Response[pb.Article], error) {
 	log.Printf("Update article: ID=%s, %+v", req.Msg.GetId(), req.Msg)
 
+	if req.Msg.Id == nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("id is required"))
+	}
+
 	queries := db.New(s.db)
 
-	// TODO db.UpdateArticleParams has no ID field, so req.Msg.Id cannot be passed
 	article, err := queries.UpdateArticle(ctx, db.UpdateArticleParams{
+		ID:             *req.Msg.Id,
 		Slug:           req.Msg.Slug,
 		Title:          req.Msg.Title,
 		Author:         req.Msg.Author,

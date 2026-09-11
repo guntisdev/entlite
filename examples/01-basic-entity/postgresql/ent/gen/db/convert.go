@@ -45,6 +45,23 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 	}
 }
 
+func NullTimeToPtr(n sql.NullTime) *time.Time {
+	if !n.Valid {
+		return nil
+	}
+	return &n.Time
+}
+
+func PtrToNullTime(p *time.Time) sql.NullTime {
+	if p == nil {
+		return sql.NullTime{Valid: false}
+	}
+	return sql.NullTime{
+		Time:  *p,
+		Valid: true,
+	}
+}
+
 // txBeginner is satisfied by *sql.DB and *sql.Conn but not *sql.Tx: a Queries already
 // in a transaction runs inside the caller's one instead of nesting.
 type txBeginner interface {
