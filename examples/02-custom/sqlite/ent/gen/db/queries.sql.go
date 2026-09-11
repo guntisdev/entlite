@@ -101,7 +101,7 @@ func (q *Queries) GetSensorReadingById(ctx context.Context, id int64) (*SensorRe
 type ListSensorFilterByLabelKindActiveParams struct {
 	Label string `json:"label"`
 	Kind string `json:"kind"`
-	Active bool `json:"active"`
+	Active *bool `json:"active"`
 	Offset int32 `json:"offset"`
 	Limit int32 `json:"limit"`
 }
@@ -111,7 +111,7 @@ func (q *Queries) ListSensorFilterByLabelKindActive(ctx context.Context, arg Lis
 	internalArg := internal.ListSensorFilterByLabelKindActiveParams{
 		Label: arg.Label,
 		Kind: arg.Kind,
-		Active: SQLiteBoolToInt(arg.Active),
+		Active: SQLiteBoolPtrToInt64Ptr(arg.Active),
 		Offset: IntConvert[int32, int64](arg.Offset),
 		Limit: IntConvert[int32, int64](arg.Limit),
 	}

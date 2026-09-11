@@ -242,17 +242,17 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuth
 }
 
 const listArticleFilterByAuthorIsFeaturedPublishedAtTitle = `-- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at, CAST(COUNT(*) OVER() AS SIGNED) AS total_size FROM ` + "`" + `article` + "`" + ` WHERE author = ? AND is_featured = ? AND published_at BETWEEN ? AND ? AND title LIKE ? ORDER BY published_at LIMIT ? OFFSET ?
+SELECT id, slug, title, author, subtitle, reading_minutes, last_viewed_ms, rating, cover_image, published_at, metadata, is_featured, created_at, updated_at, CAST(COUNT(*) OVER() AS SIGNED) AS total_size FROM ` + "`" + `article` + "`" + ` WHERE author = ? AND (? IS NULL OR is_featured = ?) AND (? IS NULL OR published_at >= ?) AND (? IS NULL OR published_at <= ?) AND (? IS NULL OR title LIKE ?) ORDER BY published_at LIMIT ? OFFSET ?
 `
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
-	Author         string       `json:"author"`
-	IsFeatured     bool         `json:"is_featured"`
-	MinPublishedAt sql.NullTime `json:"min_published_at"`
-	MaxPublishedAt sql.NullTime `json:"max_published_at"`
-	Title          string       `json:"title"`
-	Limit          int32        `json:"limit"`
-	Offset         int32        `json:"offset"`
+	Author         string         `json:"author"`
+	IsFeatured     sql.NullBool   `json:"is_featured"`
+	MinPublishedAt sql.NullTime   `json:"min_published_at"`
+	MaxPublishedAt sql.NullTime   `json:"max_published_at"`
+	Title          sql.NullString `json:"title"`
+	Limit          int32          `json:"limit"`
+	Offset         int32          `json:"offset"`
 }
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRow struct {
@@ -277,8 +277,12 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 	rows, err := q.db.QueryContext(ctx, listArticleFilterByAuthorIsFeaturedPublishedAtTitle,
 		arg.Author,
 		arg.IsFeatured,
+		arg.IsFeatured,
+		arg.MinPublishedAt,
 		arg.MinPublishedAt,
 		arg.MaxPublishedAt,
+		arg.MaxPublishedAt,
+		arg.Title,
 		arg.Title,
 		arg.Limit,
 		arg.Offset,

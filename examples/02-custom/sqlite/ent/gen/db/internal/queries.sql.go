@@ -207,15 +207,15 @@ func (q *Queries) GetSensorReadingById(ctx context.Context, id int64) (SensorRea
 }
 
 const listSensorFilterByLabelKindActive = `-- name: ListSensorFilterByLabelKindActive :many
-SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND active = ?3 ORDER BY installed_at LIMIT ?5 OFFSET ?4
+SELECT id, code, label, kind, unit, location, active, firmware, sample_rate_ms, installed_at, created_at, updated_at, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE ?1 AND kind = ?2 AND (?3 IS NULL OR active = ?3) ORDER BY installed_at LIMIT ?5 OFFSET ?4
 `
 
 type ListSensorFilterByLabelKindActiveParams struct {
-	Label  string `json:"label"`
-	Kind   string `json:"kind"`
-	Active int64  `json:"active"`
-	Offset int64  `json:"offset"`
-	Limit  int64  `json:"limit"`
+	Label  string      `json:"label"`
+	Kind   string      `json:"kind"`
+	Active interface{} `json:"active"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListSensorFilterByLabelKindActiveRow struct {

@@ -394,6 +394,12 @@ func (g *Generator) namedArg(name string) string {
 	panic("unreachable: invalid SQL dialect")
 }
 
+// sqlc.narg() declares a nullable named arg regardless of dialect or the column's
+// own nullability - passing NULL is how a caller skips an optional filter/update field.
+func (g *Generator) nargArg(name string) string {
+	return fmt.Sprintf("sqlc.narg('%s')", name)
+}
+
 func (g *Generator) getParameterPlaceholder(index int) string {
 	switch g.sqlDialect {
 	case schema.PostgreSQL:
@@ -421,4 +427,14 @@ func (g *Generator) rangeClause(field string) string {
 	}
 
 	panic("unreachable: invalid SQL dialect")
+}
+
+// each bound is skipped independently when its arg is NULL, so BETWEEN doesn't
+// apply here - it can't express "no lower bound" or "no upper bound"
+func (g *Generator) rangeClauseOptional(field string) string {
+	column := g.column(field)
+	minArg := g.nargArg("min_" + field)
+	maxArg := g.nargArg("max_" + field)
+
+	return fmt.Sprintf("(%s IS NULL OR %s >= %s) AND (%s IS NULL OR %s <= %s)", minArg, column, minArg, maxArg, column, maxArg)
 }

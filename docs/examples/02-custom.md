@@ -303,7 +303,7 @@ SELECT * FROM "sensor" WHERE id = ?;
 SELECT * FROM "sensor" WHERE code = ?;
 
 -- name: ListSensorFilterByLabelKindActive :many
-SELECT *, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE @label AND kind = @kind AND active = @active ORDER BY installed_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT *, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE @label AND kind = @kind AND (sqlc.narg('active') IS NULL OR active = sqlc.narg('active')) ORDER BY installed_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateSensor :one
 UPDATE "sensor" SET

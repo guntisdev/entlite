@@ -9,7 +9,6 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 * Explore google AIP https://google.aip.dev/ - read it through first and decide which parts fit, query and rpc naming is the open one
 * Add mcp for visual testing of examples/
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
-* Fix filter.Optional() - it only makes the proto field optional, the sql keeps a plain comparison, so an omitted value filters on the zero value instead of being skipped. Needs sqlc.narg() with an IS NULL guard. The doc comment and the 03-optional readme both claim it is skipped
 
 
 * Implement Queries Having()

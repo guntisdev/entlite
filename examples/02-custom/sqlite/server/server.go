@@ -155,7 +155,7 @@ func (s *SensorServer) ListSensorFilterByLabelKindActive(
 	dbSensors, totalSize, err := queries.ListSensorFilterByLabelKindActive(ctx, db.ListSensorFilterByLabelKindActiveParams{
 		Label:  req.Msg.Label, // filter.Search: compared with LIKE, so the caller supplies the wildcards
 		Kind:   req.Msg.Kind,
-		Active: req.Msg.GetActive(),
+		Active: req.Msg.Active, // Optional() filter: nil skips it, unlike GetActive()'s false zero value
 		Limit:  req.Msg.GetLimit(),
 		Offset: req.Msg.GetOffset(),
 	})
