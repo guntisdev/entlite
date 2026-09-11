@@ -12,8 +12,8 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/gen/db"
-	"github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/gen/pb"
+	"github.com/guntisdev/entlite/examples/03-optional/postgresql/ent/gen/db"
+	"github.com/guntisdev/entlite/examples/03-optional/postgresql/ent/gen/pb"
 )
 
 type ArticleServer struct {

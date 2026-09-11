@@ -6,9 +6,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/logic"
+	"github.com/guntisdev/entlite/examples/03-optional/postgresql/ent/logic"
 	"time"
-	internal "github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/gen/db/internal"
+	internal "github.com/guntisdev/entlite/examples/03-optional/postgresql/ent/gen/db/internal"
 )
 
 type CreateArticleParams struct {
@@ -37,14 +37,14 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (s
 		Slug: arg.Slug,
 		Title: arg.Title,
 		Author: arg.Author,
-		Subtitle: arg.Subtitle,
-		ReadingMinutes: IntPtrConvert[int32, int64](arg.ReadingMinutes),
-		LastViewedMs: arg.LastViewedMs,
-		Rating: arg.Rating,
+		Subtitle: PtrToNullString(arg.Subtitle),
+		ReadingMinutes: PtrToNullInt32(arg.ReadingMinutes),
+		LastViewedMs: PtrToNullInt64(arg.LastViewedMs),
+		Rating: PtrToNullFloat64(arg.Rating),
 		CoverImage: PtrToNullBytes(arg.CoverImage),
-		PublishedAt: arg.PublishedAt,
-		Metadata: arg.Metadata,
-		IsFeatured: SQLiteBoolToInt(OptionalWithFallback(arg.IsFeatured, false)),
+		PublishedAt: PtrToNullTime(arg.PublishedAt),
+		Metadata: PtrToNullRawMessage(arg.Metadata),
+		IsFeatured: OptionalWithFallback(arg.IsFeatured, false),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -92,8 +92,8 @@ type ListArticleByAuthorParams struct {
 func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuthorParams) ([]*Article, error) {
 	internalArg := internal.ListArticleByAuthorParams{
 		Author: arg.Author,
-		Offset: IntConvert[int32, int64](arg.Offset),
-		Limit: IntConvert[int32, int64](arg.Limit),
+		Offset: arg.Offset,
+		Limit: arg.Limit,
 	}
 	dbResults, err := (*internal.Queries)(q).ListArticleByAuthor(ctx, internalArg)
 	if err != nil {
@@ -120,12 +120,12 @@ type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRow = internal.ListArtic
 func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, arg ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams) ([]*Article, int64, error) {
 	internalArg := internal.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams{
 		Author: arg.Author,
-		IsFeatured: SQLiteBoolToInt(arg.IsFeatured),
-		MinPublishedAt: arg.MinPublishedAt,
-		MaxPublishedAt: arg.MaxPublishedAt,
+		IsFeatured: arg.IsFeatured,
+		MinPublishedAt: PtrToNullTime(arg.MinPublishedAt),
+		MaxPublishedAt: PtrToNullTime(arg.MaxPublishedAt),
 		Title: arg.Title,
-		Offset: IntConvert[int32, int64](arg.Offset),
-		Limit: IntConvert[int32, int64](arg.Limit),
+		Offset: arg.Offset,
+		Limit: arg.Limit,
 	}
 	dbResults, err := (*internal.Queries)(q).ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx, internalArg)
 	if err != nil {
@@ -138,14 +138,14 @@ func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx contex
 			Slug: dbResults[i].Slug,
 			Title: dbResults[i].Title,
 			Author: dbResults[i].Author,
-			Subtitle: dbResults[i].Subtitle,
-			ReadingMinutes: IntPtrConvert[int64, int32](dbResults[i].ReadingMinutes),
-			LastViewedMs: dbResults[i].LastViewedMs,
-			Rating: dbResults[i].Rating,
+			Subtitle: NullStringToPtr(dbResults[i].Subtitle),
+			ReadingMinutes: NullInt32ToPtr(dbResults[i].ReadingMinutes),
+			LastViewedMs: NullInt64ToPtr(dbResults[i].LastViewedMs),
+			Rating: NullFloat64ToPtr(dbResults[i].Rating),
 			CoverImage: NullBytesToPtr(dbResults[i].CoverImage),
-			PublishedAt: dbResults[i].PublishedAt,
-			Metadata: dbResults[i].Metadata,
-			IsFeatured: SQLiteIntToBool(dbResults[i].IsFeatured),
+			PublishedAt: NullTimeToPtr(dbResults[i].PublishedAt),
+			Metadata: NullRawMessageToPtr(dbResults[i].Metadata),
+			IsFeatured: dbResults[i].IsFeatured,
 			CreatedAt: dbResults[i].CreatedAt,
 			UpdatedAt: dbResults[i].UpdatedAt,
 		}
@@ -184,14 +184,14 @@ func (q *Queries) UpdateArticle(ctx context.Context, arg UpdateArticleParams) (*
 		Slug: arg.Slug,
 		Title: arg.Title,
 		Author: arg.Author,
-		Subtitle: arg.Subtitle,
-		ReadingMinutes: IntPtrConvert[int32, int64](arg.ReadingMinutes),
-		LastViewedMs: arg.LastViewedMs,
-		Rating: arg.Rating,
+		Subtitle: PtrToNullString(arg.Subtitle),
+		ReadingMinutes: PtrToNullInt32(arg.ReadingMinutes),
+		LastViewedMs: PtrToNullInt64(arg.LastViewedMs),
+		Rating: PtrToNullFloat64(arg.Rating),
 		CoverImage: PtrToNullBytes(arg.CoverImage),
-		PublishedAt: arg.PublishedAt,
-		Metadata: arg.Metadata,
-		IsFeatured: SQLiteBoolPtrToInt64Ptr(arg.IsFeatured),
+		PublishedAt: PtrToNullTime(arg.PublishedAt),
+		Metadata: PtrToNullRawMessage(arg.Metadata),
+		IsFeatured: PtrToNullBool(arg.IsFeatured),
 		UpdatedAt: time.Now(),
 	}
 

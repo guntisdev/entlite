@@ -194,6 +194,23 @@ func ProtoToNullTime(t *timestamppb.Timestamp) sql.NullTime {
 		Valid: true,
 	}
 }
+
+func NullTimeToPtr(n sql.NullTime) *time.Time {
+	if !n.Valid {
+		return nil
+	}
+	return &n.Time
+}
+
+func PtrToNullTime(p *time.Time) sql.NullTime {
+	if p == nil {
+		return sql.NullTime{Valid: false}
+	}
+	return sql.NullTime{
+		Time:  *p,
+		Valid: true,
+	}
+}
 `
 
 const nullableBytes = `

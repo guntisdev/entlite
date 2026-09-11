@@ -166,7 +166,7 @@ func (Article) Queries() []entlite.Query {
 
 ## Generated contract
 
-What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/03-optional/sqlite) for the other variants.
+What `entlite gen` writes from the schema above. See [`sqlite`](../../examples/03-optional/sqlite), [`postgresql`](../../examples/03-optional/postgresql) for the other variants.
 
 <details>
 <summary>ent/contract/sqlc/schema.sql</summary>
