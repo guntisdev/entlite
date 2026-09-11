@@ -9,8 +9,6 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 * Explore google AIP https://google.aip.dev/ - read it through first and decide which parts fit, query and rpc naming is the open one
 * Add mcp for visual testing of examples/
 * Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
-* Fix Time().Optional() on postgres/mysql - sqlToGo/goFromSQL have no time case, sqlc gives sql.NullTime but the wrapper declares *time.Time, so the converter does not compile. Needs a NullTimeToPtr helper
-* Add postgres and mysql optional examples
 * Fix filter.Optional() - it only makes the proto field optional, the sql keeps a plain comparison, so an omitted value filters on the zero value instead of being skipped. Needs sqlc.narg() with an IS NULL guard. The doc comment and the 03-optional readme both claim it is skipped
 
 

@@ -166,10 +166,14 @@ func (g *Generator) getMySQLType(fieldType schema.FieldType) string {
 	}
 }
 
-// returns the column constraint that keeps invalid json out on sqlite,
-// postgres and mysql validate a JSONB/JSON column themselves
+// returns the column constraint that keeps invalid json out
 func (g *Generator) jsonCheck(field schema.Field) string {
-	if g.sqlDialect != schema.SQLite || field.Type != schema.FieldTypeJSON {
+	if field.Type != schema.FieldTypeJSON {
+		return ""
+	}
+	usesNativeJSONColumn := g.sqlDialect == schema.PostgreSQL ||
+		(g.sqlDialect == schema.MySQL && !field.Optional)
+	if usesNativeJSONColumn {
 		return ""
 	}
 

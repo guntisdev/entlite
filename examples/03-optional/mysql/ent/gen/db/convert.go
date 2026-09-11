@@ -3,7 +3,6 @@
 package db
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
 	"reflect"
@@ -58,12 +57,6 @@ func PtrToNullTime(p *time.Time) sql.NullTime {
 		Time:  *p,
 		Valid: true,
 	}
-}
-
-// txBeginner is satisfied by *sql.DB and *sql.Conn but not *sql.Tx: a Queries already
-// in a transaction runs inside the caller's one instead of nesting.
-type txBeginner interface {
-	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 }
 
 // OptionalWithFallback chooses fallback if optional value is nil

@@ -380,6 +380,15 @@ func PtrBytesToNullString(p *[]byte) sql.NullString {
         String: string(*p),
         Valid:  true,
     }
+}
+
+// NullStringToPtrBytes converts sql.NullString back to *[]byte for MySQL compatibility
+func NullStringToPtrBytes(n sql.NullString) *[]byte {
+    if !n.Valid {
+        return nil
+    }
+    b := []byte(n.String)
+    return &b
 }`
 
 const rawMessageTypes = `
