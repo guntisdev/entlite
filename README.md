@@ -6,16 +6,15 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 ## TODO
 * Wire buf lint into the pipeline, it needs the proto package and rpc response type decisions first
 * Implement DefaultFunc for sql generation
-* Explore google AIP https://google.aip.dev/ - read it through first and decide which parts fit, query and rpc naming is the open one
 * Add mcp for visual testing of examples/
-* Fix Optional() with Validate() - generated code passes a pointer to a value func and does not compile
+* Generate proto package name "modulename.v1"
 
 
 * Implement Queries Having()
+* Explore google AIP https://google.aip.dev/ - read it through first and decide which parts fit, query and rpc naming is the open one
 * Aggregate a row count per group, Count() already means the total next to a page
 * Min()/Max() of a time column, sqlite cannot cast a timestamp back, postgres and mysql can
 * DeleteBy(...) query
-* Create queries example with complicated edge case queries
 
 * Figure out enums
 * Create /internal/naming/ to have in one place consistant naming

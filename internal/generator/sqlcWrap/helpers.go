@@ -247,7 +247,6 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}
 
-	// TODO fix Optional() with Validate(), see README
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue
@@ -255,10 +254,20 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		if field.IsVirtual() {
 			continue
 		}
+		// update skips immutable fields, so they are not in the params struct
+		if sqlQuery == "update" && field.Immutable {
+			continue
+		}
 
 		validateName := field.Validate().(string)
 		fieldName := toDBFieldName(field)
-		sb.WriteString(fmt.Sprintf("%sif !%s(%s.%s) {\n", indent, validateName, argVar, fieldName))
+		ref := fmt.Sprintf("%s.%s", argVar, fieldName)
+		cond := fmt.Sprintf("!%s(%s)", validateName, ref)
+		if isPointerParam(entity, field, sqlQuery) {
+			// an omitted optional field skips validation rather than dereferencing a nil pointer
+			cond = fmt.Sprintf("%s != nil && !%s(*%s)", ref, validateName, ref)
+		}
+		sb.WriteString(fmt.Sprintf("%sif %s {\n", indent, cond))
 		sb.WriteString(fmt.Sprintf("%s\treturn %sfmt.Errorf(\"Failed %s: %sincorrect value for '%s' in field '%s', validated by '%s'\"%s)\n", indent, zeroPrefix, sqlQuery, itemPrefix, entity.Name, field.Name, validateName, itemArgs))
 		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}
