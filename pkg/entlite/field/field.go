@@ -15,7 +15,8 @@ type StringFieldBuilder interface {
 	Unique() StringFieldBuilder
 	// Default sets a fixed default value, it clears DefaultFunc.
 	Default(string) StringFieldBuilder
-	// DefaultFunc sets a default value computed on insert, it clears Default.
+	// DefaultFunc sets a default value computed in Go on insert, it clears Default.
+	// The SQL schema gets no DEFAULT for it, only entlite's generated Go code fills it in.
 	DefaultFunc(func() string) StringFieldBuilder
 	// ProtoField pins the proto field number, so it stays stable.
 	ProtoField(int) StringFieldBuilder
@@ -477,7 +478,9 @@ func (f *FloatField) Validate(fn func(float64) bool) FloatFieldBuilder {
 type TimeFieldBuilder interface {
 	// Default sets a fixed default value, it clears DefaultFunc.
 	Default(time.Time) TimeFieldBuilder
-	// DefaultFunc sets a default value computed on insert, it clears Default.
+	// DefaultFunc sets a default value computed in Go on insert, it clears Default.
+	// time.Now is the one exception: it also becomes a SQL DEFAULT CURRENT_TIMESTAMP,
+	// any other func stays Go-only, with no SQL-level default.
 	DefaultFunc(func() time.Time) TimeFieldBuilder
 	// ProtoField pins the proto field number, so it stays stable.
 	ProtoField(int) TimeFieldBuilder
@@ -600,7 +603,8 @@ type ByteFieldBuilder interface {
 	ProtoField(int) ByteFieldBuilder
 	// Contracts limits the field to the given layers, sqlc or proto.
 	Contracts(contracts ...entlite.Contract) ByteFieldBuilder
-	// DefaultFunc sets a default value computed on insert.
+	// DefaultFunc sets a default value computed in Go on insert.
+	// The SQL schema gets no DEFAULT for it, only entlite's generated Go code fills it in.
 	DefaultFunc(func() []byte) ByteFieldBuilder
 	// Validate checks the value before it is written.
 	Validate(func([]byte) bool) ByteFieldBuilder
@@ -713,7 +717,8 @@ type JSONFieldBuilder interface {
 	Contracts(contracts ...entlite.Contract) JSONFieldBuilder
 	// Default takes raw json text, e.g. `{}` or `{"theme":"dark"}`
 	Default(string) JSONFieldBuilder
-	// DefaultFunc sets a default value computed on insert, it clears Default.
+	// DefaultFunc sets a default value computed in Go on insert, it clears Default.
+	// The SQL schema gets no DEFAULT for it, only entlite's generated Go code fills it in.
 	DefaultFunc(func() string) JSONFieldBuilder
 	// Validate checks the value before it is written.
 	Validate(func(string) bool) JSONFieldBuilder

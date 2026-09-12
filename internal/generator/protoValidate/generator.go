@@ -134,7 +134,6 @@ func generateValidateMethod(entity schema.Entity, query schema.Query) string {
 		content.WriteString("\t}\n")
 	}
 
-	// TODO fix Optional() with Validate(), see README
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue
@@ -144,7 +143,13 @@ func generateValidateMethod(entity schema.Entity, query schema.Query) string {
 		}
 
 		fieldName := toProtoFieldName(field)
-		content.WriteString(fmt.Sprintf("\tif !%s(r.%s) {\n", field.Validate().(string), fieldName))
+		ref := fmt.Sprintf("r.%s", fieldName)
+		cond := fmt.Sprintf("!%s(%s)", field.Validate().(string), ref)
+		if isPointerField(field, queryType) {
+			// an omitted optional field skips validation rather than dereferencing a nil pointer
+			cond = fmt.Sprintf("%s != nil && !%s(*%s)", ref, field.Validate().(string), ref)
+		}
+		content.WriteString(fmt.Sprintf("\tif %s {\n", cond))
 		content.WriteString(fmt.Sprintf("\t\treturn fmt.Errorf(\"Validation failed for field name: %s\")\n", fieldName))
 		content.WriteString("\t}\n")
 	}

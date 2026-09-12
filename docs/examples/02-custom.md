@@ -236,8 +236,8 @@ CREATE TABLE IF NOT EXISTS "sensor"(
   sample_rate_ms INTEGER DEFAULT 1000 NOT NULL,
   -- When the device was physically installed (client-supplied)
   installed_at DATETIME NOT NULL,
-  created_at DATETIME NOT NULL,
-  updated_at DATETIME NOT NULL
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- SensorReading is a single measurement captured by a Sensor.
@@ -252,7 +252,7 @@ CREATE TABLE IF NOT EXISTS "sensor_reading"(
   flagged INTEGER DEFAULT false NOT NULL,
   -- Device measurement time (client-supplied)
   recorded_at DATETIME NOT NULL,
-  created_at DATETIME NOT NULL
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 ```
 
@@ -303,7 +303,7 @@ SELECT * FROM "sensor" WHERE id = ?;
 SELECT * FROM "sensor" WHERE code = ?;
 
 -- name: ListSensorFilterByLabelKindActive :many
-SELECT *, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE @label AND kind = @kind AND active = @active ORDER BY installed_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT *, COUNT(*) OVER() AS total_size FROM "sensor" WHERE label LIKE @label AND kind = @kind AND (sqlc.narg('active') IS NULL OR active = sqlc.narg('active')) ORDER BY installed_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateSensor :one
 UPDATE "sensor" SET

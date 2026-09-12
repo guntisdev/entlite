@@ -50,7 +50,7 @@ func getFieldByName(entity schema.Entity, name string) *schema.Field {
 }
 
 // converts query sql types to go type
-func filterParamField(entity schema.Entity, paramName string) (schema.Field, bool) {
+func filterParamField(query schema.Query, entity schema.Entity, paramName string) (schema.Field, bool) {
 	lookup := func(name string) (schema.Field, bool) {
 		for _, field := range entity.Fields {
 			if strings.EqualFold(toDBFieldName(field), name) {
@@ -60,14 +60,26 @@ func filterParamField(entity schema.Entity, paramName string) (schema.Field, boo
 		return schema.Field{}, false
 	}
 
+	// an Optional() filter is skippable even when its own field is a required column,
+	// so the param needs a nullable Go type independent of field.Optional
+	withFilterOptional := func(field schema.Field) schema.Field {
+		for _, f := range query.Filters {
+			if f.Optional && strings.EqualFold(f.Field, field.Name) {
+				field.Optional = true
+				break
+			}
+		}
+		return field
+	}
+
 	if field, ok := lookup(paramName); ok {
-		return field, true
+		return withFilterOptional(field), true
 	}
 
 	for _, prefix := range []string{"Min", "Max"} {
 		if len(paramName) > len(prefix) && strings.EqualFold(paramName[:len(prefix)], prefix) {
 			if field, ok := lookup(paramName[len(prefix):]); ok {
-				return field, true
+				return withFilterOptional(field), true
 			}
 		}
 	}
@@ -82,7 +94,7 @@ func isPaginationParam(fieldName string) bool {
 
 // generateFilterParamsStruct restates sqlc's "<Query>Params" in the wrapper's types,
 // keeping sqlc's field names and json tags.
-func generateFilterParamsStruct(structName string, structType *ast.StructType, entity schema.Entity) string {
+func generateFilterParamsStruct(structName string, structType *ast.StructType, entity schema.Entity, query schema.Query) string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("type %s struct {\n", structName))
 
@@ -93,7 +105,7 @@ func generateFilterParamsStruct(structName string, structType *ast.StructType, e
 		fieldName := astField.Names[0].Name
 
 		goType := formatType(astField.Type)
-		if field, ok := filterParamField(entity, fieldName); ok {
+		if field, ok := filterParamField(query, entity, fieldName); ok {
 			goType = fieldToGoType(field)
 		} else if isPaginationParam(fieldName) {
 			goType = "int32"
@@ -112,7 +124,7 @@ func generateFilterParamsStruct(structName string, structType *ast.StructType, e
 
 // generateFilterParamsArg builds the params literal for sqlc, converting each field
 // back to its dialect type.
-func generateFilterParamsArg(structName string, structType *ast.StructType, entity schema.Entity, inputPkg, argVar string, sqlDialect schema.SQLDialect) string {
+func generateFilterParamsArg(structName string, structType *ast.StructType, entity schema.Entity, inputPkg, argVar string, sqlDialect schema.SQLDialect, query schema.Query) string {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("\tinternalArg := %s.%s{\n", inputPkg, structName))
 
@@ -123,7 +135,7 @@ func generateFilterParamsArg(structName string, structType *ast.StructType, enti
 		fieldName := astField.Names[0].Name
 
 		valueRef := fmt.Sprintf("%s.%s", argVar, fieldName)
-		if field, ok := filterParamField(entity, fieldName); ok {
+		if field, ok := filterParamField(query, entity, fieldName); ok {
 			valueRef = sqlToGo(field, valueRef, sqlDialect)
 		} else if isPaginationParam(fieldName) && formatType(astField.Type) == "int64" {
 			// sqlite widens LIMIT/OFFSET to int64
@@ -146,6 +158,9 @@ func (ctx *generationContext) wrapFilterParams(funcDecl *ast.FuncDecl, entity sc
 
 	var paramsSb, argsSb, preludeSb strings.Builder
 
+	// The DSL query, if any, carries the Filters that decide optionality below.
+	query := ctx.dslQueries[funcDecl.Name.Name].query
+
 	// Index 0 is ctx, which callers emit themselves.
 	for i := 1; i < len(funcDecl.Type.Params.List); i++ {
 		param := funcDecl.Type.Params.List[i]
@@ -155,13 +170,13 @@ func (ctx *generationContext) wrapFilterParams(funcDecl *ast.FuncDecl, entity sc
 			// A params struct the wrapper restates: take ours, convert to sqlc's.
 			if structType, ok := ctx.filterParamsStructs[typeName]; ok {
 				paramsSb.WriteString(fmt.Sprintf(", %s %s", name.Name, typeName))
-				preludeSb.WriteString(generateFilterParamsArg(typeName, structType, entity, ctx.inputPackageName, name.Name, ctx.sqlDialect))
+				preludeSb.WriteString(generateFilterParamsArg(typeName, structType, entity, ctx.inputPackageName, name.Name, ctx.sqlDialect, query))
 				argsSb.WriteString(", internalArg")
 				continue
 			}
 
 			// A lone filter arrives as a bare scalar rather than a struct.
-			if field, ok := filterParamField(entity, name.Name); ok {
+			if field, ok := filterParamField(query, entity, name.Name); ok {
 				paramsSb.WriteString(fmt.Sprintf(", %s %s", name.Name, fieldToGoType(field)))
 				argsSb.WriteString(fmt.Sprintf(", %s", sqlToGo(field, name.Name, ctx.sqlDialect)))
 				continue
@@ -232,7 +247,6 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}
 
-	// TODO fix Optional() with Validate(), see README
 	for _, field := range entity.Fields {
 		if field.Validate == nil {
 			continue
@@ -240,10 +254,20 @@ func addValidationChecksIndexed(entity schema.Entity, sqlQuery string, returnTyp
 		if field.IsVirtual() {
 			continue
 		}
+		// update skips immutable fields, so they are not in the params struct
+		if sqlQuery == "update" && field.Immutable {
+			continue
+		}
 
 		validateName := field.Validate().(string)
 		fieldName := toDBFieldName(field)
-		sb.WriteString(fmt.Sprintf("%sif !%s(%s.%s) {\n", indent, validateName, argVar, fieldName))
+		ref := fmt.Sprintf("%s.%s", argVar, fieldName)
+		cond := fmt.Sprintf("!%s(%s)", validateName, ref)
+		if isPointerParam(entity, field, sqlQuery) {
+			// an omitted optional field skips validation rather than dereferencing a nil pointer
+			cond = fmt.Sprintf("%s != nil && !%s(*%s)", ref, validateName, ref)
+		}
+		sb.WriteString(fmt.Sprintf("%sif %s {\n", indent, cond))
 		sb.WriteString(fmt.Sprintf("%s\treturn %sfmt.Errorf(\"Failed %s: %sincorrect value for '%s' in field '%s', validated by '%s'\"%s)\n", indent, zeroPrefix, sqlQuery, itemPrefix, entity.Name, field.Name, validateName, itemArgs))
 		sb.WriteString(fmt.Sprintf("%s}\n", indent))
 	}

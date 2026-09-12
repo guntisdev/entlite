@@ -28,7 +28,13 @@ send it. Look at `CreateArticleRequest` in the generated
 
 The column is `TEXT PRIMARY KEY` on sqlite and postgresql, and
 `VARCHAR(36) PRIMARY KEY` on mysql. The uuid is generated in Go, not by the
-database.
+database — `logic.NewUUID` has no SQL equivalent, so the column gets no
+`DEFAULT` and only entlite's generated code can fill it in.
+
+`created_at`/`updated_at` also use `DefaultFunc`, but with `time.Now`
+specifically, which is the one function entlite maps to a SQL default: the
+column gets `DEFAULT CURRENT_TIMESTAMP` too, so a row inserted outside the
+generated Go API (raw SQL, another client) still gets a timestamp.
 
 **Optional fields.** One per type, so you can compare them side by side:
 
@@ -193,8 +199,8 @@ CREATE TABLE IF NOT EXISTS "article"(
   -- Free-form metadata, e.g. {"og_image":"/cover.png"}
   metadata TEXT CHECK (json_valid(metadata)),
   is_featured INTEGER DEFAULT false NOT NULL,
-  created_at DATETIME NOT NULL,
-  updated_at DATETIME NOT NULL
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 ```
 
@@ -260,7 +266,7 @@ SELECT * FROM "article" WHERE author = @author LIMIT sqlc.arg('limit') OFFSET sq
 SELECT * FROM "article";
 
 -- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT *, COUNT(*) OVER() AS total_size FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at >= @min_published_at AND published_at <= @max_published_at AND title LIKE @title ORDER BY published_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT *, COUNT(*) OVER() AS total_size FROM "article" WHERE author = @author AND (sqlc.narg('is_featured') IS NULL OR is_featured = sqlc.narg('is_featured')) AND (sqlc.narg('min_published_at') IS NULL OR published_at >= sqlc.narg('min_published_at')) AND (sqlc.narg('max_published_at') IS NULL OR published_at <= sqlc.narg('max_published_at')) AND (sqlc.narg('title') IS NULL OR title LIKE sqlc.narg('title')) ORDER BY published_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateArticle :one
 UPDATE "article" SET

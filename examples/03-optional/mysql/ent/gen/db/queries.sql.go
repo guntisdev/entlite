@@ -120,10 +120,10 @@ func (q *Queries) ListArticleByAuthor(ctx context.Context, arg ListArticleByAuth
 
 type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams struct {
 	Author string `json:"author"`
-	IsFeatured bool `json:"is_featured"`
+	IsFeatured *bool `json:"is_featured"`
 	MinPublishedAt *time.Time `json:"min_published_at"`
 	MaxPublishedAt *time.Time `json:"max_published_at"`
-	Title string `json:"title"`
+	Title *string `json:"title"`
 	Limit int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
@@ -132,10 +132,10 @@ type ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRow = internal.ListArtic
 func (q *Queries) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, arg ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams) ([]*Article, int64, error) {
 	internalArg := internal.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams{
 		Author: arg.Author,
-		IsFeatured: arg.IsFeatured,
+		IsFeatured: PtrToNullBool(arg.IsFeatured),
 		MinPublishedAt: PtrToNullTime(arg.MinPublishedAt),
 		MaxPublishedAt: PtrToNullTime(arg.MaxPublishedAt),
-		Title: arg.Title,
+		Title: PtrToNullString(arg.Title),
 		Limit: arg.Limit,
 		Offset: arg.Offset,
 	}

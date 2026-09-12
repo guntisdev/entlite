@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `article`(
   -- Free-form metadata, e.g. {"og_image":"/cover.png"}
   metadata TEXT CHECK (json_valid(metadata)),
   is_featured TINYINT(1) DEFAULT false NOT NULL,
-  created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 

@@ -187,8 +187,8 @@ CREATE TABLE IF NOT EXISTS "user"(
   is_admin BOOLEAN NOT NULL,
   api_key BYTEA NOT NULL,
   last_login_ms BIGINT NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );`
 
 	if content, err := os.ReadFile(sqlSchemaPath); err != nil {

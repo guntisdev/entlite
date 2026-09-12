@@ -205,10 +205,10 @@ func (s *ArticleServer) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(
 		ctx,
 		db.ListArticleFilterByAuthorIsFeaturedPublishedAtTitleParams{
 			Author:         req.Msg.Author,
-			IsFeatured:     req.Msg.GetIsFeatured(),
+			IsFeatured:     req.Msg.IsFeatured, // Optional() filter: nil skips it, unlike GetIsFeatured()'s false zero value
 			MinPublishedAt: protoToTimePtr(req.Msg.GetMinPublishedAt()),
 			MaxPublishedAt: protoToTimePtr(req.Msg.GetMaxPublishedAt()),
-			Title:          req.Msg.GetTitle(),
+			Title:          req.Msg.Title, // Optional() filter: nil skips it, unlike GetTitle()'s "" zero value
 			Limit:          req.Msg.GetLimit(),
 			Offset:         req.Msg.GetOffset(),
 		},

@@ -54,7 +54,7 @@ SELECT * FROM "article" WHERE author = @author LIMIT sqlc.arg('limit') OFFSET sq
 SELECT * FROM "article";
 
 -- name: ListArticleFilterByAuthorIsFeaturedPublishedAtTitle :many
-SELECT *, COUNT(*) OVER() AS total_size FROM "article" WHERE author = @author AND is_featured = @is_featured AND published_at >= @min_published_at AND published_at <= @max_published_at AND title LIKE @title ORDER BY published_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+SELECT *, COUNT(*) OVER() AS total_size FROM "article" WHERE author = @author AND (sqlc.narg('is_featured') IS NULL OR is_featured = sqlc.narg('is_featured')) AND (sqlc.narg('min_published_at') IS NULL OR published_at >= sqlc.narg('min_published_at')) AND (sqlc.narg('max_published_at') IS NULL OR published_at <= sqlc.narg('max_published_at')) AND (sqlc.narg('title') IS NULL OR title LIKE sqlc.narg('title')) ORDER BY published_at LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: UpdateArticle :one
 UPDATE "article" SET

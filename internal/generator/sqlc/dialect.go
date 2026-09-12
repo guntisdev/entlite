@@ -198,6 +198,23 @@ func (g *Generator) formatDefaultValue(value any, fieldType schema.FieldType) st
 	return fmt.Sprintf("%v", value)
 }
 
+// maps defaultFunc in go except for time.Now
+var defaultFuncSQL = map[string]string{
+	"time.Now": "CURRENT_TIMESTAMP",
+}
+
+func (g *Generator) formatDefaultFunc(field schema.Field) (string, bool) {
+	if field.DefaultFunc == nil {
+		return "", false
+	}
+	funcName, ok := field.DefaultFunc().(string)
+	if !ok {
+		return "", false
+	}
+	expr, ok := defaultFuncSQL[funcName]
+	return expr, ok
+}
+
 func (g *Generator) supportsReturning() bool {
 	switch g.sqlDialect {
 	case schema.MySQL:
@@ -394,6 +411,12 @@ func (g *Generator) namedArg(name string) string {
 	panic("unreachable: invalid SQL dialect")
 }
 
+// sqlc.narg() declares a nullable named arg regardless of dialect or the column's
+// own nullability - passing NULL is how a caller skips an optional filter/update field.
+func (g *Generator) nargArg(name string) string {
+	return fmt.Sprintf("sqlc.narg('%s')", name)
+}
+
 func (g *Generator) getParameterPlaceholder(index int) string {
 	switch g.sqlDialect {
 	case schema.PostgreSQL:
@@ -421,4 +444,14 @@ func (g *Generator) rangeClause(field string) string {
 	}
 
 	panic("unreachable: invalid SQL dialect")
+}
+
+// each bound is skipped independently when its arg is NULL, so BETWEEN doesn't
+// apply here - it can't express "no lower bound" or "no upper bound"
+func (g *Generator) rangeClauseOptional(field string) string {
+	column := g.column(field)
+	minArg := g.nargArg("min_" + field)
+	maxArg := g.nargArg("max_" + field)
+
+	return fmt.Sprintf("(%s IS NULL OR %s >= %s) AND (%s IS NULL OR %s <= %s)", minArg, column, minArg, maxArg, column, maxArg)
 }

@@ -198,27 +198,27 @@ func (ctx *generationContext) aggregateRowQuery(structName string) (dslQuery, bo
 	return target, true
 }
 
-func (ctx *generationContext) filterParamsEntity(structName string) (schema.Entity, bool) {
+func (ctx *generationContext) filterParamsEntity(structName string) (schema.Entity, schema.Query, bool) {
 	methodName, ok := strings.CutSuffix(structName, naming.SuffixParams)
 	if !ok {
-		return schema.Entity{}, false
+		return schema.Entity{}, schema.Query{}, false
 	}
 
 	// a custom Name() query does not follow the List<Entity>By... pattern
 	if target, ok := ctx.dslQueries[methodName]; ok {
 		switch target.query.Type {
 		case schema.QueryListBy, schema.QueryListAll, schema.QueryGetBy, schema.QueryDelete:
-			return target.entity, true
+			return target.entity, target.query, true
 		}
 	}
 
 	// a custom query only gets the entity's params struct when its wrapper fits
 	switch entity, kind := ctx.namedEntityWrap(methodName); kind {
 	case wrapGet, wrapList, wrapDelete:
-		return entity, true
+		return entity, schema.Query{}, true
 	}
 
-	return schema.Entity{}, false
+	return schema.Entity{}, schema.Query{}, false
 }
 
 func (ctx *generationContext) collectDeclarations() {
@@ -235,7 +235,7 @@ func (ctx *generationContext) collectDeclarations() {
 			for _, spec := range d.Specs {
 				if typeSpec, ok := spec.(*ast.TypeSpec); ok {
 					if structType, ok := typeSpec.Type.(*ast.StructType); ok {
-						if _, ok := ctx.filterParamsEntity(typeSpec.Name.Name); ok {
+						if _, _, ok := ctx.filterParamsEntity(typeSpec.Name.Name); ok {
 							ctx.filterParamsStructs[typeSpec.Name.Name] = structType
 						}
 						if target, ok := ctx.paramsQuery(typeSpec.Name.Name); ok {
@@ -529,8 +529,8 @@ func (ctx *generationContext) processQueryGenDecl(sb *strings.Builder, decl *ast
 			}
 
 			if structType, ok := ctx.filterParamsStructs[s.Name.Name]; ok {
-				if entity, ok := ctx.filterParamsEntity(s.Name.Name); ok {
-					sb.WriteString(generateFilterParamsStruct(s.Name.Name, structType, entity))
+				if entity, query, ok := ctx.filterParamsEntity(s.Name.Name); ok {
+					sb.WriteString(generateFilterParamsStruct(s.Name.Name, structType, entity, query))
 					continue
 				}
 			}

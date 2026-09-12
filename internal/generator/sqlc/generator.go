@@ -127,6 +127,8 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 		if field.DefaultValue != nil && field.Type != schema.FieldTypeJSON {
 			defaultVal := g.formatDefaultValue(field.DefaultValue, field.Type)
 			column.WriteString(fmt.Sprintf(" DEFAULT %s", defaultVal))
+		} else if expr, ok := g.formatDefaultFunc(field); ok {
+			column.WriteString(fmt.Sprintf(" DEFAULT %s", expr))
 		}
 
 		if !field.Optional {
@@ -137,7 +139,6 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 			column.WriteString(" " + check)
 		}
 
-		// TODO write logic for DefaultFunc etc
 		columns = append(columns, column.String())
 	}
 
@@ -301,13 +302,27 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 		for _, filter := range query.Filters {
 			switch filter.Type {
 			case schema.QueryFilterEq:
-				whereParts = append(whereParts, fmt.Sprintf("%s = %s", g.column(filter.Field), g.namedArg(filter.Field)))
+				if filter.Optional {
+					arg := g.nargArg(filter.Field)
+					whereParts = append(whereParts, fmt.Sprintf("(%s IS NULL OR %s = %s)", arg, g.column(filter.Field), arg))
+				} else {
+					whereParts = append(whereParts, fmt.Sprintf("%s = %s", g.column(filter.Field), g.namedArg(filter.Field)))
+				}
 
 			case schema.QueryFilterSearch:
-				whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", g.column(filter.Field), g.namedArg(filter.Field)))
+				if filter.Optional {
+					arg := g.nargArg(filter.Field)
+					whereParts = append(whereParts, fmt.Sprintf("(%s IS NULL OR %s LIKE %s)", arg, g.column(filter.Field), arg))
+				} else {
+					whereParts = append(whereParts, fmt.Sprintf("%s LIKE %s", g.column(filter.Field), g.namedArg(filter.Field)))
+				}
 
 			case schema.QueryFilterRange:
-				whereParts = append(whereParts, g.rangeClause(filter.Field))
+				if filter.Optional {
+					whereParts = append(whereParts, g.rangeClauseOptional(filter.Field))
+				} else {
+					whereParts = append(whereParts, g.rangeClause(filter.Field))
+				}
 			}
 		}
 		selectSQL := fmt.Sprintf("SELECT * FROM %s", g.quote(tableName))
@@ -402,7 +417,7 @@ func (g *Generator) generateCRUDQueries(entity schema.Entity) string {
 			var fieldUpdate string
 			if !canApiRead || acceptOptional {
 				// This makes the field optional in updates - if NULL is passed, keep existing value
-				fieldUpdate = fmt.Sprintf("  %s = COALESCE(sqlc.narg('%s'), %s)", g.column(field.Name), field.Name, g.column(field.Name))
+				fieldUpdate = fmt.Sprintf("  %s = COALESCE(%s, %s)", g.column(field.Name), g.nargArg(field.Name), g.column(field.Name))
 			} else {
 				fieldUpdate = fmt.Sprintf("  %s = %s", g.column(field.Name), g.namedArg(field.Name))
 			}

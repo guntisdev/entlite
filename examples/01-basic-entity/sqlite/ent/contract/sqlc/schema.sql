@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS "user"(
   rating REAL DEFAULT 0 NOT NULL,
   -- UI preferences, e.g. {"theme":"dark"}
   preferences TEXT NOT NULL CHECK (json_valid(preferences)),
-  created_at DATETIME NOT NULL,
-  updated_at DATETIME NOT NULL
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE INDEX IF NOT EXISTS "idx_user_age_is_active" ON "user" (age, is_active);
 CREATE INDEX IF NOT EXISTS "idx_user_is_active_created_at" ON "user" (is_active, created_at DESC);

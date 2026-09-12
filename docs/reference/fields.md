@@ -29,7 +29,7 @@ Creates a string field with the given column name.
 | --- | --- |
 | `Unique() StringFieldBuilder` | Makes the value unique across all rows. |
 | `Default(string) StringFieldBuilder` | Sets a fixed default value, it clears DefaultFunc. |
-| `DefaultFunc(func() string) StringFieldBuilder` | Sets a default value computed on insert, it clears Default. |
+| `DefaultFunc(func() string) StringFieldBuilder` | Sets a default value computed in Go on insert, it clears Default. The SQL schema gets no DEFAULT for it, only entlite's generated Go code fills it in. |
 | `ProtoField(int) StringFieldBuilder` | Pins the proto field number, so it stays stable. |
 | `Contracts(contracts ...entlite.Contract) StringFieldBuilder` | Limits the field to the given layers, sqlc or proto. |
 | `Immutable() StringFieldBuilder` | Blocks changes after the row is created. |
@@ -100,7 +100,7 @@ Creates a timestamp field with the given column name.
 | Method | Description |
 | --- | --- |
 | `Default(time.Time) TimeFieldBuilder` | Sets a fixed default value, it clears DefaultFunc. |
-| `DefaultFunc(func() time.Time) TimeFieldBuilder` | Sets a default value computed on insert, it clears Default. |
+| `DefaultFunc(func() time.Time) TimeFieldBuilder` | Sets a default value computed in Go on insert, it clears Default. time.Now is the one exception: it also becomes a SQL DEFAULT CURRENT_TIMESTAMP, any other func stays Go-only, with no SQL-level default. |
 | `ProtoField(int) TimeFieldBuilder` | Pins the proto field number, so it stays stable. |
 | `Contracts(contracts ...entlite.Contract) TimeFieldBuilder` | Limits the field to the given layers, sqlc or proto. |
 | `Immutable() TimeFieldBuilder` | Blocks changes after the row is created. |
@@ -120,7 +120,7 @@ Creates a bytes field with the given column name.
 | `Immutable() ByteFieldBuilder` | Blocks changes after the row is created. |
 | `ProtoField(int) ByteFieldBuilder` | Pins the proto field number, so it stays stable. |
 | `Contracts(contracts ...entlite.Contract) ByteFieldBuilder` | Limits the field to the given layers, sqlc or proto. |
-| `DefaultFunc(func() []byte) ByteFieldBuilder` | Sets a default value computed on insert. |
+| `DefaultFunc(func() []byte) ByteFieldBuilder` | Sets a default value computed in Go on insert. The SQL schema gets no DEFAULT for it, only entlite's generated Go code fills it in. |
 | `Validate(func([]byte) bool) ByteFieldBuilder` | Checks the value before it is written. |
 
 ## JSON
@@ -136,5 +136,5 @@ Creates a json field with the given column name.
 | `ProtoField(int) JSONFieldBuilder` | Pins the proto field number, so it stays stable. |
 | `Contracts(contracts ...entlite.Contract) JSONFieldBuilder` | Limits the field to the given layers, sqlc or proto. |
 | `Default(string) JSONFieldBuilder` | Takes raw json text, e.g. `{}` or `{"theme":"dark"}` |
-| `DefaultFunc(func() string) JSONFieldBuilder` | Sets a default value computed on insert, it clears Default. |
+| `DefaultFunc(func() string) JSONFieldBuilder` | Sets a default value computed in Go on insert, it clears Default. The SQL schema gets no DEFAULT for it, only entlite's generated Go code fills it in. |
 | `Validate(func(string) bool) JSONFieldBuilder` | Checks the value before it is written. |
