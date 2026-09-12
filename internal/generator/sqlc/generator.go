@@ -127,6 +127,8 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 		if field.DefaultValue != nil && field.Type != schema.FieldTypeJSON {
 			defaultVal := g.formatDefaultValue(field.DefaultValue, field.Type)
 			column.WriteString(fmt.Sprintf(" DEFAULT %s", defaultVal))
+		} else if expr, ok := g.formatDefaultFunc(field); ok {
+			column.WriteString(fmt.Sprintf(" DEFAULT %s", expr))
 		}
 
 		if !field.Optional {
@@ -137,7 +139,6 @@ func (g *Generator) generateTableSQL(entity schema.Entity) string {
 			column.WriteString(" " + check)
 		}
 
-		// TODO write logic for DefaultFunc etc
 		columns = append(columns, column.String())
 	}
 

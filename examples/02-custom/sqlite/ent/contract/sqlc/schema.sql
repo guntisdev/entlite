@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS "sensor"(
   sample_rate_ms INTEGER DEFAULT 1000 NOT NULL,
   -- When the device was physically installed (client-supplied)
   installed_at DATETIME NOT NULL,
-  created_at DATETIME NOT NULL,
-  updated_at DATETIME NOT NULL
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- SensorReading is a single measurement captured by a Sensor.
@@ -36,6 +36,6 @@ CREATE TABLE IF NOT EXISTS "sensor_reading"(
   flagged INTEGER DEFAULT false NOT NULL,
   -- Device measurement time (client-supplied)
   recorded_at DATETIME NOT NULL,
-  created_at DATETIME NOT NULL
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 

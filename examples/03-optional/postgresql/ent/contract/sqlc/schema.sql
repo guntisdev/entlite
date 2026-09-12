@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "article"(
   -- Free-form metadata, e.g. {"og_image":"/cover.png"}
   metadata JSONB,
   is_featured BOOLEAN DEFAULT false NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 

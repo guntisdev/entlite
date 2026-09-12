@@ -5,7 +5,6 @@ Documentation: [docs/](docs/README.md) — [getting started](docs/guide/01-getti
 
 ## TODO
 * Wire buf lint into the pipeline, it needs the proto package and rpc response type decisions first
-* Implement DefaultFunc for sql generation
 * Add mcp for visual testing of examples/
 * Generate proto package name "modulename.v1"
 

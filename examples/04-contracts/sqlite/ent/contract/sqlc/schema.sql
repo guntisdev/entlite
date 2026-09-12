@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "audit"(
   "action" TEXT NOT NULL,
   match_id INTEGER NOT NULL,
   detail TEXT NOT NULL,
-  created_at DATETIME NOT NULL
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- match table
@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS "match"(
   -- e.g. Sicilian Defence
   opening TEXT,
   moves INTEGER NOT NULL,
-  played_at DATETIME NOT NULL,
-  created_at DATETIME NOT NULL
+  played_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Player is the club roster, written on the server and read by members.
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS "player"(
   rating INTEGER NOT NULL,
   -- e.g. GM, IM, FM
   title TEXT,
-  joined_at DATETIME NOT NULL,
+  joined_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   PRIMARY KEY (name)
 );
 

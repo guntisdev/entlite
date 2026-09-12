@@ -198,6 +198,23 @@ func (g *Generator) formatDefaultValue(value any, fieldType schema.FieldType) st
 	return fmt.Sprintf("%v", value)
 }
 
+// maps defaultFunc in go except for time.Now
+var defaultFuncSQL = map[string]string{
+	"time.Now": "CURRENT_TIMESTAMP",
+}
+
+func (g *Generator) formatDefaultFunc(field schema.Field) (string, bool) {
+	if field.DefaultFunc == nil {
+		return "", false
+	}
+	funcName, ok := field.DefaultFunc().(string)
+	if !ok {
+		return "", false
+	}
+	expr, ok := defaultFuncSQL[funcName]
+	return expr, ok
+}
+
 func (g *Generator) supportsReturning() bool {
 	switch g.sqlDialect {
 	case schema.MySQL:
