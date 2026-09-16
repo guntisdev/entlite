@@ -36,6 +36,7 @@ ent/
 ├── buf.yaml
 ├── buf.gen.yaml
 ├── buf.lock
+├── entlite.yaml       # proto package name and version
 ├── sqlc.yaml          # dialect and sqlc settings
 └── generate.go        # the go:generate lines that run the pipeline
 ```
