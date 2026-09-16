@@ -26,7 +26,14 @@ func protoValidate() {
 		os.Exit(1)
 	}
 
-	outputDir := bufConfig.ProtoTypesDir
+	packageName, err := resolveProtoPackage(".")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed resolving proto package name: %v\n", err)
+		os.Exit(1)
+	}
+
+	// must match the nested dir genCommand wrote the .proto file into
+	outputDir := path.Join(bufConfig.ProtoTypesDir, util.ProtoPackageDir(packageName))
 
 	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
 		fmt.Fprintf(os.Stderr, "Output directory does not exist, must be created by buf %v\n", err)
