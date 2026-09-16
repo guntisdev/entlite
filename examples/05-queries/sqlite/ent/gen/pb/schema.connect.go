@@ -24,7 +24,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// BuildServiceName is the fully-qualified name of the BuildService service.
-	BuildServiceName = "proto.BuildService"
+	BuildServiceName = "queries.v1.BuildService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -37,61 +37,61 @@ const (
 const (
 	// BuildServiceCreateBuildProcedure is the fully-qualified name of the BuildService's CreateBuild
 	// RPC.
-	BuildServiceCreateBuildProcedure = "/proto.BuildService/CreateBuild"
+	BuildServiceCreateBuildProcedure = "/queries.v1.BuildService/CreateBuild"
 	// BuildServiceCreateBulkBuildProcedure is the fully-qualified name of the BuildService's
 	// CreateBulkBuild RPC.
-	BuildServiceCreateBulkBuildProcedure = "/proto.BuildService/CreateBulkBuild"
+	BuildServiceCreateBulkBuildProcedure = "/queries.v1.BuildService/CreateBulkBuild"
 	// BuildServiceGetBuildByIdProcedure is the fully-qualified name of the BuildService's GetBuildById
 	// RPC.
-	BuildServiceGetBuildByIdProcedure = "/proto.BuildService/GetBuildById"
+	BuildServiceGetBuildByIdProcedure = "/queries.v1.BuildService/GetBuildById"
 	// BuildServiceGetBuildByCommitShaProcedure is the fully-qualified name of the BuildService's
 	// GetBuildByCommitSha RPC.
-	BuildServiceGetBuildByCommitShaProcedure = "/proto.BuildService/GetBuildByCommitSha"
+	BuildServiceGetBuildByCommitShaProcedure = "/queries.v1.BuildService/GetBuildByCommitSha"
 	// BuildServiceUpdateBuildProcedure is the fully-qualified name of the BuildService's UpdateBuild
 	// RPC.
-	BuildServiceUpdateBuildProcedure = "/proto.BuildService/UpdateBuild"
+	BuildServiceUpdateBuildProcedure = "/queries.v1.BuildService/UpdateBuild"
 	// BuildServiceDeleteBuildProcedure is the fully-qualified name of the BuildService's DeleteBuild
 	// RPC.
-	BuildServiceDeleteBuildProcedure = "/proto.BuildService/DeleteBuild"
+	BuildServiceDeleteBuildProcedure = "/queries.v1.BuildService/DeleteBuild"
 	// BuildServiceDeleteAllBuildProcedure is the fully-qualified name of the BuildService's
 	// DeleteAllBuild RPC.
-	BuildServiceDeleteAllBuildProcedure = "/proto.BuildService/DeleteAllBuild"
+	BuildServiceDeleteAllBuildProcedure = "/queries.v1.BuildService/DeleteAllBuild"
 	// BuildServiceListAllBuildProcedure is the fully-qualified name of the BuildService's ListAllBuild
 	// RPC.
-	BuildServiceListAllBuildProcedure = "/proto.BuildService/ListAllBuild"
+	BuildServiceListAllBuildProcedure = "/queries.v1.BuildService/ListAllBuild"
 	// BuildServiceListBuildByBranchProcedure is the fully-qualified name of the BuildService's
 	// ListBuildByBranch RPC.
-	BuildServiceListBuildByBranchProcedure = "/proto.BuildService/ListBuildByBranch"
+	BuildServiceListBuildByBranchProcedure = "/queries.v1.BuildService/ListBuildByBranch"
 	// BuildServiceListBranchStatusHistoryProcedure is the fully-qualified name of the BuildService's
 	// ListBranchStatusHistory RPC.
-	BuildServiceListBranchStatusHistoryProcedure = "/proto.BuildService/ListBranchStatusHistory"
+	BuildServiceListBranchStatusHistoryProcedure = "/queries.v1.BuildService/ListBranchStatusHistory"
 	// BuildServiceListLatestBuildsProcedure is the fully-qualified name of the BuildService's
 	// ListLatestBuilds RPC.
-	BuildServiceListLatestBuildsProcedure = "/proto.BuildService/ListLatestBuilds"
+	BuildServiceListLatestBuildsProcedure = "/queries.v1.BuildService/ListLatestBuilds"
 	// BuildServiceSearchBuildsProcedure is the fully-qualified name of the BuildService's SearchBuilds
 	// RPC.
-	BuildServiceSearchBuildsProcedure = "/proto.BuildService/SearchBuilds"
+	BuildServiceSearchBuildsProcedure = "/queries.v1.BuildService/SearchBuilds"
 	// BuildServiceListBranchesProcedure is the fully-qualified name of the BuildService's ListBranches
 	// RPC.
-	BuildServiceListBranchesProcedure = "/proto.BuildService/ListBranches"
+	BuildServiceListBranchesProcedure = "/queries.v1.BuildService/ListBranches"
 	// BuildServiceListEnvBranchesProcedure is the fully-qualified name of the BuildService's
 	// ListEnvBranches RPC.
-	BuildServiceListEnvBranchesProcedure = "/proto.BuildService/ListEnvBranches"
+	BuildServiceListEnvBranchesProcedure = "/queries.v1.BuildService/ListEnvBranches"
 	// BuildServiceListBranchStatusesProcedure is the fully-qualified name of the BuildService's
 	// ListBranchStatuses RPC.
-	BuildServiceListBranchStatusesProcedure = "/proto.BuildService/ListBranchStatuses"
+	BuildServiceListBranchStatusesProcedure = "/queries.v1.BuildService/ListBranchStatuses"
 	// BuildServiceBuildTotalsProcedure is the fully-qualified name of the BuildService's BuildTotals
 	// RPC.
-	BuildServiceBuildTotalsProcedure = "/proto.BuildService/BuildTotals"
+	BuildServiceBuildTotalsProcedure = "/queries.v1.BuildService/BuildTotals"
 	// BuildServiceBranchDurationsProcedure is the fully-qualified name of the BuildService's
 	// BranchDurations RPC.
-	BuildServiceBranchDurationsProcedure = "/proto.BuildService/BranchDurations"
+	BuildServiceBranchDurationsProcedure = "/queries.v1.BuildService/BranchDurations"
 	// BuildServiceListEnvBranchDurationsProcedure is the fully-qualified name of the BuildService's
 	// ListEnvBranchDurations RPC.
-	BuildServiceListEnvBranchDurationsProcedure = "/proto.BuildService/ListEnvBranchDurations"
+	BuildServiceListEnvBranchDurationsProcedure = "/queries.v1.BuildService/ListEnvBranchDurations"
 )
 
-// BuildServiceClient is a client for the proto.BuildService service.
+// BuildServiceClient is a client for the queries.v1.BuildService service.
 type BuildServiceClient interface {
 	// re-running the same commit overwrites the row instead of failing on the
 	// unique column
@@ -131,8 +131,8 @@ type BuildServiceClient interface {
 	ListEnvBranchDurations(context.Context, *connect.Request[ListEnvBranchDurationsRequest]) (*connect.Response[ListEnvBranchDurationsResponse], error)
 }
 
-// NewBuildServiceClient constructs a client for the proto.BuildService service. By default, it uses
-// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
+// NewBuildServiceClient constructs a client for the queries.v1.BuildService service. By default, it
+// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
 //
@@ -275,97 +275,97 @@ type buildServiceClient struct {
 	listEnvBranchDurations  *connect.Client[ListEnvBranchDurationsRequest, ListEnvBranchDurationsResponse]
 }
 
-// CreateBuild calls proto.BuildService.CreateBuild.
+// CreateBuild calls queries.v1.BuildService.CreateBuild.
 func (c *buildServiceClient) CreateBuild(ctx context.Context, req *connect.Request[CreateBuildRequest]) (*connect.Response[Build], error) {
 	return c.createBuild.CallUnary(ctx, req)
 }
 
-// CreateBulkBuild calls proto.BuildService.CreateBulkBuild.
+// CreateBulkBuild calls queries.v1.BuildService.CreateBulkBuild.
 func (c *buildServiceClient) CreateBulkBuild(ctx context.Context, req *connect.Request[CreateBulkBuildRequest]) (*connect.Response[CreateBulkBuildResponse], error) {
 	return c.createBulkBuild.CallUnary(ctx, req)
 }
 
-// GetBuildById calls proto.BuildService.GetBuildById.
+// GetBuildById calls queries.v1.BuildService.GetBuildById.
 func (c *buildServiceClient) GetBuildById(ctx context.Context, req *connect.Request[GetBuildByIdRequest]) (*connect.Response[Build], error) {
 	return c.getBuildById.CallUnary(ctx, req)
 }
 
-// GetBuildByCommitSha calls proto.BuildService.GetBuildByCommitSha.
+// GetBuildByCommitSha calls queries.v1.BuildService.GetBuildByCommitSha.
 func (c *buildServiceClient) GetBuildByCommitSha(ctx context.Context, req *connect.Request[GetBuildByCommitShaRequest]) (*connect.Response[Build], error) {
 	return c.getBuildByCommitSha.CallUnary(ctx, req)
 }
 
-// UpdateBuild calls proto.BuildService.UpdateBuild.
+// UpdateBuild calls queries.v1.BuildService.UpdateBuild.
 func (c *buildServiceClient) UpdateBuild(ctx context.Context, req *connect.Request[UpdateBuildRequest]) (*connect.Response[Build], error) {
 	return c.updateBuild.CallUnary(ctx, req)
 }
 
-// DeleteBuild calls proto.BuildService.DeleteBuild.
+// DeleteBuild calls queries.v1.BuildService.DeleteBuild.
 func (c *buildServiceClient) DeleteBuild(ctx context.Context, req *connect.Request[DeleteBuildRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteBuild.CallUnary(ctx, req)
 }
 
-// DeleteAllBuild calls proto.BuildService.DeleteAllBuild.
+// DeleteAllBuild calls queries.v1.BuildService.DeleteAllBuild.
 func (c *buildServiceClient) DeleteAllBuild(ctx context.Context, req *connect.Request[DeleteAllBuildRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteAllBuild.CallUnary(ctx, req)
 }
 
-// ListAllBuild calls proto.BuildService.ListAllBuild.
+// ListAllBuild calls queries.v1.BuildService.ListAllBuild.
 func (c *buildServiceClient) ListAllBuild(ctx context.Context, req *connect.Request[ListAllBuildRequest]) (*connect.Response[ListAllBuildResponse], error) {
 	return c.listAllBuild.CallUnary(ctx, req)
 }
 
-// ListBuildByBranch calls proto.BuildService.ListBuildByBranch.
+// ListBuildByBranch calls queries.v1.BuildService.ListBuildByBranch.
 func (c *buildServiceClient) ListBuildByBranch(ctx context.Context, req *connect.Request[ListBuildByBranchRequest]) (*connect.Response[ListBuildByBranchResponse], error) {
 	return c.listBuildByBranch.CallUnary(ctx, req)
 }
 
-// ListBranchStatusHistory calls proto.BuildService.ListBranchStatusHistory.
+// ListBranchStatusHistory calls queries.v1.BuildService.ListBranchStatusHistory.
 func (c *buildServiceClient) ListBranchStatusHistory(ctx context.Context, req *connect.Request[ListBranchStatusHistoryRequest]) (*connect.Response[ListBranchStatusHistoryResponse], error) {
 	return c.listBranchStatusHistory.CallUnary(ctx, req)
 }
 
-// ListLatestBuilds calls proto.BuildService.ListLatestBuilds.
+// ListLatestBuilds calls queries.v1.BuildService.ListLatestBuilds.
 func (c *buildServiceClient) ListLatestBuilds(ctx context.Context, req *connect.Request[ListLatestBuildsRequest]) (*connect.Response[ListLatestBuildsResponse], error) {
 	return c.listLatestBuilds.CallUnary(ctx, req)
 }
 
-// SearchBuilds calls proto.BuildService.SearchBuilds.
+// SearchBuilds calls queries.v1.BuildService.SearchBuilds.
 func (c *buildServiceClient) SearchBuilds(ctx context.Context, req *connect.Request[SearchBuildsRequest]) (*connect.Response[SearchBuildsResponse], error) {
 	return c.searchBuilds.CallUnary(ctx, req)
 }
 
-// ListBranches calls proto.BuildService.ListBranches.
+// ListBranches calls queries.v1.BuildService.ListBranches.
 func (c *buildServiceClient) ListBranches(ctx context.Context, req *connect.Request[ListBranchesRequest]) (*connect.Response[ListBranchesResponse], error) {
 	return c.listBranches.CallUnary(ctx, req)
 }
 
-// ListEnvBranches calls proto.BuildService.ListEnvBranches.
+// ListEnvBranches calls queries.v1.BuildService.ListEnvBranches.
 func (c *buildServiceClient) ListEnvBranches(ctx context.Context, req *connect.Request[ListEnvBranchesRequest]) (*connect.Response[ListEnvBranchesResponse], error) {
 	return c.listEnvBranches.CallUnary(ctx, req)
 }
 
-// ListBranchStatuses calls proto.BuildService.ListBranchStatuses.
+// ListBranchStatuses calls queries.v1.BuildService.ListBranchStatuses.
 func (c *buildServiceClient) ListBranchStatuses(ctx context.Context, req *connect.Request[ListBranchStatusesRequest]) (*connect.Response[ListBranchStatusesResponse], error) {
 	return c.listBranchStatuses.CallUnary(ctx, req)
 }
 
-// BuildTotals calls proto.BuildService.BuildTotals.
+// BuildTotals calls queries.v1.BuildService.BuildTotals.
 func (c *buildServiceClient) BuildTotals(ctx context.Context, req *connect.Request[BuildTotalsRequest]) (*connect.Response[BuildTotalsResponse], error) {
 	return c.buildTotals.CallUnary(ctx, req)
 }
 
-// BranchDurations calls proto.BuildService.BranchDurations.
+// BranchDurations calls queries.v1.BuildService.BranchDurations.
 func (c *buildServiceClient) BranchDurations(ctx context.Context, req *connect.Request[BranchDurationsRequest]) (*connect.Response[BranchDurationsResponse], error) {
 	return c.branchDurations.CallUnary(ctx, req)
 }
 
-// ListEnvBranchDurations calls proto.BuildService.ListEnvBranchDurations.
+// ListEnvBranchDurations calls queries.v1.BuildService.ListEnvBranchDurations.
 func (c *buildServiceClient) ListEnvBranchDurations(ctx context.Context, req *connect.Request[ListEnvBranchDurationsRequest]) (*connect.Response[ListEnvBranchDurationsResponse], error) {
 	return c.listEnvBranchDurations.CallUnary(ctx, req)
 }
 
-// BuildServiceHandler is an implementation of the proto.BuildService service.
+// BuildServiceHandler is an implementation of the queries.v1.BuildService service.
 type BuildServiceHandler interface {
 	// re-running the same commit overwrites the row instead of failing on the
 	// unique column
@@ -520,7 +520,7 @@ func NewBuildServiceHandler(svc BuildServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(buildServiceMethods.ByName("ListEnvBranchDurations")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/proto.BuildService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/queries.v1.BuildService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BuildServiceCreateBuildProcedure:
 			buildServiceCreateBuildHandler.ServeHTTP(w, r)
@@ -568,73 +568,73 @@ func NewBuildServiceHandler(svc BuildServiceHandler, opts ...connect.HandlerOpti
 type UnimplementedBuildServiceHandler struct{}
 
 func (UnimplementedBuildServiceHandler) CreateBuild(context.Context, *connect.Request[CreateBuildRequest]) (*connect.Response[Build], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.CreateBuild is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.CreateBuild is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) CreateBulkBuild(context.Context, *connect.Request[CreateBulkBuildRequest]) (*connect.Response[CreateBulkBuildResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.CreateBulkBuild is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.CreateBulkBuild is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) GetBuildById(context.Context, *connect.Request[GetBuildByIdRequest]) (*connect.Response[Build], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.GetBuildById is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.GetBuildById is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) GetBuildByCommitSha(context.Context, *connect.Request[GetBuildByCommitShaRequest]) (*connect.Response[Build], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.GetBuildByCommitSha is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.GetBuildByCommitSha is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) UpdateBuild(context.Context, *connect.Request[UpdateBuildRequest]) (*connect.Response[Build], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.UpdateBuild is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.UpdateBuild is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) DeleteBuild(context.Context, *connect.Request[DeleteBuildRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.DeleteBuild is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.DeleteBuild is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) DeleteAllBuild(context.Context, *connect.Request[DeleteAllBuildRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.DeleteAllBuild is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.DeleteAllBuild is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) ListAllBuild(context.Context, *connect.Request[ListAllBuildRequest]) (*connect.Response[ListAllBuildResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListAllBuild is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.ListAllBuild is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) ListBuildByBranch(context.Context, *connect.Request[ListBuildByBranchRequest]) (*connect.Response[ListBuildByBranchResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListBuildByBranch is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.ListBuildByBranch is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) ListBranchStatusHistory(context.Context, *connect.Request[ListBranchStatusHistoryRequest]) (*connect.Response[ListBranchStatusHistoryResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListBranchStatusHistory is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.ListBranchStatusHistory is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) ListLatestBuilds(context.Context, *connect.Request[ListLatestBuildsRequest]) (*connect.Response[ListLatestBuildsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListLatestBuilds is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.ListLatestBuilds is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) SearchBuilds(context.Context, *connect.Request[SearchBuildsRequest]) (*connect.Response[SearchBuildsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.SearchBuilds is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.SearchBuilds is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) ListBranches(context.Context, *connect.Request[ListBranchesRequest]) (*connect.Response[ListBranchesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListBranches is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.ListBranches is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) ListEnvBranches(context.Context, *connect.Request[ListEnvBranchesRequest]) (*connect.Response[ListEnvBranchesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListEnvBranches is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.ListEnvBranches is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) ListBranchStatuses(context.Context, *connect.Request[ListBranchStatusesRequest]) (*connect.Response[ListBranchStatusesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListBranchStatuses is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.ListBranchStatuses is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) BuildTotals(context.Context, *connect.Request[BuildTotalsRequest]) (*connect.Response[BuildTotalsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.BuildTotals is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.BuildTotals is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) BranchDurations(context.Context, *connect.Request[BranchDurationsRequest]) (*connect.Response[BranchDurationsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.BranchDurations is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.BranchDurations is not implemented"))
 }
 
 func (UnimplementedBuildServiceHandler) ListEnvBranchDurations(context.Context, *connect.Request[ListEnvBranchDurationsRequest]) (*connect.Response[ListEnvBranchDurationsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.BuildService.ListEnvBranchDurations is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("queries.v1.BuildService.ListEnvBranchDurations is not implemented"))
 }

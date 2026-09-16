@@ -24,7 +24,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// UserServiceName is the fully-qualified name of the UserService service.
-	UserServiceName = "proto.UserService"
+	UserServiceName = "basicentity.v1.UserService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -36,32 +36,32 @@ const (
 // period.
 const (
 	// UserServiceCreateUserProcedure is the fully-qualified name of the UserService's CreateUser RPC.
-	UserServiceCreateUserProcedure = "/proto.UserService/CreateUser"
+	UserServiceCreateUserProcedure = "/basicentity.v1.UserService/CreateUser"
 	// UserServiceGetUserByIdProcedure is the fully-qualified name of the UserService's GetUserById RPC.
-	UserServiceGetUserByIdProcedure = "/proto.UserService/GetUserById"
+	UserServiceGetUserByIdProcedure = "/basicentity.v1.UserService/GetUserById"
 	// UserServiceUpdateUserProcedure is the fully-qualified name of the UserService's UpdateUser RPC.
-	UserServiceUpdateUserProcedure = "/proto.UserService/UpdateUser"
+	UserServiceUpdateUserProcedure = "/basicentity.v1.UserService/UpdateUser"
 	// UserServiceDeleteUserProcedure is the fully-qualified name of the UserService's DeleteUser RPC.
-	UserServiceDeleteUserProcedure = "/proto.UserService/DeleteUser"
+	UserServiceDeleteUserProcedure = "/basicentity.v1.UserService/DeleteUser"
 	// UserServiceCreateBulkUserProcedure is the fully-qualified name of the UserService's
 	// CreateBulkUser RPC.
-	UserServiceCreateBulkUserProcedure = "/proto.UserService/CreateBulkUser"
+	UserServiceCreateBulkUserProcedure = "/basicentity.v1.UserService/CreateBulkUser"
 	// UserServiceGetUserByEmailProcedure is the fully-qualified name of the UserService's
 	// GetUserByEmail RPC.
-	UserServiceGetUserByEmailProcedure = "/proto.UserService/GetUserByEmail"
+	UserServiceGetUserByEmailProcedure = "/basicentity.v1.UserService/GetUserByEmail"
 	// UserServiceListAllUserProcedure is the fully-qualified name of the UserService's ListAllUser RPC.
-	UserServiceListAllUserProcedure = "/proto.UserService/ListAllUser"
+	UserServiceListAllUserProcedure = "/basicentity.v1.UserService/ListAllUser"
 	// UserServiceDeleteAllUserProcedure is the fully-qualified name of the UserService's DeleteAllUser
 	// RPC.
-	UserServiceDeleteAllUserProcedure = "/proto.UserService/DeleteAllUser"
+	UserServiceDeleteAllUserProcedure = "/basicentity.v1.UserService/DeleteAllUser"
 	// UserServiceListActiveProcedure is the fully-qualified name of the UserService's ListActive RPC.
-	UserServiceListActiveProcedure = "/proto.UserService/ListActive"
+	UserServiceListActiveProcedure = "/basicentity.v1.UserService/ListActive"
 	// UserServiceListUserFilterByAgeNameProcedure is the fully-qualified name of the UserService's
 	// ListUserFilterByAgeName RPC.
-	UserServiceListUserFilterByAgeNameProcedure = "/proto.UserService/ListUserFilterByAgeName"
+	UserServiceListUserFilterByAgeNameProcedure = "/basicentity.v1.UserService/ListUserFilterByAgeName"
 )
 
-// UserServiceClient is a client for the proto.UserService service.
+// UserServiceClient is a client for the basicentity.v1.UserService service.
 type UserServiceClient interface {
 	CreateUser(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error)
 	GetUserById(context.Context, *connect.Request[GetUserByIdRequest]) (*connect.Response[User], error)
@@ -77,10 +77,10 @@ type UserServiceClient interface {
 	ListUserFilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error)
 }
 
-// NewUserServiceClient constructs a client for the proto.UserService service. By default, it uses
-// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
-// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
-// connect.WithGRPCWeb() options.
+// NewUserServiceClient constructs a client for the basicentity.v1.UserService service. By default,
+// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
+// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
+// or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -165,57 +165,57 @@ type userServiceClient struct {
 	listUserFilterByAgeName *connect.Client[ListUserFilterByAgeNameRequest, ListUserFilterByAgeNameResponse]
 }
 
-// CreateUser calls proto.UserService.CreateUser.
+// CreateUser calls basicentity.v1.UserService.CreateUser.
 func (c *userServiceClient) CreateUser(ctx context.Context, req *connect.Request[CreateUserRequest]) (*connect.Response[User], error) {
 	return c.createUser.CallUnary(ctx, req)
 }
 
-// GetUserById calls proto.UserService.GetUserById.
+// GetUserById calls basicentity.v1.UserService.GetUserById.
 func (c *userServiceClient) GetUserById(ctx context.Context, req *connect.Request[GetUserByIdRequest]) (*connect.Response[User], error) {
 	return c.getUserById.CallUnary(ctx, req)
 }
 
-// UpdateUser calls proto.UserService.UpdateUser.
+// UpdateUser calls basicentity.v1.UserService.UpdateUser.
 func (c *userServiceClient) UpdateUser(ctx context.Context, req *connect.Request[UpdateUserRequest]) (*connect.Response[User], error) {
 	return c.updateUser.CallUnary(ctx, req)
 }
 
-// DeleteUser calls proto.UserService.DeleteUser.
+// DeleteUser calls basicentity.v1.UserService.DeleteUser.
 func (c *userServiceClient) DeleteUser(ctx context.Context, req *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteUser.CallUnary(ctx, req)
 }
 
-// CreateBulkUser calls proto.UserService.CreateBulkUser.
+// CreateBulkUser calls basicentity.v1.UserService.CreateBulkUser.
 func (c *userServiceClient) CreateBulkUser(ctx context.Context, req *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error) {
 	return c.createBulkUser.CallUnary(ctx, req)
 }
 
-// GetUserByEmail calls proto.UserService.GetUserByEmail.
+// GetUserByEmail calls basicentity.v1.UserService.GetUserByEmail.
 func (c *userServiceClient) GetUserByEmail(ctx context.Context, req *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error) {
 	return c.getUserByEmail.CallUnary(ctx, req)
 }
 
-// ListAllUser calls proto.UserService.ListAllUser.
+// ListAllUser calls basicentity.v1.UserService.ListAllUser.
 func (c *userServiceClient) ListAllUser(ctx context.Context, req *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error) {
 	return c.listAllUser.CallUnary(ctx, req)
 }
 
-// DeleteAllUser calls proto.UserService.DeleteAllUser.
+// DeleteAllUser calls basicentity.v1.UserService.DeleteAllUser.
 func (c *userServiceClient) DeleteAllUser(ctx context.Context, req *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteAllUser.CallUnary(ctx, req)
 }
 
-// ListActive calls proto.UserService.ListActive.
+// ListActive calls basicentity.v1.UserService.ListActive.
 func (c *userServiceClient) ListActive(ctx context.Context, req *connect.Request[ListActiveRequest]) (*connect.Response[ListActiveResponse], error) {
 	return c.listActive.CallUnary(ctx, req)
 }
 
-// ListUserFilterByAgeName calls proto.UserService.ListUserFilterByAgeName.
+// ListUserFilterByAgeName calls basicentity.v1.UserService.ListUserFilterByAgeName.
 func (c *userServiceClient) ListUserFilterByAgeName(ctx context.Context, req *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error) {
 	return c.listUserFilterByAgeName.CallUnary(ctx, req)
 }
 
-// UserServiceHandler is an implementation of the proto.UserService service.
+// UserServiceHandler is an implementation of the basicentity.v1.UserService service.
 type UserServiceHandler interface {
 	CreateUser(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error)
 	GetUserById(context.Context, *connect.Request[GetUserByIdRequest]) (*connect.Response[User], error)
@@ -298,7 +298,7 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("ListUserFilterByAgeName")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/proto.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/basicentity.v1.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserServiceCreateUserProcedure:
 			userServiceCreateUserHandler.ServeHTTP(w, r)
@@ -330,41 +330,41 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 type UnimplementedUserServiceHandler struct{}
 
 func (UnimplementedUserServiceHandler) CreateUser(context.Context, *connect.Request[CreateUserRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.CreateUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.CreateUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetUserById(context.Context, *connect.Request[GetUserByIdRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.GetUserById is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.GetUserById is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) UpdateUser(context.Context, *connect.Request[UpdateUserRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.UpdateUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.UpdateUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) DeleteUser(context.Context, *connect.Request[DeleteUserRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.DeleteUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.DeleteUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) CreateBulkUser(context.Context, *connect.Request[CreateBulkUserRequest]) (*connect.Response[CreateBulkUserResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.CreateBulkUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.CreateBulkUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetUserByEmail(context.Context, *connect.Request[GetUserByEmailRequest]) (*connect.Response[User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.GetUserByEmail is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.GetUserByEmail is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListAllUser(context.Context, *connect.Request[ListAllUserRequest]) (*connect.Response[ListAllUserResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.ListAllUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.ListAllUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) DeleteAllUser(context.Context, *connect.Request[DeleteAllUserRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.DeleteAllUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.DeleteAllUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListActive(context.Context, *connect.Request[ListActiveRequest]) (*connect.Response[ListActiveResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.ListActive is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.ListActive is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListUserFilterByAgeName(context.Context, *connect.Request[ListUserFilterByAgeNameRequest]) (*connect.Response[ListUserFilterByAgeNameResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.UserService.ListUserFilterByAgeName is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("basicentity.v1.UserService.ListUserFilterByAgeName is not implemented"))
 }

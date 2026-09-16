@@ -24,11 +24,11 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// MatchServiceName is the fully-qualified name of the MatchService service.
-	MatchServiceName = "proto.MatchService"
+	MatchServiceName = "contracts.v1.MatchService"
 	// PlayerServiceName is the fully-qualified name of the PlayerService service.
-	PlayerServiceName = "proto.PlayerService"
+	PlayerServiceName = "contracts.v1.PlayerService"
 	// StandingServiceName is the fully-qualified name of the StandingService service.
-	StandingServiceName = "proto.StandingService"
+	StandingServiceName = "contracts.v1.StandingService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -41,28 +41,28 @@ const (
 const (
 	// MatchServiceCreateMatchProcedure is the fully-qualified name of the MatchService's CreateMatch
 	// RPC.
-	MatchServiceCreateMatchProcedure = "/proto.MatchService/CreateMatch"
+	MatchServiceCreateMatchProcedure = "/contracts.v1.MatchService/CreateMatch"
 	// MatchServiceGetMatchByIdProcedure is the fully-qualified name of the MatchService's GetMatchById
 	// RPC.
-	MatchServiceGetMatchByIdProcedure = "/proto.MatchService/GetMatchById"
+	MatchServiceGetMatchByIdProcedure = "/contracts.v1.MatchService/GetMatchById"
 	// MatchServiceDeleteMatchProcedure is the fully-qualified name of the MatchService's DeleteMatch
 	// RPC.
-	MatchServiceDeleteMatchProcedure = "/proto.MatchService/DeleteMatch"
+	MatchServiceDeleteMatchProcedure = "/contracts.v1.MatchService/DeleteMatch"
 	// MatchServiceListAllMatchProcedure is the fully-qualified name of the MatchService's ListAllMatch
 	// RPC.
-	MatchServiceListAllMatchProcedure = "/proto.MatchService/ListAllMatch"
+	MatchServiceListAllMatchProcedure = "/contracts.v1.MatchService/ListAllMatch"
 	// PlayerServiceGetPlayerByNameProcedure is the fully-qualified name of the PlayerService's
 	// GetPlayerByName RPC.
-	PlayerServiceGetPlayerByNameProcedure = "/proto.PlayerService/GetPlayerByName"
+	PlayerServiceGetPlayerByNameProcedure = "/contracts.v1.PlayerService/GetPlayerByName"
 	// PlayerServiceListAllPlayerProcedure is the fully-qualified name of the PlayerService's
 	// ListAllPlayer RPC.
-	PlayerServiceListAllPlayerProcedure = "/proto.PlayerService/ListAllPlayer"
+	PlayerServiceListAllPlayerProcedure = "/contracts.v1.PlayerService/ListAllPlayer"
 	// StandingServiceListAllStandingProcedure is the fully-qualified name of the StandingService's
 	// ListAllStanding RPC.
-	StandingServiceListAllStandingProcedure = "/proto.StandingService/ListAllStanding"
+	StandingServiceListAllStandingProcedure = "/contracts.v1.StandingService/ListAllStanding"
 )
 
-// MatchServiceClient is a client for the proto.MatchService service.
+// MatchServiceClient is a client for the contracts.v1.MatchService service.
 type MatchServiceClient interface {
 	CreateMatch(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
 	GetMatchById(context.Context, *connect.Request[GetMatchByIdRequest]) (*connect.Response[Match], error)
@@ -70,10 +70,10 @@ type MatchServiceClient interface {
 	ListAllMatch(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error)
 }
 
-// NewMatchServiceClient constructs a client for the proto.MatchService service. By default, it uses
-// the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
-// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
-// connect.WithGRPCWeb() options.
+// NewMatchServiceClient constructs a client for the contracts.v1.MatchService service. By default,
+// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
+// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
+// or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -116,27 +116,27 @@ type matchServiceClient struct {
 	listAllMatch *connect.Client[ListAllMatchRequest, ListAllMatchResponse]
 }
 
-// CreateMatch calls proto.MatchService.CreateMatch.
+// CreateMatch calls contracts.v1.MatchService.CreateMatch.
 func (c *matchServiceClient) CreateMatch(ctx context.Context, req *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error) {
 	return c.createMatch.CallUnary(ctx, req)
 }
 
-// GetMatchById calls proto.MatchService.GetMatchById.
+// GetMatchById calls contracts.v1.MatchService.GetMatchById.
 func (c *matchServiceClient) GetMatchById(ctx context.Context, req *connect.Request[GetMatchByIdRequest]) (*connect.Response[Match], error) {
 	return c.getMatchById.CallUnary(ctx, req)
 }
 
-// DeleteMatch calls proto.MatchService.DeleteMatch.
+// DeleteMatch calls contracts.v1.MatchService.DeleteMatch.
 func (c *matchServiceClient) DeleteMatch(ctx context.Context, req *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteMatch.CallUnary(ctx, req)
 }
 
-// ListAllMatch calls proto.MatchService.ListAllMatch.
+// ListAllMatch calls contracts.v1.MatchService.ListAllMatch.
 func (c *matchServiceClient) ListAllMatch(ctx context.Context, req *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
 	return c.listAllMatch.CallUnary(ctx, req)
 }
 
-// MatchServiceHandler is an implementation of the proto.MatchService service.
+// MatchServiceHandler is an implementation of the contracts.v1.MatchService service.
 type MatchServiceHandler interface {
 	CreateMatch(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error)
 	GetMatchById(context.Context, *connect.Request[GetMatchByIdRequest]) (*connect.Response[Match], error)
@@ -175,7 +175,7 @@ func NewMatchServiceHandler(svc MatchServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(matchServiceMethods.ByName("ListAllMatch")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/proto.MatchService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/contracts.v1.MatchService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MatchServiceCreateMatchProcedure:
 			matchServiceCreateMatchHandler.ServeHTTP(w, r)
@@ -195,31 +195,31 @@ func NewMatchServiceHandler(svc MatchServiceHandler, opts ...connect.HandlerOpti
 type UnimplementedMatchServiceHandler struct{}
 
 func (UnimplementedMatchServiceHandler) CreateMatch(context.Context, *connect.Request[CreateMatchRequest]) (*connect.Response[Match], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.CreateMatch is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("contracts.v1.MatchService.CreateMatch is not implemented"))
 }
 
 func (UnimplementedMatchServiceHandler) GetMatchById(context.Context, *connect.Request[GetMatchByIdRequest]) (*connect.Response[Match], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.GetMatchById is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("contracts.v1.MatchService.GetMatchById is not implemented"))
 }
 
 func (UnimplementedMatchServiceHandler) DeleteMatch(context.Context, *connect.Request[DeleteMatchRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.DeleteMatch is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("contracts.v1.MatchService.DeleteMatch is not implemented"))
 }
 
 func (UnimplementedMatchServiceHandler) ListAllMatch(context.Context, *connect.Request[ListAllMatchRequest]) (*connect.Response[ListAllMatchResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.MatchService.ListAllMatch is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("contracts.v1.MatchService.ListAllMatch is not implemented"))
 }
 
-// PlayerServiceClient is a client for the proto.PlayerService service.
+// PlayerServiceClient is a client for the contracts.v1.PlayerService service.
 type PlayerServiceClient interface {
 	GetPlayerByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error)
 	ListAllPlayer(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
 }
 
-// NewPlayerServiceClient constructs a client for the proto.PlayerService service. By default, it
-// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
-// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
-// connect.WithGRPCWeb() options.
+// NewPlayerServiceClient constructs a client for the contracts.v1.PlayerService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -248,17 +248,17 @@ type playerServiceClient struct {
 	listAllPlayer   *connect.Client[ListAllPlayerRequest, ListAllPlayerResponse]
 }
 
-// GetPlayerByName calls proto.PlayerService.GetPlayerByName.
+// GetPlayerByName calls contracts.v1.PlayerService.GetPlayerByName.
 func (c *playerServiceClient) GetPlayerByName(ctx context.Context, req *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error) {
 	return c.getPlayerByName.CallUnary(ctx, req)
 }
 
-// ListAllPlayer calls proto.PlayerService.ListAllPlayer.
+// ListAllPlayer calls contracts.v1.PlayerService.ListAllPlayer.
 func (c *playerServiceClient) ListAllPlayer(ctx context.Context, req *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
 	return c.listAllPlayer.CallUnary(ctx, req)
 }
 
-// PlayerServiceHandler is an implementation of the proto.PlayerService service.
+// PlayerServiceHandler is an implementation of the contracts.v1.PlayerService service.
 type PlayerServiceHandler interface {
 	GetPlayerByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error)
 	ListAllPlayer(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error)
@@ -283,7 +283,7 @@ func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(playerServiceMethods.ByName("ListAllPlayer")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/proto.PlayerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/contracts.v1.PlayerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlayerServiceGetPlayerByNameProcedure:
 			playerServiceGetPlayerByNameHandler.ServeHTTP(w, r)
@@ -299,22 +299,22 @@ func NewPlayerServiceHandler(svc PlayerServiceHandler, opts ...connect.HandlerOp
 type UnimplementedPlayerServiceHandler struct{}
 
 func (UnimplementedPlayerServiceHandler) GetPlayerByName(context.Context, *connect.Request[GetPlayerByNameRequest]) (*connect.Response[Player], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.GetPlayerByName is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("contracts.v1.PlayerService.GetPlayerByName is not implemented"))
 }
 
 func (UnimplementedPlayerServiceHandler) ListAllPlayer(context.Context, *connect.Request[ListAllPlayerRequest]) (*connect.Response[ListAllPlayerResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.PlayerService.ListAllPlayer is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("contracts.v1.PlayerService.ListAllPlayer is not implemented"))
 }
 
-// StandingServiceClient is a client for the proto.StandingService service.
+// StandingServiceClient is a client for the contracts.v1.StandingService service.
 type StandingServiceClient interface {
 	ListAllStanding(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error)
 }
 
-// NewStandingServiceClient constructs a client for the proto.StandingService service. By default,
-// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
-// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
-// or connect.WithGRPCWeb() options.
+// NewStandingServiceClient constructs a client for the contracts.v1.StandingService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -336,12 +336,12 @@ type standingServiceClient struct {
 	listAllStanding *connect.Client[ListAllStandingRequest, ListAllStandingResponse]
 }
 
-// ListAllStanding calls proto.StandingService.ListAllStanding.
+// ListAllStanding calls contracts.v1.StandingService.ListAllStanding.
 func (c *standingServiceClient) ListAllStanding(ctx context.Context, req *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error) {
 	return c.listAllStanding.CallUnary(ctx, req)
 }
 
-// StandingServiceHandler is an implementation of the proto.StandingService service.
+// StandingServiceHandler is an implementation of the contracts.v1.StandingService service.
 type StandingServiceHandler interface {
 	ListAllStanding(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error)
 }
@@ -359,7 +359,7 @@ func NewStandingServiceHandler(svc StandingServiceHandler, opts ...connect.Handl
 		connect.WithSchema(standingServiceMethods.ByName("ListAllStanding")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/proto.StandingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/contracts.v1.StandingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case StandingServiceListAllStandingProcedure:
 			standingServiceListAllStandingHandler.ServeHTTP(w, r)
@@ -373,5 +373,5 @@ func NewStandingServiceHandler(svc StandingServiceHandler, opts ...connect.Handl
 type UnimplementedStandingServiceHandler struct{}
 
 func (UnimplementedStandingServiceHandler) ListAllStanding(context.Context, *connect.Request[ListAllStandingRequest]) (*connect.Response[ListAllStandingResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.StandingService.ListAllStanding is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("contracts.v1.StandingService.ListAllStanding is not implemented"))
 }

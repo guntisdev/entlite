@@ -24,7 +24,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// ArticleServiceName is the fully-qualified name of the ArticleService service.
-	ArticleServiceName = "proto.ArticleService"
+	ArticleServiceName = "optional.v1.ArticleService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -37,31 +37,31 @@ const (
 const (
 	// ArticleServiceCreateArticleProcedure is the fully-qualified name of the ArticleService's
 	// CreateArticle RPC.
-	ArticleServiceCreateArticleProcedure = "/proto.ArticleService/CreateArticle"
+	ArticleServiceCreateArticleProcedure = "/optional.v1.ArticleService/CreateArticle"
 	// ArticleServiceGetArticleByIdProcedure is the fully-qualified name of the ArticleService's
 	// GetArticleById RPC.
-	ArticleServiceGetArticleByIdProcedure = "/proto.ArticleService/GetArticleById"
+	ArticleServiceGetArticleByIdProcedure = "/optional.v1.ArticleService/GetArticleById"
 	// ArticleServiceUpdateArticleProcedure is the fully-qualified name of the ArticleService's
 	// UpdateArticle RPC.
-	ArticleServiceUpdateArticleProcedure = "/proto.ArticleService/UpdateArticle"
+	ArticleServiceUpdateArticleProcedure = "/optional.v1.ArticleService/UpdateArticle"
 	// ArticleServiceDeleteArticleProcedure is the fully-qualified name of the ArticleService's
 	// DeleteArticle RPC.
-	ArticleServiceDeleteArticleProcedure = "/proto.ArticleService/DeleteArticle"
+	ArticleServiceDeleteArticleProcedure = "/optional.v1.ArticleService/DeleteArticle"
 	// ArticleServiceGetArticleBySlugProcedure is the fully-qualified name of the ArticleService's
 	// GetArticleBySlug RPC.
-	ArticleServiceGetArticleBySlugProcedure = "/proto.ArticleService/GetArticleBySlug"
+	ArticleServiceGetArticleBySlugProcedure = "/optional.v1.ArticleService/GetArticleBySlug"
 	// ArticleServiceListArticleByAuthorProcedure is the fully-qualified name of the ArticleService's
 	// ListArticleByAuthor RPC.
-	ArticleServiceListArticleByAuthorProcedure = "/proto.ArticleService/ListArticleByAuthor"
+	ArticleServiceListArticleByAuthorProcedure = "/optional.v1.ArticleService/ListArticleByAuthor"
 	// ArticleServiceListAllArticleProcedure is the fully-qualified name of the ArticleService's
 	// ListAllArticle RPC.
-	ArticleServiceListAllArticleProcedure = "/proto.ArticleService/ListAllArticle"
+	ArticleServiceListAllArticleProcedure = "/optional.v1.ArticleService/ListAllArticle"
 	// ArticleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleProcedure is the fully-qualified
 	// name of the ArticleService's ListArticleFilterByAuthorIsFeaturedPublishedAtTitle RPC.
-	ArticleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleProcedure = "/proto.ArticleService/ListArticleFilterByAuthorIsFeaturedPublishedAtTitle"
+	ArticleServiceListArticleFilterByAuthorIsFeaturedPublishedAtTitleProcedure = "/optional.v1.ArticleService/ListArticleFilterByAuthorIsFeaturedPublishedAtTitle"
 )
 
-// ArticleServiceClient is a client for the proto.ArticleService service.
+// ArticleServiceClient is a client for the optional.v1.ArticleService service.
 type ArticleServiceClient interface {
 	// re-posting a slug keeps the article that is already there, the caller
 	// gets sql.ErrNoRows because nothing was inserted
@@ -75,10 +75,10 @@ type ArticleServiceClient interface {
 	ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error)
 }
 
-// NewArticleServiceClient constructs a client for the proto.ArticleService service. By default, it
-// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
-// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
-// connect.WithGRPCWeb() options.
+// NewArticleServiceClient constructs a client for the optional.v1.ArticleService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
@@ -149,48 +149,48 @@ type articleServiceClient struct {
 	listArticleFilterByAuthorIsFeaturedPublishedAtTitle *connect.Client[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest, ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse]
 }
 
-// CreateArticle calls proto.ArticleService.CreateArticle.
+// CreateArticle calls optional.v1.ArticleService.CreateArticle.
 func (c *articleServiceClient) CreateArticle(ctx context.Context, req *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error) {
 	return c.createArticle.CallUnary(ctx, req)
 }
 
-// GetArticleById calls proto.ArticleService.GetArticleById.
+// GetArticleById calls optional.v1.ArticleService.GetArticleById.
 func (c *articleServiceClient) GetArticleById(ctx context.Context, req *connect.Request[GetArticleByIdRequest]) (*connect.Response[Article], error) {
 	return c.getArticleById.CallUnary(ctx, req)
 }
 
-// UpdateArticle calls proto.ArticleService.UpdateArticle.
+// UpdateArticle calls optional.v1.ArticleService.UpdateArticle.
 func (c *articleServiceClient) UpdateArticle(ctx context.Context, req *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {
 	return c.updateArticle.CallUnary(ctx, req)
 }
 
-// DeleteArticle calls proto.ArticleService.DeleteArticle.
+// DeleteArticle calls optional.v1.ArticleService.DeleteArticle.
 func (c *articleServiceClient) DeleteArticle(ctx context.Context, req *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteArticle.CallUnary(ctx, req)
 }
 
-// GetArticleBySlug calls proto.ArticleService.GetArticleBySlug.
+// GetArticleBySlug calls optional.v1.ArticleService.GetArticleBySlug.
 func (c *articleServiceClient) GetArticleBySlug(ctx context.Context, req *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error) {
 	return c.getArticleBySlug.CallUnary(ctx, req)
 }
 
-// ListArticleByAuthor calls proto.ArticleService.ListArticleByAuthor.
+// ListArticleByAuthor calls optional.v1.ArticleService.ListArticleByAuthor.
 func (c *articleServiceClient) ListArticleByAuthor(ctx context.Context, req *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
 	return c.listArticleByAuthor.CallUnary(ctx, req)
 }
 
-// ListAllArticle calls proto.ArticleService.ListAllArticle.
+// ListAllArticle calls optional.v1.ArticleService.ListAllArticle.
 func (c *articleServiceClient) ListAllArticle(ctx context.Context, req *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
 	return c.listAllArticle.CallUnary(ctx, req)
 }
 
 // ListArticleFilterByAuthorIsFeaturedPublishedAtTitle calls
-// proto.ArticleService.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle.
+// optional.v1.ArticleService.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle.
 func (c *articleServiceClient) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(ctx context.Context, req *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
 	return c.listArticleFilterByAuthorIsFeaturedPublishedAtTitle.CallUnary(ctx, req)
 }
 
-// ArticleServiceHandler is an implementation of the proto.ArticleService service.
+// ArticleServiceHandler is an implementation of the optional.v1.ArticleService service.
 type ArticleServiceHandler interface {
 	// re-posting a slug keeps the article that is already there, the caller
 	// gets sql.ErrNoRows because nothing was inserted
@@ -259,7 +259,7 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 		connect.WithSchema(articleServiceMethods.ByName("ListArticleFilterByAuthorIsFeaturedPublishedAtTitle")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/proto.ArticleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/optional.v1.ArticleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ArticleServiceCreateArticleProcedure:
 			articleServiceCreateArticleHandler.ServeHTTP(w, r)
@@ -287,33 +287,33 @@ func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect.Handler
 type UnimplementedArticleServiceHandler struct{}
 
 func (UnimplementedArticleServiceHandler) CreateArticle(context.Context, *connect.Request[CreateArticleRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.CreateArticle is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("optional.v1.ArticleService.CreateArticle is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) GetArticleById(context.Context, *connect.Request[GetArticleByIdRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetArticleById is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("optional.v1.ArticleService.GetArticleById is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) UpdateArticle(context.Context, *connect.Request[UpdateArticleRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.UpdateArticle is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("optional.v1.ArticleService.UpdateArticle is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) DeleteArticle(context.Context, *connect.Request[DeleteArticleRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.DeleteArticle is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("optional.v1.ArticleService.DeleteArticle is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) GetArticleBySlug(context.Context, *connect.Request[GetArticleBySlugRequest]) (*connect.Response[Article], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.GetArticleBySlug is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("optional.v1.ArticleService.GetArticleBySlug is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) ListArticleByAuthor(context.Context, *connect.Request[ListArticleByAuthorRequest]) (*connect.Response[ListArticleByAuthorResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListArticleByAuthor is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("optional.v1.ArticleService.ListArticleByAuthor is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) ListAllArticle(context.Context, *connect.Request[ListAllArticleRequest]) (*connect.Response[ListAllArticleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListAllArticle is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("optional.v1.ArticleService.ListAllArticle is not implemented"))
 }
 
 func (UnimplementedArticleServiceHandler) ListArticleFilterByAuthorIsFeaturedPublishedAtTitle(context.Context, *connect.Request[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleRequest]) (*connect.Response[ListArticleFilterByAuthorIsFeaturedPublishedAtTitleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("proto.ArticleService.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("optional.v1.ArticleService.ListArticleFilterByAuthorIsFeaturedPublishedAtTitle is not implemented"))
 }

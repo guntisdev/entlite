@@ -299,7 +299,7 @@ DELETE FROM "article" WHERE id = ?;
 
 syntax = "proto3";
 
-package proto;
+package optional.v1;
 
 option go_package = "github.com/guntisdev/entlite/examples/03-optional/sqlite/ent/gen/pb";
 

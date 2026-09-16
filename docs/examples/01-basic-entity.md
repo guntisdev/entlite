@@ -301,7 +301,7 @@ DELETE FROM "user";
 
 syntax = "proto3";
 
-package proto;
+package basicentity.v1;
 
 option go_package = "github.com/guntisdev/entlite/examples/01-basic-entity/sqlite/ent/gen/pb";
 

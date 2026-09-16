@@ -524,7 +524,7 @@ DELETE FROM "build";
 
 syntax = "proto3";
 
-package proto;
+package queries.v1;
 
 option go_package = "github.com/guntisdev/entlite/examples/05-queries/sqlite/ent/gen/pb";
 

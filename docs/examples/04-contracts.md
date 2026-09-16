@@ -433,7 +433,7 @@ SELECT * FROM "player";
 
 syntax = "proto3";
 
-package proto;
+package contracts.v1;
 
 option go_package = "github.com/guntisdev/entlite/examples/04-contracts/sqlite/ent/gen/pb";
 
