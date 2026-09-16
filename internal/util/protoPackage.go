@@ -31,7 +31,7 @@ func AutoProtoPackage(entDir string) (string, error) {
 	segments := strings.Split(filepath.ToSlash(relPath), "/")
 	sanitized := make([]string, 0, len(segments)+1)
 	for _, seg := range segments {
-		if s := sanitizeProtoSegment(seg); s != "" {
+		if s := SanitizeProtoSegment(seg); s != "" {
 			sanitized = append(sanitized, s)
 		}
 	}
@@ -45,9 +45,9 @@ func ProtoPackageDir(packageName string) string {
 	return strings.ReplaceAll(packageName, ".", "/")
 }
 
-// make valid proto package name:
+// makes a valid proto package name segment:
 // lowercase letters, digits and underscores, not starting with a digit.
-func sanitizeProtoSegment(seg string) string {
+func SanitizeProtoSegment(seg string) string {
 	seg = strings.ToLower(seg)
 	seg = nonIdentChars.ReplaceAllString(seg, "_")
 	seg = strings.Trim(seg, "_")

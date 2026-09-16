@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/guntisdev/entlite/internal/util"
 	"gopkg.in/yaml.v3"
 )
 
@@ -22,6 +23,7 @@ func TestNewCommandFunction(t *testing.T) {
 		"ent/sqlc.yaml",
 		"ent/buf.yaml",
 		"ent/buf.gen.yaml",
+		"ent/entlite.yaml",
 		"ent/generate.go",
 	}
 
@@ -66,7 +68,7 @@ func TestNewCommandScaffoldsValidYaml(t *testing.T) {
 
 	newCommand([]string{"User"})
 
-	for _, file := range []string{"ent/sqlc.yaml", "ent/buf.yaml", "ent/buf.gen.yaml"} {
+	for _, file := range []string{"ent/sqlc.yaml", "ent/buf.yaml", "ent/buf.gen.yaml", "ent/entlite.yaml"} {
 		data, err := os.ReadFile(file)
 		if err != nil {
 			t.Fatalf("Failed to read %s: %v", file, err)
@@ -75,5 +77,28 @@ func TestNewCommandScaffoldsValidYaml(t *testing.T) {
 		if err := yaml.Unmarshal(data, &out); err != nil {
 			t.Errorf("%s is not valid yaml: %v", file, err)
 		}
+	}
+}
+
+func TestNewCommandScaffoldsEntliteYaml(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	newCommand([]string{"User"})
+
+	config, err := util.GetEntliteConfigFromYaml(filepath.Join("ent", "entlite.yaml"))
+	if err != nil {
+		t.Fatalf("Failed to parse scaffolded entlite.yaml: %v", err)
+	}
+
+	wantName := util.SanitizeProtoSegment(filepath.Base(tmpDir))
+	if wantName == "" {
+		wantName = "app"
+	}
+	if config.ProtoPackageName != wantName {
+		t.Errorf("Expected proto package name %q, got %q", wantName, config.ProtoPackageName)
+	}
+	if config.ProtoPackageVersion != "v1" {
+		t.Errorf("Expected proto package version 'v1', got %q", config.ProtoPackageVersion)
 	}
 }
