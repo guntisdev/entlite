@@ -34,7 +34,7 @@ func distinctEntity() schema.Entity {
 }
 
 func TestDistinctResponseMessages(t *testing.T) {
-	content := generateSchemaProto([]schema.Entity{distinctEntity()}, "example/gen/pb")
+	content := generateSchemaProto([]schema.Entity{distinctEntity()}, "example/gen/pb", "example.v1")
 
 	// one column returns the values themselves
 	single := `message ListReleaseNamesResponse {
@@ -73,7 +73,7 @@ message ListReleaseLatestResponse {
 
 // a repeated field cannot be optional in proto3, but the value type still has to match
 func TestDistinctOptionalColumnResponse(t *testing.T) {
-	content := generateSchemaProto([]schema.Entity{distinctEntity()}, "example/gen/pb")
+	content := generateSchemaProto([]schema.Entity{distinctEntity()}, "example/gen/pb", "example.v1")
 
 	want := `message ListReleaseBuildsResponse {
   repeated string build = 1;

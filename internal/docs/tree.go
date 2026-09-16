@@ -24,6 +24,7 @@ var entTree = []struct{ Path, Note string }{
 	{Path: "buf.yaml", Note: ""},
 	{Path: "buf.gen.yaml", Note: ""},
 	{Path: "buf.lock", Note: ""},
+	{Path: "entlite.yaml", Note: "proto package name and version"},
 	{Path: "sqlc.yaml", Note: "dialect and sqlc settings"},
 	{Path: "generate.go", Note: "the go:generate lines that run the pipeline"},
 }

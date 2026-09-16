@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -43,13 +44,19 @@ func genCommand(args []string) {
 	// PROTO
 	protoEntities := schema.FilterPROTO(parsedEntities)
 	if len(protoEntities) > 0 {
+		packageName, err := resolveProtoPackage(filepath.Dir(dir))
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed resolving proto package name: %v\n", err)
+			os.Exit(1)
+		}
+
 		goPackage, err := pbImportPath(filepath.Dir(dir))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed resolving go_package: %v\n", err)
 			os.Exit(1)
 		}
 
-		if err := proto.Generate(protoEntities, protoDir, goPackage); err != nil {
+		if err := proto.Generate(protoEntities, protoDir, goPackage, packageName); err != nil {
 			fmt.Fprintf(os.Stderr, "Failed generating proto: %v\n", err)
 			os.Exit(1)
 		}
@@ -75,6 +82,18 @@ func genCommand(args []string) {
 			fmt.Fprintf(os.Stderr, "warning: %s\n", warning)
 		}
 	}
+}
+
+// reads entlite.yaml if present, else gets package name from entDir's path.
+func resolveProtoPackage(entDir string) (string, error) {
+	config, err := util.GetEntliteConfigFromYaml(filepath.Join(entDir, "entlite.yaml"))
+	if err == nil {
+		return config.ProtoPackageName + "." + config.ProtoPackageVersion, nil
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		return "", err
+	}
+	return util.AutoProtoPackage(entDir)
 }
 
 func pbImportPath(entDir string) (string, error) {

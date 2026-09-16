@@ -31,7 +31,7 @@ func suppliedIdEntity() schema.Entity {
 }
 
 func TestCallerSuppliedIdInCreateRequest(t *testing.T) {
-	content := generateSchemaProto([]schema.Entity{suppliedIdEntity()}, "example/gen/pb")
+	content := generateSchemaProto([]schema.Entity{suppliedIdEntity()}, "example/gen/pb", "example.v1")
 
 	create := `message CreateServiceRequest {
   string id = 1 [(buf.validate.field).required = true];`
@@ -52,7 +52,7 @@ func TestGeneratedIdStaysOutOfCreateRequest(t *testing.T) {
 	entity.Indexes = nil
 	entity.Fields[0].Primary = true
 
-	content := generateSchemaProto([]schema.Entity{entity}, "example/gen/pb")
+	content := generateSchemaProto([]schema.Entity{entity}, "example/gen/pb", "example.v1")
 
 	create := `message CreateServiceRequest {
   string env = 2`

@@ -26,7 +26,7 @@ func countEntity() schema.Entity {
 }
 
 func TestCountResponseField(t *testing.T) {
-	content := generateSchemaProto([]schema.Entity{countEntity()}, "example/gen/pb")
+	content := generateSchemaProto([]schema.Entity{countEntity()}, "example/gen/pb", "example.v1")
 
 	counted := `message ListPostPagedResponse {
   repeated Post rows = 1;

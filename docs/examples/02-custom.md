@@ -374,7 +374,7 @@ DELETE FROM "sensor_reading" WHERE id = ?;
 
 syntax = "proto3";
 
-package proto;
+package custom.v1;
 
 option go_package = "github.com/guntisdev/entlite/examples/02-custom/sqlite/ent/gen/pb";
 

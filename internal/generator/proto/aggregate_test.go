@@ -45,7 +45,7 @@ func aggregateEntity() schema.Entity {
 }
 
 func TestAggregateResponseMessages(t *testing.T) {
-	content := generateSchemaProto([]schema.Entity{aggregateEntity()}, "example/gen/pb")
+	content := generateSchemaProto([]schema.Entity{aggregateEntity()}, "example/gen/pb", "example.v1")
 
 	// a group returns one row per group, keyed by the grouped columns
 	grouped := `message SumBranchDurationsRow {

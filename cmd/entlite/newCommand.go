@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/guntisdev/entlite/internal/schema"
+	"github.com/guntisdev/entlite/internal/util"
 )
 
 // newCommand scaffolds an ent directory, one schema file per entity.
@@ -74,6 +75,11 @@ func newCommand(args []string) {
 
 	if err := createBufGenYamlFile(entDir); err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating buf.gen.yaml: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err := createEntliteYamlFile(entDir); err != nil {
+		fmt.Fprintf(os.Stderr, "Error creating entlite.yaml: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -165,6 +171,8 @@ modules:
 lint:
   use:
     - STANDARD
+  except:
+    - PACKAGE_DIRECTORY_MATCH
 breaking:
   use:
     - FILE
@@ -194,6 +202,26 @@ plugins:
     include_imports: true`
 
 	path := filepath.Join(dir, "buf.gen.yaml")
+	return createIfNotExist(path, content)
+}
+
+func createEntliteYamlFile(dir string) error {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get working directory: %w", err)
+	}
+
+	name := util.SanitizeProtoSegment(filepath.Base(cwd))
+	if name == "" {
+		name = "app"
+	}
+
+	content := fmt.Sprintf(`proto:
+  name: %s
+  version: v1
+`, name)
+
+	path := filepath.Join(dir, "entlite.yaml")
 	return createIfNotExist(path, content)
 }
 
