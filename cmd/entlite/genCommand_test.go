@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	testutil "github.com/guntisdev/entlite/internal/util"
@@ -263,5 +264,65 @@ DELETE FROM "user" WHERE id = $1;`
 		if d := testutil.Diff(expectedSQLQueries, actualContent); d != "" {
 			t.Errorf("SQL queries content mismatch (-expected +actual):\n%s", d)
 		}
+	}
+}
+
+func TestGenCommandFunction_EntliteYamlOverridesPackage(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	schemaDir := filepath.Join(tmpDir, "ent", "schema")
+	logicDir := filepath.Join(tmpDir, "ent", "logic")
+
+	if err := os.MkdirAll(schemaDir, 0755); err != nil {
+		t.Fatalf("Failed to create schema directory: %v", err)
+	}
+	if err := os.MkdirAll(logicDir, 0755); err != nil {
+		t.Fatalf("Failed to create logic directory: %v", err)
+	}
+
+	writeTestGoMod(t, tmpDir)
+	writeTestUserSchema(t, schemaDir)
+	writeTestLogic(t, logicDir)
+
+	sqlcYamlContent := `version: "2"
+sql:
+  - schema: "contract/sqlc/schema.sql"
+    queries: "contract/sqlc/queries.sql"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "internal"
+        out: "gen/db/internal"
+        emit_json_tags: true`
+	if err := os.WriteFile(filepath.Join(tmpDir, "ent", "sqlc.yaml"), []byte(sqlcYamlContent), 0644); err != nil {
+		t.Fatalf("Failed to write sqlc.yaml: %v", err)
+	}
+
+	bufGenYamlContent := `version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/go:v1.34.2
+    out: gen/pb
+    opt: paths=source_relative`
+	if err := os.WriteFile(filepath.Join(tmpDir, "ent", "buf.gen.yaml"), []byte(bufGenYamlContent), 0644); err != nil {
+		t.Fatalf("Failed to write buf.gen.yaml: %v", err)
+	}
+
+	entliteYamlContent := `proto:
+  name: acme
+  version: v2`
+	if err := os.WriteFile(filepath.Join(tmpDir, "ent", "entlite.yaml"), []byte(entliteYamlContent), 0644); err != nil {
+		t.Fatalf("Failed to write entlite.yaml: %v", err)
+	}
+
+	genCommand([]string{schemaDir})
+
+	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto")
+	content, err := os.ReadFile(protoPath)
+	if err != nil {
+		t.Fatalf("Failed to read proto file: %v", err)
+	}
+
+	if !strings.Contains(string(content), "package acme.v2;") {
+		t.Errorf("expected entlite.yaml to set the package, got:\n%s", content)
 	}
 }

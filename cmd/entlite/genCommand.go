@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -49,7 +50,7 @@ func genCommand(args []string) {
 			os.Exit(1)
 		}
 
-		packageName, err := util.AutoProtoPackage(filepath.Dir(dir))
+		packageName, err := resolveProtoPackage(filepath.Dir(dir))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed resolving proto package name: %v\n", err)
 			os.Exit(1)
@@ -81,6 +82,18 @@ func genCommand(args []string) {
 			fmt.Fprintf(os.Stderr, "warning: %s\n", warning)
 		}
 	}
+}
+
+// reads entlite.yaml if present, else gets package name from entDir's path.
+func resolveProtoPackage(entDir string) (string, error) {
+	config, err := util.GetEntliteConfigFromYaml(filepath.Join(entDir, "entlite.yaml"))
+	if err == nil {
+		return config.ProtoPackageName + "." + config.ProtoPackageVersion, nil
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		return "", err
+	}
+	return util.AutoProtoPackage(entDir)
 }
 
 func pbImportPath(entDir string) (string, error) {
