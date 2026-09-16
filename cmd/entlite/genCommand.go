@@ -49,7 +49,13 @@ func genCommand(args []string) {
 			os.Exit(1)
 		}
 
-		if err := proto.Generate(protoEntities, protoDir, goPackage); err != nil {
+		packageName, err := util.AutoProtoPackage(filepath.Dir(dir))
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed resolving proto package name: %v\n", err)
+			os.Exit(1)
+		}
+
+		if err := proto.Generate(protoEntities, protoDir, goPackage, packageName); err != nil {
 			fmt.Fprintf(os.Stderr, "Failed generating proto: %v\n", err)
 			os.Exit(1)
 		}

@@ -11,11 +11,8 @@ import (
 	"github.com/guntisdev/entlite/internal/util"
 )
 
-// proto package name for every generated schema.proto
-const PackageName = "proto"
-
-func Generate(entities []schema.Entity, dir string, goPackage string) error {
-	protoContent := generateSchemaProto(entities, goPackage)
+func Generate(entities []schema.Entity, dir string, goPackage string, packageName string) error {
+	protoContent := generateSchemaProto(entities, goPackage, packageName)
 
 	fileName := "schema.proto"
 	filePath := filepath.Join(dir, fileName)
@@ -27,12 +24,12 @@ func Generate(entities []schema.Entity, dir string, goPackage string) error {
 	return nil
 }
 
-func generateSchemaProto(entities []schema.Entity, goPackage string) string {
+func generateSchemaProto(entities []schema.Entity, goPackage string, packageName string) string {
 	var content strings.Builder
 
 	content.WriteString(util.GeneratedGo)
 	content.WriteString("syntax = \"proto3\";\n\n")
-	content.WriteString(fmt.Sprintf("package %s;\n\n", PackageName))
+	content.WriteString(fmt.Sprintf("package %s;\n\n", packageName))
 	content.WriteString(fmt.Sprintf("option go_package = \"%s\";\n\n", goPackage))
 
 	imports := []string{}

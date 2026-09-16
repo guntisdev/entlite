@@ -87,7 +87,7 @@ plugins:
 	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto")
 	expectedProtoContent := testutil.GeneratedGo + `syntax = "proto3";
 
-package proto;
+package ent.v1;
 
 option go_package = "github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/pb";
 
