@@ -123,7 +123,7 @@ func TestGenCommandContractGating(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			entDir := runGenWithContracts(t, tt.contracts)
 
-			protoPath := filepath.Join(entDir, "contract", "proto", "ent", "v1", "schema.proto")
+			protoPath := filepath.Join(entDir, "contract", "proto", "schema.proto")
 			schemaPath := filepath.Join(entDir, "contract", "sqlc", "schema.sql")
 			queriesPath := filepath.Join(entDir, "contract", "sqlc", "queries.sql")
 

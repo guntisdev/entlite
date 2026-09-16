@@ -65,7 +65,7 @@ plugins:
 		filepath.Join(tmpDir, "ent", "gen"),
 	}
 	expectedFiles := []string{
-		filepath.Join(tmpDir, "ent", "contract", "proto", "ent", "v1", "schema.proto"),
+		filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto"),
 		filepath.Join(tmpDir, "ent", "contract", "sqlc", "schema.sql"),
 		filepath.Join(tmpDir, "ent", "contract", "sqlc", "queries.sql"),
 	}
@@ -85,12 +85,12 @@ plugins:
 	}
 
 	// Verify schema.proto
-	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "ent", "v1", "schema.proto")
+	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto")
 	expectedProtoContent := testutil.GeneratedGo + `syntax = "proto3";
 
 package ent.v1;
 
-option go_package = "github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/pb/ent/v1;pb";
+option go_package = "github.com/guntisdev/entlite/examples/01-basic-entity/ent/gen/pb";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -316,7 +316,7 @@ plugins:
 
 	genCommand([]string{schemaDir})
 
-	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "acme", "v2", "schema.proto")
+	protoPath := filepath.Join(tmpDir, "ent", "contract", "proto", "schema.proto")
 	content, err := os.ReadFile(protoPath)
 	if err != nil {
 		t.Fatalf("Failed to read proto file: %v", err)
@@ -324,8 +324,5 @@ plugins:
 
 	if !strings.Contains(string(content), "package acme.v2;") {
 		t.Errorf("expected entlite.yaml to set the package, got:\n%s", content)
-	}
-	if !strings.Contains(string(content), ";pb\";") {
-		t.Errorf("expected go_package to keep the pb package name, got:\n%s", content)
 	}
 }

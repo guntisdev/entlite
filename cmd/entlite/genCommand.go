@@ -49,24 +49,14 @@ func genCommand(args []string) {
 			fmt.Fprintf(os.Stderr, "Failed resolving proto package name: %v\n", err)
 			os.Exit(1)
 		}
-		packageDir := util.ProtoPackageDir(packageName)
 
-		// path rule matching its package, e.g. contract/proto/acme/v2/schema.proto.
-		nestedProtoDir := filepath.Join(protoDir, packageDir)
-		if err := os.MkdirAll(nestedProtoDir, 0755); err != nil {
-			fmt.Fprintf(os.Stderr, "Error creating directory %s %v\n", nestedProtoDir, err)
-			os.Exit(1)
-		}
-
-		goPackage, err := pbImportPath(filepath.Dir(dir), packageDir)
+		goPackage, err := pbImportPath(filepath.Dir(dir))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Failed resolving go_package: %v\n", err)
 			os.Exit(1)
 		}
-		// ";pb" keeps the Go package name "pb" regardless of nesting depth.
-		goPackage += ";pb"
 
-		if err := proto.Generate(protoEntities, nestedProtoDir, goPackage, packageName); err != nil {
+		if err := proto.Generate(protoEntities, protoDir, goPackage, packageName); err != nil {
 			fmt.Fprintf(os.Stderr, "Failed generating proto: %v\n", err)
 			os.Exit(1)
 		}
@@ -106,12 +96,12 @@ func resolveProtoPackage(entDir string) (string, error) {
 	return util.AutoProtoPackage(entDir)
 }
 
-func pbImportPath(entDir string, packageDir string) (string, error) {
-	pbDir := filepath.Join(entDir, "gen", "pb", packageDir)
+func pbImportPath(entDir string) (string, error) {
+	pbDir := filepath.Join(entDir, "gen", "pb")
 
 	// buf.gen.yaml is the source of truth
 	if bufConfig, err := util.GetBufConfigFromYaml(filepath.Join(entDir, "buf.gen.yaml")); err == nil {
-		pbDir = filepath.Join(entDir, bufConfig.ProtoTypesDir, packageDir)
+		pbDir = filepath.Join(entDir, bufConfig.ProtoTypesDir)
 	}
 
 	return util.PathToImport(pbDir)

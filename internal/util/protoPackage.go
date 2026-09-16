@@ -40,11 +40,6 @@ func AutoProtoPackage(entDir string) (string, error) {
 	return strings.Join(sanitized, "."), nil
 }
 
-// convert dotted proto package name into a directory path,
-func ProtoPackageDir(packageName string) string {
-	return strings.ReplaceAll(packageName, ".", "/")
-}
-
 // makes a valid proto package name segment:
 // lowercase letters, digits and underscores, not starting with a digit.
 func SanitizeProtoSegment(seg string) string {

@@ -14,7 +14,7 @@ func TestProtoValidateCommand(t *testing.T) {
 
 	schemaDir := filepath.Join(tmpDir, "ent", "schema")
 	logicDir := filepath.Join(tmpDir, "ent", "logic")
-	pbDir := filepath.Join(tmpDir, "ent", "gen", "pb", "ent", "v1")
+	pbDir := filepath.Join(tmpDir, "ent", "gen", "pb")
 
 	if err := os.MkdirAll(schemaDir, 0755); err != nil {
 		t.Fatalf("Failed to create schema directory: %v", err)
