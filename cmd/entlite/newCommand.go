@@ -173,6 +173,9 @@ lint:
     - STANDARD
   except:
     - PACKAGE_DIRECTORY_MATCH
+    - RPC_RESPONSE_STANDARD_NAME
+    - RPC_REQUEST_RESPONSE_UNIQUE
+  rpc_allow_google_protobuf_empty_responses: true
 breaking:
   use:
     - FILE
