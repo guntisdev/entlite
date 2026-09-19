@@ -320,7 +320,7 @@ func NewSensorAnalyticsServiceServer(db *sql.DB) *AnalyticsServer {
 
 func (s *AnalyticsServer) GetReadingStats(
 	ctx context.Context,
-	req *connect.Request[pb.GetSensorReadingStatsRequest],
+	req *connect.Request[pb.GetReadingStatsRequest],
 ) (*connect.Response[pb.SensorReadingStats], error) {
 	log.Printf("SensorReading stats: sensor_id=%d, %s..%s",
 		req.Msg.SensorId, req.Msg.FromTs.AsTime(), req.Msg.ToTs.AsTime())
@@ -352,7 +352,7 @@ func (s *AnalyticsServer) GetReadingStats(
 
 func (s *AnalyticsServer) ListWithLatestReading(
 	ctx context.Context,
-	req *connect.Request[pb.ListSensorsWithLatestReadingRequest],
+	req *connect.Request[pb.ListWithLatestReadingRequest],
 ) (*connect.Response[pb.ListSensorsWithLatestReadingResponse], error) {
 	log.Printf("List sensors with latest reading: limit=%d, offset=%d", req.Msg.Limit, req.Msg.Offset)
 

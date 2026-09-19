@@ -13,7 +13,7 @@ import "schema.proto";
 
 // reading statistics
 
-message GetSensorReadingStatsRequest {
+message GetReadingStatsRequest {
   int32 sensor_id = 1 [(buf.validate.field).required = true];
   google.protobuf.Timestamp from_ts = 2 [(buf.validate.field).required = true];
   google.protobuf.Timestamp to_ts = 3 [(buf.validate.field).required = true];
@@ -28,7 +28,7 @@ message SensorReadingStats {
 
 // sensors with their latest reading
 
-message ListSensorsWithLatestReadingRequest {
+message ListWithLatestReadingRequest {
   int32 limit = 1 [(buf.validate.field).required = true];
   int32 offset = 2;
 }
@@ -56,7 +56,7 @@ message PruneReadingsResponse {
 
 // Sits in the same package as the generated services, backed by custom.sql.
 service SensorAnalyticsService {
-  rpc GetReadingStats(GetSensorReadingStatsRequest) returns (SensorReadingStats);
-  rpc ListWithLatestReading(ListSensorsWithLatestReadingRequest) returns (ListSensorsWithLatestReadingResponse);
+  rpc GetReadingStats(GetReadingStatsRequest) returns (SensorReadingStats);
+  rpc ListWithLatestReading(ListWithLatestReadingRequest) returns (ListSensorsWithLatestReadingResponse);
   rpc PruneReadings(PruneReadingsRequest) returns (PruneReadingsResponse);
 }

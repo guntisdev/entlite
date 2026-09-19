@@ -45,8 +45,8 @@ const (
 
 // SensorAnalyticsServiceClient is a client for the custom.v1.SensorAnalyticsService service.
 type SensorAnalyticsServiceClient interface {
-	GetReadingStats(context.Context, *connect.Request[GetSensorReadingStatsRequest]) (*connect.Response[SensorReadingStats], error)
-	ListWithLatestReading(context.Context, *connect.Request[ListSensorsWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error)
+	GetReadingStats(context.Context, *connect.Request[GetReadingStatsRequest]) (*connect.Response[SensorReadingStats], error)
+	ListWithLatestReading(context.Context, *connect.Request[ListWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error)
 	PruneReadings(context.Context, *connect.Request[PruneReadingsRequest]) (*connect.Response[PruneReadingsResponse], error)
 }
 
@@ -61,13 +61,13 @@ func NewSensorAnalyticsServiceClient(httpClient connect.HTTPClient, baseURL stri
 	baseURL = strings.TrimRight(baseURL, "/")
 	sensorAnalyticsServiceMethods := File_custom_proto.Services().ByName("SensorAnalyticsService").Methods()
 	return &sensorAnalyticsServiceClient{
-		getReadingStats: connect.NewClient[GetSensorReadingStatsRequest, SensorReadingStats](
+		getReadingStats: connect.NewClient[GetReadingStatsRequest, SensorReadingStats](
 			httpClient,
 			baseURL+SensorAnalyticsServiceGetReadingStatsProcedure,
 			connect.WithSchema(sensorAnalyticsServiceMethods.ByName("GetReadingStats")),
 			connect.WithClientOptions(opts...),
 		),
-		listWithLatestReading: connect.NewClient[ListSensorsWithLatestReadingRequest, ListSensorsWithLatestReadingResponse](
+		listWithLatestReading: connect.NewClient[ListWithLatestReadingRequest, ListSensorsWithLatestReadingResponse](
 			httpClient,
 			baseURL+SensorAnalyticsServiceListWithLatestReadingProcedure,
 			connect.WithSchema(sensorAnalyticsServiceMethods.ByName("ListWithLatestReading")),
@@ -84,18 +84,18 @@ func NewSensorAnalyticsServiceClient(httpClient connect.HTTPClient, baseURL stri
 
 // sensorAnalyticsServiceClient implements SensorAnalyticsServiceClient.
 type sensorAnalyticsServiceClient struct {
-	getReadingStats       *connect.Client[GetSensorReadingStatsRequest, SensorReadingStats]
-	listWithLatestReading *connect.Client[ListSensorsWithLatestReadingRequest, ListSensorsWithLatestReadingResponse]
+	getReadingStats       *connect.Client[GetReadingStatsRequest, SensorReadingStats]
+	listWithLatestReading *connect.Client[ListWithLatestReadingRequest, ListSensorsWithLatestReadingResponse]
 	pruneReadings         *connect.Client[PruneReadingsRequest, PruneReadingsResponse]
 }
 
 // GetReadingStats calls custom.v1.SensorAnalyticsService.GetReadingStats.
-func (c *sensorAnalyticsServiceClient) GetReadingStats(ctx context.Context, req *connect.Request[GetSensorReadingStatsRequest]) (*connect.Response[SensorReadingStats], error) {
+func (c *sensorAnalyticsServiceClient) GetReadingStats(ctx context.Context, req *connect.Request[GetReadingStatsRequest]) (*connect.Response[SensorReadingStats], error) {
 	return c.getReadingStats.CallUnary(ctx, req)
 }
 
 // ListWithLatestReading calls custom.v1.SensorAnalyticsService.ListWithLatestReading.
-func (c *sensorAnalyticsServiceClient) ListWithLatestReading(ctx context.Context, req *connect.Request[ListSensorsWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error) {
+func (c *sensorAnalyticsServiceClient) ListWithLatestReading(ctx context.Context, req *connect.Request[ListWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error) {
 	return c.listWithLatestReading.CallUnary(ctx, req)
 }
 
@@ -107,8 +107,8 @@ func (c *sensorAnalyticsServiceClient) PruneReadings(ctx context.Context, req *c
 // SensorAnalyticsServiceHandler is an implementation of the custom.v1.SensorAnalyticsService
 // service.
 type SensorAnalyticsServiceHandler interface {
-	GetReadingStats(context.Context, *connect.Request[GetSensorReadingStatsRequest]) (*connect.Response[SensorReadingStats], error)
-	ListWithLatestReading(context.Context, *connect.Request[ListSensorsWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error)
+	GetReadingStats(context.Context, *connect.Request[GetReadingStatsRequest]) (*connect.Response[SensorReadingStats], error)
+	ListWithLatestReading(context.Context, *connect.Request[ListWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error)
 	PruneReadings(context.Context, *connect.Request[PruneReadingsRequest]) (*connect.Response[PruneReadingsResponse], error)
 }
 
@@ -154,11 +154,11 @@ func NewSensorAnalyticsServiceHandler(svc SensorAnalyticsServiceHandler, opts ..
 // UnimplementedSensorAnalyticsServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedSensorAnalyticsServiceHandler struct{}
 
-func (UnimplementedSensorAnalyticsServiceHandler) GetReadingStats(context.Context, *connect.Request[GetSensorReadingStatsRequest]) (*connect.Response[SensorReadingStats], error) {
+func (UnimplementedSensorAnalyticsServiceHandler) GetReadingStats(context.Context, *connect.Request[GetReadingStatsRequest]) (*connect.Response[SensorReadingStats], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("custom.v1.SensorAnalyticsService.GetReadingStats is not implemented"))
 }
 
-func (UnimplementedSensorAnalyticsServiceHandler) ListWithLatestReading(context.Context, *connect.Request[ListSensorsWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error) {
+func (UnimplementedSensorAnalyticsServiceHandler) ListWithLatestReading(context.Context, *connect.Request[ListWithLatestReadingRequest]) (*connect.Response[ListSensorsWithLatestReadingResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("custom.v1.SensorAnalyticsService.ListWithLatestReading is not implemented"))
 }
 

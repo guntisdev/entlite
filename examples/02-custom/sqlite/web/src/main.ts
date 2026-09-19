@@ -13,8 +13,8 @@ import type {
 // from custom proto
 import { SensorAnalyticsService } from "../../ent/gen/ts/custom_pb.js";
 import type {
-    GetSensorReadingStatsRequest,
-    ListSensorsWithLatestReadingRequest,
+    GetReadingStatsRequest,
+    ListWithLatestReadingRequest,
     PruneReadingsRequest,
 } from "../../ent/gen/ts/custom_pb.js";
 import {
@@ -328,7 +328,7 @@ function filterReadings() {
 
 function listWithLatestReading() {
     log("Listing active sensors with their latest reading (custom LEFT JOIN)...");
-    const request: StrictMessageInput<ListSensorsWithLatestReadingRequest> = {
+    const request: StrictMessageInput<ListWithLatestReadingRequest> = {
         limit: 50,
         offset: 0,
     };
@@ -353,7 +353,7 @@ function getReadingStats() {
         return;
     }
     log(`Getting reading stats of sensor ${sensorId} over the last 30 days...`);
-    const request: StrictMessageInput<GetSensorReadingStatsRequest> = {
+    const request: StrictMessageInput<GetReadingStatsRequest> = {
         sensorId: sensorId,
         fromTs: timestampFromDate(daysAgo(30)),
         toTs: timestampFromDate(new Date()),

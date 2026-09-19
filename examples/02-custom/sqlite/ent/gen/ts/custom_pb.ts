@@ -15,12 +15,12 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file custom.proto.
  */
 export const file_custom: GenFile = /*@__PURE__*/
-  fileDesc("CgxjdXN0b20ucHJvdG8SCWN1c3RvbS52MSKhAQocR2V0U2Vuc29yUmVhZGluZ1N0YXRzUmVxdWVzdBIZCglzZW5zb3JfaWQYASABKAVCBrpIA8gBARIzCgdmcm9tX3RzGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEjEKBXRvX3RzGAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBImQKElNlbnNvclJlYWRpbmdTdGF0cxIVCg1yZWFkaW5nX2NvdW50GAEgASgDEhEKCWF2Z192YWx1ZRgCIAEoARIRCgltaW5fdmFsdWUYAyABKAESEQoJbWF4X3ZhbHVlGAQgASgBIkwKI0xpc3RTZW5zb3JzV2l0aExhdGVzdFJlYWRpbmdSZXF1ZXN0EhUKBWxpbWl0GAEgASgFQga6SAPIAQESDgoGb2Zmc2V0GAIgASgFIrwBChdTZW5zb3JXaXRoTGF0ZXN0UmVhZGluZxIhCgZzZW5zb3IYASABKAsyES5jdXN0b20udjEuU2Vuc29yEhkKDGxhdGVzdF92YWx1ZRgCIAEoAUgAiAEBEjsKEmxhdGVzdF9yZWNvcmRlZF9hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBAUIPCg1fbGF0ZXN0X3ZhbHVlQhUKE19sYXRlc3RfcmVjb3JkZWRfYXQiWQokTGlzdFNlbnNvcnNXaXRoTGF0ZXN0UmVhZGluZ1Jlc3BvbnNlEjEKBWl0ZW1zGAEgAygLMiIuY3VzdG9tLnYxLlNlbnNvcldpdGhMYXRlc3RSZWFkaW5nIkoKFFBydW5lUmVhZGluZ3NSZXF1ZXN0EjIKBmN1dG9mZhgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCBrpIA8gBASIoChVQcnVuZVJlYWRpbmdzUmVzcG9uc2USDwoHZGVsZXRlZBgBIAEoAzLBAgoWU2Vuc29yQW5hbHl0aWNzU2VydmljZRJZCg9HZXRSZWFkaW5nU3RhdHMSJy5jdXN0b20udjEuR2V0U2Vuc29yUmVhZGluZ1N0YXRzUmVxdWVzdBodLmN1c3RvbS52MS5TZW5zb3JSZWFkaW5nU3RhdHMSeAoVTGlzdFdpdGhMYXRlc3RSZWFkaW5nEi4uY3VzdG9tLnYxLkxpc3RTZW5zb3JzV2l0aExhdGVzdFJlYWRpbmdSZXF1ZXN0Gi8uY3VzdG9tLnYxLkxpc3RTZW5zb3JzV2l0aExhdGVzdFJlYWRpbmdSZXNwb25zZRJSCg1QcnVuZVJlYWRpbmdzEh8uY3VzdG9tLnYxLlBydW5lUmVhZGluZ3NSZXF1ZXN0GiAuY3VzdG9tLnYxLlBydW5lUmVhZGluZ3NSZXNwb25zZUJDWkFnaXRodWIuY29tL2d1bnRpc2Rldi9lbnRsaXRlL2V4YW1wbGVzLzAyLWN1c3RvbS9zcWxpdGUvZW50L2dlbi9wYmIGcHJvdG8z", [file_google_protobuf_timestamp, file_buf_validate_validate, file_schema]);
+  fileDesc("CgxjdXN0b20ucHJvdG8SCWN1c3RvbS52MSKbAQoWR2V0UmVhZGluZ1N0YXRzUmVxdWVzdBIZCglzZW5zb3JfaWQYASABKAVCBrpIA8gBARIzCgdmcm9tX3RzGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBEjEKBXRvX3RzGAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBImQKElNlbnNvclJlYWRpbmdTdGF0cxIVCg1yZWFkaW5nX2NvdW50GAEgASgDEhEKCWF2Z192YWx1ZRgCIAEoARIRCgltaW5fdmFsdWUYAyABKAESEQoJbWF4X3ZhbHVlGAQgASgBIkUKHExpc3RXaXRoTGF0ZXN0UmVhZGluZ1JlcXVlc3QSFQoFbGltaXQYASABKAVCBrpIA8gBARIOCgZvZmZzZXQYAiABKAUivAEKF1NlbnNvcldpdGhMYXRlc3RSZWFkaW5nEiEKBnNlbnNvchgBIAEoCzIRLmN1c3RvbS52MS5TZW5zb3ISGQoMbGF0ZXN0X3ZhbHVlGAIgASgBSACIAQESOwoSbGF0ZXN0X3JlY29yZGVkX2F0GAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBQg8KDV9sYXRlc3RfdmFsdWVCFQoTX2xhdGVzdF9yZWNvcmRlZF9hdCJZCiRMaXN0U2Vuc29yc1dpdGhMYXRlc3RSZWFkaW5nUmVzcG9uc2USMQoFaXRlbXMYASADKAsyIi5jdXN0b20udjEuU2Vuc29yV2l0aExhdGVzdFJlYWRpbmciSgoUUHJ1bmVSZWFkaW5nc1JlcXVlc3QSMgoGY3V0b2ZmGAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIGukgDyAEBIigKFVBydW5lUmVhZGluZ3NSZXNwb25zZRIPCgdkZWxldGVkGAEgASgDMrQCChZTZW5zb3JBbmFseXRpY3NTZXJ2aWNlElMKD0dldFJlYWRpbmdTdGF0cxIhLmN1c3RvbS52MS5HZXRSZWFkaW5nU3RhdHNSZXF1ZXN0Gh0uY3VzdG9tLnYxLlNlbnNvclJlYWRpbmdTdGF0cxJxChVMaXN0V2l0aExhdGVzdFJlYWRpbmcSJy5jdXN0b20udjEuTGlzdFdpdGhMYXRlc3RSZWFkaW5nUmVxdWVzdBovLmN1c3RvbS52MS5MaXN0U2Vuc29yc1dpdGhMYXRlc3RSZWFkaW5nUmVzcG9uc2USUgoNUHJ1bmVSZWFkaW5ncxIfLmN1c3RvbS52MS5QcnVuZVJlYWRpbmdzUmVxdWVzdBogLmN1c3RvbS52MS5QcnVuZVJlYWRpbmdzUmVzcG9uc2VCQ1pBZ2l0aHViLmNvbS9ndW50aXNkZXYvZW50bGl0ZS9leGFtcGxlcy8wMi1jdXN0b20vc3FsaXRlL2VudC9nZW4vcGJiBnByb3RvMw", [file_google_protobuf_timestamp, file_buf_validate_validate, file_schema]);
 
 /**
- * @generated from message custom.v1.GetSensorReadingStatsRequest
+ * @generated from message custom.v1.GetReadingStatsRequest
  */
-export type GetSensorReadingStatsRequest = Message<"custom.v1.GetSensorReadingStatsRequest"> & {
+export type GetReadingStatsRequest = Message<"custom.v1.GetReadingStatsRequest"> & {
   /**
    * @generated from field: int32 sensor_id = 1;
    */
@@ -38,10 +38,10 @@ export type GetSensorReadingStatsRequest = Message<"custom.v1.GetSensorReadingSt
 };
 
 /**
- * Describes the message custom.v1.GetSensorReadingStatsRequest.
- * Use `create(GetSensorReadingStatsRequestSchema)` to create a new message.
+ * Describes the message custom.v1.GetReadingStatsRequest.
+ * Use `create(GetReadingStatsRequestSchema)` to create a new message.
  */
-export const GetSensorReadingStatsRequestSchema: GenMessage<GetSensorReadingStatsRequest> = /*@__PURE__*/
+export const GetReadingStatsRequestSchema: GenMessage<GetReadingStatsRequest> = /*@__PURE__*/
   messageDesc(file_custom, 0);
 
 /**
@@ -77,9 +77,9 @@ export const SensorReadingStatsSchema: GenMessage<SensorReadingStats> = /*@__PUR
   messageDesc(file_custom, 1);
 
 /**
- * @generated from message custom.v1.ListSensorsWithLatestReadingRequest
+ * @generated from message custom.v1.ListWithLatestReadingRequest
  */
-export type ListSensorsWithLatestReadingRequest = Message<"custom.v1.ListSensorsWithLatestReadingRequest"> & {
+export type ListWithLatestReadingRequest = Message<"custom.v1.ListWithLatestReadingRequest"> & {
   /**
    * @generated from field: int32 limit = 1;
    */
@@ -92,10 +92,10 @@ export type ListSensorsWithLatestReadingRequest = Message<"custom.v1.ListSensors
 };
 
 /**
- * Describes the message custom.v1.ListSensorsWithLatestReadingRequest.
- * Use `create(ListSensorsWithLatestReadingRequestSchema)` to create a new message.
+ * Describes the message custom.v1.ListWithLatestReadingRequest.
+ * Use `create(ListWithLatestReadingRequestSchema)` to create a new message.
  */
-export const ListSensorsWithLatestReadingRequestSchema: GenMessage<ListSensorsWithLatestReadingRequest> = /*@__PURE__*/
+export const ListWithLatestReadingRequestSchema: GenMessage<ListWithLatestReadingRequest> = /*@__PURE__*/
   messageDesc(file_custom, 2);
 
 /**
@@ -189,7 +189,7 @@ export const SensorAnalyticsService: GenService<{
    */
   getReadingStats: {
     methodKind: "unary";
-    input: typeof GetSensorReadingStatsRequestSchema;
+    input: typeof GetReadingStatsRequestSchema;
     output: typeof SensorReadingStatsSchema;
   },
   /**
@@ -197,7 +197,7 @@ export const SensorAnalyticsService: GenService<{
    */
   listWithLatestReading: {
     methodKind: "unary";
-    input: typeof ListSensorsWithLatestReadingRequestSchema;
+    input: typeof ListWithLatestReadingRequestSchema;
     output: typeof ListSensorsWithLatestReadingResponseSchema;
   },
   /**
